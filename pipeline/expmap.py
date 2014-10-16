@@ -1,7 +1,7 @@
 from astropy.io import fits
 import numpy as np
-from astropy import units as u
-from astropy.coordinates import SkyCoord
+#from astropy import units as u
+#from astropy.coordinates import SkyCoord
 
 # arcmin/pixels, 81 used for 1.3armin/pixels. Don't want to hardcode this
 
