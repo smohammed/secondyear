@@ -3,6 +3,10 @@ import numpy as np
 from numpy import loadtxt
 from matplotlib import pyplot as plt
 
+########################################################################################
+# This code generates an intensity map. Combine with the exposure map to get a final image.
+########################################################################################
+
 ############################################
 # Input parameters
 ############################################
@@ -23,19 +27,6 @@ lines = loadtxt("../filelists/fits_photon_list.txt", comments = "#", delimiter =
 # Probably not important
 ############################################
 
-'''
-if len(fits.open(path+lines[42])[1].data.field('gl_cor')) > len(fits.open(path+lines[43])[1].data.field('gl_cor')):
-	hdulist = fits.open(path+lines[42])
-	photons = hdulist[1].data
-	gl = photons.field('gl_cor')
-	gb = photons.field('gb_cor')
-elif len(fits.open(path+lines[43])[1].data.field('gl_cor')) > len(fits.open(path+lines[42])[1].data.field('gl_cor')):
-	hdulist = fits.open(path+lines[43])
-	photons = hdulist[1].data
-	gl = photons.field('gl_cor')
-	gb = photons.field('gb_cor')
-'''
-
 startgl = a
 endgl = a
 
@@ -55,21 +46,6 @@ gb = np.concatenate((photons.gb_cor,photons2.gb_cor))
 ############################################
 # 
 ############################################
-'''
-for i in np.linspace(x,y,18):
-	if len(fits.open(path+lines[i])[1].data.field('gl_cor')) > len(fits.open(path+lines[i+1])[1].data.field('gl_cor')):
-		hdulist = fits.open(path+lines[i])
-		photons = hdulist[1].data
-		gl = np.hstack([gl, photons.field('gl_cor')])
-		gb = np.hstack([gb, photons.field('gb_cor')])
-	elif len(fits.open(path+lines[i+1])[1].data.field('gl_cor')) > len(fits.open(path+lines[i])[1].data.field('gl_cor')):
-		hdulist = fits.open(path+lines[i+1])
-		photons = hdulist[1].data
-		gl = np.hstack([gl, photons.field('gl_cor')])
-		gb = np.hstack([gb, photons.field('gb_cor')])
-'''
-
-
 
 for i in range(startgl+2,endgl,2):
 	print i
@@ -101,17 +77,8 @@ H, xbins, ybins = np.histogram2d(gl, gb, bins = (np.linspace(a, b, 1200), np.lin
 fig = plt.figure(figsize = (10,10))
 ax = plt.axes()
 
-expmap = fits.open('AIS_GAL_SCAN_full_aspcorr_new_scst.fits')[0].data[40:1239,40:1239]
+#fits.PrimaryHDU(H).writeto('intensitymap.fits')
 
-fin = np.sqrt(H)
-
-
-tot = expmap/fin
-
-ax.imshow(tot)
-fig.savefig('test2.png')
-
-'''
 ax.imshow(np.sqrt(H).T, vmin = 0, vmax = 5, origin = 'lower', extent = [a, b, -10, 10], interpolation = 'nearest', aspect = 'auto', cmap = 'gray')
 ax.set_xlabel(r'${\rm gl}$')
 ax.set_ylabel(r'${\rm gb}$')
@@ -119,4 +86,3 @@ ax.set_title('Galactic Plane in UV, %d<gl<%d'%(a,b))
 
 fig.set_dpi(300)
 fig.savefig('GALEX_galplane_%d-%d_vmax05.png'%(a,b), bbox_inches = 'tight', pad_inches = 0)
-'''
