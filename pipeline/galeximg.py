@@ -8,12 +8,10 @@ from matplotlib import pyplot as plt
 ########################################################################################
 
 ############################################
-# Input parameters
+# Input galactic longitude range
 ############################################
 a=0 		# Start gl
 b=20		# End gl
-x=1 		# 
-y=612 		# 
 
 ############################################
 # Set the file pathways
@@ -24,7 +22,7 @@ path = "../intmapfiles/"
 lines = loadtxt("../filelists/fits_photon_list.txt", comments = "#", delimiter = ",", unpack = False, dtype = str)
 
 ############################################
-# Probably not important
+# Grab appropriate files using gl range
 ############################################
 
 startgl = a
@@ -44,7 +42,7 @@ gl = np.concatenate((photons.gl_cor,photons2.gl_cor))
 gb = np.concatenate((photons.gb_cor,photons2.gb_cor))
 
 ############################################
-# 
+# Combine photons from up and down runs, stack data horizontally
 ############################################
 
 for i in range(startgl+2,endgl,2):
@@ -55,13 +53,11 @@ for i in range(startgl+2,endgl,2):
 		f1gl_cor = f1.gl_cor
 		f1gb_cor = f1.gb_cor
 		f2gl_cor = f2.gl_cor
-		f2gb_cor = f2.gb_cor[::-1]
+		f2gb_cor = f2.gb_cor[::-1]				# Flipped to account for different scan direction
 
-	except IOError:
+	except IOError:								# if the file is corrupted, skip it 
 		print 'Index '+str(i)+' is corrupted'
 		#f1gl_cor = np.zeros(np.size())
-
-	#NOPE figure out how to add the arrays first correctly!	
 
 	glinit = np.concatenate((f1gl_cor,f2gl_cor))
 	gbinit = np.concatenate((f1gb_cor,f2gb_cor))
@@ -70,15 +66,16 @@ for i in range(startgl+2,endgl,2):
 
 
 ############################################
-# Plot stuff
+# Bin data and plot stuff
 ############################################
 
-H, xbins, ybins = np.histogram2d(gl, gb, bins = (np.linspace(a, b, 1200), np.linspace(-10, 10, 1200)))
-fig = plt.figure(figsize = (10,10))
-ax = plt.axes()
+H, xbins, ybins = np.histogram2d(gl, gb, bins = (np.linspace(a, b, 3000), np.linspace(-10, 10, 3000)))
+#fig = plt.figure(figsize = (10,10))
+#ax = plt.axes()
 
-#fits.PrimaryHDU(H).writeto('intensitymap.fits')
+fits.PrimaryHDU(H).writeto('intensitymap2.fits')
 
+'''
 ax.imshow(np.sqrt(H).T, vmin = 0, vmax = 5, origin = 'lower', extent = [a, b, -10, 10], interpolation = 'nearest', aspect = 'auto', cmap = 'gray')
 ax.set_xlabel(r'${\rm gl}$')
 ax.set_ylabel(r'${\rm gb}$')
@@ -86,3 +83,4 @@ ax.set_title('Galactic Plane in UV, %d<gl<%d'%(a,b))
 
 fig.set_dpi(300)
 fig.savefig('GALEX_galplane_%d-%d_vmax05.png'%(a,b), bbox_inches = 'tight', pad_inches = 0)
+'''

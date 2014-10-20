@@ -5,8 +5,11 @@ import numpy as np
 
 # arcmin/pixels, 81 used for 1.3armin/pixels. Don't want to hardcode this
 
-nx=81.
-ny=81.
+#nx=81.
+#ny=81.
+
+nx = 
+ny = 
 
 #################################################
 # Make array exposure map
