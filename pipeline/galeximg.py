@@ -1,7 +1,7 @@
 from astropy.io import fits
 import numpy as np
 from numpy import loadtxt
-from matplotlib import pyplot as plt
+#from matplotlib import pyplot as plt
 
 ########################################################################################
 # This code generates an intensity map. Combine with the exposure map to get a final image.
@@ -49,31 +49,36 @@ for i in range(startgl+2,endgl,2):
 	print i
 	try:
 		f1 = fits.open(path+lines[i])[1].data
-		f2 = fits.open(path+lines[i+1])[1].data
 		f1gl_cor = f1.gl_cor
 		f1gb_cor = f1.gb_cor
-		f2gl_cor = f2.gl_cor
-		f2gb_cor = f2.gb_cor[::-1]				# Flipped to account for different scan direction
 
 	except IOError:								# if the file is corrupted, skip it 
 		print 'Index '+str(i)+' is corrupted'
-		#f1gl_cor = np.zeros(np.size())
 
+	try:
+		f2 = fits.open(path+lines[i+1])[1].data
+		f2gl_cor = f2.gl_cor
+		f2gb_cor = f2.gb_cor
+
+	except IOError:								# if the file is corrupted, skip it 
+		print 'Index '+str(i+1)+' is corrupted'
+	
 	glinit = np.concatenate((f1gl_cor,f2gl_cor))
 	gbinit = np.concatenate((f1gb_cor,f2gb_cor))
 	gl = np.hstack([gl, glinit])
 	gb = np.hstack([gb, gbinit])
 
-
 ############################################
 # Bin data and plot stuff
 ############################################
 
-H, xbins, ybins = np.histogram2d(gl, gb, bins = (np.linspace(a, b, 3000), np.linspace(-10, 10, 3000)))
+binnum = 1200
+
+H, xbins, ybins = np.histogram2d(gl, gb, bins = (np.linspace(a, b, binnum), np.linspace(-10, 10, binnum)))
 #fig = plt.figure(figsize = (10,10))
 #ax = plt.axes()
 
-fits.PrimaryHDU(H).writeto('intensitymap2.fits')
+fits.PrimaryHDU(H).writeto('../1617intensitymap'+str(binnum)+'.fits')
 
 '''
 ax.imshow(np.sqrt(H).T, vmin = 0, vmax = 5, origin = 'lower', extent = [a, b, -10, 10], interpolation = 'nearest', aspect = 'auto', cmap = 'gray')

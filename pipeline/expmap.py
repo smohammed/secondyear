@@ -5,11 +5,10 @@ import numpy as np
 
 # arcmin/pixels, 81 used for 1.3armin/pixels. Don't want to hardcode this
 
-#nx=81.
-#ny=81.
+#jk these can be arbitrary 
 
-nx = 
-ny = 
+nx=81.
+ny=81.
 
 #################################################
 # Make array exposure map
@@ -22,7 +21,8 @@ expim=np.zeros((360.0*60+nx,20.0*60+ny))
 # Creates a circular mask array of 1s bordered by 0s
 #################################################
 mask = np.zeros((nx+1.,ny+1.))
-radius = nx/2.
+#radius = nx/2.
+radius = (1.24/2)*60. 
 
 for i in np.arange(nx):
      for j in np.arange(ny):
@@ -70,24 +70,24 @@ for line in range(len(files1)):
              elif gy[i] > 20*60.:
                   gy[i] = 20*60.
 
+
 	##### ADD BORDER TO PIXEL VALUE
 	# use 40 offset to keep from trailing off to account for errors at the border of the map
 	gx = gx + 40.
 	gy = gy + 40.
 	
 	#################################################
-	# 
+	# Apply mask and only take data with > 15000 photon counts
 	#################################################
 	
 	##### ONLY USE SCAN POSITIONS FROM TIMES WHERE WE RECEIVED MORE THAN 15000 photons per second.  You can do something similar by only taking scan positions that have
 	##### photons that you used to build the images.
 	
 	for j in range(len(d)-1):
-             print j
 	     if d.NDCTEC[j] > 15000.:
 	          if np.shape(expim[gx[j]-41.:gx[j]+41., gy[j]-41.:gy[j]+41.]) == np.shape(mask):
 	               expim[gx[j]-41.:gx[j]+41., gy[j]-41.:gy[j]+41.] = expim[gx[j]-41.:gx[j]+41., gy[j]-41.:gy[j]+41.] + mask 
 	
 hdu = fits.PrimaryHDU(expim)
-hdu.writeto(files1[line].split('-')[0]+'aspcorr_new_scst.fits')
+hdu.writeto('testaspcorr_new_scst.fits')
 
