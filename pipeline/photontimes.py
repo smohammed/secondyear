@@ -1,23 +1,22 @@
 from astropy.io import fits
 import numpy as np
-from numpy import loadtxt
 #from matplotlib import pyplot as plt
 
 ########################################################################################
-# This code finds the photon times used in int and creates a list to compare with the expmap data
+# This code creates a list of photon times for each scan
 ########################################################################################
 
 ############################################
 # Input galactic longitude range
 ############################################
 a=0 		# Start gl
-b=20		# End gl
+b=359		# End gl
 
 ############################################
 # Set the file pathways
 ############################################
 path = "../intmapfiles/"
-lines = loadtxt("../filelists/fits_photon_list.txt", comments = "#", delimiter = ",", unpack = False, dtype = str)
+lines = np.loadtxt("../filelists/fits_photon_list.txt", comments = "#", delimiter = ",", unpack = False, dtype = str)
 
 ############################################
 # Grab appropriate files using gl range
@@ -35,14 +34,15 @@ photons = fits.open(path+lines[startgl])[1].data
 photons2 = fits.open(path+lines[startgl+1])[1].data
 
 time = np.concatenate((photons.time,photons2.time))
-
 time = np.unique(time.astype(int))
+time = np.append(time,time[-1]+1)
 
-np.savetxt('times/'+lines[startgl].split('_')[0]+'photontimes.txt',time,newline=',')
+
+np.savetxt('../times/'+lines[startgl].split('_')[0]+'photontimes.txt',time,newline=',')
 
 
 ############################################
-# Combine photons from up and down runs, stack data horizontally
+# Combine photon times
 ############################################
 for i in range(startgl+2,endgl,2):
 	print i
@@ -61,5 +61,6 @@ for i in range(startgl+2,endgl,2):
 		print 'Index '+str(i+1)+' is corrupted'
 
 	timeinit = np.unique(np.concatenate((f1time,f2time)).astype(int))
+	timeinit = np.append(timeinit,timeinit[-1]+1)
 
-	np.savetxt('times/'+lines[i].split('_')[0]+'photontimes.txt',time,newline=',')
+	np.savetxt('../times/'+lines[i].split('_')[0]+'photontimes.txt',timeinit,newline=',')

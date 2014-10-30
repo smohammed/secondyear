@@ -10,8 +10,8 @@ from numpy import loadtxt
 ############################################
 # Input galactic longitude range
 ############################################
-a=0 		# Start gl
-b=20		# End gl
+a=120 		# Start gl
+b=140		# End gl
 
 ############################################
 # Set the file pathways
@@ -78,7 +78,7 @@ H, xbins, ybins = np.histogram2d(gl, gb, bins = (np.linspace(a, b, binnum), np.l
 #fig = plt.figure(figsize = (10,10))
 #ax = plt.axes()
 
-fits.PrimaryHDU(H).writeto('../1617intensitymap'+str(binnum)+'.fits')
+fits.PrimaryHDU(H).writeto('../intensitymap'+str(binnum)+'_'+str(a)+'_'+str(b)+'.fits')
 
 '''
 ax.imshow(np.sqrt(H).T, vmin = 0, vmax = 5, origin = 'lower', extent = [a, b, -10, 10], interpolation = 'nearest', aspect = 'auto', cmap = 'gray')

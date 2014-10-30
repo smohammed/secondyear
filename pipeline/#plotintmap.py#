@@ -1,0 +1,27 @@
+from astropy.io import fits
+import numpy as np
+from matplotlib import pyplot as plt
+import matplotlib.cm as cm
+
+############################################
+# Input galactic longitude range
+############################################
+a=20 		# Start gl
+b=40		# End gl
+
+pixscale = 1 * (b - 20) /20. 
+
+phomap = fits.open('../intensitymap1200'+'_'+str(a)+'_'+str(b)+'.fits')[0].data.T
+expmap = fits.open('../8-28-aspcorr_new_scst.fits')[0].data.T
+
+#xexpmap,yexpmap = expmap.shape[0],expmap.shape[1]
+#expmap = expmap[]
+
+expmap1 = expmap[39:1238,39+1199*pixscale:1238+1199*pixscale]
+
+
+
+intmap = phomap/expmap1
+
+plt.imshow(intmap,vmin=0,vmax=2,origin='lower',extent=[a,b,-10,10],interpolation='nearest',aspect='auto',cmap=cm.gray)
+plt.show()
