@@ -16,5 +16,7 @@ def plotmap(a,b):
 	
 	intmap = phomap/expmap1
 	
+	intmap = np.nan_to_num(intmap)
+
 	return plt.imshow(intmap,vmin=0,vmax=0.4,origin='lower',extent=[a,b,-10,10],interpolation='nearest',aspect='auto',cmap=cm.gray), plt.show()	
 
