@@ -10,8 +10,8 @@ from numpy import loadtxt
 ############################################
 # Input galactic longitude range
 ############################################
-a=120 		# Start gl
-b=140		# End gl
+a=140 		# Start gl
+b=160		# End gl
 
 ############################################
 # Set the file pathways
