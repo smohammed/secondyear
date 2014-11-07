@@ -1,5 +1,7 @@
 from astropy.io import fits
 import numpy as np
+from astropy import units as u
+from astropy.coordinates import SkyCoord
 
 # arcmin/pixels, 81 used for 1.3armin/pixels. Don't want to hardcode this
 
@@ -33,29 +35,35 @@ for i in np.arange(nx):
 # Open files to mask
 #################################################
 
-files1 = np.loadtxt('../filelists/aspcorr_new_list.txt',dtype='string')
-path = "../scst/"
+#files1 = np.loadtxt('../filelists/aspcorr_new_list.txt',dtype='string')
+#path = "../scst/"
+
+files1 = np.loadtxt('../filelists/AIS_GAL_SCAN_csv.txt',dtype='string')
+path = "../csv/"
+
 photonlist = np.loadtxt('../filelists/photontimes.txt',dtype='string')
 
 
 for line in range(len(files1)):									# Iterate through scst files
 	print line
 	d = fits.open(path+files1[line])[1].data					# Open exp file
-	for pholine in range(len(photonlist)):						# Find correct photon times file
-		if files1[line].split('_')[3] == photonlist[pholine][:5]:
-			pfile = pholine
-
-	photimes = np.loadtxt('../times/'+photonlist[pfile],comments='#',delimiter=',',unpack=False,dtype=str)[:-1]													# Load correct photon times file
-
-	delpho=[]
-	for i in range(len(photimes)-1):
- 	   delpho.append(np.where((d['T']-d['T'][0])==float(photimes[i])))
-
- 	q=[]
- 	for i in range(len(delpho)):
- 		if len(delpho[i][0]) > 0:
- 			q.append(delpho[i][0][0])
-
+	
+	addphotontimes = 0
+	if addphotontimes == 1:
+		for pholine in range(len(photonlist)):						# Find correct photon times file
+			if files1[line].split('_')[3] == photonlist[pholine][:5]:
+				pfile = pholine
+	
+		photimes = np.loadtxt('../times/'+photonlist[pfile],comments='#',delimiter=',',unpack=False,dtype=	str)[:-1]													# Load correct photon times file
+	
+		delpho=[]
+		for i in range(len(photimes)-1):
+ 		   delpho.append(np.where((d['T']-d['T'][0])==float(photimes[i])))
+	
+ 		q=[]
+ 		for i in range(len(delpho)):
+ 			if len(delpho[i][0]) > 0:
+ 				q.append(delpho[i][0][0])
 
 	#################################################
 	# Convert RA, DEC to gl, gb then to pixels 
@@ -64,11 +72,14 @@ for line in range(len(files1)):									# Iterate through scst files
 	##### CONVERT RA, DEC to GL, GB, and then to PIXELS, assuming that each pixel is 1 arcmin (thus the x60 below)	
 	##### THESE ARE ARRAYS of SCAN position at a given time (in 1 second intervals)
 	
-	#gl = SkyCoord(d.ra_acs*u.degree, d.dec_acs*u.degree, frame='icrs').galactic.l.degree
-	#gb = SkyCoord(d.ra_acs*u.degree, d.dec_acs*u.degree, frame='icrs').galactic.b.degree
+	gl = SkyCoord(d.RA*u.degree, d.DEC*u.degree, frame='icrs').galactic.l.degree
+	gb = SkyCoord(d.RA*u.degree, d.DEC*u.degree, frame='icrs').galactic.b.degree
 	
-	gl = d.SCAN_GL[q]
-	gb = d.SCAN_GB[q]
+	#gl = d.SCAN_GL[q]
+	#gb = d.SCAN_GB[q]
+
+	#gl = gl[q]
+	#gb = gb[q]
 
 	gx = gl * 60.
 	gy = (gb + 10.) * 60.
@@ -98,11 +109,18 @@ for line in range(len(files1)):									# Iterate through scst files
 	##### ONLY USE SCAN POSITIONS FROM TIMES WHERE WE RECEIVED MORE THAN 15000 photons per second.  You can do something similar by only taking scan positions that have
 	##### photons that you used to build the images.
 	
-	for j in range(len(d[q])-1):
-	     if d.NDCTEC[q][j] > 15000.:
+	if addphotontimes == 1:
+		for j in range(len(d[q])-1):
+		     if d.NDCTEC[q][j] > 15000.:
+	    	      if np.shape(expim[gx[j]-41.:gx[j]+41., gy[j]-41.:gy[j]+41.]) == np.shape(mask):
+	        	       expim[gx[j]-41.:gx[j]+41., gy[j]-41.:gy[j]+41.] = expim[gx[j]-41.:gx[j]+41., gy[j]-41.:gy[j]+41.] + mask 
+	
+
+	for j in range(len(d)-1):
+	     if d.NDCTEC[j] > 15000.:
 	          if np.shape(expim[gx[j]-41.:gx[j]+41., gy[j]-41.:gy[j]+41.]) == np.shape(mask):
 	               expim[gx[j]-41.:gx[j]+41., gy[j]-41.:gy[j]+41.] = expim[gx[j]-41.:gx[j]+41., gy[j]-41.:gy[j]+41.] + mask 
 	
 hdu = fits.PrimaryHDU(expim)
-hdu.writeto('8-28-aspcorr_new_scst.fits')
+hdu.writeto('11-7-ais_scan_csv.fits')
 
