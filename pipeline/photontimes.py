@@ -16,7 +16,7 @@ b=359		# End gl
 # Set the file pathways
 ############################################
 path = "../intmapfiles/"
-lines = np.loadtxt("../filelists/fits_photon_list.txt", comments = "#", delimiter = ",", unpack = False, dtype = str)
+lines = np.loadtxt("../filelists/pointingtimes.txt", comments = "#", delimiter = ",", unpack = False, dtype = str)
 
 ############################################
 # Grab appropriate files using gl range
