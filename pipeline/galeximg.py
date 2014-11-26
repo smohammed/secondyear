@@ -18,8 +18,8 @@ pointing2 = 1
 ############################################
 # Input galactic longitude range
 ############################################
-a=100 		# Start gl
-b=120		# End gl
+a=120				# Start gl
+b=140				# End gl
 
 ############################################
 # Set the file pathways
@@ -30,8 +30,9 @@ if pointing1 == 1:
 	lines = loadtxt("../filelists/pointingtimes.txt", comments = "#", delimiter = ",", unpack = False, dtype = str)
 
 if pointing2 == 1:
-	path = "../csv/"
-	lines = loadtxt("../filelists/AIS_GAL_SCAN_csv.txt", comments = "#", delimiter = ",", unpack = False, dtype = str)
+	path = "../corrcsv/"
+	#lines = loadtxt("../filelists/AIS_GAL_SCAN_csv.txt", comments = "#", delimiter = ",", unpack = False, dtype = str)
+	lines = loadtxt("../filelists/csv_galcorr.txt", dtype = 'string')
 
 ############################################
 # Grab appropriate files using gl range
@@ -53,15 +54,26 @@ if pointing1 == 1:
 	gb = np.concatenate((photons.gb_cor,photons2.gb_cor))
 
 if pointing2 == 1:
+	'''
 	while (float(lines[startgl].split('_')[3])/10.) < a:
 		startgl+=1
 	while (float(lines[endgl].split('_')[3])/10.) < b:
 		endgl+=1
 	endgl = endgl - 1
+	'''
+
+	while (float(lines[startgl].split('_')[0])/10.) < a:
+		startgl+=1
+	while (float(lines[endgl].split('_')[0])/10.) < b:
+		endgl+=1
+	endgl = endgl - 1
 	
 	photons = fits.open(path+lines[startgl])[1].data
-	gl = SkyCoord(photons.RA*u.degree, photons.DEC*u.degree, frame='icrs').galactic.l.degree
-	gb = SkyCoord(photons.RA*u.degree, photons.DEC*u.degree, frame='icrs').galactic.b.degree
+	#gl = SkyCoord(photons.RA*u.degree, photons.DEC*u.degree, frame='icrs').galactic.l.degree
+	#gb = SkyCoord(photons.RA*u.degree, photons.DEC*u.degree, frame='icrs').galactic.b.degree
+
+	gl = photons.gl
+	gb = photons.gb
 
 print startgl
 print endgl
@@ -99,8 +111,10 @@ if pointing2 == 1:
 		print i
 		try:
 			f1 = fits.open(path+lines[i])[1].data
-			f1gl = SkyCoord(f1.RA*u.degree, f1.DEC*u.degree, frame='icrs').galactic.l.degree
-			f1gb = SkyCoord(f1.RA*u.degree, f1.DEC*u.degree, frame='icrs').galactic.b.degree
+			#f1gl = SkyCoord(f1.RA*u.degree, f1.DEC*u.degree, frame='icrs').galactic.l.degree
+			#f1gb = SkyCoord(f1.RA*u.degree, f1.DEC*u.degree, frame='icrs').galactic.b.degree
+			f1gl = f1.gl
+			f1gb = f1.gb
 
 		except IOError:								# if the file is corrupted, skip it 
 			print 'Index '+str(i)+' is corrupted'
@@ -132,13 +146,13 @@ if pointing1 == 1:
 	'''
 
 if pointing2 == 1:
-	binnum = 1200
+	binnum = 12000
 	
 	H, xbins, ybins = np.histogram2d(gl, gb, bins = (np.linspace(a, b, binnum), np.linspace(-10, 10, binnum)))
 	#fig = plt.figure(figsize = (10,10))
 	#ax = plt.axes()
 	
-	fits.PrimaryHDU(H).writeto('../intmapcsv'+str(binnum)+'_'+str(a)+'_'+str(b)+'.fits')
+	fits.PrimaryHDU(H).writeto('../testintmapcsvcorr'+str(binnum)+'_'+str(a)+'_'+str(b)+'.fits')
 	
 	'''
 	ax.imshow(np.sqrt(H).T, vmin = 0, vmax = 5, origin = 'lower', extent = [a, b, -10, 10], interpolation = 'nearest', aspect = 'auto', cmap = 'gray')
