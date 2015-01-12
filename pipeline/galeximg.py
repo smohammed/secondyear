@@ -18,8 +18,8 @@ pointing2 = 1
 ############################################
 # Input galactic longitude range
 ############################################
-a=120				# Start gl
-b=140				# End gl
+a=80				# Start gl
+b=100				# End gl
 
 ############################################
 # Set the file pathways
@@ -54,14 +54,6 @@ if pointing1 == 1:
 	gb = np.concatenate((photons.gb_cor,photons2.gb_cor))
 
 if pointing2 == 1:
-	'''
-	while (float(lines[startgl].split('_')[3])/10.) < a:
-		startgl+=1
-	while (float(lines[endgl].split('_')[3])/10.) < b:
-		endgl+=1
-	endgl = endgl - 1
-	'''
-
 	while (float(lines[startgl].split('_')[0])/10.) < a:
 		startgl+=1
 	while (float(lines[endgl].split('_')[0])/10.) < b:
@@ -71,7 +63,6 @@ if pointing2 == 1:
 	photons = fits.open(path+lines[startgl])[1].data
 	#gl = SkyCoord(photons.RA*u.degree, photons.DEC*u.degree, frame='icrs').galactic.l.degree
 	#gb = SkyCoord(photons.RA*u.degree, photons.DEC*u.degree, frame='icrs').galactic.b.degree
-
 	gl = photons.gl
 	gb = photons.gb
 
@@ -146,13 +137,13 @@ if pointing1 == 1:
 	'''
 
 if pointing2 == 1:
-	binnum = 12000
+	binnum = 1200
 	
 	H, xbins, ybins = np.histogram2d(gl, gb, bins = (np.linspace(a, b, binnum), np.linspace(-10, 10, binnum)))
 	#fig = plt.figure(figsize = (10,10))
 	#ax = plt.axes()
 	
-	fits.PrimaryHDU(H).writeto('../testintmapcsvcorr'+str(binnum)+'_'+str(a)+'_'+str(b)+'.fits')
+	fits.PrimaryHDU(H).writeto('../intmapcsvcorr'+str(binnum)+'_'+str(a)+'_'+str(b)+'.fits')
 	
 	'''
 	ax.imshow(np.sqrt(H).T, vmin = 0, vmax = 5, origin = 'lower', extent = [a, b, -10, 10], interpolation = 'nearest', aspect = 'auto', cmap = 'gray')

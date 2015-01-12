@@ -16,8 +16,7 @@ def plotmap(a,b,cutflux):
 	
 	#phomap = np.sqrt(fits.open('../intensitymap1200'+'_'+str(a)+'_'+str(b)+'.fits')[0].data).T
 	phomap = np.sqrt(fits.open('../intmapcsvcorr1200'+'_'+str(a)+'_'+str(b)+'.fits')[0].data).T	
-	#expmap = fits.open('../8-28-aspcorr_new_scst.fits')[0].data.T
-	expmap = fits.open('../aspcorr_new_scst_1200.fits')[0].data.T
+	expmap = fits.open('../12-18-aspcorr_new_scst_1200.fits')[0].data.T
 
 	bstars = fits.open('../bstar.fits')[1].data
 
@@ -31,12 +30,12 @@ def plotmap(a,b,cutflux):
 	offset = 0
 	#expmap1 = expmap[39:1238,39+1199*pixscale:1238+1199*pixscale]
 	expmap1 = expmap[39:1238,39+offset+1199*pixscale:1238+offset+1199*pixscale]
-	
 	intmap = phomap/expmap1	
 	intmap = np.nan_to_num(intmap)
 
-	plt.scatter(gl,gb,facecolor='none',edgecolor='red')
+	#plt.scatter(gl,gb,facecolor='none',edgecolor='red')
 	plt.xlabel('gl')
 	plt.ylabel('gb')
-	return plt.imshow(intmap,vmin=0,vmax=0.4,origin='lower',extent=[a,b,-10,10],interpolation='nearest',aspect='auto',cmap=cm.gray), plt.show()	
+	return plt.imshow(intmap,vmin=0,vmax=0.7,origin='lower',extent=[a,b,-10,10],interpolation='nearest',aspect='auto',cmap=cm.gray), plt.show()	
 
+plotmap(60,80,10000)
