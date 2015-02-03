@@ -6,7 +6,7 @@ from astropy.io import fits
 from astropy import units as u
 from astropy.coordinates import SkyCoord
 from matching import search_around_sky
-from collections import defaultdict
+import matplotlib.gridspec as gridspec
 
 ##############################################################
 ##############################################################
@@ -48,9 +48,14 @@ names,times,nphotons,stargl,stargb,phogl,phogb = [],[],[],[],[],[],[]
 timestep = np.arange(np.round(field.time[-1])+1)
 tstep = 0
 
+fig = plt.figure(figsize=(8,8))
+
+grid = gridspec.GridSpec(5,10,wspace=0.0,hspace=0.0)
+gridcount = 0
+
 # Limit to the first three timesteps to make it run faster
 #for tstep in timestep[:5]:
-while tstep < timestep[20]:
+while tstep < timestep[25]:
 	fieldlim = np.where((field.time >= tstep) & (field.time < tstep+5.))   #CHANGED TSTEP+1 TO +5
 	fgl = field.gl[fieldlim]
 	fgb = field.gb[fieldlim]
@@ -93,71 +98,104 @@ while tstep < timestep[20]:
 	pblist = []
 	pllist.append(fgl[photind[0:starnumber[0]+1]])
 	pblist.append(fgb[photind[0:starnumber[0]+1]])
-
 	for i in range(len(starnumber)-1):
 		pllist.append(fgl[photind[starnumber[i]+1:starnumber[i+1]+1]])
 		pblist.append(fgb[photind[starnumber[i]+1:starnumber[i+1]+1]])
-
 	pllist.append(fgl[photind[starnumber[-1]+1:-1]])
 	pblist.append(fgb[photind[starnumber[-1]+1:-1]])
 
-	maxnuv = np.argsort(bstar2.nuv_cps[-10:])[::-1] 
-	#bgl = bgl[maxnuv]
-	#bgb = bgb[maxnuv]
 
+	maxnuv = np.argsort(bstar2.nuv_cps[-10:])[::-1] 
+
+	#fig = plt.figure(figsize=(8,8))
+	for i in range(len(maxnuv)):
+		ax = plt.Subplot(fig,grid[gridcount])
+		ax.scatter(pllist[maxnuv[i]],pblist[maxnuv[i]],c='red')
+		ax.scatter(bgl[maxnuv[i]],bgb[maxnuv[i]],s=100,facecolor='none',edgecolor='blue',linewidth='3')
+		ax.set_xticks([])
+		ax.set_yticks([])
+		ax.text(np.min(bgl)-0.5,np.min(bgb)-0.5,str(starname[maxnuv[i]]))
+		fig.add_subplot(ax)
+		gridcount+=1
+	
+
+	'''
 	for i in maxnuv:
 		plt.scatter(pllist[i],pblist[i],c='red')
 		plt.scatter(bgl[i],bgb[i],s=100,facecolor='none',edgecolor='blue')
 		plt.savefig('star'+str(i)+'_time'+str(tstep)+'.png')
 		plt.clf()
-
-
-
 	'''
-	bskyfix = 0
-	if bskyfix == 1: # Do the same gl fix as for the fgl values
-		for i in range(len(bgl)):
-			if min(bgl) < 10. and bgl[i] > 310.:
-				bgl[i] = bgl[i] - 360.
+
+	otherstuff = 0
+	if otherstuff == 1:
+		'''
+		bskyfix = 0
+		if bskyfix == 1: # Do the same gl fix as for the fgl values
+			for i in range(len(bgl)):
+				if min(bgl) < 10. and bgl[i] > 310.:
+					bgl[i] = bgl[i] - 360.
+		
+		# Check to see that you're not totally screwing up by plotting
+		plot = 0
+		if plot == 1:
+			plt.scatter(bgl,bgb,c='green',s=20,facecolor='none')
+			plt.scatter(fgl[photind],fgb[photind],c='orange',s=10,edgecolor='none')
+			#plt.scatter(fgl,fgb,c='red',s=3,edgecolor='none')
+			plt.show()
+			break
 	
-	# Check to see that you're not totally screwing up by plotting
-	plot = 0
-	if plot == 1:
-		plt.scatter(bgl,bgb,c='green',s=20,facecolor='none')
-		plt.scatter(fgl[photind],fgb[photind],c='orange',s=10,edgecolor='none')
-		#plt.scatter(fgl,fgb,c='red',s=3,edgecolor='none')
-		plt.show()
-		break
+		# Add photon times for each index
+		photon = []
+		for i in starind:
+			photon.append(sum(starind == i))
+	
+		#Add values to arrays so you can then make a big table
+		cutnames = np.unique(starname)
+		bgl = np.unique(bgl)
+		bgb = np.unique(bgb)
+		fieldgl = fgl[photind].tolist()
+		fieldgb = fgb[photind].tolist()
+	
+		names = np.concatenate((names,starname),axis=0)
+		stargl = np.concatenate((stargl,bgl),axis=0)
+		stargb = np.concatenate((stargb,bgb),axis=0)
+		phogl.append(fieldgl)
+		phogb.append(fieldgb)
+		times = np.concatenate((times,np.ones(len(names))*tstep),axis=0)
+		nphotons = np.concatenate((nphotons,photon),axis=0)
+		'''
 
-	# Add photon times for each index
-	photon = []
-	for i in starind:
-		photon.append(sum(starind == i))
-
-	#Add values to arrays so you can then make a big table
-	cutnames = np.unique(starname)
-	bgl = np.unique(bgl)
-	bgb = np.unique(bgb)
-	fieldgl = fgl[photind].tolist()
-	fieldgb = fgb[photind].tolist()
-
-	names = np.concatenate((names,starname),axis=0)
-	stargl = np.concatenate((stargl,bgl),axis=0)
-	stargb = np.concatenate((stargb,bgb),axis=0)
-	phogl.append(fieldgl)
-	phogb.append(fieldgb)
-	times = np.concatenate((times,np.ones(len(names))*tstep),axis=0)
-	nphotons = np.concatenate((nphotons,photon),axis=0)
-	'''
-
+	print tstep
 	tstep += 5
+
+#plt.xlabel('10 Brightest stars, left to right')
+#plt.ylabel('time, top to bottom')
+
+
+all_axes = fig.get_axes()
+
+#show only the outside spines
+for ax in all_axes:
+    for sp in ax.spines.values():
+        sp.set_visible(False)
+    if ax.is_first_row():
+        ax.spines['top'].set_visible(True)
+    if ax.is_last_row():
+        ax.spines['bottom'].set_visible(True)
+    if ax.is_first_col():
+        ax.spines['left'].set_visible(True)
+    if ax.is_last_col():
+        ax.spines['right'].set_visible(True)
+
+plt.subplots_adjust(hspace=None,wspace=None)
+ 
+plt.show()
+plt.savefig('bstar-photongrid.png')
 
 ##############################################################
 # Now find average photon displacement from each star
 ##############################################################
-
-
-
 
 
 ##############################################################
