@@ -8,7 +8,7 @@ import matplotlib
 matplotlib.rcParams['figure.figsize'] = 16,8
 matplotlib.rcParams['font.size'] = 20
 
-def plotmap(a,b,cutflux):
+def plotmap(a,b,cutfluxlow, cutfluxhigh):
 	a=a		# Start gl
 	b=b		# End gl
 	
@@ -22,7 +22,7 @@ def plotmap(a,b,cutflux):
 
 	gl = SkyCoord(bstars.ra*u.degree, bstars.dec*u.degree, frame='icrs').galactic.l.degree
 	gb = SkyCoord(bstars.ra*u.degree, bstars.dec*u.degree, frame='icrs').galactic.b.degree
-	blim = np.where((bstars.fuv_cps > cutflux) & (gl > a) & (gl < b) & (gb > -10) & (gb < 10))
+	blim = np.where((bstars.nuv_cps > cutfluxlow) & (bstars.nuv_cps < cutfluxhigh) & (gl > a) & (gl < b) & (gb > -10) & (gb < 10))
 
 	gl = gl[blim]
 	gb = gb[blim]
@@ -33,9 +33,9 @@ def plotmap(a,b,cutflux):
 	intmap = phomap/expmap1	
 	intmap = np.nan_to_num(intmap)
 
-	#plt.scatter(gl,gb,facecolor='none',edgecolor='red')
+	plt.scatter(gl,gb,facecolor='none',edgecolor='red')
 	plt.xlabel('gl')
 	plt.ylabel('gb')
 	return plt.imshow(intmap,vmin=0,vmax=0.7,origin='lower',extent=[a,b,-10,10],interpolation='nearest',aspect='auto',cmap=cm.gray), plt.show()	
 
-plotmap(60,80,10000)
+plotmap(0,20,10,100)

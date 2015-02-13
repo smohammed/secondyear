@@ -11,14 +11,8 @@ import matplotlib.gridspec as gridspec
 ##############################################################
 ##############################################################
 # TO DO
-# 1. Fix stupid table error with times and nphoton
-# 2. Automate for all slices. Remove duplicate lines and create lists for things with similar times
-# 3. Find the average shift of photons from a star, that will indicate the needed offset.
-
-# Buuuuuuut do this first:
-# 4. Cut bstar list to only brightest 10 stars
-# 5. Use 5 second timesteps
-# 6. Gather all photon data for every 5 seconds, plot in a grid  
+# 2/10
+# - Stack brightest stars, look for dx dy offset
 ##############################################################
 ##############################################################
 
@@ -46,17 +40,23 @@ field = fits.open('../corrcsv/00005_0001galcorr.csv.fits')[1].data
 ##############################################################
 names,times,nphotons,stargl,stargb,phogl,phogb = [],[],[],[],[],[],[]
 timestep = np.arange(np.round(field.time[-1])+1)
-tstep = 0
+tstep = 210
+maxtime = 0
 
-fig = plt.figure(figsize=(8,8))
+#fig = plt.figure(figsize=(8,8))
 
-grid = gridspec.GridSpec(5,10,wspace=0.0,hspace=0.0)
+#grid = gridspec.GridSpec(5,10,wspace=0.0,hspace=0.0)
 gridcount = 0
+expsize = 5.
+arcminlim = 1.
+totdx,totdy = [],[]
 
 # Limit to the first three timesteps to make it run faster
-#for tstep in timestep[:5]:
-while tstep < timestep[25]:
-	fieldlim = np.where((field.time >= tstep) & (field.time < tstep+5.))   #CHANGED TSTEP+1 TO +5
+while tstep < timestep[-1]:
+	print tstep
+	tstep += expsize
+
+	fieldlim = np.where((field.time >= tstep) & (field.time < tstep+expsize))
 	fgl = field.gl[fieldlim]
 	fgb = field.gb[fieldlim]
 
@@ -73,8 +73,8 @@ while tstep < timestep[25]:
 
 	##############################################################
 	# Find photons within 2' of each star 
-	##############################################################
-	starind, photind, starsep, stardist = search_around_sky(bgal2,fgal,2.*u.arcmin)
+	##############################################################	
+	starind, photind, starsep, stardist = search_around_sky(bgal2,fgal,arcminlim*u.arcmin)
 	bstar2 = bstar2[np.unique(starind)]
 	starname = bstar2.galex_id
 	bgal2 = SkyCoord(bstar2.ra*u.degree, bstar2.dec*u.degree, frame='icrs').galactic
@@ -83,16 +83,19 @@ while tstep < timestep[25]:
 
 	fgl = fgal.l.degree
 	fgb = fgal.b.degree
+	
 	# Fix neg values of fgl that are ~360 deg to neg numbers to keep circular shape
 	for i in range(len(fgl)):
 		if min(fgl) < 10. and fgl[i] > 310.:
 			fgl[i] = fgl[i] - 360.
-
+	
 	# Make a list for each star/photon list pair...probably more efficient way to do this
 	starnumber = []
 	for i in range(len(starind)-1):
 		if starind[i] != starind[i+1]:
 			starnumber.append(i) 		# Do this so we can match indices with photind
+
+	print starnumber
 
 	pllist = []
 	pblist = []
@@ -104,27 +107,54 @@ while tstep < timestep[25]:
 	pllist.append(fgl[photind[starnumber[-1]+1:-1]])
 	pblist.append(fgb[photind[starnumber[-1]+1:-1]])
 
-
 	maxnuv = np.argsort(bstar2.nuv_cps[-10:])[::-1] 
+	print maxnuv
 
-	#fig = plt.figure(figsize=(8,8))
-	for i in range(len(maxnuv)):
-		ax = plt.Subplot(fig,grid[gridcount])
-		ax.scatter(pllist[maxnuv[i]],pblist[maxnuv[i]],c='red')
-		ax.scatter(bgl[maxnuv[i]],bgb[maxnuv[i]],s=100,facecolor='none',edgecolor='blue',linewidth='3')
-		ax.set_xticks([])
-		ax.set_yticks([])
-		ax.text(np.min(bgl)-0.5,np.min(bgb)-0.5,str(starname[maxnuv[i]]))
-		fig.add_subplot(ax)
-		gridcount+=1
+	##############################################################
+	# Get offset for each point 
+	##############################################################
+	# First translate each star coords to (0,0)
+	dx,dy,sumdx,sumdy = [],[],[],[]
+	for i in maxnuv:
+		dx.append(bgl[i] - pllist[i])
+		dy.append(bgb[i] - pblist[i])
+
+	for i in range(len(dx)):
+		sumdx = np.concatenate((sumdx,dx[i].tolist()))
+		sumdy = np.concatenate((sumdy,dy[i].tolist()))
 	
+	totdx.append(np.mean(sumdx))
+	totdy.append(np.mean(sumdy))
+
+	##############################################################
+	# Plot histograms!
+	##############################################################
+
+	fig = plt.figure(figsize=(8,8))
+	plt.hist(sumdx,bins=50)
+	plt.savefig('tstep-'+str(tstep)+'_dx_mean-'+str(np.mean(sumdx))[:8]+'.png')
+	plt.close()
+	
+	fig = plt.figure(figsize=(8,8))
+	plt.hist(sumdy,bins=50)
+	plt.savefig('tstep-'+str(tstep)+'_dy_mean-'+str(np.mean(sumdy))[:8]+'.png')
+	plt.close()
 
 	'''
-	for i in maxnuv:
-		plt.scatter(pllist[i],pblist[i],c='red')
-		plt.scatter(bgl[i],bgb[i],s=100,facecolor='none',edgecolor='blue')
-		plt.savefig('star'+str(i)+'_time'+str(tstep)+'.png')
-		plt.clf()
+	plotgrid = 0
+	if plotgrid == 1:
+		for i in range(len(maxnuv)):
+			ax = plt.Subplot(fig,grid[gridcount])
+			ax.scatter(bgl[maxnuv[i]],bgb[maxnuv[i]],s=100,facecolor='none',edgecolor='blue',	linewidth='2')
+			ax.scatter(pllist[maxnuv[i]],pblist[maxnuv[i]],marker='.',s=1)
+			ax.set_xticks([])
+			ax.set_yticks([])
+			axislim = 0.1 
+			ax.text(bgl[maxnuv[i]]-axislim+0.01,bgb[maxnuv[i]]-axislim,str(starname[maxnuv[i]]))
+			ax.set_xlim(bgl[maxnuv[i]]-axislim,bgl[maxnuv[i]]+axislim)
+			ax.set_ylim(bgb[maxnuv[i]]-axislim,bgb[maxnuv[i]]+axislim)
+			fig.add_subplot(ax)
+			gridcount+=1
 	'''
 
 	otherstuff = 0
@@ -166,33 +196,64 @@ while tstep < timestep[25]:
 		nphotons = np.concatenate((nphotons,photon),axis=0)
 		'''
 
-	print tstep
-	tstep += 5
+
+print totdx
+print ' '
+print totdy
+
+fig = plt.figure(figsize=(8,8))
+plt.scatter(np.arange(0,timestep[-1],5),totdx)
+plt.savefig('dxvstime.png')
+
+
+fig = plt.figure(figsize=(8,8))
+plt.scatter(np.arange(0,timestep[-1],5),totdy)
+plt.savefig('dyvstime.png')
+
+
+
+a1 = np.array(np.arange(0,timestep[-1],5))
+a2 = np.array(totdx)
+a3 = np.array(totdy)
+cols = []
+col1 = fits.Column(name='time', format='E', array=a1)
+col2 = fits.Column(name='dx', format='E', array=a2)
+col3 = fits.Column(name='dy', format='E', array=a3)
+cols.append(col1)
+cols.append(col2)
+cols.append(col3)
+new_cols = fits.ColDefs(cols)
+hdu = fits.BinTableHDU.from_columns(new_cols)
+hdu.writeto('staroffset.fits')
+
+
+'''
+a = []
+b = []
+for i in range(len(dx)):
+	for j in range(len(dx[i])):
+		if (np.sqrt(dx[i][j]**2 + dy[i][j]**2) < max(np.abs(dx[i]))/2.):
+			a.append(j)
+	b.append(a)
+	a = []
+
+
+for i in range(len(dx)):
+	plt.scatter(dx[i],dy[i],s=1,alpha=0.5)
+
+#plt.title('Stacked photons 0-50s')
+
 
 #plt.xlabel('10 Brightest stars, left to right')
 #plt.ylabel('time, top to bottom')
 
+#plt.subplots_adjust(hspace=None,wspace=None)
 
-all_axes = fig.get_axes()
 
-#show only the outside spines
-for ax in all_axes:
-    for sp in ax.spines.values():
-        sp.set_visible(False)
-    if ax.is_first_row():
-        ax.spines['top'].set_visible(True)
-    if ax.is_last_row():
-        ax.spines['bottom'].set_visible(True)
-    if ax.is_first_col():
-        ax.spines['left'].set_visible(True)
-    if ax.is_last_col():
-        ax.spines['right'].set_visible(True)
 
-plt.subplots_adjust(hspace=None,wspace=None)
- 
 plt.show()
-plt.savefig('bstar-photongrid.png')
-
+#plt.savefig('bstar_lim_'+str(arcminlim)+'_exp_'+str(expsize)+'.png')
+'''
 ##############################################################
 # Now find average photon displacement from each star
 ##############################################################
