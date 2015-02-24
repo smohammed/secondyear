@@ -132,6 +132,7 @@ while (tstep < timestep[timesteplimit]) and (tstep != 1340.):
 		radlim = np.where(np.sqrt(sumdx**2 + sumdy**2) < 1.)
 
 		radlim30as = np.where(np.sqrt(sumdx**2 + sumdy**2) < 1/2.)
+		
 		sumdx1am = sumdx[radlim]
 		sumdy1am = sumdy[radlim]
 
@@ -143,6 +144,8 @@ while (tstep < timestep[timesteplimit]) and (tstep != 1340.):
 		stdsumdy.append(np.std(sumdy1am)/np.sqrt(len(sumdy1am)))
 		totphot2.append(len(sumdx[radlim30as]))
 
+		plt.scatter(totdx,totdy)
+		plt.show()
 		##############################################################
 		# Make plots
 		##############################################################
