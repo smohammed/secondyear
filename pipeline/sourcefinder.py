@@ -136,8 +136,8 @@ while (tstep < timestep[timesteplimit]) and (tstep != 1340.):
 
 		totdx.append(np.mean(sumdx) + tempdgl)
 		totdy.append(np.mean(sumdy) + tempdgb)
-		tempdgl = np.mean(sumdx)
-		tempdgy = np.mean(sumdy)
+		#tempdgl = np.mean(sumdx)
+		#tempdgy = np.mean(sumdy)
 		stdsumdx.append(np.std(sumdx)/np.sqrt(len(sumdx)))
 		stdsumdy.append(np.std(sumdy)/np.sqrt(len(sumdy)))
 		totphot2.append(len(sumdx))
@@ -254,7 +254,7 @@ axarr[2].set_xlabel('Time [s]')
 axarr[2].set_ylabel('NPhot 2arcmin')
 axarr[2].axhline(y=100)
 f.subplots_adjust(hspace=0)
-f.savefig('../testplots.png')
+f.savefig('../dxdyvst_nofix.png')
 
 ##############################################################
 # Make a table of dx, dy, Nphotons in 2' and 15' 
