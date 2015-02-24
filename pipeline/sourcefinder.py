@@ -139,14 +139,14 @@ while (tstep < timestep[timesteplimit]) and (tstep != 1340.):
 
 		totdx.append(np.mean(sumdx))
 		totdy.append(np.mean(sumdy))
-		stdsumdx.append(np.std(sumdx))
-		stdsumdy.append(np.std(sumdy))
+		stdsumdx.append(np.std(sumdx)/np.sqrt(len(sumdx)))
+		stdsumdy.append(np.std(sumdy)/np.sqrt(len(sumdy)))
 		totphot2.append(len(sumdx))
 
 		##############################################################
 		# Make plots
 		##############################################################
-		plot_hist = 1.
+		plot_hist = 0.
 		if plot_hist == 1:
 			fig = plt.figure(figsize=(8,8))
 			plt.hist(sumdx,bins=50)
