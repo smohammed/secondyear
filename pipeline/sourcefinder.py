@@ -53,6 +53,8 @@ if plotgrid == 1:
 	grid = gridspec.GridSpec(5,10,wspace=0.0,hspace=0.0)
 	gridcount = 0
 
+tempdgl, tempdgb = .0,.0
+
 while (tstep < timestep[timesteplimit]) and (tstep != 1340.):
 	print 'tstep = ', tstep
 	tstep += expsize
@@ -90,13 +92,13 @@ while (tstep < timestep[timesteplimit]) and (tstep != 1340.):
 	starnumber = []
 	for i in range(len(starind)-1):
 		if starind[i] != starind[i+1]:
-			starnumber.append(i) 		# Do this so we can match indices with photind
+			starnumber.append(i) 		# Do this so we can match indices with photind	
 
 	if len(starnumber) > 0.:
 		pllist = []
 		pblist = []
-		pllist.append(fgl[photind[0:starnumber[0]+1]])
-		pblist.append(fgb[photind[0:starnumber[0]+1]])
+		pllist.append(fgl[photind[0:starnumber[0]+1]]-tempdgl)
+		pblist.append(fgb[photind[0:starnumber[0]+1]]-tempdgb)
 		for i in range(len(starnumber)-1):
 			pllist.append(fgl[photind[starnumber[i]+1:starnumber[i+1]+1]])
 			pblist.append(fgb[photind[starnumber[i]+1:starnumber[i+1]+1]])
@@ -132,13 +134,10 @@ while (tstep < timestep[timesteplimit]) and (tstep != 1340.):
 		sumdx = sumdx[radlim]
 		sumdy = sumdy[radlim]
 
-		#newbcenter = SkyCoord(np.zeros(len(sumdx))*u.degree, np.zeros(len(sumdx))*u.degree, frame='galactic')
-		#newphotcenter = SkyCoord(sumdx*u.degree, sumdy*u.degree, frame='galactic')
-
-		#starind1am, photind1am, starsep1am, stardist1am = search_around_sky(newbcenter,newphotcenter,1.*u.arcmin)
-
-		totdx.append(np.mean(sumdx))
-		totdy.append(np.mean(sumdy))
+		totdx.append(np.mean(sumdx) + tempdgl)
+		totdy.append(np.mean(sumdy) + tempdgb)
+		tempdgl = np.mean(sumdx)
+		tempdgy = np.mean(sumdy)
 		stdsumdx.append(np.std(sumdx)/np.sqrt(len(sumdx)))
 		stdsumdy.append(np.std(sumdy)/np.sqrt(len(sumdy)))
 		totphot2.append(len(sumdx))
