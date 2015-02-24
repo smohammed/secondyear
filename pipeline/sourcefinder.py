@@ -119,8 +119,19 @@ while (tstep < timestep[timesteplimit]) and (tstep != 1340.):
 			sumdx = np.concatenate((sumdx,dx[i].tolist()))
 			sumdy = np.concatenate((sumdy,dy[i].tolist()))
 		
-		totphot2.append(len(sumdx))
-		
+		bns = 50 
+
+		tx = np.histogram(sumdx,bins=bns)[1][np.argmax(np.histogram(sumdx,bins=bns)[0])]
+		ty = np.histogram(sumdy,bins=bns)[1][np.argmax(np.histogram(sumdy,bins=bns)[0])]
+
+		sumdx = sumdx - tx
+		sumdy = sumdy - ty
+
+		radlim = np.where(np.sqrt(sumdx**2 + sumdy**2) < 1.)
+
+		sumdx = sumdx[radlim]
+		sumdy = sumdy[radlim]
+
 		#newbcenter = SkyCoord(np.zeros(len(sumdx))*u.degree, np.zeros(len(sumdx))*u.degree, frame='galactic')
 		#newphotcenter = SkyCoord(sumdx*u.degree, sumdy*u.degree, frame='galactic')
 
@@ -130,11 +141,12 @@ while (tstep < timestep[timesteplimit]) and (tstep != 1340.):
 		totdy.append(np.mean(sumdy))
 		stdsumdx.append(np.std(sumdx))
 		stdsumdy.append(np.std(sumdy))
+		totphot2.append(len(sumdx))
 
 		##############################################################
 		# Make plots
 		##############################################################
-		plot_hist = 0.
+		plot_hist = 1.
 		if plot_hist == 1:
 			fig = plt.figure(figsize=(8,8))
 			plt.hist(sumdx,bins=50)
@@ -169,7 +181,7 @@ while (tstep < timestep[timesteplimit]) and (tstep != 1340.):
 		totphot2.append(0.)
 
 
-	find_Nphot15 = 0.
+	find_Nphot15 = 0
 	if find_Nphot15 == 1:
 		##############################################################
 		# Find photons in a 15' radius now
