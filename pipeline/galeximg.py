@@ -1,8 +1,6 @@
 from astropy.io import fits
 import numpy as np
 from numpy import loadtxt
-from astropy import units as u
-from astropy.coordinates import SkyCoord
 #from matplotlib import pyplot as plt
 
 ########################################################################################

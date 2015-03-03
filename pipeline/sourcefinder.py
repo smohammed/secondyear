@@ -7,52 +7,7 @@ from astropy import units as u
 from astropy.coordinates import SkyCoord
 from matching import search_around_sky
 import matplotlib.gridspec as gridspec
-
-def plotdata(x,y):
-	from matplotlib.ticker import NullFormatter
-
-	# the random data
-	nullfmt   = NullFormatter()         # no labels
-	
-	# definitions for the axes
-	left, width = 0.1, 0.65
-	bottom, height = 0.1, 0.65
-	bottom_h = left_h = left+width+0.02
-	
-	rect_scatter = [left, bottom, width, height]
-	rect_histx = [left, bottom_h, width, 0.2]
-	rect_histy = [left_h, bottom, 0.2, height]
-	
-	# start with a rectangular Figure
-	plt.figure(1, figsize=(8,8))
-	
-	axScatter = plt.axes(rect_scatter)
-	axHistx = plt.axes(rect_histx)
-	axHisty = plt.axes(rect_histy)
-	
-	# no labels
-	axHistx.xaxis.set_major_formatter(nullfmt)
-	axHisty.yaxis.set_major_formatter(nullfmt)
-	
-	# the scatter plot:
-	axScatter.scatter(x, y)
-	
-	# now determine nice limits by hand:
-	binwidth = 0.25
-	xymax = np.max( [np.max(np.fabs(x)), np.max(np.fabs(y))] )
-	lim = ( int(xymax/binwidth) + 1) * binwidth
-	
-	axScatter.set_xlim( (-lim, lim) )
-	axScatter.set_ylim( (-lim, lim) )
-	
-	bins = np.arange(-lim, lim + binwidth, binwidth)
-	axHistx.hist(x, bins=bins)
-	axHisty.hist(y, bins=bins, orientation='horizontal')
-	
-	axHistx.set_xlim( axScatter.get_xlim() )
-	axHisty.set_ylim( axScatter.get_ylim() )
-	
-	return plt.show()
+from plotdata import plotdata # form plotdata(x,y)
 
 ##############################################################
 ##############################################################
@@ -76,7 +31,7 @@ bgal = SkyCoord(bstar.ra*u.degree, bstar.dec*u.degree, frame='icrs').galactic
 path = "../corrcsv/"
 lines = np.loadtxt("../filelists/csv_galcorr.txt", dtype = 'string')
 
-skyfield = 150 #what skyfield?
+skyfield = 20 #what skyfield?
 
 field = fits.open('../corrcsv/'+lines[skyfield])[1].data
 print lines[skyfield]
@@ -95,7 +50,7 @@ arcminlim = 2.
 totdx,totdy,totphot2, totphot15,stdsumdx,stdsumdy = [],[],[],[],[],[]
 timesteplimit = -1 	#Index of the timestep limits. -1 is the entire set
 tempdgl, tempdgb = 0.,0.
-fix = 0.
+fix = 1.
 
 print 'timesteps = ', timestep[timesteplimit]
 
