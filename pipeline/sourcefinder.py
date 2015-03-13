@@ -32,7 +32,7 @@ path = "../corrcsv/"
 lines = np.loadtxt("../filelists/csv_galcorr.txt", dtype = 'string')
 
 fix = 1.
-skyfield = 120 #what skyfield?
+skyfield = 100 #what skyfield?
 
 # 0,20,60,78,100,120,130,150,180,190,210,220,240,280,300,330,360,390,420,440
 
@@ -57,7 +57,7 @@ if plotgrid == 1:
 # Apply offset from last iteration?
 off = 1.
 for offsetrun in range(10):
-	tstep = 0
+	tstep = 2.5
 	expsize = 5.
 	arcminlim = 2.
 	totdx,totdy,totphot2, totphot15,stdsumdx,stdsumdy = [],[],[],[],[],[]
@@ -67,17 +67,17 @@ for offsetrun in range(10):
 
 	# Find regions where the tx, ty offset moves the data far from 0,0
 	print 'timesteps = ', timestep[timesteplimit]
-	dxerror, dyerror = [],[]
+	dxdyerror = []
 
 	if off == 1.:
 		offsetpath = '../dxdyoffsets/'
-		offsetfile = fits.open(offsetpath+lines[skyfield][:10]+'offset.fits')[1].data
+		if os.path.exists('../dxdyoffsets/'+str(lines[skyfield])[:10]+'offset25.fits'):
+			offsetfile = fits.open(offsetpath+lines[skyfield][:10]+'offset25.fits')[1].data
 	print 'offsetrun =', offsetrun
 
 	while (tstep < timestep[timesteplimit-5]):
 		print ' '
 		print 'tstep = ', tstep
-		tstep += expsize
 	
 		fieldlim = np.where((field.time >= tstep) & (field.time < tstep+expsize))
 		fgl = field.gl[fieldlim]
@@ -113,7 +113,7 @@ for offsetrun in range(10):
 			starnumber = []
 			for i in range(len(starind)-1):
 				if starind[i] != starind[i+1]:
-					starnumber.append(i) 		# Do this so we can match indices with photind	
+					starnumber.append(i) 		# Do this so we can match indices with photind
 		
 			if len(starnumber) > 2.:
 				pllist = []
@@ -144,13 +144,15 @@ for offsetrun in range(10):
 				
 				# Apply offset from last iteration, then add it to the photons
 				if off == 1.:
-					offind = np.where(offsetfile.time == tstep)
+					if os.path.exists('../dxdyoffsets/'+str(lines[skyfield])[:10]+'offset25.fits'):
+						offind = np.where(offsetfile.time == (tstep-2.5))
+						print 'offind =', offind
 	
-				print 'dxoffset = ', offsetfile.dx[offind][0]
-				print 'dyoffset = ', offsetfile.dy[offind][0]
+						print 'dxoffset = ', offsetfile.dx[offind][0]
+						print 'dyoffset = ', offsetfile.dy[offind][0]
 	
-				sumdx = sumdx + offsetfile.dx[offind] 
-				sumdy = sumdy + offsetfile.dy[offind] 
+						sumdx = sumdx + offsetfile.dx[offind] 
+						sumdy = sumdy + offsetfile.dy[offind] 
 	
 				bns = 50 
 				tx = np.histogram(sumdx,bins=bns)[1][np.argmax(np.histogram(sumdx,bins=bns)[0])]
@@ -160,7 +162,7 @@ for offsetrun in range(10):
 				if ((tx < 2.) & (ty < 2.)):
 					pass
 				else:
-					dxerror.append(tstep)
+					dxdyerror.append(tstep)
 					tx, ty = 0.,0.
 	
 				sumdx = sumdx - tx
@@ -172,8 +174,8 @@ for offsetrun in range(10):
 				sumdx1am = sumdx[radlim]
 				sumdy1am = sumdy[radlim]
 	
-				totdx.append(np.mean(sumdx1am) + tempdgl)
-				totdy.append(np.mean(sumdy1am) + tempdgb)
+				totdx.append(np.mean(sumdx1am) - tempdgl)
+				totdy.append(np.mean(sumdy1am) - tempdgb)
 	
 				tempdgl = np.mean(sumdx1am)
 				tempdgb = np.mean(sumdy1am)
@@ -282,6 +284,7 @@ for offsetrun in range(10):
 			stdsumdx.append(0.)
 			stdsumdy.append(0.)
 			totphot2.append(0.)
+		tstep += expsize
 	
 	
 	totdx.append(0.)
@@ -294,8 +297,7 @@ for offsetrun in range(10):
 	print 'totdy = ',len(totdy)
 
 	print 'totphot2 =', len(totphot2)
-	print 'dxerror =', dxerror
-	print 'dyerror =', dyerror
+	print 'dxdyerror =', dxdyerror
 	print len(timelist)
 	timelist = np.append(timelist,timestep[timesteplimit])
 
@@ -303,6 +305,7 @@ for offsetrun in range(10):
 	axarr[0].errorbar(timelist,totdx,yerr=stdsumdx,fmt='o')
 	axarr[0].set_ylabel('dx [arcmin]')
 	axarr[0].set_xlim(0,timestep[timesteplimit])
+	axarr[0].set_title(str(lines[skyfield][:10])+', tstep = 2.5s')
 	axarr[1].errorbar(timelist,totdy,yerr=stdsumdy,fmt='o')
 	axarr[1].set_ylabel('dy [arcmin]')
 	axarr[2].scatter(timelist, totphot2)
@@ -319,9 +322,9 @@ for offsetrun in range(10):
 		#plt.show()
 	elif off == 1:
 		if fix == 1.:
-			f.savefig('../dxdyplots/dxdyvst'+str(lines[skyfield])[:10]+'_fix_iter10.png')
+			f.savefig('../dxdyplots/dxdyvst'+str(lines[skyfield])[:10]+'_2.5s_fix_iter10.png')
 		else:
-			f.savefig('../dxdyplots/dxdyvst'+str(lines[skyfield])[:10]+'_nofix_iter10.png')
+			f.savefig('../dxdyplots/dxdyvst'+str(lines[skyfield])[:10]+'_2.5s_nofix_iter10.png')
 		#plt.show()
 	
 	##############################################################
@@ -349,10 +352,10 @@ for offsetrun in range(10):
 		hdu = fits.BinTableHDU.from_columns(new_cols)
 	
 		if off == 0.:
-			hdu.writeto('../dxdyoffsets/'+str(lines[skyfield])[:10]+'offset.fits')
+			hdu.writeto('../dxdyoffsets/'+str(lines[skyfield])[:10]+'offset25.fits')
 	
 		if off == 1.:
-			if os.path.exists('../dxdyoffsets/'+str(lines[skyfield])[:10]+'offset.fits'):
-				os.remove('../dxdyoffsets/'+str(lines[skyfield])[:10]+'offset.fits')
+			if os.path.exists('../dxdyoffsets/'+str(lines[skyfield])[:10]+'offset25.fits'):
+				os.remove('../dxdyoffsets/'+str(lines[skyfield])[:10]+'offset25.fits')
 	
-			hdu.writeto('../dxdyoffsets/'+str(lines[skyfield])[:10]+'offset.fits')
+			hdu.writeto('../dxdyoffsets/'+str(lines[skyfield])[:10]+'offset25.fits')
