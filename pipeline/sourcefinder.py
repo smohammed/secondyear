@@ -32,7 +32,7 @@ path = "../corrcsv/"
 lines = np.loadtxt("../filelists/csv_galcorr.txt", dtype = 'string')
 
 fix = 1.
-skyfield = 100 #what skyfield?
+skyfield = 20 #what skyfield?
 
 # 0,20,60,78,100,120,130,150,180,190,210,220,240,280,300,330,360,390,420,440
 
@@ -72,6 +72,8 @@ for offsetrun in range(10):
 	if off == 1.:
 		offsetpath = '../dxdyoffsets/'
 		if os.path.exists('../dxdyoffsets/'+str(lines[skyfield])[:10]+'offset25.fits'):
+			if offsetrun == 0:
+				os.remove('../dxdyoffsets/'+str(lines[skyfield])[:10]+'offset25.fits')	
 			offsetfile = fits.open(offsetpath+lines[skyfield][:10]+'offset25.fits')[1].data
 	print 'offsetrun =', offsetrun
 
@@ -354,7 +356,7 @@ for offsetrun in range(10):
 		if off == 0.:
 			hdu.writeto('../dxdyoffsets/'+str(lines[skyfield])[:10]+'offset25.fits')
 	
-		if off == 1.:
+		if ((off == 1.) & (offsetrun == 0.)):
 			if os.path.exists('../dxdyoffsets/'+str(lines[skyfield])[:10]+'offset25.fits'):
 				os.remove('../dxdyoffsets/'+str(lines[skyfield])[:10]+'offset25.fits')
 	
