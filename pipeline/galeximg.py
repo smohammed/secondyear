@@ -13,11 +13,13 @@ from numpy import loadtxt
 pointing1 = 0
 pointing2 = 1
 
+correction = 1
+
 ############################################
 # Input galactic longitude range
 ############################################
-a=80				# Start gl
-b=100				# End gl
+a=0					# Start gl
+b=5				# End gl
 
 ############################################
 # Set the file pathways
@@ -31,6 +33,10 @@ if pointing2 == 1:
 	path = "../corrcsv/"
 	#lines = loadtxt("../filelists/AIS_GAL_SCAN_csv.txt", comments = "#", delimiter = ",", unpack = False, dtype = str)
 	lines = loadtxt("../filelists/csv_galcorr.txt", dtype = 'string')
+
+if correction == 1:
+	offpath = "../dxdyoffsets/"
+	offlines = loadtxt("../filelists/dxdycorrectionfiles.txt",dtype='string')
 
 ############################################
 # Grab appropriate files using gl range
@@ -59,13 +65,28 @@ if pointing2 == 1:
 	endgl = endgl - 1
 	
 	photons = fits.open(path+lines[startgl])[1].data
-	#gl = SkyCoord(photons.RA*u.degree, photons.DEC*u.degree, frame='icrs').galactic.l.degree
-	#gb = SkyCoord(photons.RA*u.degree, photons.DEC*u.degree, frame='icrs').galactic.b.degree
 	gl = photons.gl
 	gb = photons.gb
+	time = photons.time
 
-print startgl
-print endgl
+	gl[(min(gl) < 10.) & (gl > 350.)] = gl[(min(gl) < 10.) & (gl > 350.)] - 360.
+
+	print len(gl)
+	print len(gb)
+
+
+	if correction == 1:
+		offset = fits.open(offpath+offlines[startgl])[1].data
+
+		for i in range(len(offset)-1):
+			offsetind = np.where((time >= offset.time[i]) & (time < offset.time[i+1]))
+			gl[offsetind] = gl[offsetind] + offset.dx[i]
+			gb[offsetind] = gb[offsetind] + offset.dy[i]
+	print len(gl)
+	print len(gb)
+
+print 'startgl = ', startgl
+print 'endgl =', endgl
 
 ############################################
 # Combine photons from up and down runs, stack data horizontally
@@ -99,17 +120,30 @@ if pointing2 == 1:
 	for i in range(startgl+1,endgl+1):
 		print i
 		try:
-			f1 = fits.open(path+lines[i])[1].data
-			#f1gl = SkyCoord(f1.RA*u.degree, f1.DEC*u.degree, frame='icrs').galactic.l.degree
-			#f1gb = SkyCoord(f1.RA*u.degree, f1.DEC*u.degree, frame='icrs').galactic.b.degree
+			f1 = fits.open(path+lines[i])[1].data 
 			f1gl = f1.gl
 			f1gb = f1.gb
+			time = f1.time
+			f1gl[(min(f1gl) < 10.) & (f1gl > 350.)] = f1gl[(min(f1gl) < 10.) & (f1gl > 350.)] - 360.
+			print len(f1gl)
+			print len(f1gb)
+
+			if correction == 1:
+				offset= fits.open(offpath+offlines[i])[1].data
+				for i in range(len(offset)-1):
+					offsetind = np.where((time >= offset.time[i]) & (time < offset.time[i+1]))
+					f1gl[offsetind] = f1gl[offsetind] + offset.dx[i]
+					f1gb[offsetind] = f1gb[offsetind] + offset.dy[i]
+			print len(f1gl)
+			print len(f1gb)
 
 		except IOError:								# if the file is corrupted, skip it 
 			print 'Index '+str(i)+' is corrupted'
 			
 		gl = np.hstack([gl, f1gl])
 		gb = np.hstack([gb, f1gb])
+
+
 
 
 ############################################
@@ -136,12 +170,18 @@ if pointing1 == 1:
 
 if pointing2 == 1:
 	binnum = 1200
-	
+	print binnum 
+
 	H, xbins, ybins = np.histogram2d(gl, gb, bins = (np.linspace(a, b, binnum), np.linspace(-10, 10, binnum)))
 	#fig = plt.figure(figsize = (10,10))
 	#ax = plt.axes()
 	
-	fits.PrimaryHDU(H).writeto('../intmapcsvcorr'+str(binnum)+'_'+str(a)+'_'+str(b)+'.fits')
+	print np.size(H)
+
+	if correction == 0:
+		fits.PrimaryHDU(H).writeto('../intmapcsvcorr'+str(binnum)+'_'+str(a)+'_'+str(b)+'.fits')
+	elif correction == 1:
+		fits.PrimaryHDU(H).writeto('../intmapcsvcorr'+str(binnum)+'_'+str(a)+'_'+str(b)+'off.fits')
 	
 	'''
 	ax.imshow(np.sqrt(H).T, vmin = 0, vmax = 5, origin = 'lower', extent = [a, b, -10, 10], interpolation = 'nearest', aspect = 'auto', cmap = 'gray')

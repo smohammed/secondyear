@@ -10,9 +10,9 @@ ny=81.
 # Make array exposure map
 #################################################
 # add a buffer around edge just for good measure
-expim=np.zeros((360.0*60+nx,20.0*60+ny))
+#expim=np.zeros((360.0*60+nx,20.0*60+ny))
 
-#expim=np.zeros((20.0*60+nx,20.0*60+ny)) # For 20x20 deg field
+expim=np.zeros((20.0*60+nx,20.0*60+ny)) # For 20x20 deg field
 
 #expim=np.zeros((200.0*60+nx,200.0*60+ny))
 
@@ -33,8 +33,8 @@ for i in np.arange(nx):
 # Open files to mask
 #################################################
 
-files1 = np.loadtxt('../filelists/aspcorr_new_list.txt',dtype='string')
-#files1 = np.loadtxt('../filelists/truncaspcorr_new_list.txt',dtype='string') # For 0-20deg
+#files1 = np.loadtxt('../filelists/aspcorr_new_list.txt',dtype='string')
+files1 = np.loadtxt('../filelists/truncaspcorr_new_list.txt',dtype='string') # For 0-20deg
 path = "../scst/"
 photonlist = np.loadtxt('../filelists/photontimes.txt',dtype='string')
 
@@ -107,4 +107,4 @@ for line in range(len(files1)):									# Iterate through scst files
 				print 'shape of expim != shape of mask' 
 
 hdu = fits.PrimaryHDU(expim)
-hdu.writeto('../12-18-aspcorr_new_scst_1200.fits')
+hdu.writeto('../12-18-aspcorr_new_scst_1200_0to20.fits')
