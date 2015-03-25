@@ -8,15 +8,19 @@ import matplotlib
 matplotlib.rcParams['figure.figsize'] = 16,8
 matplotlib.rcParams['font.size'] = 20
 
-def plotmap(a,b,cutfluxlow, cutfluxhigh):
-	a=a		# Start gl
-	b=b		# End gl
+def plotmap(startgl,endgl,startgb,endgb,cutfluxlow, cutfluxhigh):
+	a = startgl		# Start gl
+	b = endgl		# End gl
 	
+	c = startgb
+	d = endgb
+
 	###################################################################
 	# Set a scale so we can cut the correct portion of the sky from the big expmap 
 	###################################################################
-	pixscale = (b - 20.)/20.
-	
+	pixscalex = (b - 20.)/20.
+	pixscaley = (d)
+
 	offset = 0
 
 	###################################################################
@@ -33,13 +37,13 @@ def plotmap(a,b,cutfluxlow, cutfluxhigh):
 	###################################################################
 	# Set pixel limits on the image to remove the edges of the expmap, then apply to the map
 	###################################################################
-	ymin = 39 # is gb = -10
+	ymin = 39 # is gb = -10 
 	ymax = 1238 # is gb = 10 
-	xmin = 39 + 1199 * pixscale + offset 
-	xmax = 1238 + 1199 * pixscale + offset
+	xmin = 39 + 1199 * pixscalex + offset 
+	xmax = 1238 + 1199 * pixscalex + offset
 
-	#expmap1 = expmap[39:1238,39+1199*pixscale:1238+1199*pixscale]
-	#expmap1 = expmap[39:1238,39+offset+1199*pixscale:1238+offset+1199*pixscale]
+	#expmap1 = expmap[39:1238,39+1199*pixscalex:1238+1199*pixscalex]
+	#expmap1 = expmap[39:1238,39+offset+1199*pixscalex:1238+offset+1199*pixscalex]
 	expmap1 = expmap[ymin:ymax,xmin:xmax]	
 
 	###################################################################
@@ -67,4 +71,4 @@ def plotmap(a,b,cutfluxlow, cutfluxhigh):
 	return plt.imshow(intmap,vmin=0,vmax=0.7,origin='lower',extent=[a,b,-10,10],interpolation='nearest',aspect='auto',cmap=cm.gray), plt.show()	
 
 
-plotmap(0,5,10,100)
+plotmap(0,5,-10,10,10,100)

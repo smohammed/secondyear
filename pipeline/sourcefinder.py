@@ -32,7 +32,7 @@ path = "../corrcsv/"
 lines = np.loadtxt("../filelists/csv_galcorr.txt", dtype = 'string')
 
 fix = 1.
-skyfield = 0 #what skyfield?
+skyfield = 4 #what skyfield?
 
 # 0,20,60,78,100,120,130,150,180,190,210,220,240,280,300,330,360,390,420,440
 
@@ -56,10 +56,10 @@ if plotgrid == 1:
 
 # Apply offset from last iteration?
 off = 1.
-for offsetrun in range(10):
+for offsetrun in range(20):
 	tstep = 0
 	expsize = 5
-	arcminlim = 3.
+	arcminlim = 2.
 	totdx,totdy,totphot2, totphot15,stdsumdx,stdsumdy = [],[],[],[],[],[]
 	timesteplimit = -1 	#Index of the timestep limits. -1 is the entire set
 	tempdgl, tempdgb = 0.,0.
@@ -87,8 +87,9 @@ for offsetrun in range(10):
 		fgl = field.gl[fieldlim]
 		fgb = field.gb[fieldlim]
 	
-		# Fix neg values of fgl that are ~360 deg to neg numbers to keep circular shape
-		if len(fgl) > 0.:
+		
+		if len(fgl) > 0.: # Removes areas with no photon data
+			# Fix neg values of fgl that are ~360 deg to neg numbers to keep circular shape
 			fgl[(min(fgl) < 10.) & (fgl > 350.)] = fgl[(min(fgl) < 10.) & (fgl > 350.)] - 360.
 	
 			# Convert to galactic coordinates and limit the bstar range 
@@ -146,34 +147,52 @@ for offsetrun in range(10):
 					sumdx = np.concatenate((sumdx,dx[i].tolist()))
 					sumdy = np.concatenate((sumdy,dy[i].tolist()))
 				
+
+				# Original star positions
+				if ((tstep%50 == 0.)& (offsetrun != 0.)):
+					plotdata(sumdx,sumdy)
+
+
 				# Apply offset from last iteration, then add it to the photons
-				if off == 1.:
-					if os.path.exists('../dxdyoffsets/'+str(lines[skyfield])[:10]+'offset.fits'):
-						offind = np.where(offsetfile.time == (tstep)) # Remember to change to 2.5
-						print 'offind =', offind
+				if ((off == 1.) & (offsetrun != 0.)):
+					offind = np.where(offsetfile.time == (tstep)) # Remember to change to 2.5
+					print 'offind =', offind[0][0]
+					print 'dxoffset = ', offsetfile.dx[offind][0]
+					print 'dyoffset = ', offsetfile.dy[offind][0]
 	
-						print 'dxoffset = ', offsetfile.dx[offind][0]
-						print 'dyoffset = ', offsetfile.dy[offind][0]
-	
-						sumdx = sumdx - offsetfile.dx[offind] 
-						sumdy = sumdy - offsetfile.dy[offind] 
-	
+					sumdx = sumdx - offsetfile.dx[offind][0]
+					sumdy = sumdy - offsetfile.dy[offind][0]
+					
 				# Find peak of a histogram for dx,dy, remove peaks that are too offset from 0,0
-				bns = 50 
+				bns = 50
 				tx = np.histogram(sumdx,bins=bns)[1][np.argmax(np.histogram(sumdx,bins=bns)[0])]
 				ty = np.histogram(sumdy,bins=bns)[1][np.argmax(np.histogram(sumdy,bins=bns)[0])]
-		
+
+				# Positions with correction applied
+				if ((tstep%50 == 0.) & (offsetrun != 0.)):
+					plotdata(sumdx,sumdy)
+
+
 				# Make sure tx, ty offset isn't too large. If it is, make a note
-				if ((tx < 2.) & (ty < 2.)):
+				#if ((tx < 2.) & (ty < 2.)):
+				if (np.sqrt(tx**2+ty**2) < 2.):
+					print 'tx =',tx
+					print 'ty =',ty
 					pass
 				else:
 					dxdyerror.append(tstep)
+					print 'txty error at',tstep
 					tx, ty = 0.,0.
-	
+				
 				# Recenter dx,dy using histogram
 				sumdx = sumdx - tx
 				sumdy = sumdy - ty
-		
+
+				# Position after histogram recentering
+				if ((tstep%50 == 0.) & (offsetrun != 0.)):
+					plotdata(sumdx,sumdy)
+
+
 				# Remove photons that are outside 1"
 				#plotdata(sumdx,sumdy)
 				radlim = np.where(np.sqrt(sumdx**2 + sumdy**2) < 1.)
@@ -181,10 +200,13 @@ for offsetrun in range(10):
 				sumdx1am = sumdx[radlim]
 				sumdy1am = sumdy[radlim]
 				
+				#print 'tempdgl =',tempdgl
+				#print 'mean sumdx1am =', np.mean(sumdx1am)
+
 				# temp coords apply a fix from the last position to the next one
 				totdx.append(np.mean(sumdx1am) - tempdgl)
 				totdy.append(np.mean(sumdy1am) - tempdgb)
-	
+				
 				tempdgl = np.mean(sumdx1am)
 				tempdgb = np.mean(sumdy1am)
 				
@@ -193,7 +215,8 @@ for offsetrun in range(10):
 		
 				# Add up all photons within 30 arcsec
 				radlim30as = np.where(np.sqrt(sumdx**2 + sumdy**2) < 1/2.)
-				totphot2.append(len(sumdx[radlim30as]))
+				radlim2am = np.where(np.sqrt(sumdx**2 + sumdy**2) < 2.)
+				totphot2.append(len(sumdx[radlim2am]))
 		
 				##############################################################
 				# Make plots
@@ -285,8 +308,8 @@ for offsetrun in range(10):
 					
 					totphot15.append(len(sumdx15))
 	
-		else:
-			print 'len(fgl) = 0'
+		else: # If there are no photons in that region 
+			print 'len(fgl) =', len(fgl)
 			totdx.append(0.)
 			totdy.append(0.)
 			stdsumdx.append(0.)
@@ -341,7 +364,7 @@ for offsetrun in range(10):
 	##############################################################
 	make_star_table = 1
 	if make_star_table == 1.:
-		a1 = np.array(np.arange(0,timestep[timesteplimit],0.5))
+		a1 = np.array(np.arange(0,timestep[timesteplimit],5))
 		a2 = np.array(totdx)
 		a3 = np.array(totdy)
 		a4 = np.array(totphot2)
@@ -363,7 +386,7 @@ for offsetrun in range(10):
 		if off == 0.:
 			hdu.writeto('../dxdyoffsets/'+str(lines[skyfield])[:10]+'offset.fits')
 	
-		if ((off == 1.) & (offsetrun == 0.)):
+		if (off == 1.):#((off == 1.) & (offsetrun == 0.)):
 			if os.path.exists('../dxdyoffsets/'+str(lines[skyfield])[:10]+'offset.fits'):
 				os.remove('../dxdyoffsets/'+str(lines[skyfield])[:10]+'offset.fits')
 	

@@ -19,7 +19,7 @@ correction = 1
 # Input galactic longitude range
 ############################################
 a=0					# Start gl
-b=5				# End gl
+b=5					# End gl
 
 ############################################
 # Set the file pathways
