@@ -1,7 +1,6 @@
 from astropy.io import fits
 import numpy as np
 from numpy import loadtxt
-#from matplotlib import pyplot as plt
 
 ########################################################################################
 # This code generates an intensity map. Combine with the exposure map to get a final image.
@@ -13,7 +12,7 @@ from numpy import loadtxt
 pointing1 = 0
 pointing2 = 1
 
-correction = 1
+correction = 0
 
 ############################################
 # Input galactic longitude range
@@ -68,22 +67,22 @@ if pointing2 == 1:
 	gl = photons.gl
 	gb = photons.gb
 	time = photons.time
-
+	'''
+	#timelim = np.where((time >= 0.) & (time <1000.))
+	gl = gl[timelim]
+	gb = gl[timelim]
+	time = time[timelim]
+	'''
 	gl[(min(gl) < 10.) & (gl > 350.)] = gl[(min(gl) < 10.) & (gl > 350.)] - 360.
-
-	print len(gl)
-	print len(gb)
-
 
 	if correction == 1:
 		offset = fits.open(offpath+offlines[startgl])[1].data
 
 		for i in range(len(offset)-1):
 			offsetind = np.where((time >= offset.time[i]) & (time < offset.time[i+1]))
-			gl[offsetind] = gl[offsetind] + offset.dx[i]
-			gb[offsetind] = gb[offsetind] + offset.dy[i]
-	print len(gl)
-	print len(gb)
+			gl[offsetind] = gl[offsetind] + offset.dx[i]/60.
+			gb[offsetind] = gb[offsetind] + offset.dy[i]/60.
+
 
 print 'startgl = ', startgl
 print 'endgl =', endgl
@@ -91,7 +90,6 @@ print 'endgl =', endgl
 ############################################
 # Combine photons from up and down runs, stack data horizontally
 ############################################
-
 if pointing1 == 1:
 	for i in range(startgl+2,endgl,2):
 		print i
@@ -123,28 +121,27 @@ if pointing2 == 1:
 			f1 = fits.open(path+lines[i])[1].data 
 			f1gl = f1.gl
 			f1gb = f1.gb
-			time = f1.time
+			f1time = f1.time
 			f1gl[(min(f1gl) < 10.) & (f1gl > 350.)] = f1gl[(min(f1gl) < 10.) & (f1gl > 350.)] - 360.
-			print len(f1gl)
-			print len(f1gb)
-
+			
+			'''
+			f1timelim = np.where((f1time >= 0.) & (f1time <1000.))
+			f1gl = gl[f1timelim]
+			f1gb = gl[f1timelim]
+			f1time = f1time[f1timelim]
+			'''
 			if correction == 1:
 				offset= fits.open(offpath+offlines[i])[1].data
 				for i in range(len(offset)-1):
-					offsetind = np.where((time >= offset.time[i]) & (time < offset.time[i+1]))
-					f1gl[offsetind] = f1gl[offsetind] + offset.dx[i]
-					f1gb[offsetind] = f1gb[offsetind] + offset.dy[i]
-			print len(f1gl)
-			print len(f1gb)
+					offsetind = np.where((f1time >= offset.time[i]) & (f1time < offset.time[i+1]))
+					f1gl[offsetind] = f1gl[offsetind] - offset.dx[i]/60.
+					f1gb[offsetind] = f1gb[offsetind] - offset.dy[i]/60.
 
 		except IOError:								# if the file is corrupted, skip it 
 			print 'Index '+str(i)+' is corrupted'
 			
 		gl = np.hstack([gl, f1gl])
 		gb = np.hstack([gb, f1gb])
-
-
-
 
 ############################################
 # Bin data and plot stuff
@@ -169,7 +166,7 @@ if pointing1 == 1:
 	'''
 
 if pointing2 == 1:
-	binnum = 1200
+	binnum = 120
 	print binnum 
 
 	H, xbins, ybins = np.histogram2d(gl, gb, bins = (np.linspace(a, b, binnum), np.linspace(-10, 10, binnum)))
@@ -181,7 +178,7 @@ if pointing2 == 1:
 	if correction == 0:
 		fits.PrimaryHDU(H).writeto('../intmapcsvcorr'+str(binnum)+'_'+str(a)+'_'+str(b)+'.fits')
 	elif correction == 1:
-		fits.PrimaryHDU(H).writeto('../intmapcsvcorr'+str(binnum)+'_'+str(a)+'_'+str(b)+'off.fits')
+		fits.PrimaryHDU(H).writeto('../intmapcsvcorr'+str(binnum)+'_'+str(a)+'_'+str(b)+'_corr.fits')
 	
 	'''
 	ax.imshow(np.sqrt(H).T, vmin = 0, vmax = 5, origin = 'lower', extent = [a, b, -10, 10], interpolation = 'nearest', aspect = 'auto', cmap = 'gray')

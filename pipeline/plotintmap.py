@@ -70,5 +70,3 @@ def plotmap(startgl,endgl,startgb,endgb,cutfluxlow, cutfluxhigh):
 	plt.ylabel('gb')
 	return plt.imshow(intmap,vmin=0,vmax=0.7,origin='lower',extent=[a,b,-10,10],interpolation='nearest',aspect='auto',cmap=cm.gray), plt.show()	
 
-
-plotmap(0,5,-10,10,10,100)

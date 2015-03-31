@@ -7,8 +7,13 @@ from astropy import units as u
 from astropy.coordinates import SkyCoord
 from matching import search_around_sky
 import matplotlib.gridspec as gridspec
+from scipy.optimize import curve_fit
 from plotdata import plotdata 
 import os
+
+def gauss(x, *p):
+    A, mu, sigma = p
+    return A*np.exp(-(x-mu)**2/(2.*sigma**2))
 
 ##############################################################
 ##############################################################
@@ -56,7 +61,7 @@ if plotgrid == 1:
 
 # Apply offset from last iteration?
 off = 1.
-for offsetrun in range(20):
+for offsetrun in range(1):
 	tstep = 0
 	expsize = 5
 	arcminlim = 2.
@@ -164,9 +169,41 @@ for offsetrun in range(20):
 					sumdy = sumdy - offsetfile.dy[offind][0]
 					
 				# Find peak of a histogram for dx,dy, remove peaks that are too offset from 0,0
-				bns = 50
-				tx = np.histogram(sumdx,bins=bns)[1][np.argmax(np.histogram(sumdx,bins=bns)[0])]
-				ty = np.histogram(sumdy,bins=bns)[1][np.argmax(np.histogram(sumdy,bins=bns)[0])]
+				bns = 25
+
+				# Define some test data which is close to Gaussian
+				histx, bin_edgesx = np.histogram(sumdx,bins=bns, density=True)
+				bin_centersx = (bin_edgesx[:-1] + bin_edgesx[1:])/2
+
+				histy, bin_edgesy = np.histogram(sumdy,bins=bns, density=True)
+				bin_centersy = (bin_edgesy[:-1] + bin_edgesy[1:])/2
+
+
+				# p0 is the initial guess for the fitting coefficients (A, mu and sigma above)
+				px0 = [1., 0., 1.]
+				py0 = [1., 0., 1.]				
+
+				try:
+					coeffx, var_matrixx = curve_fit(gauss, bin_centersx, histx, p0=px0)
+					coeffy, var_matrixy = curve_fit(gauss, bin_centersy, histy, p0=py0)
+					tx = coeffx[1]
+					ty = coeffy[1]
+
+					'''
+					print 'Fitted x mean = ', coeffx[1]
+					print 'Fitted x standard deviation = ', coeffx[2]
+					print 'Fitted y mean = ', coeffy[1]
+					print 'Fitted y standard deviation = ', coeffy[2]
+					'''
+
+				except RuntimeError:
+					tx = 0.
+					ty = 0.
+					print 'tx = ',tx
+					print 'ty = ',ty
+
+				#tx = np.histogram(sumdx,bins=bns)[1][np.argmax(np.histogram(sumdx,bins=bns)[0])]
+				#ty = np.histogram(sumdy,bins=bns)[1][np.argmax(np.histogram(sumdy,bins=bns)[0])]
 
 				# Positions with correction applied
 				if ((tstep%50 == 0.) & (offsetrun != 0.)):
@@ -185,13 +222,12 @@ for offsetrun in range(20):
 					tx, ty = 0.,0.
 				
 				# Recenter dx,dy using histogram
-				sumdx = sumdx - tx
-				sumdy = sumdy - ty
+				sumdx = sumdx + tx
+				sumdy = sumdy + ty
 
 				# Position after histogram recentering
 				if ((tstep%50 == 0.) & (offsetrun != 0.)):
 					plotdata(sumdx,sumdy)
-
 
 				# Remove photons that are outside 1"
 				#plotdata(sumdx,sumdy)
@@ -204,8 +240,8 @@ for offsetrun in range(20):
 				#print 'mean sumdx1am =', np.mean(sumdx1am)
 
 				# temp coords apply a fix from the last position to the next one
-				totdx.append(np.mean(sumdx1am) - tempdgl)
-				totdy.append(np.mean(sumdy1am) - tempdgb)
+				totdx.append(np.mean(sumdx1am) + tempdgl)
+				totdy.append(np.mean(sumdy1am) + tempdgb)
 				
 				tempdgl = np.mean(sumdx1am)
 				tempdgb = np.mean(sumdy1am)
