@@ -17,8 +17,10 @@ correction = 0
 ############################################
 # Input galactic longitude range
 ############################################
-a=0					# Start gl
-b=5					# End gl
+a = 0				# Start gl
+b = 10				# End gl
+c = -10	 			# Start gb
+d = 0 				# End gb
 
 ############################################
 # Set the file pathways
@@ -64,15 +66,11 @@ if pointing2 == 1:
 	endgl = endgl - 1
 	
 	photons = fits.open(path+lines[startgl])[1].data
-	gl = photons.gl
-	gb = photons.gb
-	time = photons.time
-	'''
-	#timelim = np.where((time >= 0.) & (time <1000.))
-	gl = gl[timelim]
-	gb = gl[timelim]
-	time = time[timelim]
-	'''
+	photlim = np.where((photons.gl >= a) & (photons.gl < b) & (photons.gb >= c) & (photons.gb < d))
+	gl = photons.gl[photlim]
+	gb = photons.gb[photlim]
+	time = photons.time[photlim]
+
 	gl[(min(gl) < 10.) & (gl > 350.)] = gl[(min(gl) < 10.) & (gl > 350.)] - 360.
 
 	if correction == 1:
@@ -80,8 +78,8 @@ if pointing2 == 1:
 
 		for i in range(len(offset)-1):
 			offsetind = np.where((time >= offset.time[i]) & (time < offset.time[i+1]))
-			gl[offsetind] = gl[offsetind] + offset.dx[i]/60.
-			gb[offsetind] = gb[offsetind] + offset.dy[i]/60.
+			gl[offsetind] = gl[offsetind] - offset.dx[i]/60.
+			gb[offsetind] = gb[offsetind] - offset.dy[i]/60.
 
 
 print 'startgl = ', startgl
@@ -119,21 +117,16 @@ if pointing2 == 1:
 		print i
 		try:
 			f1 = fits.open(path+lines[i])[1].data 
-			f1gl = f1.gl
-			f1gb = f1.gb
-			f1time = f1.time
+			f1lim = np.where((f1.gl >= a) & (f1.gl < b) & (f1.gb >= c) &  (f1.gb < d))
+			f1gl = f1.gl[f1lim]
+			f1gb = f1.gb[f1lim]
+			time = f1.time[f1lim]
 			f1gl[(min(f1gl) < 10.) & (f1gl > 350.)] = f1gl[(min(f1gl) < 10.) & (f1gl > 350.)] - 360.
-			
-			'''
-			f1timelim = np.where((f1time >= 0.) & (f1time <1000.))
-			f1gl = gl[f1timelim]
-			f1gb = gl[f1timelim]
-			f1time = f1time[f1timelim]
-			'''
+
 			if correction == 1:
 				offset= fits.open(offpath+offlines[i])[1].data
 				for i in range(len(offset)-1):
-					offsetind = np.where((f1time >= offset.time[i]) & (f1time < offset.time[i+1]))
+					offsetind = np.where((time >= offset.time[i]) & (time < offset.time[i+1]))
 					f1gl[offsetind] = f1gl[offsetind] - offset.dx[i]/60.
 					f1gb[offsetind] = f1gb[offsetind] - offset.dy[i]/60.
 
@@ -149,7 +142,7 @@ if pointing2 == 1:
 if pointing1 == 1:
 	binnum = 1200
 	
-	H, xbins, ybins = np.histogram2d(gl, gb, bins = (np.linspace(a, b, binnum), np.linspace(-10, 10, binnum)))
+	H, xbins, ybins = np.histogram2d(gl, gb, bins = (np.linspace(a, b, binnum), np.linspace(c, d, binnum)))
 	#fig = plt.figure(figsize = (10,10))
 	#ax = plt.axes()
 	
@@ -166,21 +159,20 @@ if pointing1 == 1:
 	'''
 
 if pointing2 == 1:
-	binnum = 120
+	binnum = 12000
 	print binnum 
 
-	H, xbins, ybins = np.histogram2d(gl, gb, bins = (np.linspace(a, b, binnum), np.linspace(-10, 10, binnum)))
-	#fig = plt.figure(figsize = (10,10))
-	#ax = plt.axes()
-	
+	H, xbins, ybins = np.histogram2d(gl, gb, bins = (np.linspace(a, b, binnum), np.linspace(c, d, binnum)))
 	print np.size(H)
 
 	if correction == 0:
-		fits.PrimaryHDU(H).writeto('../intmapcsvcorr'+str(binnum)+'_'+str(a)+'_'+str(b)+'.fits')
+		fits.PrimaryHDU(H.T).writeto('../intmapcsvcorr'+str(binnum)+'_gl_'+str(a)+'to'+str(b)+'_gb_'+str(c)+'to'+str(d)+'transp.fits')
 	elif correction == 1:
-		fits.PrimaryHDU(H).writeto('../intmapcsvcorr'+str(binnum)+'_'+str(a)+'_'+str(b)+'_corr.fits')
+		fits.PrimaryHDU(H).writeto('../intmapcsvcorr'+str(binnum)+'_gl_'+str(a)+'to'+str(b)+'_gb_'+str(c)+'to'+str(d)+'_corr_no_offset.fits')
 	
 	'''
+	fig = plt.figure(figsize = (10,10))
+	ax = plt.axes()
 	ax.imshow(np.sqrt(H).T, vmin = 0, vmax = 5, origin = 'lower', extent = [a, b, -10, 10], interpolation = 'nearest', aspect = 'auto', cmap = 'gray')
 	ax.set_xlabel(r'${\rm gl}$')
 	ax.set_ylabel(r'${\rm gb}$')

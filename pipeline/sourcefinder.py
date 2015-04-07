@@ -37,7 +37,7 @@ path = "../corrcsv/"
 lines = np.loadtxt("../filelists/csv_galcorr.txt", dtype = 'string')
 
 fix = 1.
-skyfield = 4 #what skyfield?
+skyfield = 11 #what skyfield?
 
 # 0,20,60,78,100,120,130,150,180,190,210,220,240,280,300,330,360,390,420,440
 
@@ -157,7 +157,7 @@ for offsetrun in range(1):
 				if ((tstep%50 == 0.)& (offsetrun != 0.)):
 					plotdata(sumdx,sumdy)
 
-
+				'''
 				# Apply offset from last iteration, then add it to the photons
 				if ((off == 1.) & (offsetrun != 0.)):
 					offind = np.where(offsetfile.time == (tstep)) # Remember to change to 2.5
@@ -167,7 +167,8 @@ for offsetrun in range(1):
 	
 					sumdx = sumdx - offsetfile.dx[offind][0]
 					sumdy = sumdy - offsetfile.dy[offind][0]
-					
+				'''
+
 				# Find peak of a histogram for dx,dy, remove peaks that are too offset from 0,0
 				bns = 25
 
@@ -222,8 +223,8 @@ for offsetrun in range(1):
 					tx, ty = 0.,0.
 				
 				# Recenter dx,dy using histogram
-				sumdx = sumdx + tx
-				sumdy = sumdy + ty
+				sumdx = sumdx - tx
+				sumdy = sumdy - ty
 
 				# Position after histogram recentering
 				if ((tstep%50 == 0.) & (offsetrun != 0.)):

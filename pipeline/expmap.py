@@ -10,9 +10,9 @@ ny=81.
 # Make array exposure map
 #################################################
 # add a buffer around edge just for good measure
-#expim=np.zeros((360.0*60+nx,20.0*60+ny))
+expim=np.zeros((360.0*60+nx,20.0*60+ny))
 
-expim=np.zeros((20.0*60+nx,20.0*60+ny)) # For 20x20 deg field
+#expim=np.zeros((20.0*60+nx,20.0*60+ny)) # For 20x20 deg field
 
 #expim=np.zeros((200.0*60+nx,200.0*60+ny))
 
