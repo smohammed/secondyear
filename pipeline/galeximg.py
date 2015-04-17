@@ -18,8 +18,8 @@ correction = 0
 # Input galactic longitude range
 ############################################
 a = 0				# Start gl
-b = 10				# End gl
-c = -10	 			# Start gb
+b = 2				# End gl
+c = -2	 			# Start gb
 d = 0 				# End gb
 
 ############################################
@@ -159,7 +159,7 @@ if pointing1 == 1:
 	'''
 
 if pointing2 == 1:
-	binnum = 12000
+	binnum = 1200
 	print binnum 
 
 	H, xbins, ybins = np.histogram2d(gl, gb, bins = (np.linspace(a, b, binnum), np.linspace(c, d, binnum)))

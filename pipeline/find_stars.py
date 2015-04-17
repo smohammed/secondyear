@@ -13,12 +13,16 @@ matplotlib.rcParams['font.size'] = 20
 # Load star values
 ###################################################################
 '''
-x = np.loadtxt('x_stars.txt',dtype='string').astype(float)
-y = np.loadtxt('y_stars.txt',dtype='string').astype(float)
+x = np.loadtxt('x_stars_flux5.txt',dtype='string').astype(float)
+y = np.loadtxt('y_stars_flux5.txt',dtype='string').astype(float)
+flux = np.loadtxt('flux_stars_flux5.txt',dtype='string').astype(float)
 x = x * 10./12000.
-y = y * 10./12000. - 10. 
+y = y * 10./12000. - 10.
+hdu = fits.BinTableHDU.from_columns(fits.ColDefs([fits.Column(name='gl', format='E', array=x),fits.Column(name='gb', format='E', array=y),fits.Column(name='flux', format='E', array=flux)]))
+hdu.writeto('find_star_cands.fits')
 '''
-star_cand = fits.open('find_stars.fits')[1].data
+
+star_cand = fits.open('../find_star_cands.fits')[1].data
 sgl = star_cand.gl.tolist()
 sgb = star_cand.gb.tolist()
 s_cgal = SkyCoord(sgl*u.degree, sgb*u.degree, frame='galactic')
@@ -26,33 +30,53 @@ s_cgal = SkyCoord(sgl*u.degree, sgb*u.degree, frame='galactic')
 ###################################################################
 # Load bstars
 ###################################################################
-bstar = fits.open('bstar.fits')[1].data
+bstar = fits.open('../bstar2.fits')[1].data
 bcut1 = np.where((bstar.nuv_cps > 10.) & (bstar.nuv_cps < 100.))
 bstar = bstar[bcut1]
-bgal = SkyCoord(bstar.ra*u.degree, bstar.dec*u.degree, frame='icrs').galactic
-bcut2 = np.where((bgal.l.degree > 0) & (bgal.l.degree < 10) & (bgal.b.degree > -10.) & (bgal.b.degree < 10.))
+bcut2 = np.where((bstar.gl > 0) & (bstar.gl < 2) & (bstar.gb > -2.) & (bstar.gb < 0.))
 bstar2 = bstar[bcut2]
-bgal2 = SkyCoord(bstar2.ra*u.degree, bstar2.dec*u.degree, frame='icrs').galactic
-
+bgal2 = SkyCoord(bstar2.gl*u.degree, bstar2.gb*u.degree, frame='galactic')
 
 ###################################################################
 # Match stars with detections
 ###################################################################
-bstarind, star_candind, starsep, stardist = search_around_sky(bgal2,s_cgal,1.*u.arcmin)
+bstarind, star_candind, starangsep, stardist3d = search_around_sky(bgal2, s_cgal, 1.*u.arcmin)
 
+uniqueind = np.unique(bstarind, return_index=True)[1]
 
+bstar3 = bstar2[bstarind[uniqueind]]
+bstarname = bstar3.galex_id
+bgal3 = SkyCoord(bstar3.ra*u.degree, bstar3.dec*u.degree, frame='icrs').galactic
+bgl = bgal3.l.degree
+bgb = bgal3.b.degree
 
+s_match = star_cand[star_candind[uniqueind]]
+sgl = s_match.gl
+sgb = s_match.gb
+sflux = s_match.flux
 
+a1 = bstar3.galex_id
+a2 = bstar3.cat_id
+a3 = bstar3.ra
+a4 = bstar3.dec
+a5 = bgl
+a6 = bgb
+a7 = bstar3.fuv_cps
+a8 = bstar3.fuv_cat
+a9 = bstar3.nuv_cps
+a10 = bstar3.nuv_cat
 
-bstar2 = bstar2[np.unique(bstarind)]
-bstarname = bstar2.galex_id
-bgal2 = SkyCoord(bstar2.ra*u.degree, bstar2.dec*u.degree, frame='icrs').galactic
-bgl = bgal2.l.degree
-bgb = bgal2.b.degree
+col1 = fits.Column(name='galex_id', format='E', array=a1)
+col2 = fits.Column(name='cat_id', format='10A', array=a2)
+col3 = fits.Column(name='ra', format='E', array=a3)
+col4 = fits.Column(name='dec', format='E', array=a4)
+col5 = fits.Column(name='gl', format='E', array=a5)
+col6 = fits.Column(name='gb', format='E', array=a6)
+col7 = fits.Column(name='fuv_cps', format='E', array=a7)
+col8 = fits.Column(name='fuv_cat', format='10A', array=a8)
+col9 = fits.Column(name='nuv_cps', format='E', array=a9)
+col10 = fits.Column(name='nuv_cat', format='10A', array=a10)
 
-
-bstarnumber = []
-for i in range(len(bstarind)-1):
-	if bstarind[i] != bstarind[i+1]:
-		bstarnumber.append(i) 		# Do this so we can match indices with photind
-
+new_cols = fits.ColDefs([col1,col2,col3,col4,col5,col6,col7,col8,col9,col10])
+hdu = fits.BinTableHDU.from_columns(new_cols)
+hdu.writeto('../find_bstar_matches.fits')
