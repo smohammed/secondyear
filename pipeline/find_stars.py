@@ -49,6 +49,7 @@ bstarname = bstar3.galex_id
 bgal3 = SkyCoord(bstar3.ra*u.degree, bstar3.dec*u.degree, frame='icrs').galactic
 bgl = bgal3.l.degree
 bgb = bgal3.b.degree
+bflux = bgal3.nuv_cp
 
 s_match = star_cand[star_candind[uniqueind]]
 sgl = s_match.gl
@@ -79,4 +80,4 @@ col10 = fits.Column(name='nuv_cat', format='10A', array=a10)
 
 new_cols = fits.ColDefs([col1,col2,col3,col4,col5,col6,col7,col8,col9,col10])
 hdu = fits.BinTableHDU.from_columns(new_cols)
-hdu.writeto('../find_bstar_matches.fits')
+#hdu.writeto('../find_bstar_matches.fits')
