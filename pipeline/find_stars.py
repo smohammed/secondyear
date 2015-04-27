@@ -59,6 +59,7 @@ sgl = s_match.gl
 sgb = s_match.gb
 sflux = s_match.flux
 
+
 # Make a table
 table = 0
 if table == 1:
@@ -100,3 +101,4 @@ if table == 1:
 	hdu = fits.BinTableHDU.from_columns(new_cols)
 	hdu.writeto('../find_bstar_t2_matches.fits')
 	
+
