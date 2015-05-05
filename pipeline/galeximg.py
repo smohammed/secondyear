@@ -16,13 +16,12 @@ correction = 0
 ############################################
 # Input galactic longitude range
 ############################################
-a = 10				# Start gl
-b = 20				# End gl
-c = 0	 			# Start gb
-d = 10 				# End gb
+#a = 10				# Start gl
+#b = 20				# End gl
+#c = 0	 			# Start gb
+#d = 10 				# End gb
 
-def intensitymap(glinit,glfinal,gbinit,gbfinal,pointing,correction):
-	
+def intensitymap(a,b,c,d,pointing,correction): 
 	############################################
 	# Set the file pathways
 	############################################
@@ -33,7 +32,7 @@ def intensitymap(glinit,glfinal,gbinit,gbfinal,pointing,correction):
 	
 	if pointing == 2:
 		path = "../corrcsv/"
-		#lines = loadtxt("../filelists/AIS_GAL_SCAN_csv.txt", comments = "#", delimiter = ",", unpack = 	False, dtype = str)
+		#lines = loadtxt("../filelists/AIS_GAL_SCAN_csv.txt", comments = "#", delimiter = ",", unpack = False, dtype = str)
 		lines = loadtxt("../filelists/csv_galcorr.txt", dtype = 'string')
 	
 	if correction == 1:
@@ -67,13 +66,19 @@ def intensitymap(glinit,glfinal,gbinit,gbfinal,pointing,correction):
 		endgl = endgl - 1
 		
 		photons = fits.open(path+lines[startgl])[1].data
-		photlim = np.where((photons.gl >= a) & (photons.gl < b) & (photons.gb >= c) & (photons.gb < d))
-		gl = photons.gl[photlim]
-		gb = photons.gb[photlim]
-		time = photons.time[photlim]
+		photlim1 = np.where((photons.gb >= c) & (photons.gb < d))
+		gl = photons.gl[photlim1]
+		gb = photons.gb[photlim1]
+		time = photons.time[photlim1]
 	
 		gl[(min(gl) < 10.) & (gl > 350.)] = gl[(min(gl) < 10.) & (gl > 350.)] - 360.
-	
+
+		photlim2 = np.where((gl >= a) & (gl < b))
+
+		gl = gl[photlim2]
+		gb = gb[photlim2]
+		time = time[photlim2]
+
 		if correction == 1:
 			offset = fits.open(offpath+offlines[startgl])[1].data
 	
@@ -114,16 +119,21 @@ def intensitymap(glinit,glfinal,gbinit,gbfinal,pointing,correction):
 			gb = np.hstack([gb, gbinit])
 	
 	if pointing == 2:
-		for i in range(startgl+1,endgl+1):
-			print i
+		for i in range(startgl+1, endgl+1):
+			print str(i) + ' for file ' + lines[i]
 			try:
 				f1 = fits.open(path+lines[i])[1].data 
-				f1lim = np.where((f1.gl >= a) & (f1.gl < b) & (f1.gb >= c) &  (f1.gb < d))
-				f1gl = f1.gl[f1lim]
-				f1gb = f1.gb[f1lim]
-				time = f1.time[f1lim]
+				f1lim1 = np.where((f1.gb >= c) & (f1.gb < d))
+				f1gl = f1.gl[f1lim1]
+				f1gb = f1.gb[f1lim1]
+				time = f1.time[f1lim1]
 				f1gl[(min(f1gl) < 10.) & (f1gl > 350.)] = f1gl[(min(f1gl) < 10.) & (f1gl > 350.)] - 360.
-	
+
+				f1lim2 = np.where((f1gl >= a) & (f1gl < b))
+				f1gl = f1gl[f1lim2]
+				f1gb = f1gb[f1lim2]
+				time = time[f1lim2]
+
 				if correction == 1:
 					offset= fits.open(offpath+offlines[i])[1].data
 					for i in range(len(offset)-1):
@@ -133,9 +143,33 @@ def intensitymap(glinit,glfinal,gbinit,gbfinal,pointing,correction):
 	
 			except IOError:								# if the file is corrupted, skip it 
 				print 'Index '+str(i)+' is corrupted'
+			except ValueError:
+				print 'No data available for ' + lines[i]
 				
 			gl = np.hstack([gl, f1gl])
 			gb = np.hstack([gb, f1gb])
+
+	# Be sure to write the last scan! 
+	if pointing == 2:
+		if float(lines[endgl+1].split('_')[0])/10. == 359.6:
+			print 'Writing last slice 359.6 deg'
+			b = b + 1
+		
+			f1 = fits.open(path+lines[endgl + 1])[1].data
+			photlim1 = np.where((photons.gb >= c) & (photons.gb < d))
+			f1gl = f1.gl[f1lim1]
+			f1gb = f1.gb[f1lim1]
+			time = f1.time[f1lim1]
+	
+			f1gl[(min(f1gl) < 10.) & (f1gl > 350.)] = f1gl[(min(f1gl) < 10.) & (f1gl > 350.)] - 360.
+			f1lim2 = np.where((f1gl >= a) & (f1gl < b))
+
+			f1gl = f1gl[f1lim2]
+			f1gb = f1gb[f1lim2]
+			time = time[f1lim2]
+
+			gl = np.hstack([gl,f1gl])
+			gb = np.hstack([gb,f1gb])
 	
 	############################################
 	# Bin data and plot stuff
@@ -163,7 +197,7 @@ def intensitymap(glinit,glfinal,gbinit,gbfinal,pointing,correction):
 		binnum = 12000
 		print binnum 
 	
-		H, xbins, ybins = np.histogram2d(gl, gb, bins = (np.linspace(a, b, binnum), np.linspace(c, d, 	binnum)))
+		H, xbins, ybins = np.histogram2d(gl, gb, bins = (np.linspace(a, b, binnum), np.linspace(c, d, binnum)))
 		print np.size(H)
 	
 	
@@ -185,5 +219,7 @@ def intensitymap(glinit,glfinal,gbinit,gbfinal,pointing,correction):
 		fig.savefig('GALEX_galplane_%d-%d_vmax05.png'%(a,b), bbox_inches = 'tight', pad_inches = 0)
 		'''
 	
-for glstep in range(30, 361, 10):
-	intensitymap(glstep,glstep+10,0,10,pointing,correction)
+#for glstep in range(80, 359, 10):
+#	intensitymap(glstep,glstep+10,-10,0,pointing,correction)
+
+intensitymap(350,359,-10,0,pointing,correction)
