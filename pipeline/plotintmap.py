@@ -27,7 +27,7 @@ def plotmap(startgl,endgl,startgb,endgb,cutfluxlow, cutfluxhigh):
 	# Load the photon map, which is 20x20 deg
 	###################################################################
 	#phomap = np.sqrt(fits.open('../intensitymap1200'+'_'+str(a)+'_'+str(b)+'.fits')[0].data).T
-	phomap = np.sqrt(fits.open('../intmapcsvcorr1200'+'_'+str(a)+'_'+str(b)+'.fits')[0].data).T	
+	phomap = np.sqrt(fits.open('../intmapcsvcorr12000_gl_'+str(a)+'to'+str(b)+'_gb_'+str(c)+'to'+str(d)+'.fits')[0].data).T	
 
 	###################################################################
 	# Load the expmap which is 360x20 deg
@@ -59,8 +59,8 @@ def plotmap(startgl,endgl,startgb,endgb,cutfluxlow, cutfluxhigh):
 	###################################################################
 	# Combine the exposure map with the intensity map
 	###################################################################
-	intmap = phomap/expmap1	
-	intmap = np.nan_to_num(intmap)
+	intmap = phomap#/expmap1	
+	#intmap = np.nan_to_num(intmap)
 
 	###################################################################
 	# Now plot!
