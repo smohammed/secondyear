@@ -18,6 +18,11 @@ t2ind, extind, angsep, dist3d = search_around_sky(t2gal, extgal, 0.1*u.arcsec)
 t2 = t2[t2ind]
 ext = ext[extind]
 
+# Bands
+nuv = t2.nuvmag
+fuv = t2.fuvmag
+BJ = t2.BJmag
+VJ = t2.VJmag
 
 # Extinction A_lambda, from Wyder et al 2007
 rnuv = 8.2
