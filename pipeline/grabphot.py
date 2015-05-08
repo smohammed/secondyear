@@ -1,5 +1,5 @@
 from intphotometry import phot
-#from loadt2 import *
+from loadt2 import *
 import itertools
 import numpy as np
 from astropy.io import fits
@@ -45,9 +45,12 @@ sgal = SkyCoord(phot.gl*u.degree,phot.gb*u.degree,frame='galactic')
 
 sind, t2sind, angseps, dist3ds = search_around_sky(sgal, t2sgal, 0.1*u.arcsec)
 
-t2s = t2[t2sind]
-phot = phot[sind]
+t2s = t2[t2sind] # Tycho 2 stars
+ext = ext[t2sind] # Extinction
+phot = phot[sind] # Photometry
 pgl = phot.gl
 pgb = phot.gb
 nuv = phot.nuv
 
+BJ = t2s.BJmag 
+VJ = t2s.VJmag 
