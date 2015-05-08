@@ -8,7 +8,7 @@ from matching import search_around_sky
 tycho = fits.open('../tychobstarmatch.fits')[1].data
 tcut = np.where((tycho.gb > -10) & (tycho.gb < 10) & (tycho.nuv_cps > 10.) & (tycho.nuv_cps < 100.))
 tycho = tycho[tcut]
-ext = fits.open('../dust/extinction0-6.fits')[1].data
+ext = fits.open('../dust/extinction.fits')[1].data
 t2 = tycho[:len(ext)]
 
 # Match stars with extinction catalog
