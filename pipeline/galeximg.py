@@ -194,7 +194,7 @@ def intensitymap(a,b,c,d,pointing,correction):
 		''' 
 	
 	if pointing == 2:
-		binnum = 12000
+		binnum = 1200
 		print binnum 
 	
 		H, xbins, ybins = np.histogram2d(gl, gb, bins = (np.linspace(a, b, binnum), np.linspace(c, d, binnum)))
@@ -219,7 +219,14 @@ def intensitymap(a,b,c,d,pointing,correction):
 		fig.savefig('GALEX_galplane_%d-%d_vmax05.png'%(a,b), bbox_inches = 'tight', pad_inches = 0)
 		'''
 	
-#for glstep in range(80, 359, 10):
-#	intensitymap(glstep,glstep+10,-10,0,pointing,correction)
+for glstep in range(20, 359, 20):
+	intensitymap(glstep,glstep+20,-10,10,pointing,correction)
 
-#intensitymap(350,359,-10,0,pointing,correction)
+#intensitymap(0,20,-10,10,pointing,correction)
+#Skipped:
+# 140-160
+# 
+
+# Ran for bins = 1200 
+
+intensitymap(0,360,-10,10,pointing,correction)
