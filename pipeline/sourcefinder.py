@@ -279,7 +279,7 @@ for offsetrun in range(1):
 						ax.set_yticks([])
 						axislim = 0.1 
 						ax.text(bgl[maxnuv[i]]-axislim+0.01,bgb[maxnuv[i]]-axislim,str(starname[maxnuv[i]])	)
-						ax.set_xlim(bgl[maxnuv[i]]-axislim,bgl[maxnuv[i]]+axislim)
+					f	ax.set_xlim(bgl[maxnuv[i]]-axislim,bgl[maxnuv[i]]+axislim)
 						ax.set_ylim(bgb[maxnuv[i]]-axislim,bgb[maxnuv[i]]+axislim)
 						fig.add_subplot(ax)
 						gridcount+=1
