@@ -216,7 +216,7 @@ def intensitymap(a,b,c,d,pointing,correction):
 #for glstep in range(280, 359, 20):
 #    intensitymap(glstep, glstep+20, -10, 10, pointing, correction)
 
-intensitymap(260,280,-10,10,pointing,correction)
+intensitymap(260, 280, -10, 10, pointing, correction)
 #Skipped:
 # 140-160
 # 240-260
