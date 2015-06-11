@@ -13,7 +13,6 @@ t2 = tycho
 photons = fits.open('../photometry12000.fits')[1].data
 sdss = fits.open('../sdss_0-300.fits')[1].data
 
-
 # Match stars with photometry
 t2gal = SkyCoord(t2.gl*u.degree, t2.gb*u.degree, frame='galactic')
 photgal = SkyCoord(photons.gl*u.degree, photons.gb*u.degree, frame='galactic')

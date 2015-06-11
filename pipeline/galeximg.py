@@ -179,7 +179,7 @@ def intensitymap(a,b,c,d,pointing,correction):
         #fig = plt.figure(figsize = (10,10))
         #ax = plt.axes()
 
-        fits.PrimaryHDU(H).writeto('../intensitymap'+str(binnum)+'_'+str(a)+'_'+str(b)+'.fits')
+        fits.PrimaryHDU(H.T).writeto('../intensitymap'+str(binnum)+'_'+str(a)+'_'+str(b)+'.fits')
 
         '''
         ax.imshow(np.sqrt(H).T, vmin = 0, vmax = 5, origin = 'lower', extent = [a, b, -10, 10],     interpolation = 'nearest', aspect = 'auto', cmap = 'gray')
@@ -199,7 +199,7 @@ def intensitymap(a,b,c,d,pointing,correction):
         if correction == 0:
             return fits.PrimaryHDU(H.T).writeto('../intmapcsvcorr'+str(binnum)+'_gl_'+str(a)+'to'+str(b)+'_gb_'+str(c)+'to'+str(d)+'.fits')
         elif correction == 1:
-            return fits.PrimaryHDU(H).writeto('../intmapcsvcorr'+str(binnum)+'_gl_'+str(a)+'to'+str(b)+'_gb_'+str(c)+'to'+str(d)+'_corr_no_offset.fits')
+            return fits.PrimaryHDU(H.T).writeto('../intmapcsvcorr'+str(binnum)+'_gl_'+str(a)+'to'+str(b)+'_gb_'+str(c)+'to'+str(d)+'_corr.fits')
 
         '''
         fig = plt.figure(figsize = (10,10))
