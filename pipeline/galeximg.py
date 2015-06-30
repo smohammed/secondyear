@@ -192,14 +192,45 @@ def intensitymap(a,b,c,d,pointing,correction):
         '''
 
     if pointing == 2:
-        binnum = 12000
+        binnum = 1200
         print binnum
-        H, xbins, ybins = np.histogram2d(gl, gb, bins = (np.linspace(a, b, binnum), np.linspace(c, d, binnum)))
-        print np.size(H)
+        H, xbins, ybins = np.histogram2d(gl, gb, bins=(np.linspace(a, b, binnum), np.linspace(c, d, binnum)))
+
+        H = H.T
+
+        # characterize your data in terms of a linear translation from XY pixels to gl, gb
+
+        # lambda function given min, max, n_pixels, return spacing, middle value.
+        linwcs = lambda x, y, n: ((x-y)/n, (x+y)/2)
+
+        cdeltaX, crvalX = linwcs(np.amin(gl), np.amax(gl), len(gl))
+        cdeltaY, crvalY = linwcs(np.amin(gb), np.amax(gb), len(gb))
+
+        # wcs code ripped from 
+        # http://docs.astropy.org/en/latest/wcs/index.html
+
+        w = wcs.WCS(naxis=2)
+
+        # what is the center pixel of the XY grid.
+        w.wcs.crpix = [len(gl)/2, len(gb)/2]
+
+        # what is the galactic coordinate of that pixel.
+        w.wcs.crval = [crvalX, crvalY]
+
+        # what is the pixel scale in lon, lat.
+        w.wcs.cdelt = np.array([cdeltaX, cdeltaY])
+
+        # you would have to determine if this is in fact a tangential projection. 
+        w.wcs.ctype = ["GLON", "GLAT"]
+
+        # write the HDU object WITH THE HEADER
+        header = w.to_header()
+
         if correction == 0:
-            return fits.PrimaryHDU(H.T).writeto('../intmapcsvcorr'+str(binnum)+'_gl_'+str(a)+'to'+str(b)+'_gb_'+str(c)+'to'+str(d)+'.fits')
+            #return fits.PrimaryHDU(H,header=header).writeto('../intmapcsvcorr'+str(binnum)+'_gl_'+str(a)+'to'+str(b)+'_gb_'+str(c)+'to'+str(d)+'.fits')
+            return H, gl, gb, xbins,ybins
         elif correction == 1:
-            return fits.PrimaryHDU(H.T).writeto('../intmapcsvcorr'+str(binnum)+'_gl_'+str(a)+'to'+str(b)+'_gb_'+str(c)+'to'+str(d)+'_corr.fits')
+            return fits.PrimaryHDU(H,header=header).writeto('../intmapcsvcorr'+str(binnum)+'_gl_'+str(a)+'to'+str(b)+'_gb_'+str(c)+'to'+str(d)+'_corr.fits')
 
         '''
         fig = plt.figure(figsize = (10,10))
@@ -216,7 +247,7 @@ def intensitymap(a,b,c,d,pointing,correction):
 #for glstep in range(280, 359, 20):
 #    intensitymap(glstep, glstep+20, -10, 10, pointing, correction)
 
-intensitymap(260, 280, -10, 10, pointing, correction)
+#intensitymap(0, 10, -10, 0, pointing, correction)
 #Skipped:
 # 140-160
 # 240-260

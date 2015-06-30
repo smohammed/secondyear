@@ -84,9 +84,9 @@ def plotmap(startgl, endgl, startgb, endgb, bins):
     bstarplot = 0
     if bstarplot == 1:
         ###################################################################
-        # Find gl,gb of bstars in that region, restrict by flux
+        # Find gl,gb of bstars in that region, restrict by bstars   
         ###################################################################
-        bstars = fits.open('../bstar.fits')[1].data
+        flux = fits.open('../bstar.fits')[1].data
         gl = SkyCoord(bstars.ra*u.degree, bstars.dec*u.degree, frame='icrs').galactic.l.degree
         gb = SkyCoord(bstars.ra*u.degree, bstars.dec*u.degree, frame='icrs').galactic.b.degree
         blim = np.where((bstars.nuv_cps > cutfluxlow) & (bstars.nuv_cps < cutfluxhigh) & (gl > a) & (gl < b) & (gb > -10) & (gb < 10))
