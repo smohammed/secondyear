@@ -34,8 +34,11 @@ def plotdata(x,y):
 	xymax = np.max( [np.max(np.fabs(x)), np.max(np.fabs(y))] )
 	lim = ( int(xymax/binwidth) + 1) * binwidth
 	
-	axScatter.set_xlim( (-lim, lim) )
-	axScatter.set_ylim( (-lim, lim) )
+	#axScatter.set_xlim( (-lim, lim) )
+	#axScatter.set_ylim( (-lim, lim) )
+
+	axScatter.set_xlim( (-0.4, 0.6) )
+	axScatter.set_ylim( (-0.3, 0.9) )
 	
 	bins = np.arange(-lim, lim + binwidth, binwidth)
 	axHistx.hist(x, bins=bins)
