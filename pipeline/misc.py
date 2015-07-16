@@ -10,7 +10,7 @@ for i in picklefiles:
     h.append(a['col2'][3095])
     k.append(a['col2'][4089])
 
-star = fits.open('starcatalog.fits')[1].data
+star = fits.open('starcatalog_120_rand.fits')[1].data
 newt = Table.read('galex120_2mass_t2.txt',format='ascii')
 pickles = Table.read('picklemags.txt',format='ascii')
 

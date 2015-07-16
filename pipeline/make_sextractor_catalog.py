@@ -62,3 +62,16 @@ combtable = hstack([sex, t2])
 ascii.write(combtable, '../sextractor_t2_2mass.txt')
 
 plt.imshow(intmap,vmin=0,vmax=0.7,origin='lower',extent=[120,140,-10,10],interpolation='nearest',aspect='auto',cmap=cm.gray)
+
+'''
+im5rsex = fits.open('sex_test_120_im5_rand.fits')[1].data
+data = im5rsex
+xfac = 4630
+yfac = 0 
+dgl = (data.X_IMAGE+xfac) * 20./12000. + 120.
+dgb = (data.Y_IMAGE+yfac) * 20./12000. - 10.
+nuv = -2.5*np.log10(data.FLUX_AUTO*10.) + 20.08
+new_cols = fits.ColDefs([fits.Column(name='gl', format='1E', array=dgl), fits.Column(name='gb', format='1E', array=dgb), fits.Column(name='nuv', format='1E', array=nuv)])
+hdu = fits.BinTableHDU.from_columns(data.columns + new_cols)
+hdu.writeto('../combmaps12000/sex_test_120_im5_rand_edit.fits')
+'''
