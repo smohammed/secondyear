@@ -27,8 +27,8 @@ photons = photons[photind]
 t2icrs = SkyCoord(t2.ra*u.degree, t2.dec*u.degree, frame='icrs')
 exticrs = SkyCoord(ext.ra*u.degree, ext.dec*u.degree, frame='icrs')
 t2newind, extind, angsep, dist3d = search_around_sky(t2icrs, exticrs, 0.1*u.arcsec)
-t2 = t2[t2newind]
-ext = ext[extind]
+t2 = t2[t2newind
+]ext = ext[extind]
 photons = photons[t2newind]
 
 cuts = np.unique(t2.galex_id, return_index='true')[1]

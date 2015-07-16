@@ -160,7 +160,7 @@ def expmap(begin,end, binsize):
         plt.imshow(expim.T,origin='lower')
         return plt.show()
 
-#for glstep in range(0, 360, 20):
+#for glstep in range(0, 359, 20):
 #    expmap(glstep,glstep+20,12000)
 
 expmap(340,359,12000)

@@ -30,19 +30,19 @@ def plotdata(x, y):
     axScatter.scatter(x, y, edgecolor='None')
 
     # now determine nice limits by hand:
-    #binwidth = 0.08
-    #xymax = np.max([np.max(np.fabs(x)), np.max(np.fabs(y))])
-    #lim = (int(xymax/binwidth) + 1) * binwidth
+    binwidth = 0.08
+    xymax = np.max([np.max(np.fabs(x)), np.max(np.fabs(y))])
+    lim = (int(xymax/binwidth) + 1) * binwidth
 
-    #axScatter.set_xlim( (-lim, lim) )
-    #axScatter.set_ylim( (-lim, lim) )
+    axScatter.set_xlim( (-lim, lim) )
+    axScatter.set_ylim( (-lim, lim) )
 
-    axScatter.set_xlim((-0.4, 0.6))
-    axScatter.set_ylim((-0.3, 0.9))
+    #axScatter.set_xlim((-0.4, 0.6))
+    #axScatter.set_ylim((-0.3, 0.9))
 
-    #bins = np.arange(-lim, lim + binwidth, binwidth)
-    axHistx.hist(x, bins=100)  # bins)
-    axHisty.hist(y, bins=100, orientation='horizontal')  # bins, orientation='horizontal')
+    bins = np.arange(-lim, lim + binwidth, binwidth)
+    axHistx.hist(x, bins=bins)
+    axHisty.hist(y, bins=bins, orientation='horizontal')
 
     axHistx.set_xlim(axScatter.get_xlim())
     axHisty.set_ylim(axScatter.get_ylim())

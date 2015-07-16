@@ -10,7 +10,8 @@ for i in picklefiles:
     h.append(a['col2'][3095])
     k.append(a['col2'][4089])
 
-
+star = fits.open('starcatalog.fits')[1].data
+newt = Table.read('galex120_2mass_t2.txt',format='ascii')
 pickles = Table.read('picklemags.txt',format='ascii')
 
 i = 120
@@ -70,6 +71,27 @@ plt.legend([p1,p2,p3],['sextractor','GALEX','pickles'],scatterpoints=1,loc=2)
 plt.show()
 
 
+weight1 = np.ones(np.shape(art)) * 100
 
+weight2 = np.ones(np.shape(art)) * 100
 
+for i in range(2000):
+    for j in range(2000):
+        try:
+            if ((art[i-1][j-1]+art[i-1][j]+art[i-1][j+1]+art[i][j-1]+art[i][j+1]+art[i+1][j-1]+art[i+1][j]+art[i+1][j+1]+art[i][j]) == 0.):
+                weight1[i][j] = 0.
+
+            if ((art[i-1][j-1]+art[i-1][j]+art[i-1][j+1]+art[i][j-1]+art[i][j+1]+art[i+1][j-1]+art[i+1][j]+art[i+1][j+1]) == 0.) and (art[i][j] > 0.08):
+                #weight1[i][j] = 0.
+                weight1[i-1][j-1] = 100.
+                weight1[i-1][j] = 100.
+                weight1[i-1][j+1] = 100.
+                weight1[i][j-1] = 100.
+                weight1[i][j+1] = 100.
+                weight1[i+1][j-1] = 100.
+                weight1[i+1][j] = 100.
+                weight1[i+1][j+1] = 100.
+
+        except IndexError:
+            pass
 
