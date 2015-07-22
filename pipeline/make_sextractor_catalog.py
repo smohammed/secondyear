@@ -195,7 +195,7 @@ if glstart == 80:
     hdu = fits.BinTableHDU.from_columns(data.columns + new_cols)
     hdu.writeto('../combmaps12000/sex_'+str(glstart)+'_im6_rand_deadtime_edit.fits')
 
-print 'Converted coordinates to gl/gb'
+print 'Converted coordinates to gl/gb' 
 
 ##################################################
 # Combine all tables
