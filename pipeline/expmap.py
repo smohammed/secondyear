@@ -57,7 +57,14 @@ def expmap(begin,end, binsize):
     while (float(files1[startgl].split('_')[3])/10.) < begin:
         startgl += 1
     while (float(files1[endgl].split('_')[3])/10.) < end:
-        endgl += 1
+        try:
+            if (float(files1[endgl+1].split('_')[3])/10.) > 360.:
+                break
+            else:
+                endgl += 1
+        except IndexError:
+            break
+        
 
     for line in range(startgl, endgl, 1):                         # Iterate through scst files
         print line
@@ -136,7 +143,7 @@ def expmap(begin,end, binsize):
             for j in range(len(d[q])-1):
                 if d.NDCTEC[q][j] > 15000.:
                     if np.shape(expim[gx[j]-405.:gx[j]+405., gy[j]-405.:gy[j]+405.]) == np.shape(mask):
-                       expim[gx[j]-405.:gx[j]+405., gy[j]-405.:gy[j]+405.] = expim[gx[j]-405.:gx[j]+405., gy[j]-405.:gy[j]+405.] + mask
+                       expim[gx[j]-405.:gx[j]+405., gy[j]-405.:gy[j]+405.] = expim[gx[j]-405.:gx[j]+405., gy[j]-405.:gy[j]+405.] + (mask*(1-d.T_DEAD_NUV[q][j])*0.88)
                     else:
                         print 'shape of expim != shape of mask'
 
@@ -144,14 +151,14 @@ def expmap(begin,end, binsize):
             for j in range(len(d[q])-1):
                 if d.NDCTEC[q][j] > 15000.:
                     if np.shape(expim[gx[j]-41.:gx[j]+41., gy[j]-41.:gy[j]+41.]) == np.shape(mask):
-                       expim[gx[j]-41.:gx[j]+41., gy[j]-41.:gy[j]+41.] = expim[gx[j]-41.:gx[j]+41., gy[j]-41.:gy[j]+41.] + mask
+                       expim[gx[j]-41.:gx[j]+41., gy[j]-41.:gy[j]+41.] = expim[gx[j]-41.:gx[j]+41., gy[j]-41.:gy[j]+41.] + (mask*(1-d.T_DEAD_NUV[q][j])*0.88)
                     else:
                         print 'shape of expim '+str(np.shape(expim[gx[j]-41.:gx[j]+41., gy[j]-41.:gy[j]+41.]))+' != shape of mask'
 
     if factor == 10.:
         hdu = fits.PrimaryHDU(expim)
         print 'finished'
-        return hdu.writeto('../expmaps/expmap_12000_'+str(float(files1[startgl].split('_')[3])/10.)+'to'+str(   float(files1[endgl-1].split('_')[3])/10.)+'.fits')
+        return hdu.writeto('../expmaps12000/expmap_12000_'+str(float(files1[startgl].split('_')[3])/10.)+'to'+str(   float(files1[endgl-1].split('_')[3])/10.)+'.fits')
 
     if factor == 1.:
         hdu = fits.PrimaryHDU(expim)
@@ -163,4 +170,4 @@ def expmap(begin,end, binsize):
 #for glstep in range(0, 359, 20):
 #    expmap(glstep,glstep+20,12000)
 
-expmap(340,359,12000)
+expmap(340,360,12000)

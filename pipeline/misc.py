@@ -10,19 +10,20 @@ for i in picklefiles:
     h.append(a['col2'][3095])
     k.append(a['col2'][4089])
 
-star = fits.open('starcatalog_120_rand.fits')[1].data
+star = fits.open('starcatalog_120_rand_deadtime.fits')[1].data
 newt = Table.read('galex120_2mass_t2.txt',format='ascii')
 pickles = Table.read('picklemags.txt',format='ascii')
 
 i = 120
-scut = np.where((np.abs(star.gb > 5.)) & (star.gl > i) & (star.gl < i+20))
-scut2 = np.where((np.abs(star.gb < 5.)) & (star.gl > i) & (star.gl < i+20))
-ncut = np.where(np.abs(newt['gb'] > 5))
-ncut2 = np.where(np.abs(newt['gb'] < 5))
+gbcut = 5.
+scut = np.where((np.abs(star.gb) > gbcut) & (star.gl > i) & (star.gl < i+20))
+scut2 = np.where((np.abs(star.gb) < gbcut) & (star.gl > i) & (star.gl < i+20))
+ncut = np.where(np.abs(newt['gb']) > gbcut)
+ncut2 = np.where(np.abs(newt['gb']) < gbcut)
 f, (ax1, ax2) = plt.subplots(1, 2)
 plt.rc('legend',**{'fontsize':15})
 a1 = ax1.scatter(star.j[scut]-star.k[scut],star.nuv[scut]-star.j[scut],edgecolor='none',alpha=0.2)
-ax1.set_title('gb > 5, gl = '+str(i)+' to '+str(i+20))
+ax1.set_title('gb > '+str(gbcut)+', gl = '+str(i)+' to '+str(i+20))
 ax1.set_xlim((-0.5,1.5))
 ax1.set_ylim((3,12.5))
 ax1.set_xlabel('J - K')
@@ -36,7 +37,7 @@ ax1.legend([a1,a2,a3],['sextractor','galex','pickles'],scatterpoints=1,loc=2)
 
 
 b1 = ax2.scatter(star.j[scut2]-star.k[scut2],star.nuv[scut2]-star.j[scut2],edgecolor='none',alpha=0.2)
-ax2.set_title('gb < 5, gl = '+str(i)+' to '+str(i+20))
+ax2.set_title('gb < '+str(gbcut)+', gl = '+str(i)+' to '+str(i+20))
 ax2.set_xlim((-0.5,1.5))
 ax2.set_ylim((3,12.5))
 ax2.set_xlabel('J - K')
@@ -69,6 +70,8 @@ for j in range(len(pickles)):
 
 plt.legend([p1,p2,p3],['sextractor','GALEX','pickles'],scatterpoints=1,loc=2)
 plt.show()
+
+
 
 
 weight1 = np.ones(np.shape(art)) * 100

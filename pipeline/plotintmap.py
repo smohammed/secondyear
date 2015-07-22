@@ -73,7 +73,7 @@ def plotmap(startgl, endgl, startgb, endgb, bins):
     expmap1 = expmap[ymin:ymax, xmin:xmax]
 
     ###################################################################
-    # Combine the exposure map with the intensity map
+    # Combine the exposure map with the intensity map, remove nans/infs
     ###################################################################
     intmap = phomap/expmap1
     intmap[np.isnan(intmap)] = 0
@@ -84,7 +84,7 @@ def plotmap(startgl, endgl, startgb, endgb, bins):
     bstarplot = 0
     if bstarplot == 1:
         ###################################################################
-        # Find gl,gb of bstars in that region, restrict by bstars   
+        # Find gl,gb of bstars in that region, restrict by bstars
         ###################################################################
         flux = fits.open('../bstar.fits')[1].data
         gl = SkyCoord(bstars.ra*u.degree, bstars.dec*u.degree, frame='icrs').galactic.l.degree
@@ -106,7 +106,7 @@ def plotmap(startgl, endgl, startgb, endgb, bins):
         return hdu.writeto('../comb1200_gl'+str(a)+'to'+str(b)+'.fits')
 
     if bins == 12000:
-        #return plt.imshow(intmap,vmin=0,vmax=0.05,origin='lower',extent=[a,b,-10,10],interpolation='nearest',aspect='auto',cmap=cm.gray), plt.show()
+        #return plt.imshow(intmap,vmin=0,vmax=0.1,origin='lower',extent=[a,b,-10,10],interpolation='nearest',aspect='auto',cmap=cm.gray), plt.show()
         hdu = fits.PrimaryHDU(intmap)
         return hdu.writeto('../comb12000_gl'+str(a)+'to'+str(b)+'.fits')
 
@@ -118,10 +118,9 @@ for i in range(0, 140, 20):
 for i in range(160, 240, 20):
     plotmap(i, i+20, -10, 10, 12000)
     print i
-'''
+
 for i in range(280, 360, 20):
     print 'gl = '+ str(i)
     plotmap(i, i+20, -10, 10, 12000)
-
-
-#plotmap(340, 360, -10, 10, 12000)
+'''
+plotmap(340, 360, -10, 10, 12000)
