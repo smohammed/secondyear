@@ -1,10 +1,8 @@
 import numpy as np
-from astropy.io import fits, ascii
+from astropy.io import ascii
 from astropy.table import Table, hstack, vstack
-from matplotlib import pyplot as plt
 from astropy import units as u
 from astropy.coordinates import SkyCoord, search_around_sky
-import os
 
 galexlist = np.loadtxt('../filelists/galexfilelist.txt', dtype='string')
 path = '/home/cal/smohammed/Downloads/'
@@ -44,18 +42,17 @@ finaltable = hstack([ggoid_dec, alpha_j2000, delta_j2000, E_bv, glon, glat, nuv,
 ascii.write(finaltable, '../galex120data.txt')
 
 t2 = Table.read('../tycho2_2mass_matches.txt', format='ipac')
-galexgal = SkyCoord(finaltable['alpha_j2000']*u.deg,finaltable['delta_j2000']*u.deg,frame='icrs')
-t2gal = SkyCoord(t2['ra_01']*u.deg,t2['dec_01']*u.deg,frame='icrs')
+galexgal = SkyCoord(finaltable['alpha_j2000']*u.deg, finaltable['delta_j2000']*u.deg, frame='icrs')
+t2gal = SkyCoord(t2['ra_01']*u.deg, t2['dec_01']*u.deg, frame='icrs')
 
-t2ind, galind, angsep, dist3d = search_around_sky(t2gal, ftabgal, 1.*u.arcsec)
+t2ind, galind, angsep, dist3d = search_around_sky(t2gal, galexgal, 1.*u.arcsec)
 
 t3 = t2[t2ind]
 galex2 = finaltable[galind]
 
-alldata = hstack([galex2,t3])
+alldata = hstack([galex2, t3])
 
-alldata.rename_column('glon','gl')
-alldata.rename_column('glat','gb')
+alldata.rename_column('glon', 'gl')
+alldata.rename_column('glat', 'gb')
 
 ascii.write(alldata, '../galex120_2mass_t2.txt')
-
