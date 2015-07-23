@@ -17,9 +17,17 @@ matplotlib.rcParams['font.size'] = 20
 # 5. t2_2mass.fits match
 
 
-glstart = 20
+glstart = 0
 
 img = fits.open('../combmaps12000/comb12000_gl'+str(glstart)+'to'+str(glstart+20)+'.fits')[0].data
+
+if glstart == 0:
+    im1xmin,im1xmax,im1ymin,im1ymax = 0,4400,0,11999
+    im2xmin,im2xmax,im2ymin,im2ymax = 4840,7630,6590,11999
+    im3xmin,im3xmax,im3ymin,im3ymax = 7080,7630,0,6590
+    im4xmin,im4xmax,im4ymin,im4ymax = 8100,8730,0,11999
+    im5xmin,im5xmax,im5ymin,im5ymax = 9200,11999,0,8960
+    im6xmin,im6xmax,im6ymin,im6ymax = 9200,11999,8960,11999
 
 if glstart == 20:
     im1xmin,im1xmax,im1ymin,im1ymax = 0,3770,0,11999
@@ -69,7 +77,7 @@ im1 = img[im1ymin:im1ymax,im1xmin:im1xmax]
 im1r = im1 + (np.random.poisson(lam=2.,size=np.shape(im1))/200.)
 fits.HDUList([fits.PrimaryHDU(im1r)]).writeto('../combmaps12000/'+str(glstart)+'_im1_rand_deadtime.fits')
 
-if glstart == 20 or glstart == 60 or glstart == 80 or glstart == 100 or glstart == 120:
+if glstart == 0 or glstart == 20 or glstart == 60 or glstart == 80 or glstart == 100 or glstart == 120:
     im2 = img[im2ymin:im2ymax,im2xmin:im2xmax]
     im2r = im2 + (np.random.poisson(lam=2.,size=np.shape(im2))/200.)
     fits.HDUList([fits.PrimaryHDU(im2r)]).writeto('../combmaps12000/'+str(glstart)+'_im2_rand_deadtime.fits')
@@ -95,7 +103,7 @@ print 'Added noise to all images'
 ##################################################
 os.system('sex ../combmaps12000/'+str(glstart)+'_im1_rand_deadtime.fits -c ~/sextractor/daofind.sex -CATALOG_NAME ../combmaps12000/sex_'+str(glstart)+'_im1_rand_deadtime.fits -CHECKIMAGE_NAME ../combmaps12000/background_'+str(glstart)+'_im1_rand_deadtime.fits')
 
-if glstart == 20 or glstart == 60 or glstart == 80 or glstart == 100 or glstart == 120:
+if glstart == 0 or glstart == 20 or glstart == 60 or glstart == 80 or glstart == 100 or glstart == 120:
     os.system('sex ../combmaps12000/'+str(glstart)+'_im2_rand_deadtime.fits -c ~/sextractor/daofind.sex -CATALOG_NAME ../combmaps12000/sex_'+str(glstart)+'_im2_rand_deadtime.fits -CHECKIMAGE_NAME ../combmaps12000/background_'+str(glstart)+'_im2_rand_deadtime.fits')
 
     os.system('sex ../combmaps12000/'+str(glstart)+'_im3_rand_deadtime.fits -c ~/sextractor/daofind.sex -CATALOG_NAME ../combmaps12000/sex_'+str(glstart)+'_im3_rand_deadtime.fits -CHECKIMAGE_NAME ../combmaps12000/background_'+str(glstart)+'_im3_rand_deadtime.fits')
@@ -138,7 +146,7 @@ new_cols = fits.ColDefs([fits.Column(name='gl', format='1E', array=dgl), fits.Co
 hdu = fits.BinTableHDU.from_columns(data.columns + new_cols)
 hdu.writeto('../combmaps12000/sex_'+str(glstart)+'_im1_rand_deadtime_edit.fits')
 
-if glstart == 20 or glstart == 60 or glstart == 80 or glstart == 100 or glstart == 120:
+if glstart == 0 or glstart == 20 or glstart == 60 or glstart == 80 or glstart == 100 or glstart == 120:
     im2sex = fits.open('../combmaps12000/sex_'+str(glstart)+'_im2_rand_deadtime.fits')[1].data
     data = im2sex
     xfac = im2xmin
@@ -210,7 +218,7 @@ if glstart == 40:
 
 if glstart == 80:
     sexlist = ['sex_'+str(glstart)+'_im2_rand_deadtime_edit.fits','sex_'+str(glstart)+'_im3_rand_deadtime_edit.fits','sex_'+str(glstart)+'_im4_rand_deadtime_edit.fits','sex_'+str(glstart)+'_im5_rand_deadtime_edit.fits','sex_'+str(glstart)+'_im6_rand_deadtime_edit.fits']
-if glstart == 20 or glstart == 60 or glstart == 100 or glstart == 120:
+if glstart == 0 or glstart == 20 or glstart == 20 or glstart == 60 or glstart == 100 or glstart == 120:
     sexlist = ['sex_'+str(glstart)+'_im2_rand_deadtime_edit.fits','sex_'+str(glstart)+'_im3_rand_deadtime_edit.fits','sex_'+str(glstart)+'_im4_rand_deadtime_edit.fits','sex_'+str(glstart)+'_im5_rand_deadtime_edit.fits']
 
 for i in sexlist:
