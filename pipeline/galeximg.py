@@ -181,23 +181,14 @@ def intensitymap(a,b,c,d,pointing,correction):
 
         fits.PrimaryHDU(H.T).writeto('../intensitymap'+str(binnum)+'_'+str(a)+'_'+str(b)+'.fits')
 
-        '''
-        ax.imshow(np.sqrt(H).T, vmin = 0, vmax = 5, origin = 'lower', extent = [a, b, -10, 10],     interpolation = 'nearest', aspect = 'auto', cmap = 'gray')
-        ax.set_xlabel(r'${\rm gl}$')
-        ax.set_ylabel(r'${\rm gb}$')
-        ax.set_title('Galactic Plane in UV, %d<gl<%d'%(a,b))
-
-        fig.set_dpi(300)
-        fig.savefig('GALEX_galplane_%d-%d_vmax05.png'%(a,b), bbox_inches = 'tight', pad_inches = 0)
-        '''
 
     if pointing == 2:
-        binnum = 1200
+        binnum = 12000
         print binnum
         H, xbins, ybins = np.histogram2d(gl, gb, bins=(np.linspace(a, b, binnum), np.linspace(c, d, binnum)))
 
         H = H.T
-
+        '''
         # characterize your data in terms of a linear translation from XY pixels to gl, gb
 
         # lambda function given min, max, n_pixels, return spacing, middle value.
@@ -225,24 +216,12 @@ def intensitymap(a,b,c,d,pointing,correction):
 
         # write the HDU object WITH THE HEADER
         header = w.to_header()
-
+        '''
         if correction == 0:
             #return fits.PrimaryHDU(H,header=header).writeto('../intmapcsvcorr'+str(binnum)+'_gl_'+str(a)+'to'+str(b)+'_gb_'+str(c)+'to'+str(d)+'.fits')
             return H, gl, gb, xbins,ybins
         elif correction == 1:
             return fits.PrimaryHDU(H,header=header).writeto('../intmapcsvcorr'+str(binnum)+'_gl_'+str(a)+'to'+str(b)+'_gb_'+str(c)+'to'+str(d)+'_corr.fits')
-
-        '''
-        fig = plt.figure(figsize = (10,10))
-        ax = plt.axes()
-        ax.imshow(np.sqrt(H).T, vmin = 0, vmax = 5, origin = 'lower', extent = [a, b, -10, 10],     interpolation = 'nearest', aspect = 'auto', cmap = 'gray')
-        ax.set_xlabel(r'${\rm gl}$')
-        ax.set_ylabel(r'${\rm gb}$')
-        ax.set_title('Galactic Plane in UV, %d<gl<%d'%(a,b))
-
-        fig.set_dpi(300)
-        fig.savefig('GALEX_galplane_%d-%d_vmax05.png'%(a,b), bbox_inches = 'tight', pad_inches = 0)
-        '''
 
 #for glstep in range(280, 359, 20):
 #    intensitymap(glstep, glstep+20, -10, 10, pointing, correction)

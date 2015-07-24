@@ -125,12 +125,12 @@ coord = Table([glval,gbval],names=('gl','gb'))
 
 alldata = hstack([tottable,coord])
 
-ascii.write(alldata,'../starcatalog_05-68.txt')
+ascii.write(alldata,'../newfield/starcatalog_05-68.txt')
 
 ##################################################
 # Now match with Tycho 2/2MASS catalogs
 ##################################################
-sex = Table.read('../starcatalog_05-68.txt', format='ascii')
+sex = Table.read('../newfield/starcatalog_05-68.txt', format='ascii')
 t2 = Table.read('../tycho2_2mass_matches.txt', format='ipac')
 
 sexgal = SkyCoord(sex['gl']*u.degree, sex['gb']*u.degree, frame='galactic')
@@ -157,7 +157,7 @@ combtable.rename_column('h_m', 'h')
 combtable.rename_column('k_m', 'k')
 
 
-ascii.write(combtable, '../starcatalog_05-68.txt')
+ascii.write(combtable, '../starcatalog_05-68_2mass_t2.txt')
 
 print 'Matched with T2 and 2MASS, finished'
 print 'Total objects matched =', len(combtable)
