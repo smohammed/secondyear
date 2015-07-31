@@ -234,12 +234,12 @@ print 'Combined all data tables'
 # Now match with Tycho 2/2MASS catalogs
 ##################################################
 sex = Table.read('../sex_total_'+str(glstart)+'_rand_deadtime.txt', format='ascii')
-t2 = Table.read('../tycho2_2mass_matches.txt', format='ipac')
+t2 = Table.read('../tycho2_2mass_matches.txt', format='ascii')
 
 sexgal = SkyCoord(sex['gl']*u.degree, sex['gb']*u.degree, frame='galactic')
-t2gal = SkyCoord(t2['gl_01']*u.degree, t2['gb_01']*u.degree, frame='galactic')
+t2gal = SkyCoord(t2['gl_t2']*u.degree, t2['gb_t2']*u.degree, frame='galactic')
 
-t2ind, sexind, angsep, dist3d = search_around_sky(t2gal, sexgal, 6.*u.arcsec)
+t2ind, sexind, angsep, dist3d = search_around_sky(t2gal, sexgal, 10.*u.arcsec)
 
 plt.hist(angsep*3600., bins=100), plt.show()
 
@@ -249,16 +249,6 @@ t3 = t2[t2ind]
 print len(sex)
 
 combtable = hstack([sex, t3])
-combtable.rename_column('galex_id_01', 'galex_id')
-combtable.rename_column('cat_id_01', 'cat_id')
-combtable.rename_column('fuv_cps_01', 'fuv_cps')
-combtable.rename_column('nuv_cps_01', 'nuv_cps')
-combtable.rename_column('vjmag_01', 'VJmag')
-combtable.rename_column('bjmag_01', 'BJmag')
-combtable.rename_column('j_m', 'j')
-combtable.rename_column('h_m', 'h')
-combtable.rename_column('k_m', 'k')
-
 
 ascii.write(combtable, '../sextractor_'+str(glstart)+'_rand_deadtime_t2_2mass.txt')
 

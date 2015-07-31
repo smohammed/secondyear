@@ -22,7 +22,7 @@ matplotlib.rcParams['font.size'] = 20
 img = fits.open('../newfield/count_05-68_gPr_cata_10_corr.fits')[0].data
 
 im1xmin,im1xmax,im1ymin,im1ymax = 2090,4680,1810,4470
-im2xmin,im2xmax,im2ymin,im2ymax = 3680,7230,3350,6100
+im2xmin,im2xmax,im2ymin,im2ymax = 4680,7230,3350,6100
 im3xmin,im3xmax,im3ymin,im3ymax = 7230,10100,5010,7570
 
 ##################################################
@@ -131,12 +131,12 @@ ascii.write(alldata,'../newfield/starcatalog_05-68.txt')
 # Now match with Tycho 2/2MASS catalogs
 ##################################################
 sex = Table.read('../newfield/starcatalog_05-68.txt', format='ascii')
-t2 = Table.read('../tycho2_2mass_matches.txt', format='ipac')
+t2 = Table.read('../tycho2_2mass_matches.txt', format='ascii')
 
 sexgal = SkyCoord(sex['gl']*u.degree, sex['gb']*u.degree, frame='galactic')
-t2gal = SkyCoord(t2['gl_01']*u.degree, t2['gb_01']*u.degree, frame='galactic')
+t2gal = SkyCoord(t2['gl_t2']*u.degree, t2['gb_t2']*u.degree, frame='galactic')
 
-t2ind, sexind, angsep, dist3d = search_around_sky(t2gal, sexgal, 6.*u.arcsec)
+t2ind, sexind, angsep, dist3d = search_around_sky(t2gal, sexgal, 10.*u.arcsec)
 
 plt.hist(angsep*3600., bins=100), plt.show()
 
@@ -146,16 +146,6 @@ t3 = t2[t2ind]
 print len(sex)
 
 combtable = hstack([sex, t3])
-combtable.rename_column('galex_id_01', 'galex_id')
-combtable.rename_column('cat_id_01', 'cat_id')
-combtable.rename_column('fuv_cps_01', 'fuv_cps')
-combtable.rename_column('nuv_cps_01', 'nuv_cps')
-combtable.rename_column('vjmag_01', 'VJmag')
-combtable.rename_column('bjmag_01', 'BJmag')
-combtable.rename_column('j_m', 'j')
-combtable.rename_column('h_m', 'h')
-combtable.rename_column('k_m', 'k')
-
 
 ascii.write(combtable, '../starcatalog_05-68_2mass_t2.txt')
 
