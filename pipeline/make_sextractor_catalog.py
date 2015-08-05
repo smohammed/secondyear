@@ -26,8 +26,8 @@ if glstart == 0:
     im2xmin,im2xmax,im2ymin,im2ymax = 4840,7630,6590,11999
     im3xmin,im3xmax,im3ymin,im3ymax = 7080,7630,0,6590
     im4xmin,im4xmax,im4ymin,im4ymax = 8100,8730,0,11999
-    im5xmin,im5xmax,im5ymin,im5ymax = 9200,11999,0,8960
-    im6xmin,im6xmax,im6ymin,im6ymax = 9200,11999,8960,11999
+    im5xmin,im5xmax,im5ymin,im5ymax = 8730,11999,0,6300
+    im6xmin,im6xmax,im6ymin,im6ymax = 9200,11999,6300,11999
 
 if glstart == 20:
     im1xmin,im1xmax,im1ymin,im1ymax = 0,3770,0,11999
@@ -53,7 +53,7 @@ if glstart == 80:
     im4xmin,im4xmax,im4ymin,im4ymax = 6070,6620,2600,3800
     im5xmin,im5xmax,im5ymin,im5ymax = 7060,11999,0,11999
 
-if glstart == 100: # CHECK IM6 HERE BECAUSE IT DOESN'T BELONG HERE
+if glstart == 100: 
     im1xmin,im1xmax,im1ymin,im1ymax = 0,1670,0,5900
     im2xmin,im2xmax,im2ymin,im2ymax = 1670,2150,1650,5900
     im3xmin,im3xmax,im3ymin,im3ymax = 0,4920,5900,11999
@@ -91,7 +91,7 @@ if glstart == 0 or glstart == 20 or glstart == 60 or glstart == 80 or glstart ==
     im5r = im5 + (np.random.poisson(lam=2.,size=np.shape(im5))/200.)
     fits.HDUList([fits.PrimaryHDU(im5r)]).writeto('../combmaps12000/'+str(glstart)+'_im5_rand_deadtime.fits')
 
-if glstart == 80:
+if glstart == 0 or glstart == 100:
     im6 = img[im6ymin:im6ymax,im6xmin:im6xmax]
     im6r = im6 + (np.random.poisson(lam=2.,size=np.shape(im6))/200.)
     fits.HDUList([fits.PrimaryHDU(im6r)]).writeto('../combmaps12000/'+str(glstart)+'_im6_rand_deadtime.fits')
@@ -112,7 +112,7 @@ if glstart == 0 or glstart == 20 or glstart == 60 or glstart == 80 or glstart ==
 
     os.system('sex ../combmaps12000/'+str(glstart)+'_im5_rand_deadtime.fits -c ~/sextractor/daofind.sex -CATALOG_NAME ../combmaps12000/sex_'+str(glstart)+'_im5_rand_deadtime.fits -CHECKIMAGE_NAME ../combmaps12000/background_'+str(glstart)+'_im5_rand_deadtime.fits')
 
-if glstart == 80:
+if glstart == 0 or glstart == 100:
     os.system('sex ../combmaps12000/'+str(glstart)+'_im6_rand_deadtime.fits -c ~/sextractor/daofind.sex -CATALOG_NAME ../combmaps12000/sex_'+str(glstart)+'_im6_rand_deadtime.fits -CHECKIMAGE_NAME ../combmaps12000/background_'+str(glstart)+'_im6_rand_deadtime.fits')
 
 ##################################################
@@ -191,11 +191,11 @@ if glstart == 0 or glstart == 20 or glstart == 60 or glstart == 80 or glstart ==
     hdu = fits.BinTableHDU.from_columns(data.columns + new_cols)
     hdu.writeto('../combmaps12000/sex_'+str(glstart)+'_im5_rand_deadtime_edit.fits')
 
-if glstart == 80:
+if glstart == 0 or glstart == 100:
     im6sex = fits.open('../combmaps12000/sex_'+str(glstart)+'_im6_rand_deadtime.fits')[1].data
     data = im6sex
-    xfac = 11260
-    yfac = 0
+    xfac = im6xmin
+    yfac = im6ymin
     dgl = (data.X_IMAGE+xfac) * 20./12000. + glstart
     dgb = (data.Y_IMAGE+yfac) * 20./12000. - 10.
     nuv = -2.5*np.log10(data.FLUX_AUTO*10.) + 20.08
@@ -216,9 +216,9 @@ tottable = Table.read('../combmaps12000/sex_'+str(glstart)+'_im1_rand_deadtime_e
 if glstart == 40:
     sexlist = []
 
-if glstart == 80:
+if glstart == 0 or glstart == 100:
     sexlist = ['sex_'+str(glstart)+'_im2_rand_deadtime_edit.fits','sex_'+str(glstart)+'_im3_rand_deadtime_edit.fits','sex_'+str(glstart)+'_im4_rand_deadtime_edit.fits','sex_'+str(glstart)+'_im5_rand_deadtime_edit.fits','sex_'+str(glstart)+'_im6_rand_deadtime_edit.fits']
-if glstart == 0 or glstart == 20 or glstart == 20 or glstart == 60 or glstart == 100 or glstart == 120:
+if glstart == 20 or glstart == 20 or glstart == 60 or glstart == 120:
     sexlist = ['sex_'+str(glstart)+'_im2_rand_deadtime_edit.fits','sex_'+str(glstart)+'_im3_rand_deadtime_edit.fits','sex_'+str(glstart)+'_im4_rand_deadtime_edit.fits','sex_'+str(glstart)+'_im5_rand_deadtime_edit.fits']
 
 for i in sexlist:
