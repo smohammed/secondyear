@@ -75,12 +75,12 @@ ncut2 = np.where(np.abs(newt['gb']) < gbrange)
 f, (ax1, ax2) = plt.subplots(1, 2)
 plt.rc('legend',**{'fontsize':15})
 
-ax1.set_title('Deeper Field, gb > '+str(gbrange))
-ax1.set_xlim((-0.5,1.5))
-ax1.set_ylim((2,13))
+ax1.set_title("3', Deeper Field, gb > "+str(gbrange))
+ax1.set_xlim((-1.0,2))
+ax1.set_ylim((-1.5,14))
 ax1.set_xlabel('J - K')
 ax1.set_ylabel('NUV - J')
-ax1.plot([-0.5,1.5],[2,13])
+ax1.plot([-1.0,1.5],[-1.5,14])
 a2 = ax1.scatter(newt['j'][ncut]-newt['k'][ncut],newt['nuv_mag'][ncut]-newt['j'][ncut],facecolor='none',edgecolor='red',s=30,alpha=0.3)
 a3 = ax1.scatter(pickles['j']-pickles['k'],pickles['nuv']-pickles['j'],c='black',s=5)
 for j in range(len(pickles)):
@@ -92,12 +92,12 @@ a1 = ax1.scatter(star['j'][scut]-star['k'][scut],star['nuv'][scut]-star['j'][scu
 ax1.legend([a1,a2,a3],['Sextractor','Galex','pickles'],scatterpoints=1,loc=2)
 
 
-ax2.set_title('Deeper Field, gb < '+str(gbrange))
-ax2.set_xlim((-0.5,1.5))
-ax2.set_ylim((2,13))
+ax2.set_title("3', Deeper Field, gb < "+str(gbrange))
+ax2.set_xlim((-1.0,2))
+ax2.set_ylim((-1.5,14))
 ax2.set_xlabel('J - K')
 ax2.set_ylabel('NUV - J')
-ax2.plot([-0.5,1.5],[2,13])
+ax2.plot([-1.0,1.5],[-1.5,14])
 b2 = ax2.scatter(newt['j'][ncut2]-newt['k'][ncut2],newt['nuv_mag'][ncut2]-newt['j'][ncut2],facecolor='none',edgecolor='red',s=30,alpha=0.3)
 b3 = ax2.scatter(pickles['j']-pickles['k'],pickles['nuv']-pickles['j'],c='black',s=5)
 for j in range(len(pickles)):
@@ -111,13 +111,24 @@ plt.show()
 
 
 
-
-
-
-
-
-
-
+z.rename_column('cntr_01','cntr')
+z.rename_column('number_01','number')
+z.rename_column('x_image_01','x_image')
+z.rename_column('y_image_01','y_image')
+z.rename_column('flux_auto_01','flux_auto')
+z.rename_column('fluxerr_auto_01','fluxerr_auto')
+z.rename_column('x_new_01','x_new')
+z.rename_column('y_new_01','y_new')
+z.rename_column('nuv_01','nuv')
+z.rename_column('gl_01','gl_sex')
+z.rename_column('gb_01','gb_sex')
+z.rename_column('ra_01','ra_sex')
+z.rename_column('dec_01','dec_sex')
+z.rename_column('ra','ra_2mass')
+z.rename_column('dec','dec_2mass')
+z.rename_column('j_m','j')
+z.rename_column('h_m','h')
+z.rename_column('k_m','k')
 
 
 
@@ -175,3 +186,8 @@ ax2.set_ylim((-2,3))
 ax2.set_xlabel('GALEX NUV')
 ax2.set_ylabel('SExtractor - GALEX NUV')
 plt.show()
+
+
+
+
+outcut = np.where(((star['j']-star['k']) >  0.6) & ((star['nuv']-star['j']) < 8))
