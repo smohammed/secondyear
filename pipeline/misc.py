@@ -75,7 +75,7 @@ ncut2 = np.where(np.abs(newt['gb']) < gbrange)
 f, (ax1, ax2) = plt.subplots(1, 2)
 plt.rc('legend',**{'fontsize':15})
 
-ax1.set_title("3', Deeper Field, gb > "+str(gbrange))
+ax1.set_title('3", J < 13.5, Deeper Field, gb > '+str(gbrange))
 ax1.set_xlim((-1.0,2))
 ax1.set_ylim((-1.5,14))
 ax1.set_xlabel('J - K')
@@ -92,7 +92,7 @@ a1 = ax1.scatter(star['j'][scut]-star['k'][scut],star['nuv'][scut]-star['j'][scu
 ax1.legend([a1,a2,a3],['Sextractor','Galex','pickles'],scatterpoints=1,loc=2)
 
 
-ax2.set_title("3', Deeper Field, gb < "+str(gbrange))
+ax2.set_title('3", J < 13.5, Deeper Field, gb < '+str(gbrange))
 ax2.set_xlim((-1.0,2))
 ax2.set_ylim((-1.5,14))
 ax2.set_xlabel('J - K')
@@ -109,26 +109,24 @@ plt.show()
 
 
 
-
-
-z.rename_column('cntr_01','cntr')
-z.rename_column('number_01','number')
-z.rename_column('x_image_01','x_image')
-z.rename_column('y_image_01','y_image')
-z.rename_column('flux_auto_01','flux_auto')
-z.rename_column('fluxerr_auto_01','fluxerr_auto')
-z.rename_column('x_new_01','x_new')
-z.rename_column('y_new_01','y_new')
-z.rename_column('nuv_01','nuv')
-z.rename_column('gl_01','gl_sex')
-z.rename_column('gb_01','gb_sex')
-z.rename_column('ra_01','ra_sex')
-z.rename_column('dec_01','dec_sex')
-z.rename_column('ra','ra_2mass')
-z.rename_column('dec','dec_2mass')
-z.rename_column('j_m','j')
-z.rename_column('h_m','h')
-z.rename_column('k_m','k')
+c.rename_column('cntr_01','cntr')
+c.rename_column('number_01','number')
+c.rename_column('x_image_01','x_image')
+c.rename_column('y_image_01','y_image')
+c.rename_column('flux_auto_01','flux_auto')
+c.rename_column('fluxerr_auto_01','fluxerr_auto')
+c.rename_column('x_new_01','x_new')
+c.rename_column('y_new_01','y_new')
+c.rename_column('nuv_01','nuv')
+c.rename_column('gl_01','gl_sex')
+c.rename_column('gb_01','gb_sex')
+c.rename_column('ra_01','ra_sex')
+c.rename_column('dec_01','dec_sex')
+c.rename_column('ra','ra_2mass')
+c.rename_column('dec','dec_2mass')
+c.rename_column('j_m','j')
+c.rename_column('h_m','h')
+c.rename_column('k_m','k')
 
 
 
@@ -190,4 +188,85 @@ plt.show()
 
 
 
-outcut = np.where(((star['j']-star['k']) >  0.6) & ((star['nuv']-star['j']) < 8))
+staroutcut = np.where(((star['j']-star['k']) >  0.6) & ((star['nuv']-star['j']) < 8))
+
+zoutcut = np.where(((z['j']-z['k']) >  0.6) & ((z['nuv']-z['j']) < 8))
+
+
+
+z = Table.read('newfield_ipac_2mass_matches_3arcsec.txt',format='ascii')
+
+zoutcut = np.where(((z['j']-z['k']) >  0.6) & ((z['nuv']-z['j']) < 8))
+
+img = fits.open('newfield/count_05-68_gPr_cata_10_corr.fits')[0].data
+plt.imshow(img,vmin=0,vmax=1,origin='lower',interpolation='nearest',aspect='auto',cmap=cm.gray)
+plt.scatter(z['x_new'],z['y_new'],facecolor='none',edgecolor='green',s=20,label='All')
+plt.scatter(z['x_new'][zoutcut],z['y_new'][zoutcut],facecolor='none',edgecolor='red',s=20,label='J-K > 0.6')
+plt.legend(loc=2,scatterpoints=1)
+plt.title('Deep field, J-K > 0.6 outliers')
+plt.show()
+
+
+
+from astropy.io import ascii
+a2125 = Table.read('newfield_ipac_2mass_matches_2arcsec_J_lt12.5.txt',format='ascii')
+a213 = Table.read('newfield_ipac_2mass_matches_2arcsec_J_lt13.txt',format='ascii')
+a2135 = Table.read('newfield_ipac_2mass_matches_2arcsec_J_lt13.5.txt',format='ascii')
+a214 = Table.read('newfield_ipac_2mass_matches_2arcsec_J_lt14.txt',format='ascii')
+a2145 = Table.read('newfield_ipac_2mass_matches_2arcsec_J_lt14.5.txt',format='ascii')
+b3125 = Table.read('newfield_ipac_2mass_matches_3arcsec_J_lt12.5.txt',format='ascii')
+b313 = Table.read('newfield_ipac_2mass_matches_3arcsec_J_lt13.txt',format='ascii')
+b3135 = Table.read('newfield_ipac_2mass_matches_3arcsec_J_lt13.5.txt',format='ascii')
+b314 = Table.read('newfield_ipac_2mass_matches_3arcsec_J_lt14.txt',format='ascii')
+b3145 = Table.read('newfield_ipac_2mass_matches_3arcsec_J_lt14.5.txt',format='ascii')
+c4125 = Table.read('newfield_ipac_2mass_matches_4arcsec_J_lt12.5.txt',format='ascii')
+c413 = Table.read('newfield_ipac_2mass_matches_4arcsec_J_lt13.txt',format='ascii')
+c4135 = Table.read('newfield_ipac_2mass_matches_4arcsec_J_lt13.5.txt',format='ascii')
+c414 = Table.read('newfield_ipac_2mass_matches_4arcsec_J_lt14.txt',format='ascii')
+c4145 = Table.read('newfield_ipac_2mass_matches_4arcsec_J_lt14.5.txt',format='ascii')
+
+
+
+
+files = [a2125,a213,a2135,a214,a2145,b3125,b313,b3135,b314,b3145,c4125,c413,c4135,c414,c4145]
+arcsec = ['2','2','2','2','2','3','3','3','3','3','4','4','4','4','4']
+jlim = [12.5,13,13.5,14,14.5,12.5,13,13.5,14,14.5,12.5,13,13.5,14,14.5]
+
+x = 0
+for i in files:
+    lim = np.ones(len(i))*jlim[x]
+    print jlim[x]
+    plt.scatter(lim,i['dist_x'],edgecolor='none',alpha=0.01)
+    x+=1
+
+
+
+files = [a2125,a213,a2135,a214,a2145,b3125,b313,b3135,b314,b3145,c4125,c413,c4135,c414,c4145]
+
+arcsec = ['2','2','2','2','2','3','3','3','3','3','4','4','4','4','4']
+jlim = [12.5,13,13.5,14,14.5,12.5,13,13.5,14,14.5,12.5,13,13.5,14,14.5]
+x = 0
+for i in files:
+    star = i
+    star.rename_column('cntr_01','cntr')
+    star.rename_column('number_01','number')
+    star.rename_column('x_image_01','x_image')
+    star.rename_column('y_image_01','y_image')
+    star.rename_column('flux_auto_01','flux_auto')
+    star.rename_column('fluxerr_auto_01','fluxerr_auto')
+    star.rename_column('x_new_01','x_new')
+    star.rename_column('y_new_01','y_new')
+    star.rename_column('nuv_01','nuv')
+    star.rename_column('gl_01','gl_sex')
+    star.rename_column('gb_01','gb_sex')
+    star.rename_column('ra_01','ra_sex')
+    star.rename_column('dec_01','dec_sex')
+    star.rename_column('ra','ra_2mass')
+    star.rename_column('dec','dec_2mass')
+    star.rename_column('j_m','j')
+    star.rename_column('h_m','h')
+    star.rename_column('k_m','k')
+    ascii.write(star,'newfield_ipac_2mass_matches_'+arcsec[x]+'arcsec_J_lt'+str(jlim[x])+'.txt',format='ipac')  
+    print jlim[x]
+    x=x+1
+    print x
