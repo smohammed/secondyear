@@ -1,3 +1,6 @@
+####################################################################
+# Made pickles SED dataset
+####################################################################
 name,nuv,b,v,j,h,k = [],[],[],[],[],[],[]
 picklefiles = np.loadtxt('PICKLES/pickles.txt', dtype='string')
 for i in picklefiles:
@@ -10,12 +13,10 @@ for i in picklefiles:
     h.append(a['col2'][3095])
     k.append(a['col2'][4089])
 
-star = fits.open('starcatalog_120_rand_deadtime.fits')[1].data
-
-
-
-#NUV - B, B - V
-
+####################################################################
+# NUV - B vs B - V plot
+####################################################################
+#star = fits.open('starcatalog_120_rand_deadtime.fits')[1].data
 star = Table.read('starcatalog_05-68_2mass_t2.txt', format='ascii')
 newt = Table.read('galex120_2mass_t2.txt', format='ascii')
 pickles = Table.read('picklemags.txt', format='ascii')
@@ -42,7 +43,6 @@ for j in range(len(pickles)):
 a1 = ax1.scatter(star['BJmag'][scut]-star['VJmag'][scut],star['nuv'][scut]-star['BJmag'][scut],edgecolor='none',alpha=0.5)
 ax1.legend([a1,a2,a3],['Sextractor','galex','pickles'],scatterpoints=1,loc=2)
 
-
 ax2.set_title('New Field, gb < '+str(gbrange))
 ax2.set_xlim((0,2))
 ax2.set_ylim((0,10))
@@ -59,9 +59,9 @@ ax2.legend([b1,b2,b3],['Sextractor','galex','pickles'],scatterpoints=1,loc=2)
 plt.show()
     
 
-
+####################################################################
 # NUV - J vs J - K
-
+####################################################################
 star = Table.read('starcatalog_05-68_2mass_t2.txt', format='ascii')
 newt = Table.read('galex120_2mass_t2.txt', format='ascii')
 pickles = Table.read('picklemags.txt', format='ascii')
@@ -108,7 +108,9 @@ ax2.legend([b1,b2,b3],['Sextractor','Galex','pickles'],scatterpoints=1,loc=2)
 plt.show()
 
 
-
+####################################################################
+# Rename 2MASS catalog columns
+####################################################################
 c.rename_column('cntr_01','cntr')
 c.rename_column('number_01','number')
 c.rename_column('x_image_01','x_image')
@@ -129,28 +131,9 @@ c.rename_column('h_m','h')
 c.rename_column('k_m','k')
 
 
-
-weight1 = np.ones(np.shape(art)) * 100
-weight2 = np.ones(np.shape(art)) * 100
-for i in range(2000):
-    for j in range(2000):
-        try:
-            if ((art[i-1][j-1]+art[i-1][j]+art[i-1][j+1]+art[i][j-1]+art[i][j+1]+art[i+1][j-1]+art[i+1][j]+art[i+1][j+1]+art[i][j]) == 0.):
-                weight1[i][j] = 0.
-            if ((art[i-1][j-1]+art[i-1][j]+art[i-1][j+1]+art[i][j-1]+art[i][j+1]+art[i+1][j-1]+art[i+1][j]+art[i+1][j+1]) == 0.) and (art[i][j] > 0.08):
-                #weight1[i][j] = 0.
-                weight1[i-1][j-1] = 100.
-                weight1[i-1][j] = 100.
-                weight1[i-1][j+1] = 100.
-                weight1[i][j-1] = 100.
-                weight1[i][j+1] = 100.
-                weight1[i+1][j-1] = 100.
-                weight1[i+1][j] = 100.
-                weight1[i+1][j+1] = 100.
-        except IndexError:
-            pass
-
-
+####################################################################
+# NUV comparison between GALEX and SExtractor
+####################################################################
 star = fits.open('starcatalog_120_rand_deadtime.fits')[1].data
 galex = Table.read('galex120_2mass_t2.txt',format='ascii')
 pickles = Table.read('picklemags.txt',format='ascii')
@@ -187,15 +170,13 @@ plt.show()
 
 
 
-
+####################################################################
+# Plot data w/ J limits
+####################################################################
 staroutcut = np.where(((star['j']-star['k']) >  0.6) & ((star['nuv']-star['j']) < 8))
-
 zoutcut = np.where(((z['j']-z['k']) >  0.6) & ((z['nuv']-z['j']) < 8))
 
-
-
 z = Table.read('newfield_ipac_2mass_matches_3arcsec.txt',format='ascii')
-
 zoutcut = np.where(((z['j']-z['k']) >  0.6) & ((z['nuv']-z['j']) < 8))
 
 img = fits.open('newfield/count_05-68_gPr_cata_10_corr.fits')[0].data
@@ -208,6 +189,9 @@ plt.show()
 
 
 
+####################################################################
+# Import different Jlim and arcsec search radii from 2MASS
+####################################################################
 from astropy.io import ascii
 a2125 = Table.read('newfield_ipac_2mass_matches_2arcsec_J_lt12.5.txt',format='ascii')
 a213 = Table.read('newfield_ipac_2mass_matches_2arcsec_J_lt13.txt',format='ascii')
@@ -226,16 +210,13 @@ c414 = Table.read('newfield_ipac_2mass_matches_4arcsec_J_lt14.txt',format='ascii
 c4145 = Table.read('newfield_ipac_2mass_matches_4arcsec_J_lt14.5.txt',format='ascii')
 
 
+# Plot radius search vs J mag search limits 
 files = [a2125,a213,a2135,a214,a2145,b3125,b313,b3135,b314,b3145,c4125,c413,c4135,c414,c4145]
-arcsec = ['2','2','2','2','2','3','3','3','3','3','4','4','4','4','4']
 jlim = [12.5,13,13.5,14,14.5,12.5,13,13.5,14,14.5,12.5,13,13.5,14,14.5]
-
 arcsec = [2,2,2,2,2,3,3,3,3,3,4,4,4,4,4]
-
 dx = []
 for i in files:
     dx.append(np.median(i['dist_x']))
-
 
 plt.scatter(jlim,dx,c=arcsec,edgecolor='none',s=40)
 plt.xlabel('Jlim [mag]')
@@ -246,29 +227,38 @@ for i in range(len(files)):
     plt.annotate(str(len(files[i])),xy=(jlim[i]+0.05,dx[i]))
 plt.show()
 
-
-field = (6*5.5)*3*3600.
-density = []
+# Field density plot vs J mag search limits
+field = (6*5.5)*3*3600./2
+denlo,denhi = [],[]
 for i in files:
-    density.append(len(i)/field)
+    denlo.append(len(i[np.where(i['gb_sex'] < 5.)])/field)
+    denhi.append(len(i[np.where(i['gb_sex'] > 5.)])/field)
 
-
-plt.scatter(jlim,density,c=arcsec,edgecolor='none',s=40)
+plt.scatter(jlim,denlo,c=arcsec,edgecolor='none',s=80,marker='s',label='b < 5')
+plt.scatter(jlim,denhi,c=arcsec,edgecolor='none',s=80,marker='o',label='b > 5')
 plt.xlabel('Jlim [mag]')
 plt.ylabel('Counts/area [#/arcsec$^2$]')
 cm = plt.colorbar()
 cm.set_label('Limiting radius [arcsec]')
 for i in range(len(files)):
-    plt.annotate(str(len(files[i])),xy=(jlim[i]+0.05,density[i]))
+    plt.annotate(str(len(files[i][np.where(files[i]['gb_sex'] < 5.)])),xy=(jlim[i]+0.05,denlo[i]))
+for i in range(0,5,1):
+    plt.annotate(str(len(files[i][np.where(files[i]['gb_sex'] > 5.)])),xy=(jlim[i]+0.05,denhi[i]-0.01))
+
+for i in range(5,10,1):
+    plt.annotate(str(len(files[i][np.where(files[i]['gb_sex'] > 5.)])),xy=(jlim[i]+0.05,denhi[i]))
+
+for i in range(10,15,1):
+    plt.annotate(str(len(files[i][np.where(files[i]['gb_sex'] > 5.)])),xy=(jlim[i]+0.05,denhi[i]+0.01))
 plt.title('2MASS match counts by J_lim and radius search')
+plt.legend(scatterpoints=1,loc=2)
 plt.show()
 
 
-
+# NUV vs J
 for i in files:
     plt.scatter(i['j'],i['nuv'],edgecolor='none',alpha=0.2)
     plt.show()
-
 
 x = 0
 for i in files:
@@ -278,33 +268,3 @@ for i in files:
     x+=1
 
 
-
-files = [a2125,a213,a2135,a214,a2145,b3125,b313,b3135,b314,b3145,c4125,c413,c4135,c414,c4145]
-
-arcsec = ['2','2','2','2','2','3','3','3','3','3','4','4','4','4','4']
-jlim = [12.5,13,13.5,14,14.5,12.5,13,13.5,14,14.5,12.5,13,13.5,14,14.5]
-x = 0
-for i in files:
-    star = i
-    star.rename_column('cntr_01','cntr')
-    star.rename_column('number_01','number')
-    star.rename_column('x_image_01','x_image')
-    star.rename_column('y_image_01','y_image')
-    star.rename_column('flux_auto_01','flux_auto')
-    star.rename_column('fluxerr_auto_01','fluxerr_auto')
-    star.rename_column('x_new_01','x_new')
-    star.rename_column('y_new_01','y_new')
-    star.rename_column('nuv_01','nuv')
-    star.rename_column('gl_01','gl_sex')
-    star.rename_column('gb_01','gb_sex')
-    star.rename_column('ra_01','ra_sex')
-    star.rename_column('dec_01','dec_sex')
-    star.rename_column('ra','ra_2mass')
-    star.rename_column('dec','dec_2mass')
-    star.rename_column('j_m','j')
-    star.rename_column('h_m','h')
-    star.rename_column('k_m','k')
-    ascii.write(star,'newfield_ipac_2mass_matches_'+arcsec[x]+'arcsec_J_lt'+str(jlim[x])+'.txt',format='ipac')  
-    print jlim[x]
-    x=x+1
-    print x
