@@ -226,11 +226,49 @@ c414 = Table.read('newfield_ipac_2mass_matches_4arcsec_J_lt14.txt',format='ascii
 c4145 = Table.read('newfield_ipac_2mass_matches_4arcsec_J_lt14.5.txt',format='ascii')
 
 
-
-
 files = [a2125,a213,a2135,a214,a2145,b3125,b313,b3135,b314,b3145,c4125,c413,c4135,c414,c4145]
 arcsec = ['2','2','2','2','2','3','3','3','3','3','4','4','4','4','4']
 jlim = [12.5,13,13.5,14,14.5,12.5,13,13.5,14,14.5,12.5,13,13.5,14,14.5]
+
+arcsec = [2,2,2,2,2,3,3,3,3,3,4,4,4,4,4]
+
+dx = []
+for i in files:
+    dx.append(np.median(i['dist_x']))
+
+
+plt.scatter(jlim,dx,c=arcsec,edgecolor='none',s=40)
+plt.xlabel('Jlim [mag]')
+plt.ylabel('dist_x [arcsec]')
+cm = plt.colorbar()
+cm.set_label('Limiting radius [arcsec]')
+for i in range(len(files)):
+    plt.annotate(str(len(files[i])),xy=(jlim[i]+0.05,dx[i]))
+plt.show()
+
+
+field = (6*5.5)*3*3600.
+density = []
+for i in files:
+    density.append(len(i)/field)
+
+
+plt.scatter(jlim,density,c=arcsec,edgecolor='none',s=40)
+plt.xlabel('Jlim [mag]')
+plt.ylabel('Counts/area [#/arcsec$^2$]')
+cm = plt.colorbar()
+cm.set_label('Limiting radius [arcsec]')
+for i in range(len(files)):
+    plt.annotate(str(len(files[i])),xy=(jlim[i]+0.05,density[i]))
+plt.title('2MASS match counts by J_lim and radius search')
+plt.show()
+
+
+
+for i in files:
+    plt.scatter(i['j'],i['nuv'],edgecolor='none',alpha=0.2)
+    plt.show()
+
 
 x = 0
 for i in files:
