@@ -57,6 +57,7 @@ for j in range(len(pickles)):
 b1 = ax2.scatter(star['BJmag'][scut2]-star['VJmag'][scut2],star['nuv'][scut2]-star['BJmag'][scut2],edgecolor='none',alpha=0.5)
 ax2.legend([b1,b2,b3],['Sextractor','galex','pickles'],scatterpoints=1,loc=2)
 plt.show()
+
     
 
 ####################################################################
@@ -203,17 +204,17 @@ b313 = Table.read('newfield_ipac_2mass_matches_3arcsec_J_lt13.txt',format='ascii
 b3135 = Table.read('newfield_ipac_2mass_matches_3arcsec_J_lt13.5.txt',format='ascii')
 b314 = Table.read('newfield_ipac_2mass_matches_3arcsec_J_lt14.txt',format='ascii')
 b3145 = Table.read('newfield_ipac_2mass_matches_3arcsec_J_lt14.5.txt',format='ascii')
-c4125 = Table.read('newfield_ipac_2mass_matches_4arcsec_J_lt12.5.txt',format='ascii')
-c413 = Table.read('newfield_ipac_2mass_matches_4arcsec_J_lt13.txt',format='ascii')
-c4135 = Table.read('newfield_ipac_2mass_matches_4arcsec_J_lt13.5.txt',format='ascii')
-c414 = Table.read('newfield_ipac_2mass_matches_4arcsec_J_lt14.txt',format='ascii')
-c4145 = Table.read('newfield_ipac_2mass_matches_4arcsec_J_lt14.5.txt',format='ascii')
+#c4125 = Table.read('newfield_ipac_2mass_matches_4arcsec_J_lt12.5.txt',format='ascii')
+#c413 = Table.read('newfield_ipac_2mass_matches_4arcsec_J_lt13.txt',format='ascii')
+#c4135 = Table.read('newfield_ipac_2mass_matches_4arcsec_J_lt13.5.txt',format='ascii')
+#c414 = Table.read('newfield_ipac_2mass_matches_4arcsec_J_lt14.txt',format='ascii')
+#c4145 = Table.read('newfield_ipac_2mass_matches_4arcsec_J_lt14.5.txt',format='ascii')
 
 
 # Plot radius search vs J mag search limits 
-files = [a2125,a213,a2135,a214,a2145,b3125,b313,b3135,b314,b3145,c4125,c413,c4135,c414,c4145]
-jlim = [12.5,13,13.5,14,14.5,12.5,13,13.5,14,14.5,12.5,13,13.5,14,14.5]
-arcsec = [2,2,2,2,2,3,3,3,3,3,4,4,4,4,4]
+files = [a2125,a213,a2135,a214,a2145,b3125,b313,b3135,b314,b3145]#,c4125,c413,c4135,c414,c4145]
+jlim = [12.5,13,13.5,14,14.5,12.5,13,13.5,14,14.5]#,12.5,13,13.5,14,14.5]
+arcsec = [2,2,2,2,2,3,3,3,3,3]#,4,4,4,4,4]
 dx = []
 for i in files:
     dx.append(np.median(i['dist_x']))
@@ -268,3 +269,4 @@ for i in files:
     x+=1
 
 
+tcutra = np.where((tycho['RAJ2000'] > 255.) & (tycho['RAJ2000'] < 280) & (tycho['DEJ2000'] > --35) & (tycho['DEJ2000'] < -15))
