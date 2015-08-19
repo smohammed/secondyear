@@ -29,33 +29,33 @@ ncut2 = np.where(np.abs(newt['gb']) < gbrange)
 f, (ax1, ax2) = plt.subplots(1, 2)
 plt.rc('legend',**{'fontsize':15})
 
-ax1.set_title('New Field, gb > '+str(gbrange))
-ax1.set_xlim((0,2))
-ax1.set_ylim((0,10))
+ax1.set_title('3", J < 13.5, Deeper Field, gb > '+str(gbrange))
+ax1.set_xlim((-0.5,2))
+ax1.set_ylim((2,10))
 ax1.set_xlabel('B - V')
 ax1.set_ylabel('NUV - B')
-ax1.plot([0,2],[0,10])
+ax1.plot([-0.5,2],[2,10])
 a2 = ax1.scatter(newt['BJmag'][ncut]-newt['VJmag'][ncut],newt['nuv_mag'][ncut]-newt['BJmag'][ncut],facecolor='none',edgecolor='red',s=30,alpha=0.3)
 a3 = ax1.scatter(pickles['b']-pickles['v'],pickles['nuv']-pickles['b'],c='black',s=5)
 for j in range(len(pickles)):
     ax1.annotate(pickles['name'][j][:-4],xy=(pickles['b'][j]-pickles['v'][j],pickles['nuv'][j]-pickles['b'][j]),size=12)
 
 a1 = ax1.scatter(star['BJmag'][scut]-star['VJmag'][scut],star['nuv'][scut]-star['BJmag'][scut],edgecolor='none',alpha=0.5)
-ax1.legend([a1,a2,a3],['Sextractor','galex','pickles'],scatterpoints=1,loc=2)
+ax1.legend([a1,a2,a3],['Sextractor','galex','pickles'],scatterpoints=1,loc=4)
 
-ax2.set_title('New Field, gb < '+str(gbrange))
-ax2.set_xlim((0,2))
-ax2.set_ylim((0,10))
+ax2.set_title('3", J < 13.5, Deeper Field, gb < '+str(gbrange))
+ax2.set_xlim((-0.5,2))
+ax2.set_ylim((2,10))
 ax2.set_xlabel('B - V')
 ax2.set_ylabel('NUV - B')
-ax2.plot([0,2],[0,10])
+ax2.plot([-0.5,2],[2,10])
 b2 = ax2.scatter(newt['BJmag'][ncut2]-newt['VJmag'][ncut2],newt['nuv_mag'][ncut2]-newt['BJmag'][ncut2],facecolor='none',edgecolor='red',s=30,alpha=0.3)
 b3 = ax2.scatter(pickles['b']-pickles['v'],pickles['nuv']-pickles['b'],c='black',s=5)
 for j in range(len(pickles)):
     ax2.annotate(pickles['name'][j][:-4],xy=(pickles['b'][j]-pickles['v'][j],pickles['nuv'][j]-pickles['b'][j]),size=12)
 
 b1 = ax2.scatter(star['BJmag'][scut2]-star['VJmag'][scut2],star['nuv'][scut2]-star['BJmag'][scut2],edgecolor='none',alpha=0.5)
-ax2.legend([b1,b2,b3],['Sextractor','galex','pickles'],scatterpoints=1,loc=2)
+ax2.legend([b1,b2,b3],['Sextractor','galex','pickles'],scatterpoints=1,loc=4)
 plt.show()
 
     
@@ -107,6 +107,57 @@ for j in range(len(pickles)):
 b1 = ax2.scatter(star['j'][scut2]-star['k'][scut2],star['nuv'][scut2]-star['j'][scut2],edgecolor='none',alpha=0.3)
 ax2.legend([b1,b2,b3],['Sextractor','Galex','pickles'],scatterpoints=1,loc=2)
 plt.show()
+
+####################################################################
+# J-H vs H-K
+####################################################################
+star = Table.read('starcatalog_05-68_2mass_t2.txt', format='ascii')
+
+newt = Table.read('galex120_2mass_t2.txt', format='ascii')
+pickles = Table.read('picklemags.txt', format='ascii')
+
+gbrange = 5.
+scut = np.where((np.abs(star['gb_sex']) > gbrange))
+scut2 = np.where((np.abs(star['gb_sex']) < gbrange))
+ncut = np.where(np.abs(newt['gb']) > gbrange)
+ncut2 = np.where(np.abs(newt['gb']) < gbrange)
+
+f, (ax1, ax2) = plt.subplots(1, 2)
+plt.rc('legend',**{'fontsize':15})
+
+ax1.set_title('3", J < 13.5, Deeper Field, gb > '+str(gbrange))
+ax1.set_xlim((-0.4,0.6))
+ax1.set_ylim((-0.3,1.0))
+ax1.set_xlabel('H - K')
+ax1.set_ylabel('J - H')
+ax1.plot([-0.4,0.6],[-0.3,1.0])
+a2 = ax1.scatter(newt['h'][ncut]-newt['k'][ncut],newt['j'][ncut]-newt['h'][ncut],facecolor='none',edgecolor='red',s=30,alpha=0.3)
+a3 = ax1.scatter(pickles['h']-pickles['k'],pickles['j']-pickles['h'],c='black',s=5)
+for j in range(len(pickles)):
+    ax1.annotate(pickles['name'][j][:-4],xy=(pickles['h'][j]-pickles['k'][j],pickles['j'][j]-pickles['h'][j]),size=12)
+
+a1 = ax1.scatter(star['h'][scut]-star['k'][scut],star['j'][scut]-star['h'][scut],edgecolor='none',alpha=0.1)
+
+
+ax1.legend([a1,a2,a3],['Sextractor','Galex','pickles'],scatterpoints=1,loc=2)
+
+
+ax2.set_title('3", J < 13.5, Deeper Field, gb < '+str(gbrange))
+ax2.set_xlim((-0.4,0.6))
+ax2.set_ylim((-0.3,1.0))
+ax2.set_xlabel('H - K')
+ax2.set_ylabel('J - H')
+ax2.plot([-0.4,0.6],[-0.3,1.0])
+b2 = ax2.scatter(newt['h'][ncut2]-newt['k'][ncut2],newt['j'][ncut2]-newt['h'][ncut2],facecolor='none',edgecolor='red',s=30,alpha=0.3)
+b3 = ax2.scatter(pickles['h']-pickles['k'],pickles['j']-pickles['h'],c='black',s=5)
+for j in range(len(pickles)):
+    ax2.annotate(pickles['name'][j][:-4],xy=(pickles['h'][j]-pickles['k'][j],pickles['j'][j]-pickles['h'][j]),size=12)
+
+b1 = ax2.scatter(star['h'][scut2]-star['k'][scut2],star['j'][scut2]-star['h'][scut2],edgecolor='none',alpha=0.1)
+ax2.legend([b1,b2,b3],['Sextractor','Galex','pickles'],scatterpoints=1,loc=2)
+plt.show()
+
+
 
 
 ####################################################################
@@ -204,17 +255,17 @@ b313 = Table.read('newfield_ipac_2mass_matches_3arcsec_J_lt13.txt',format='ascii
 b3135 = Table.read('newfield_ipac_2mass_matches_3arcsec_J_lt13.5.txt',format='ascii')
 b314 = Table.read('newfield_ipac_2mass_matches_3arcsec_J_lt14.txt',format='ascii')
 b3145 = Table.read('newfield_ipac_2mass_matches_3arcsec_J_lt14.5.txt',format='ascii')
-#c4125 = Table.read('newfield_ipac_2mass_matches_4arcsec_J_lt12.5.txt',format='ascii')
-#c413 = Table.read('newfield_ipac_2mass_matches_4arcsec_J_lt13.txt',format='ascii')
-#c4135 = Table.read('newfield_ipac_2mass_matches_4arcsec_J_lt13.5.txt',format='ascii')
-#c414 = Table.read('newfield_ipac_2mass_matches_4arcsec_J_lt14.txt',format='ascii')
-#c4145 = Table.read('newfield_ipac_2mass_matches_4arcsec_J_lt14.5.txt',format='ascii')
+c4125 = Table.read('newfield_ipac_2mass_matches_4arcsec_J_lt12.5.txt',format='ascii')
+c413 = Table.read('newfield_ipac_2mass_matches_4arcsec_J_lt13.txt',format='ascii')
+c4135 = Table.read('newfield_ipac_2mass_matches_4arcsec_J_lt13.5.txt',format='ascii')
+c414 = Table.read('newfield_ipac_2mass_matches_4arcsec_J_lt14.txt',format='ascii')
+c4145 = Table.read('newfield_ipac_2mass_matches_4arcsec_J_lt14.5.txt',format='ascii')
 
 
-# Plot radius search vs J mag search limits 
-files = [a2125,a213,a2135,a214,a2145,b3125,b313,b3135,b314,b3145]#,c4125,c413,c4135,c414,c4145]
-jlim = [12.5,13,13.5,14,14.5,12.5,13,13.5,14,14.5]#,12.5,13,13.5,14,14.5]
-arcsec = [2,2,2,2,2,3,3,3,3,3]#,4,4,4,4,4]
+#Plot radius search vs J mag search limits 
+files = [a2125,a213,a2135,a214,a2145,b3125,b313,b3135,b314,b3145,c4125,c413,c4135,c414,c4145]
+jlim = [12.5,13,13.5,14,14.5,12.5,13,13.5,14,14.5,12.5,13,13.5,14,14.5]
+arcsec = [2,2,2,2,2,3,3,3,3,3,4,4,4,4,4]
 dx = []
 for i in files:
     dx.append(np.median(i['dist_x']))
@@ -228,12 +279,13 @@ for i in range(len(files)):
     plt.annotate(str(len(files[i])),xy=(jlim[i]+0.05,dx[i]))
 plt.show()
 
+
 # Field density plot vs J mag search limits
 field = (6*5.5)*3*3600./2
 denlo,denhi = [],[]
 for i in files:
-    denlo.append(len(i[np.where(i['gb_sex'] < 5.)])/field)
-    denhi.append(len(i[np.where(i['gb_sex'] > 5.)])/field)
+    denlo.append(len(i[np.where(np.abs(i['gb_sex']) < 5.)])/field)
+    denhi.append(len(i[np.where(np.abs(i['gb_sex']) > 5.)])/field)
 
 plt.scatter(jlim,denlo,c=arcsec,edgecolor='none',s=80,marker='s',label='b < 5')
 plt.scatter(jlim,denhi,c=arcsec,edgecolor='none',s=80,marker='o',label='b > 5')
@@ -242,15 +294,9 @@ plt.ylabel('Counts/area [#/arcsec$^2$]')
 cm = plt.colorbar()
 cm.set_label('Limiting radius [arcsec]')
 for i in range(len(files)):
-    plt.annotate(str(len(files[i][np.where(files[i]['gb_sex'] < 5.)])),xy=(jlim[i]+0.05,denlo[i]))
-for i in range(0,5,1):
-    plt.annotate(str(len(files[i][np.where(files[i]['gb_sex'] > 5.)])),xy=(jlim[i]+0.05,denhi[i]-0.01))
+    plt.annotate(str(len(files[i][np.where(np.abs(files[i]['gb_sex']) < 5.)])),xy=(jlim[i]+0.05,denlo[i]))
+    plt.annotate(str(len(files[i][np.where(np.abs(files[i]['gb_sex']) > 5.)])),xy=(jlim[i]+0.05,denhi[i]))
 
-for i in range(5,10,1):
-    plt.annotate(str(len(files[i][np.where(files[i]['gb_sex'] > 5.)])),xy=(jlim[i]+0.05,denhi[i]))
-
-for i in range(10,15,1):
-    plt.annotate(str(len(files[i][np.where(files[i]['gb_sex'] > 5.)])),xy=(jlim[i]+0.05,denhi[i]+0.01))
 plt.title('2MASS match counts by J_lim and radius search')
 plt.legend(scatterpoints=1,loc=2)
 plt.show()

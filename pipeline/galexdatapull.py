@@ -4,7 +4,7 @@ from astropy.table import Table, hstack, vstack
 from astropy import units as u
 from astropy.coordinates import SkyCoord, search_around_sky
 
-galexlist = np.loadtxt('../filelists/galexfilelist.txt', dtype='string')
+galexlist = np.loadtxt('../filelists/galex0filelist.txt', dtype='string')
 path = '/home/cal/smohammed/Downloads/'
 data = Table.read(path+galexlist[0], format='fits')
 
@@ -39,7 +39,7 @@ for i in range(1, len(galexlist), 1):
 
 finaltable = hstack([ggoid_dec, alpha_j2000, delta_j2000, E_bv, glon, glat, nuv, fuv, NUV_FLUX_AUTO, NUV_FLUXERR_AUTO, FUV_FLUX_AUTO, FUV_FLUXERR_AUTO])
 
-ascii.write(finaltable, '../galex120data.txt')
+ascii.write(finaltable, '../galex0data.txt')
 
 t2 = Table.read('../tycho2_2mass_matches.txt', format='ascii')
 galexgal = SkyCoord(finaltable['alpha_j2000']*u.deg, finaltable['delta_j2000']*u.deg, frame='icrs')
@@ -55,4 +55,4 @@ alldata = hstack([galex2, t3])
 alldata.rename_column('glon', 'gl')
 alldata.rename_column('glat', 'gb')
 
-ascii.write(alldata, '../galex120_2mass_t2.txt')
+ascii.write(alldata, '../galex0_2mass_t2.txt')
