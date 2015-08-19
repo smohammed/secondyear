@@ -5,6 +5,37 @@ from astropy.table import Table
 pbands = Table.read('../picklesbands.txt', format='ascii')
 name = pbands['name']
 
+
+##########################################################################
+# Add LePHARE fix
+##########################################################################
+
+#to do:
+# 1. Figure out range for each band
+# 2. Make array for that range and pull data from Pickles
+# 3. Compute: (Sum PICKLE_lambda * LePHARE_lambda) / sum(LePHARE_lambda)
+# 4. Make table
+
+name,nuv,b,v,j,h,k = [],[],[],[],[],[],[]
+picklefiles = np.loadtxt('../PICKLES/pickles.txt', dtype='string')
+
+
+'''
+for i in picklefiles:
+    a = Table.read('../PICKLES/'+i,format='ascii')
+    name.append(i)
+    nuv.append(a['col2'][224])
+    b.append(a['col2'][641])
+    v.append(a['col2'][781])
+    j.append(a['col2'][2241])
+    h.append(a['col2'][3095])
+    k.append(a['col2'][4089])
+'''
+
+
+
+
+
 ##########################################################################
 # convert f_lambda to f_v, divide by 0 point, then conv to Jy. 1 Jy = 10^-23 erg/s/Hz/cm^2
 ##########################################################################

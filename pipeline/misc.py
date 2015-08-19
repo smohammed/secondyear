@@ -16,15 +16,14 @@ for i in picklefiles:
 ####################################################################
 # NUV - B vs B - V plot
 ####################################################################
-#star = fits.open('starcatalog_120_rand_deadtime.fits')[1].data
-star = Table.read('starcatalog_05-68_2mass_t2.txt', format='ascii')
-newt = Table.read('galex120_2mass_t2.txt', format='ascii')
+star = Table.read('newfield_2mass_t2_jlim_13.5_3arcsec.txt',format='ascii')
+newt = Table.read('galex0data_2mass_t2.txt', format='ascii')
 pickles = Table.read('picklemags.txt', format='ascii')
 gbrange = 5.
 scut = np.where((np.abs(star['gb_sex']) > gbrange))
 scut2 = np.where((np.abs(star['gb_sex']) < gbrange))
-ncut = np.where(np.abs(newt['gb']) > gbrange)
-ncut2 = np.where(np.abs(newt['gb']) < gbrange)
+ncut = np.where(np.abs(newt['gb_galex']) > gbrange)
+ncut2 = np.where(np.abs(newt['gb_galex']) < gbrange)
 
 f, (ax1, ax2) = plt.subplots(1, 2)
 plt.rc('legend',**{'fontsize':15})
@@ -41,7 +40,7 @@ for j in range(len(pickles)):
     ax1.annotate(pickles['name'][j][:-4],xy=(pickles['b'][j]-pickles['v'][j],pickles['nuv'][j]-pickles['b'][j]),size=12)
 
 a1 = ax1.scatter(star['BJmag'][scut]-star['VJmag'][scut],star['nuv'][scut]-star['BJmag'][scut],edgecolor='none',alpha=0.5)
-ax1.legend([a1,a2,a3],['Sextractor','galex','pickles'],scatterpoints=1,loc=4)
+ax1.legend([a1,a2,a3],['Sextractor','GALEX','Pickles'],scatterpoints=1,loc=4)
 
 ax2.set_title('3", J < 13.5, Deeper Field, gb < '+str(gbrange))
 ax2.set_xlim((-0.5,2))
@@ -55,7 +54,7 @@ for j in range(len(pickles)):
     ax2.annotate(pickles['name'][j][:-4],xy=(pickles['b'][j]-pickles['v'][j],pickles['nuv'][j]-pickles['b'][j]),size=12)
 
 b1 = ax2.scatter(star['BJmag'][scut2]-star['VJmag'][scut2],star['nuv'][scut2]-star['BJmag'][scut2],edgecolor='none',alpha=0.5)
-ax2.legend([b1,b2,b3],['Sextractor','galex','pickles'],scatterpoints=1,loc=4)
+ax2.legend([b1,b2,b3],['Sextractor','GALEX','Pickles'],scatterpoints=1,loc=4)
 plt.show()
 
     
@@ -63,15 +62,15 @@ plt.show()
 ####################################################################
 # NUV - J vs J - K
 ####################################################################
-star = Table.read('starcatalog_05-68_2mass_t2.txt', format='ascii')
-newt = Table.read('galex120_2mass_t2.txt', format='ascii')
+star = Table.read('newfield_2mass_t2_jlim_13.5_3arcsec.txt',format='ascii')
+newt = Table.read('galex0data_2mass_t2.txt', format='ascii')
 pickles = Table.read('picklemags.txt', format='ascii')
 
 gbrange = 5.
 scut = np.where((np.abs(star['gb_sex']) > gbrange))
 scut2 = np.where((np.abs(star['gb_sex']) < gbrange))
-ncut = np.where(np.abs(newt['gb']) > gbrange)
-ncut2 = np.where(np.abs(newt['gb']) < gbrange)
+ncut = np.where(np.abs(newt['gb_galex']) > gbrange)
+ncut2 = np.where(np.abs(newt['gb_galex']) < gbrange)
 
 f, (ax1, ax2) = plt.subplots(1, 2)
 plt.rc('legend',**{'fontsize':15})
@@ -90,7 +89,7 @@ for j in range(len(pickles)):
 a1 = ax1.scatter(star['j'][scut]-star['k'][scut],star['nuv'][scut]-star['j'][scut],edgecolor='none',alpha=0.3)
 
 
-ax1.legend([a1,a2,a3],['Sextractor','Galex','pickles'],scatterpoints=1,loc=2)
+ax1.legend([a1,a2,a3],['Sextractor','GALEX','Pickles'],scatterpoints=1,loc=2)
 
 
 ax2.set_title('3", J < 13.5, Deeper Field, gb < '+str(gbrange))
@@ -105,22 +104,101 @@ for j in range(len(pickles)):
     ax2.annotate(pickles['name'][j][:-4],xy=(pickles['j'][j]-pickles['k'][j],pickles['nuv'][j]-pickles['j'][j]),size=12)
 
 b1 = ax2.scatter(star['j'][scut2]-star['k'][scut2],star['nuv'][scut2]-star['j'][scut2],edgecolor='none',alpha=0.3)
-ax2.legend([b1,b2,b3],['Sextractor','Galex','pickles'],scatterpoints=1,loc=2)
+ax2.legend([b1,b2,b3],['Sextractor','GALEX','Pickles'],scatterpoints=1,loc=2)
 plt.show()
+
+
+
+####################################################################
+star = Table.read('newfield_2mass_t2_jlim_13.5_3arcsec.txt',format='ascii')
+newt = Table.read('galex0data_2mass_t2.txt', format='ascii')
+pickles = Table.read('picklemags.txt', format='ascii')
+
+gbrange = 5.
+scut = np.where((star['gb_sex'] > -10) & (star['gb_sex'] < -5))
+scut2 = np.where((star['gb_sex'] > -5) & (star['gb_sex'] < 0))
+scut3 = np.where((star['gb_sex'] > 0) & (star['gb_sex'] < 5))
+scut4 = np.where((star['gb_sex'] > 5) & (star['gb_sex'] < 10))
+
+ncut = np.where((newt['gb_galex'] > -10) & (newt['gb_galex'] < -5))
+ncut2 = np.where((newt['gb_galex'] > -5) & (newt['gb_galex'] < 0))
+ncut3 = np.where((newt['gb_galex'] > 0) & (newt['gb_galex'] < 5))
+ncut4 = np.where((newt['gb_galex'] > 5) & (newt['gb_galex'] < 10))
+
+
+f, ((ax1, ax2), (ax3, ax4)) = plt.subplots(2, 2, sharex='col', sharey='row')
+plt.rc('legend',**{'fontsize':15})
+
+ax1.set_title('3", J < 13.5, DF, -10 > gb > -5')
+ax1.set_xlim((-1.0,2))
+ax1.set_ylim((-1.5,14))
+ax1.set_xlabel('J - K')
+ax1.set_ylabel('NUV - J')
+ax1.plot([-1.0,1.5],[-1.5,14])
+a2 = ax1.scatter(newt['j'][ncut]-newt['k'][ncut],newt['nuv_mag'][ncut]-newt['j'][ncut],facecolor='none',edgecolor='red',s=30,alpha=0.3)
+a3 = ax1.scatter(pickles['j']-pickles['k'],pickles['nuv']-pickles['j'],c='black',s=5)
+for j in range(len(pickles)):
+    ax1.annotate(pickles['name'][j][:-4],xy=(pickles['j'][j]-pickles['k'][j],pickles['nuv'][j]-pickles['j'][j]),size=12)
+a1 = ax1.scatter(star['j'][scut]-star['k'][scut],star['nuv'][scut]-star['j'][scut],edgecolor='none',alpha=0.3)
+ax1.legend([a1,a2,a3],['Sextractor','GALEX','Pickles'],scatterpoints=1,loc=2)
+
+
+ax2.set_title('3", J < 13.5, DF, -5 > gb > 0')
+ax2.set_xlim((-1.0,2))
+ax2.set_ylim((-1.5,14))
+ax2.set_xlabel('J - K')
+ax2.set_ylabel('NUV - J')
+ax2.plot([-1.0,1.5],[-1.5,14])
+b2 = ax2.scatter(newt['j'][ncut2]-newt['k'][ncut2],newt['nuv_mag'][ncut2]-newt['j'][ncut2],facecolor='none',edgecolor='red',s=30,alpha=0.3)
+b3 = ax2.scatter(pickles['j']-pickles['k'],pickles['nuv']-pickles['j'],c='black',s=5)
+for j in range(len(pickles)):
+    ax2.annotate(pickles['name'][j][:-4],xy=(pickles['j'][j]-pickles['k'][j],pickles['nuv'][j]-pickles['j'][j]),size=12)
+b1 = ax2.scatter(star['j'][scut2]-star['k'][scut2],star['nuv'][scut2]-star['j'][scut2],edgecolor='none',alpha=0.3)
+ax2.legend([b1,b2,b3],['Sextractor','GALEX','Pickles'],scatterpoints=1,loc=2)
+
+
+ax3.set_title('3", J < 13.5, DF, 0 > gb > 5')
+ax3.set_xlim((-1.0,2))
+ax3.set_ylim((-1.5,14))
+ax3.set_xlabel('J - K')
+ax3.set_ylabel('NUV - J')
+ax3.plot([-1.0,1.5],[-1.5,14])
+c2 = ax3.scatter(newt['j'][ncut3]-newt['k'][ncut3],newt['nuv_mag'][ncut3]-newt['j'][ncut3],facecolor='none',edgecolor='red',s=30,alpha=0.3)
+c3 = ax3.scatter(pickles['j']-pickles['k'],pickles['nuv']-pickles['j'],c='black',s=5)
+for j in range(len(pickles)):
+    ax3.annotate(pickles['name'][j][:-4],xy=(pickles['j'][j]-pickles['k'][j],pickles['nuv'][j]-pickles['j'][j]),size=12)
+c1 = ax3.scatter(star['j'][scut3]-star['k'][scut3],star['nuv'][scut3]-star['j'][scut3],edgecolor='none',alpha=0.3)
+ax3.legend([c1,c2,c3],['Sextractor','GALEX','Pickles'],scatterpoints=1,loc=2)
+
+ax4.set_title('3", J < 13.5, DF, 5 > gb > 10')
+ax4.set_xlim((-1.0,2))
+ax4.set_ylim((-1.5,14))
+ax4.set_xlabel('J - K')
+ax4.set_ylabel('NUV - J')
+ax4.plot([-1.0,1.5],[-1.5,14])
+d2 = ax4.scatter(newt['j'][ncut4]-newt['k'][ncut4],newt['nuv_mag'][ncut4]-newt['j'][ncut4],facecolor='none',edgecolor='red',s=30,alpha=0.3)
+d3 = ax4.scatter(pickles['j']-pickles['k'],pickles['nuv']-pickles['j'],c='black',s=5)
+for j in range(len(pickles)):
+    ax4.annotate(pickles['name'][j][:-4],xy=(pickles['j'][j]-pickles['k'][j],pickles['nuv'][j]-pickles['j'][j]),size=12)
+d1 = ax4.scatter(star['j'][scut4]-star['k'][scut4],star['nuv'][scut4]-star['j'][scut4],edgecolor='none',alpha=0.3)
+ax4.legend([d1,d2,d3],['Sextractor','GALEX','Pickles'],scatterpoints=1,loc=2)
+
+
+plt.show()
+
 
 ####################################################################
 # J-H vs H-K
 ####################################################################
-star = Table.read('starcatalog_05-68_2mass_t2.txt', format='ascii')
-
-newt = Table.read('galex120_2mass_t2.txt', format='ascii')
+star = Table.read('newfield_2mass_t2_jlim_13.5_3arcsec.txt',format='ascii')
+newt = Table.read('galex0data_2mass_t2.txt', format='ascii')
 pickles = Table.read('picklemags.txt', format='ascii')
 
 gbrange = 5.
 scut = np.where((np.abs(star['gb_sex']) > gbrange))
 scut2 = np.where((np.abs(star['gb_sex']) < gbrange))
-ncut = np.where(np.abs(newt['gb']) > gbrange)
-ncut2 = np.where(np.abs(newt['gb']) < gbrange)
+ncut = np.where(np.abs(newt['gb_galex']) > gbrange)
+ncut2 = np.where(np.abs(newt['gb_galex']) < gbrange)
 
 f, (ax1, ax2) = plt.subplots(1, 2)
 plt.rc('legend',**{'fontsize':15})
@@ -139,7 +217,7 @@ for j in range(len(pickles)):
 a1 = ax1.scatter(star['h'][scut]-star['k'][scut],star['j'][scut]-star['h'][scut],edgecolor='none',alpha=0.1)
 
 
-ax1.legend([a1,a2,a3],['Sextractor','Galex','pickles'],scatterpoints=1,loc=2)
+ax1.legend([a1,a2,a3],['Sextractor','GALEX','Pickles'],scatterpoints=1,loc=2)
 
 
 ax2.set_title('3", J < 13.5, Deeper Field, gb < '+str(gbrange))
@@ -154,7 +232,7 @@ for j in range(len(pickles)):
     ax2.annotate(pickles['name'][j][:-4],xy=(pickles['h'][j]-pickles['k'][j],pickles['j'][j]-pickles['h'][j]),size=12)
 
 b1 = ax2.scatter(star['h'][scut2]-star['k'][scut2],star['j'][scut2]-star['h'][scut2],edgecolor='none',alpha=0.1)
-ax2.legend([b1,b2,b3],['Sextractor','Galex','pickles'],scatterpoints=1,loc=2)
+ax2.legend([b1,b2,b3],['Sextractor','GALEX','Pickles'],scatterpoints=1,loc=2)
 plt.show()
 
 
@@ -163,48 +241,47 @@ plt.show()
 ####################################################################
 # Rename 2MASS catalog columns
 ####################################################################
-c.rename_column('cntr_01','cntr')
-c.rename_column('number_01','number')
-c.rename_column('x_image_01','x_image')
-c.rename_column('y_image_01','y_image')
-c.rename_column('flux_auto_01','flux_auto')
-c.rename_column('fluxerr_auto_01','fluxerr_auto')
-c.rename_column('x_new_01','x_new')
-c.rename_column('y_new_01','y_new')
-c.rename_column('nuv_01','nuv')
-c.rename_column('gl_01','gl_sex')
-c.rename_column('gb_01','gb_sex')
-c.rename_column('ra_01','ra_sex')
-c.rename_column('dec_01','dec_sex')
-c.rename_column('ra','ra_2mass')
-c.rename_column('dec','dec_2mass')
-c.rename_column('j_m','j')
-c.rename_column('h_m','h')
-c.rename_column('k_m','k')
+g.rename_column('cntr_01','cntr')
+g.rename_column('number_01','number')
+g.rename_column('x_image_01','x_image')
+g.rename_column('y_image_01','y_image')
+g.rename_column('flux_auto_01','flux_auto')
+g.rename_column('fluxerr_auto_01','fluxerr_auto')
+g.rename_column('x_new_01','x_new')
+g.rename_column('y_new_01','y_new')
+g.rename_column('nuv_01','nuv')
+g.rename_column('gl_01','gl_sex')
+g.rename_column('gb_01','gb_sex')
+g.rename_column('ra_01','ra_sex')
+g.rename_column('dec_01','dec_sex')
+g.rename_column('ra','ra_2mass')
+g.rename_column('dec','dec_2mass')
+g.rename_column('j_m','j')
+g.rename_column('h_m','h')
+g.rename_column('k_m','k')
 
 
 ####################################################################
 # NUV comparison between GALEX and SExtractor
 ####################################################################
-star = fits.open('starcatalog_120_rand_deadtime.fits')[1].data
-galex = Table.read('galex120_2mass_t2.txt',format='ascii')
+star = Table.read('newfield_2mass_t2_jlim_13.5_3arcsec.txt',format='ascii')
+galex = Table.read('galex0data_2mass_t2.txt',format='ascii')
 pickles = Table.read('picklemags.txt',format='ascii')
 
 stargal = SkyCoord(star.gl*u.deg,star.gb*u.deg,frame='galactic')
-galexgal = SkyCoord(galex['gl']*u.deg,galex['gb']*u.deg,frame='galactic')
+galexgal = SkyCoord(galex['gl_galex']*u.deg,galex['gb_galex']*u.deg,frame='galactic')
 starind, galexind, angsep, dist3d = search_around_sky(stargal, galexgal, 6.*u.arcsec)
 star2 = star[starind]
 galex2 = galex[galexind]
 
-i = 120
 gbrange = 5.
-scut = np.where((np.abs(star2.gb) > gbrange) & (star2.gl > i) & (star2.gl < i+20))
-scut2 = np.where((np.abs(star2.gb) < gbrange) & (star2.gl > i) & (star2.gl < i+20))
-ncut = np.where(np.abs(galex2['gb']) > gbrange)
-ncut2 = np.where(np.abs(galex2['gb']) < gbrange)
+scut = np.where((np.abs(star['gb_sex']) > gbrange))
+scut2 = np.where((np.abs(star['gb_sex']) < gbrange))
+ncut = np.where(np.abs(newt['gb_galex']) > gbrange)
+ncut2 = np.where(np.abs(newt['gb_galex']) < gbrange)
 f, (ax1, ax2) = plt.subplots(1, 2)
 plt.rc('legend',**{'fontsize':15})
-a1 = ax1.scatter(galex2['nuv_mag'][ncut],star2.nuv[scut]-galex2['nuv_mag'][ncut],edgecolor='none',alpha=0.2)
+a1 = ax1.scatter(galex2['nuv_mag'][ncut],star2['nuv'][scut]-galex2['nuv_mag'][ncut],edgecolor='none',alpha=0.2)
 ax1.set_title('gb > '+str(gbrange)+', gl = '+str(i)+' to '+str(i+20))
 ax1.set_xlim((13,20))
 ax1.set_ylim((-2,3))
@@ -212,7 +289,7 @@ ax1.set_xlabel('GALEX NUV')
 ax1.set_ylabel('SExtractor - GALEX NUV')
 
 
-a2 = ax2.scatter(galex2['nuv_mag'][ncut2],star2.nuv[scut2]-galex2['nuv_mag'][ncut2],edgecolor='none',alpha=0.2)
+a2 = ax2.scatter(galex2['nuv_mag'][ncut2],star2['nuv'][scut2]-galex2['nuv_mag'][ncut2],edgecolor='none',alpha=0.2)
 ax2.set_title('gb < '+str(gbrange)+', gl = '+str(i)+' to '+str(i+20))
 ax2.set_xlim((13,20))
 ax2.set_ylim((-2,3))
@@ -221,6 +298,24 @@ ax2.set_ylabel('SExtractor - GALEX NUV')
 plt.show()
 
 
+plt.scatter(g2['nuv_mag'],s2['nuv']-1,g2['nuv_mag'],edgecolor='none',alpha=0.3)
+plt.plot([12,20],[12,20],c='black')
+plt.xlabel('SExtractor NUV')
+plt.ylabel('GALEX NUV')
+plt.title('GALEX0 vs SExtractor NUV')
+plt.xlim((12,20))
+plt.ylim((12,20))
+plt.show()
+
+
+plt.scatter(g2['nuv_mag'],s2['nuv']-g2['nuv_mag'],edgecolor='none',alpha=0.3)
+plt.xlabel('GALEX NUV')
+plt.ylabel('SExtractor - GALEX NUV')
+plt.title('NUV Comparison')
+plt.xlim((13,21))
+plt.ylim((-2,2))
+plt.plot([13,21],[1,1],c='black')
+plt.show()
 
 ####################################################################
 # Plot data w/ J limits
@@ -314,5 +409,3 @@ for i in files:
     plt.scatter(lim,i['dist_x'],edgecolor='none',alpha=0.01)
     x+=1
 
-
-tcutra = np.where((tycho['RAJ2000'] > 255.) & (tycho['RAJ2000'] < 280) & (tycho['DEJ2000'] > --35) & (tycho['DEJ2000'] < -15))
