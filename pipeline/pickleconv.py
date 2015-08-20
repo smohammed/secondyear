@@ -117,6 +117,14 @@ for i in picklefiles:
 
 pbands = Table([nuv, b, v, j, k, k], names=('nuv', 'b', 'v', 'j', 'h', 'k'))
 
+nuvlamb = np.sqrt(np.sum(nuvfilt['col2'])/(np.sum(nuvfilt['col2']*nuvfilt['col1']**-2)))
+blamb = np.sqrt(np.sum(bfilt['col2'])/(np.sum(bfilt['col2']*bfilt['col1']**-2)))
+vlamb = np.sqrt(np.sum(vfilt['col2'])/(np.sum(vfilt['col2']*vfilt['col1']**-2)))
+jlamb = np.sqrt(np.sum(jfilt['col2'])/(np.sum(jfilt['col2']*jfilt['col1']**-2)))
+hlamb = np.sqrt(np.sum(hfilt['col2'])/(np.sum(hfilt['col2']*hfilt['col1']**-2)))
+klamb = np.sqrt(np.sum(kfilt['col2'])/(np.sum(kfilt['col2']*kfilt['col1']**-2)))
+
+
 ##########################################################################
 # convert f_lambda to f_v, divide by 0 point, then conv to Jy. 1 Jy = 10^-23 erg/s/Hz/cm^2
 ##########################################################################
@@ -130,16 +138,22 @@ pbands = Table([nuv, b, v, j, k, k], names=('nuv', 'b', 'v', 'j', 'h', 'k'))
 #j = -2.5*np.log10(((pbands['j']*3.34*10**4 * (12350)**2) / 1594) * 10**-23) - 48.6
 #h = -2.5*np.log10(((pbands['h']*3.34*10**4 * (16620)**2) / 1024) * 10**-23) - 48.6
 #k = -2.5*np.log10(((pbands['k']*3.34*10**4 * (21590)**2) / 666.7) * 10**-23) - 48.6
-
-nuv = -2.5*np.log10(((pbands['nuv'] * 3.34*10**4 * (2300)**2))) + 8.9
-
+'''
+nuv = -2.5*np.log10(pbands['nuv'] * 3.34*10**4 * (2300)**2) + 8.9
 b = -2.5*np.log10(pbands['b'] * 3.34*10**4 * (4350)**2) + 8.9
 v = -2.5*np.log10(pbands['v'] * 3.34*10**4 * (5050)**2) + 8.9
+j = -2.5*np.log10(pbands['j']*3.34*10**4 * (12350)**2) + 7.96
+h = -2.5*np.log10(pbands['h']*3.34*10**4 * (16620)**2) + 7.526
+k = -2.5*np.log10(pbands['k']*3.34*10**4 * (21590)**2) + 7.060
+'''
 
-j = -2.5*np.log10(((pbands['j']*3.34*10**4 * (12350)**2))) + 7.96
-h = -2.5*np.log10(((pbands['h']*3.34*10**4 * (16620)**2))) + 7.526
-k = -2.5*np.log10(((pbands['k']*3.34*10**4 * (21590)**2))) + 7.060
+nuv = -2.5*np.log10(pbands['nuv'] * 3.34*10**4 * (nuvlamb)**2) + 8.9
+b = -2.5*np.log10(pbands['b'] * 3.34*10**4 * (blamb)**2) + 8.9
+v = -2.5*np.log10(pbands['v'] * 3.34*10**4 * (vlamb)**2) + 8.9
+j = -2.5*np.log10(pbands['j']*3.34*10**4 * (jlamb)**2) + 7.96
+h = -2.5*np.log10(pbands['h']*3.34*10**4 * (hlamb)**2) + 7.526
+k = -2.5*np.log10(pbands['k']*3.34*10**4 * (klamb)**2) + 7.060
 
 
 data = [name, nuv, b, v, j, h, k]
-ascii.write(data, '../picklemags_laphare.txt', names=['name', 'nuv', 'b', 'v', 'j', 'h', 'k'])
+#ascii.write(data, '../picklemags_laphare_.txt', names=['name', 'nuv', 'b', 'v', 'j', 'h', 'k'])
