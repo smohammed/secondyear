@@ -117,12 +117,23 @@ for i in picklefiles:
 
 pbands = Table([nuv, b, v, j, k, k], names=('nuv', 'b', 'v', 'j', 'h', 'k'))
 
-nuvlamb = np.sqrt(np.sum(nuvfilt['col2'])/(np.sum(nuvfilt['col2']*nuvfilt['col1']**-2)))
-blamb = np.sqrt(np.sum(bfilt['col2'])/(np.sum(bfilt['col2']*bfilt['col1']**-2)))
-vlamb = np.sqrt(np.sum(vfilt['col2'])/(np.sum(vfilt['col2']*vfilt['col1']**-2)))
-jlamb = np.sqrt(np.sum(jfilt['col2'])/(np.sum(jfilt['col2']*jfilt['col1']**-2)))
-hlamb = np.sqrt(np.sum(hfilt['col2'])/(np.sum(hfilt['col2']*hfilt['col1']**-2)))
-klamb = np.sqrt(np.sum(kfilt['col2'])/(np.sum(kfilt['col2']*kfilt['col1']**-2)))
+nuvfilt['col2'] = nuvfilt['col2']+0.00001
+bfilt['col2'] = bfilt['col2']+0.00001
+vfilt['col2'] = vfilt['col2']+0.00001
+jfilt['col2'] = jfilt['col2']+0.00001
+hfilt['col2'] = hfilt['col2']+0.00001
+kfilt['col2'] = kfilt['col2']+0.00001
+
+
+
+nuvlamb = np.sqrt(np.sum(nuvfilt['col2'])/(np.sum(nuvfilt['col2']*(nuvfilt['col1']+0.0)**-2)))
+blamb = np.sqrt(np.sum(bfilt['col2'])/(np.sum(bfilt['col2']*(bfilt['col1']+0.0)**-2)))
+vlamb = np.sqrt(np.sum(vfilt['col2'])/(np.sum(vfilt['col2']*(vfilt['col1']+0.0)**-2)))
+jlamb = np.sqrt(np.sum(jfilt['col2'])/(np.sum(jfilt['col2']*(jfilt['col1']+0.0)**-2)))
+hlamb = np.sqrt(np.sum(hfilt['col2'])/(np.sum(hfilt['col2']*(hfilt['col1']+0.0)**-2)))
+klamb = np.sqrt(np.sum(kfilt['col2'])/(np.sum(kfilt['col2']*(kfilt['col1']+0.0)**-2)))
+
+
 
 
 ##########################################################################

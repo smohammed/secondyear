@@ -64,7 +64,7 @@ plt.show()
 ####################################################################
 star = Table.read('newfield_2mass_t2_jlim_13.5_3arcsec.txt',format='ascii')
 newt = Table.read('galex0data_2mass_t2.txt', format='ascii')
-pickles = Table.read('picklemags.txt', format='ascii')
+pickles = Table.read('picklemags_laphare.txt', format='ascii')
 
 gbrange = 5.
 scut = np.where((np.abs(star['gb_sex']) > gbrange))
@@ -241,24 +241,24 @@ plt.show()
 ####################################################################
 # Rename 2MASS catalog columns
 ####################################################################
-g.rename_column('cntr_01','cntr')
-g.rename_column('number_01','number')
-g.rename_column('x_image_01','x_image')
-g.rename_column('y_image_01','y_image')
-g.rename_column('flux_auto_01','flux_auto')
-g.rename_column('fluxerr_auto_01','fluxerr_auto')
-g.rename_column('x_new_01','x_new')
-g.rename_column('y_new_01','y_new')
-g.rename_column('nuv_01','nuv')
-g.rename_column('gl_01','gl_sex')
-g.rename_column('gb_01','gb_sex')
-g.rename_column('ra_01','ra_sex')
-g.rename_column('dec_01','dec_sex')
-g.rename_column('ra','ra_2mass')
-g.rename_column('dec','dec_2mass')
-g.rename_column('j_m','j')
-g.rename_column('h_m','h')
-g.rename_column('k_m','k')
+star2.rename_column('cntr_01','cntr')
+star2.rename_column('number_01','number')
+star2.rename_column('x_image_01','x_image')
+star2.rename_column('y_image_01','y_image')
+star2.rename_column('flux_auto_01','flux_auto')
+star2.rename_column('fluxerr_auto_01','fluxerr_auto')
+star2.rename_column('x_new_01','x_new')
+star2.rename_column('y_new_01','y_new')
+star2.rename_column('nuv_01','nuv')
+star2.rename_column('gl_01','gl_sex')
+star2.rename_column('gb_01','gb_sex')
+star2.rename_column('ra_01','ra_sex')
+star2.rename_column('dec_01','dec_sex')
+star2.rename_column('ra','ra_2mass')
+star2.rename_column('dec','dec_2mass')
+star2.rename_column('j_m','j')
+star2.rename_column('h_m','h')
+star2.rename_column('k_m','k')
 
 
 ####################################################################
@@ -408,4 +408,20 @@ for i in files:
     print jlim[x]
     plt.scatter(lim,i['dist_x'],edgecolor='none',alpha=0.01)
     x+=1
+
+
+
+
+fig = plt.figure()
+ax = fig.add_axes([0,7,0,20],projection=wcs)
+
+ax.imshow(img,vmin=0,vmax=1,origin='lower',interpolation='nearest',aspect='auto',cmap=cm.gray)
+#ax.scatter(galex['gl_galex'],galex['gb_galex'],edgecolor='none',facecolor='red',s=5,transform=ax.get_transform('galactic'))
+l = [4.25, 1.20, 3.30, 2.27]
+b = [0.20, -6.23, 4.27, 8.30]
+
+ax.scatter(l, b, transform=ax.get_transform('galactic'), s=100, edgecolor='white', facecolor='red')
+
+
+plt.show()
 

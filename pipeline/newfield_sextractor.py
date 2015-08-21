@@ -18,136 +18,205 @@ matplotlib.rcParams['font.size'] = 20
 # 4. sex_total*
 # 5. t2_2mass.fits match
 
+olddata = 0
+newdata = 1
 
-img = fits.open('../newfield/count_05-68_gPr_cata_10_corr.fits')[0].data
+if olddata == 1:
+    img = fits.open('../newfield/count_05-68_gPr_cata_10_corr.fits')[0].data
+    im1xmin,im1xmax,im1ymin,im1ymax = 2090,4680,1810,4470
+    im2xmin,im2xmax,im2ymin,im2ymax = 4680,7230,3350,6100
+    im3xmin,im3xmax,im3ymin,im3ymax = 7230,10100,5010,7570
 
-im1xmin,im1xmax,im1ymin,im1ymax = 2090,4680,1810,4470
-im2xmin,im2xmax,im2ymin,im2ymax = 4680,7230,3350,6100
-im3xmin,im3xmax,im3ymin,im3ymax = 7230,10100,5010,7570
+if newdata == 1:
+    img = fits.open('../newfield/count_map_05-68_gPr_cata_10_corr_gal.fits')[0].data
+    im1xmin,im1xmax,im1ymin,im1ymax = 720,4350,1160,11400
 
 ##################################################
 # Make new fields
 ##################################################
-im1 = img[im1ymin:im1ymax,im1xmin:im1xmax]
-fits.HDUList([fits.PrimaryHDU(im1)]).writeto('../newfield/im1.fits')
+if olddata == 1:
+    im1 = img[im1ymin:im1ymax,im1xmin:im1xmax]
+    fits.HDUList([fits.PrimaryHDU(im1)]).writeto('../newfield/im1.fits')
+    
+    im2 = img[im2ymin:im2ymax,im2xmin:im2xmax]
+    fits.HDUList([fits.PrimaryHDU(im2)]).writeto('../newfield/im2.fits')
+    
+    im3 = img[im3ymin:im3ymax,im3xmin:im3xmax]
+    fits.HDUList([fits.PrimaryHDU(im3)]).writeto('../newfield/im3.fits')
 
-im2 = img[im2ymin:im2ymax,im2xmin:im2xmax]
-fits.HDUList([fits.PrimaryHDU(im2)]).writeto('../newfield/im2.fits')
+if newdata == 1:
+    im1 = img[im1ymin:im1ymax,im1xmin:im1xmax]
+    fits.HDUList([fits.PrimaryHDU(im1)]).writeto('../newfield/im1_gal.fits')
 
-im3 = img[im3ymin:im3ymax,im3xmin:im3xmax]
-fits.HDUList([fits.PrimaryHDU(im3)]).writeto('../newfield/im3.fits')
 
 ##################################################
 # Run sextractor
 ##################################################
-os.system('sex ../newfield/im1.fits -c ~/sextractor/daofind.sex -CATALOG_NAME ../newfield/sex_im1.fits -CHECKIMAGE_NAME ../newfield/background_im1.fits')
-os.system('sex ../newfield/im2.fits -c ~/sextractor/daofind.sex -CATALOG_NAME ../newfield/sex_im2.fits -CHECKIMAGE_NAME ../newfield/background_im2.fits')
-os.system('sex ../newfield/im3.fits -c ~/sextractor/daofind.sex -CATALOG_NAME ../newfield/sex_im3.fits -CHECKIMAGE_NAME ../newfield/background_im3.fits')
+if olddata == 1:
+    os.system('sex ../newfield/im1.fits -c ~/sextractor/daofind.sex -CATALOG_NAME ../newfield/sex_im1.fits -CHECKIMAGE_NAME ../newfield/background_im1.fits')
+    os.system('sex ../newfield/im2.fits -c ~/sextractor/daofind.sex -CATALOG_NAME ../newfield/sex_im2.fits -CHECKIMAGE_NAME ../newfield/background_im2.fits')
+    os.system('sex ../newfield/im3.fits -c ~/sextractor/daofind.sex -CATALOG_NAME ../newfield/sex_im3.fits -CHECKIMAGE_NAME ../newfield/background_im3.fits')
+
+if newdata == 1:
+    os.system('sex ../newfield/im1_gal.fits -c ~/sextractor/daofind.sex -CATALOG_NAME ../newfield/sex_im1_gal.fits -CHECKIMAGE_NAME ../newfield/background_im1_gal.fits')
+
 
 ##################################################
 # Get output from sextractor, convert to gl,gb,nuv
 ##################################################
-im1sex = fits.open('../newfield/sex_im1.fits')[1].data
-data = im1sex
-xfac = im1xmin
-yfac = im1ymin
-x_new = (data.X_IMAGE+xfac)
-y_new = (data.Y_IMAGE+yfac) 
-nuv = -2.5*np.log10(data.FLUX_AUTO) + 20.08
-new_cols = fits.ColDefs([fits.Column(name='x_new', format='1E', array=x_new), fits.Column(name='y_new', format='1E', array=y_new), fits.Column(name='nuv', format='1E', array=nuv)])
-hdu = fits.BinTableHDU.from_columns(data.columns + new_cols)
-hdu.writeto('../newfield/sex_im1_edit.fits')
+if olddata == 1:
+    im1sex = fits.open('../newfield/sex_im1.fits')[1].data
+    data = im1sex
+    xfac = im1xmin
+    yfac = im1ymin
+    x_new = (data.X_IMAGE+xfac)
+    y_new = (data.Y_IMAGE+yfac) 
+    nuv = -2.5*np.log10(data.FLUX_AUTO) + 20.08
+    new_cols = fits.ColDefs([fits.Column(name='x_new', format='1E', array=x_new), fits.Column(name='y_new', format='1E', array=y_new), fits.Column(name='nuv', format='1E', array=nuv)])
+    hdu = fits.BinTableHDU.from_columns(data.columns + new_cols)
+    hdu.writeto('../newfield/sex_im1_edit.fits')
+    
+    im2sex = fits.open('../newfield/sex_im2.fits')[1].data
+    data = im2sex
+    xfac = im2xmin
+    yfac = im2ymin
+    x_new = (data.X_IMAGE+xfac)
+    y_new = (data.Y_IMAGE+yfac) 
+    nuv = -2.5*np.log10(data.FLUX_AUTO) + 20.08
+    new_cols = fits.ColDefs([fits.Column(name='x_new', format='1E', array=x_new), fits.Column(name='y_new', format='1E', array=y_new), fits.Column(name='nuv', format='1E', array=nuv)])
+    hdu = fits.BinTableHDU.from_columns(data.columns + new_cols)
+    hdu.writeto('../newfield/sex_im2_edit.fits')
+    
+    im3sex = fits.open('../newfield/sex_im3.fits')[1].data
+    data = im3sex
+    xfac = im3xmin
+    yfac = im3ymin
+    x_new = (data.X_IMAGE+xfac)
+    y_new = (data.Y_IMAGE+yfac) 
+    nuv = -2.5*np.log10(data.FLUX_AUTO) + 20.08
+    new_cols = fits.ColDefs([fits.Column(name='x_new', format='1E', array=x_new), fits.Column(name='y_new', format='1E', array=y_new), fits.Column(name='nuv', format='1E', array=nuv)])
+    hdu = fits.BinTableHDU.from_columns(data.columns + new_cols)
+    hdu.writeto('../newfield/sex_im3_edit.fits')
 
-im2sex = fits.open('../newfield/sex_im2.fits')[1].data
-data = im2sex
-xfac = im2xmin
-yfac = im2ymin
-x_new = (data.X_IMAGE+xfac)
-y_new = (data.Y_IMAGE+yfac) 
-nuv = -2.5*np.log10(data.FLUX_AUTO) + 20.08
-new_cols = fits.ColDefs([fits.Column(name='x_new', format='1E', array=x_new), fits.Column(name='y_new', format='1E', array=y_new), fits.Column(name='nuv', format='1E', array=nuv)])
-hdu = fits.BinTableHDU.from_columns(data.columns + new_cols)
-hdu.writeto('../newfield/sex_im2_edit.fits')
+if newdata == 1:
+    im1sex = fits.open('../newfield/sex_im1_gal.fits')[1].data
+    data = im1sex
+    xfac = im1xmin
+    yfac = im1ymin
+    x_new = (data.X_IMAGE+xfac)
+    y_new = (data.Y_IMAGE+yfac) 
+    nuv = -2.5*np.log10(data.FLUX_AUTO) + 20.08
+    new_cols = fits.ColDefs([fits.Column(name='x_new', format='1E', array=x_new), fits.Column(name='y_new', format='1E', array=y_new), fits.Column(name='nuv', format='1E', array=nuv)])
+    hdu = fits.BinTableHDU.from_columns(data.columns + new_cols)
+    hdu.writeto('../newfield/sex_im1_gal_edit.fits')
 
-im3sex = fits.open('../newfield/sex_im3.fits')[1].data
-data = im3sex
-xfac = im3xmin
-yfac = im3ymin
-x_new = (data.X_IMAGE+xfac)
-y_new = (data.Y_IMAGE+yfac) 
-nuv = -2.5*np.log10(data.FLUX_AUTO) + 20.08
-new_cols = fits.ColDefs([fits.Column(name='x_new', format='1E', array=x_new), fits.Column(name='y_new', format='1E', array=y_new), fits.Column(name='nuv', format='1E', array=nuv)])
-hdu = fits.BinTableHDU.from_columns(data.columns + new_cols)
-hdu.writeto('../newfield/sex_im3_edit.fits')
 
 print 'Converted coordinates to gl/gb' 
 
 ##################################################
 # Combine all tables
 ##################################################
-table1 = Table.read('../newfield/sex_im1_edit.fits',format='fits')
-table2 = Table.read('../newfield/sex_im2_edit.fits',format='fits')
-table3 = Table.read('../newfield/sex_im3_edit.fits',format='fits')
+if olddata == 1:
+    table1 = Table.read('../newfield/sex_im1_edit.fits',format='fits')
+    table2 = Table.read('../newfield/sex_im2_edit.fits',format='fits')
+    table3 = Table.read('../newfield/sex_im3_edit.fits',format='fits')
+    tottable = vstack([table1,table2,table3])
+    ascii.write(tottable, '../newfield/sex_total_05-68.txt')
 
-tottable = vstack([table1,table2,table3])
-
-ascii.write(tottable, '../newfield/sex_total_05-68.txt')
+if newdata == 1:
+    tottable = Table.read('../newfield/sex_im1_gal_edit.fits',format='fits')
+    ascii.write(tottable, '../newfield/sex_total_05-68_gal.txt')    
 
 print 'Combined all data tables'
 
 ##################################################
 # Get WCS info
 ##################################################
+if olddata == 1:
+    hdulist = fits.open('../newfield/count_05-68_gPr_cata_10_corr.fits')
 
-hdulist = fits.open('../newfield/count_05-68_gPr_cata_10_corr.fits')
+if newdata == 1:
+    hdulist = fits.open('../newfield/count_map_05-68_gPr_cata_10_corr_gal.fits')
+
 xpix = tottable['x_new']
 ypix = tottable['y_new']
 w = wcs.WCS(hdulist[0].header)
 pixels = np.array([xpix,ypix]).T
 world = w.wcs_pix2world(pixels,1)
 
-raval = []
-decval = []
+if olddata == 1:
+    raval = []
+    decval = []
+    
+    for i in range(len(world)):
+        raval.append(world[i][0])
+        decval.append(world[i][1])
+    
+    skygal = SkyCoord(raval*u.deg,decval*u.deg,frame='icrs')
+    glval = skygal.galactic.l.degree
+    gbval = skygal.galactic.b.degree
+    
+    for i in range(len(glval)):
+        if glval[i] > 350:
+            glval[i] = glval[i] - 360
 
-for i in range(len(world)):
-    raval.append(world[i][0])
-    decval.append(world[i][1])
+if newdata == 1:
+    glval = []
+    gbval = []
+    
+    for i in range(len(world)):
+        glval.append(world[i][0])
+        gbval.append(world[i][1])
 
-skygal = SkyCoord(raval*u.deg,decval*u.deg,frame='icrs')
-glval = skygal.galactic.l.degree
-gbval = skygal.galactic.b.degree
+    for i in range(len(glval)):
+        if glval[i] > 350:
+            glval[i] = glval[i] - 360
 
-for i in range(len(glval)):
-    if glval[i] > 350:
-        glval[i] = glval[i] - 360
+    skygal = SkyCoord(glval*u.deg,gbval*u.deg,frame='galactic')
+    raval = skygal.icrs.ra.degree
+    decval = skygal.icrs.dec.degree
 
-coord = Table([glval,gbval],names=('gl','gb'))
 
-alldata = hstack([tottable,coord])
+if olddata == 1:
+    coord = Table([glval,gbval],names=('gl','gb'))
+    alldata = hstack([tottable,coord])
+    ascii.write(alldata,'../newfield/starcatalog_05-68.txt')
 
-ascii.write(alldata,'../newfield/starcatalog_05-68.txt')
+if newdata == 1:
+    coord = Table([glval, gbval, raval, decval], names=('gl', 'gb', 'ra', 'dec'))
+    alldata = hstack([tottable, coord])
+    ascii.write(alldata, '../newfield/starcatalog_05-68_gal.txt')
+
+
+
+# Then manually match with 2MASS
 
 ##################################################
 # Now match with Tycho 2/2MASS catalogs
 ##################################################
-sex = Table.read('../newfield/starcatalog_05-68.txt', format='ascii')
-t2 = Table.read('../tycho2_2mass_matches.txt', format='ascii')
 
-sexgal = SkyCoord(sex['gl']*u.degree, sex['gb']*u.degree, frame='galactic')
-t2gal = SkyCoord(t2['gl_t2']*u.degree, t2['gb_t2']*u.degree, frame='galactic')
+sex = Table.read('newfield_ipac_gal_2mass_matches_3arcsec_J_lt13.5.txt', format='ascii')
+tycho = Table.read('tycho2.fits', format='fits')
 
-t2ind, sexind, angsep, dist3d = search_around_sky(t2gal, sexgal, 10.*u.arcsec)
+tcut = np.where((tycho['Glon'] > 0.) & (tycho['Glon'] < 8) & (tycho['Glat'] > -10) & (tycho['Glat'] < 10))
+
+t2 = tycho[tcut]
+
+sexgal = SkyCoord(sex['ra_2mass']*u.degree, sex['dec_2mass']*u.degree, frame='icrs')
+t2gal = SkyCoord(t2['RAJ2000']*u.degree, t2['DEJ2000']*u.degree, frame='icrs')
+
+t2ind, sexind, angsep, dist3d = search_around_sky(t2gal, sexgal, 1.*u.arcsec)
 
 plt.hist(angsep*3600., bins=100), plt.show()
 
-sex = sex[sexind]
+s2 = sex[sexind]
 t3 = t2[t2ind]
 
-print len(sex)
+print len(s2)
 
-combtable = hstack([sex, t3])
+combtable = hstack([s2, t3])
 
-ascii.write(combtable, '../starcatalog_05-68_2mass_t2.txt')
+ascii.write(combtable, '../newfield_gal_2mass_t2__jlim_13.5_3arcsec.txt')
 
 print 'Matched with T2 and 2MASS, finished'
 print 'Total objects matched =', len(combtable)
