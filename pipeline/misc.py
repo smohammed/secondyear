@@ -241,24 +241,24 @@ plt.show()
 ####################################################################
 # Rename 2MASS catalog columns
 ####################################################################
-star2.rename_column('cntr_01','cntr')
-star2.rename_column('number_01','number')
-star2.rename_column('x_image_01','x_image')
-star2.rename_column('y_image_01','y_image')
-star2.rename_column('flux_auto_01','flux_auto')
-star2.rename_column('fluxerr_auto_01','fluxerr_auto')
-star2.rename_column('x_new_01','x_new')
-star2.rename_column('y_new_01','y_new')
-star2.rename_column('nuv_01','nuv')
-star2.rename_column('gl_01','gl_sex')
-star2.rename_column('gb_01','gb_sex')
-star2.rename_column('ra_01','ra_sex')
-star2.rename_column('dec_01','dec_sex')
-star2.rename_column('ra','ra_2mass')
-star2.rename_column('dec','dec_2mass')
-star2.rename_column('j_m','j')
-star2.rename_column('h_m','h')
-star2.rename_column('k_m','k')
+sex.rename_column('cntr_01','cntr')
+sex.rename_column('number_01','number')
+sex.rename_column('x_image_01','x_image')
+sex.rename_column('y_image_01','y_image')
+sex.rename_column('flux_auto_01','flux_auto')
+sex.rename_column('fluxerr_auto_01','fluxerr_auto')
+sex.rename_column('x_new_01','x_new')
+sex.rename_column('y_new_01','y_new')
+sex.rename_column('nuv_01','nuv')
+sex.rename_column('gl_01','gl_sex')
+sex.rename_column('gb_01','gb_sex')
+sex.rename_column('ra_01','ra_sex')
+sex.rename_column('dec_01','dec_sex')
+sex.rename_column('ra','ra_2mass')
+sex.rename_column('dec','dec_2mass')
+sex.rename_column('j_m','j')
+sex.rename_column('h_m','h')
+sex.rename_column('k_m','k')
 
 
 ####################################################################
@@ -425,11 +425,18 @@ xn = xn - 360
 
 plt.imshow(img,vmin=0,vmax=1,origin='lower',interpolation='nearest',aspect='auto',cmap=cm.gray,extent=[x0,xn,y0,yn])
 
-plt.scatter(galex['gl_galex'],galex['gb_galex'],edgecolor='red',facecolor='red',s=20)
+plt.scatter(star['gl_sex'],star['gb_sex'],edgecolor='red',facecolor='none',s=20)
+#plt.scatter(sex['gl'],sex['gb'],edgecolor='red',facecolor='none',s=20)
 plt.gca().invert_xaxis()
 plt.xlabel('Galactic Longitude')
 plt.ylabel('Galactic Latitude')
 plt.xlim((0,7.4))
 plt.ylim((-10,10))
+plt.show()
+
+plt.imshow(img,vmin=0,vmax=1,origin='lower',interpolation='nearest',aspect='auto',cmap=cm.gray)
+
+plt.scatter(star['x_new'],star['y_new'],edgecolor='red',facecolor='none',s=20)
+
 plt.show()
 

@@ -5,12 +5,12 @@ import matplotlib
 matplotlib.rcParams['figure.figsize'] = 16, 8
 matplotlib.rcParams['font.size'] = 20
 
-nuvjvsjk = 0
-nuvbvsbv = 1
+nuvjvsjk = 1
+nuvbvsbv = 0
 jhvshk = 0
 
-starg = Table.read('newfield_gal_2mass_t2_jlim_13.5_3arcsec.txt', format='ascii')
-star = Table.read('newfield_2mass_t2_jlim_13.5_3arcsec.txt', format='ascii')
+#starg = Table.read('newfield_gal_2mass_t2_jlim_13.5_3arcsec.txt', format='ascii')
+#star = Table.read('newfield_2mass_t2_jlim_13.5_3arcsec.txt', format='ascii')
 newt = Table.read('galex0data_2mass_t2.txt', format='ascii')
 pickles = Table.read('picklemags_laphare.txt', format='ascii')
 
@@ -26,10 +26,6 @@ ncut2 = np.where((newt['gb_galex'] > -5) & (newt['gb_galex'] < 0))
 ncut3 = np.where((newt['gb_galex'] > 0) & (newt['gb_galex'] < 5))
 ncut4 = np.where((newt['gb_galex'] > 5) & (newt['gb_galex'] < 10))
 
-sgcut = np.where((starg['gb_sex'] > -10) & (starg['gb_sex'] < -5))
-sgcut2 = np.where((starg['gb_sex'] > -5) & (starg['gb_sex'] < 0))
-sgcut3 = np.where((starg['gb_sex'] > 0) & (starg['gb_sex'] < 5))
-sgcut4 = np.where((starg['gb_sex'] > 5) & (starg['gb_sex'] < 10))
 
 # GALEX, Pickles, SExtractor order
 nuv = ['nuv_mag', 'nuv', 'nuv', 2.9720]

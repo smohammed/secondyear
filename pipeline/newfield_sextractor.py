@@ -185,6 +185,25 @@ if olddata == 1:
 if newdata == 1:
     coord = Table([glval, gbval, raval, decval], names=('gl', 'gb', 'ra', 'dec'))
     alldata = hstack([tottable, coord])
+    alldata.rename_column('cntr_01','cntr')
+    alldata.rename_column('number_01','number')
+    alldata.rename_column('x_image_01','x_image')
+    alldata.rename_column('y_image_01','y_image')
+    alldata.rename_column('flux_auto_01','flux_auto')
+    alldata.rename_column('fluxerr_auto_01','fluxerr_auto')
+    alldata.rename_column('x_new_01','x_new')
+    alldata.rename_column('y_new_01','y_new')
+    alldata.rename_column('nuv_01','nuv')
+    alldata.rename_column('gl_01','gl_sex')
+    alldata.rename_column('gb_01','gb_sex')
+    alldata.rename_column('ra_01','ra_sex')
+    alldata.rename_column('dec_01','dec_sex')
+    alldata.rename_column('ra','ra_2mass')
+    alldata.rename_column('dec','dec_2mass')
+    alldata.rename_column('j_m','j')
+    alldata.rename_column('h_m','h')
+    alldata.rename_column('k_m','k')
+
     ascii.write(alldata, '../newfield/starcatalog_05-68_gal_tests_2.txt',format='ipac')
 
 
