@@ -410,18 +410,26 @@ for i in files:
     x+=1
 
 
+img = fits.open('newfield/count_map_05-68_gPr_cata_10_corr_gal.fits')[0].data
+galex = Table.read('galex0data_2mass.txt',format='ascii')
+gallim = np.where((galex['gl_galex'] > 0) & (galex['gl_galex'] < 7.5) & (galex['gb_galex']> -10) & (galex['gb_galex'] < 10))
+galex = galex[gallim]
 
+from astropy.wcs import WCS
+header = fits.getheader('newfield/count_map_05-68_gPr_cata_10_corr_gal.fits')
+w = WCS(header)
+x0,y0 = w.wcs_pix2world(0,0,0)
+xn,yn = w.wcs_pix2world(4860,12840,0)
 
-fig = plt.figure()
-ax = fig.add_axes([0,7,0,20],projection=wcs)
+xn = xn - 360
 
-ax.imshow(img,vmin=0,vmax=1,origin='lower',interpolation='nearest',aspect='auto',cmap=cm.gray)
-#ax.scatter(galex['gl_galex'],galex['gb_galex'],edgecolor='none',facecolor='red',s=5,transform=ax.get_transform('galactic'))
-l = [4.25, 1.20, 3.30, 2.27]
-b = [0.20, -6.23, 4.27, 8.30]
+plt.imshow(img,vmin=0,vmax=1,origin='lower',interpolation='nearest',aspect='auto',cmap=cm.gray,extent=[x0,xn,y0,yn])
 
-ax.scatter(l, b, transform=ax.get_transform('galactic'), s=100, edgecolor='white', facecolor='red')
-
-
+plt.scatter(galex['gl_galex'],galex['gb_galex'],edgecolor='red',facecolor='red',s=20)
+plt.gca().invert_xaxis()
+plt.xlabel('Galactic Longitude')
+plt.ylabel('Galactic Latitude')
+plt.xlim((0,7.4))
+plt.ylim((-10,10))
 plt.show()
 
