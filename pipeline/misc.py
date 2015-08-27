@@ -236,29 +236,27 @@ ax2.legend([b1,b2,b3],['Sextractor','GALEX','Pickles'],scatterpoints=1,loc=2)
 plt.show()
 
 
-
-
 ####################################################################
 # Rename 2MASS catalog columns
 ####################################################################
-sex.rename_column('cntr_01','cntr')
-sex.rename_column('number_01','number')
-sex.rename_column('x_image_01','x_image')
-sex.rename_column('y_image_01','y_image')
-sex.rename_column('flux_auto_01','flux_auto')
-sex.rename_column('fluxerr_auto_01','fluxerr_auto')
-sex.rename_column('x_new_01','x_new')
-sex.rename_column('y_new_01','y_new')
-sex.rename_column('nuv_01','nuv')
-sex.rename_column('gl_01','gl_sex')
-sex.rename_column('gb_01','gb_sex')
-sex.rename_column('ra_01','ra_sex')
-sex.rename_column('dec_01','dec_sex')
-sex.rename_column('ra','ra_2mass')
-sex.rename_column('dec','dec_2mass')
-sex.rename_column('j_m','j')
-sex.rename_column('h_m','h')
-sex.rename_column('k_m','k')
+a1.rename_column('cntr_01','cntr')
+a1.rename_column('number_01','number')
+a1.rename_column('x_image_01','x_image')
+a1.rename_column('y_image_01','y_image')
+a1.rename_column('flux_auto_01','flux_auto')
+a1.rename_column('fluxerr_auto_01','fluxerr_auto')
+a1.rename_column('x_new_01','x_new')
+a1.rename_column('y_new_01','y_new')
+a1.rename_column('nuv_01','nuv')
+a1.rename_column('gl_01','gl_sex')
+a1.rename_column('gb_01','gb_sex')
+a1.rename_column('ra_01','ra_sex')
+a1.rename_column('dec_01','dec_sex')
+a1.rename_column('ra','ra_2mass')
+a1.rename_column('dec','dec_2mass')
+a1.rename_column('j_m','j')
+a1.rename_column('h_m','h')
+a1.rename_column('k_m','k')
 
 
 ####################################################################
@@ -335,7 +333,6 @@ plt.title('Deep field, J-K > 0.6 outliers')
 plt.show()
 
 
-
 ####################################################################
 # Import different Jlim and arcsec search radii from 2MASS
 ####################################################################
@@ -409,9 +406,11 @@ for i in files:
     plt.scatter(lim,i['dist_x'],edgecolor='none',alpha=0.01)
     x+=1
 
-
+####################################################################
+# Add WCS coords to plots
+####################################################################
 img = fits.open('newfield/count_map_05-68_gPr_cata_10_corr_gal.fits')[0].data
-galex = Table.read('galex0data_2mass.txt',format='ascii')
+galex = Table.read('galex0data.txt',format='ascii')
 gallim = np.where((galex['gl_galex'] > 0) & (galex['gl_galex'] < 7.5) & (galex['gb_galex']> -10) & (galex['gb_galex'] < 10))
 galex = galex[gallim]
 
@@ -423,10 +422,11 @@ xn,yn = w.wcs_pix2world(4860,12840,0)
 
 xn = xn - 360
 
+matplotlib.rcParams['figure.figsize'] = 7.5, 20
 plt.imshow(img,vmin=0,vmax=1,origin='lower',interpolation='nearest',aspect='auto',cmap=cm.gray,extent=[x0,xn,y0,yn])
 
-plt.scatter(star['gl_sex'],star['gb_sex'],edgecolor='red',facecolor='none',s=20)
-#plt.scatter(sex['gl'],sex['gb'],edgecolor='red',facecolor='none',s=20)
+#plt.scatter(star['gl_sex'],star['gb_sex'],edgecolor='red',facecolor='none',s=20)
+plt.scatter(galex['gl_galex'],galex['gb_galex'],edgecolor='red',facecolor='red',s=5)
 plt.gca().invert_xaxis()
 plt.xlabel('Galactic Longitude')
 plt.ylabel('Galactic Latitude')
@@ -439,4 +439,9 @@ plt.imshow(img,vmin=0,vmax=1,origin='lower',interpolation='nearest',aspect='auto
 plt.scatter(star['x_new'],star['y_new'],edgecolor='red',facecolor='none',s=20)
 
 plt.show()
+
+####################################################################
+# 
+####################################################################
+
 
