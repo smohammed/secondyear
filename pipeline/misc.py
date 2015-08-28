@@ -67,44 +67,47 @@ newt = Table.read('galex0data_2mass_t2.txt', format='ascii')
 pickles = Table.read('picklemags_laphare.txt', format='ascii')
 
 gbrange = 5.
-scut = np.where((np.abs(star['gb_sex']) > gbrange))
-scut2 = np.where((np.abs(star['gb_sex']) < gbrange))
-ncut = np.where(np.abs(newt['gb_galex']) > gbrange)
-ncut2 = np.where(np.abs(newt['gb_galex']) < gbrange)
+
+scut = np.where((star['gb_sex'] > -5) & (star['gb_sex'] < 0))
+scut2 = np.where((star['gb_sex'] > 0) & (star['gb_sex'] < 5))
+ncut = np.where((newt['gb_galex'] > -5) & (newt['gb_galex'] < 0))
+ncut2 = np.where((newt['gb_galex'] > 0) & (newt['gb_galex'] < 5))
 
 f, (ax1, ax2) = plt.subplots(1, 2)
 plt.rc('legend',**{'fontsize':15})
 
-ax1.set_title('3", J < 13.5, Deeper Field, gb > '+str(gbrange))
-ax1.set_xlim((-1.0,2))
-ax1.set_ylim((-1.5,14))
+ax1.set_title('3", J < 13.5, VPHAS, -5 < gb < 0')
+ax1.set_xlim((-0.5,2.5))
+ax1.set_ylim((0,14))
 ax1.set_xlabel('J - K')
 ax1.set_ylabel('NUV - J')
-ax1.plot([-1.0,1.5],[-1.5,14])
-a2 = ax1.scatter(newt['j'][ncut]-newt['k'][ncut],newt['nuv_mag'][ncut]-newt['j'][ncut],facecolor='none',edgecolor='red',s=30,alpha=0.3)
-a3 = ax1.scatter(pickles['j']-pickles['k'],pickles['nuv']-pickles['j'],c='black',s=5)
-for j in range(len(pickles)):
-    ax1.annotate(pickles['name'][j][:-4],xy=(pickles['j'][j]-pickles['k'][j],pickles['nuv'][j]-pickles['j'][j]),size=12)
+#ax1.plot([-1.0,1.5],[-1.5,14])
+ax1.axhline(y=4,color='black')
+
+#a3 = ax1.scatter(pickles['j']-pickles['k'],pickles['nuv']-pickles['j'],c='black',s=5)
+#for j in range(len(pickles)):
+#    ax1.annotate(pickles['name'][j][:-4],xy=(pickles['j'][j]-pickles['k'][j],pickles['nuv'][j]-pickles['j'][j]),size=12)
 
 a1 = ax1.scatter(star['j'][scut]-star['k'][scut],star['nuv'][scut]-star['j'][scut],edgecolor='none',alpha=0.3)
+a2 = ax1.scatter(newt['j'][ncut]-newt['k'][ncut],newt['nuv_mag'][ncut]-newt['j'][ncut],facecolor='none',edgecolor='red',s=30,alpha=0.3)
+
+ax1.legend([a1,a2],['Sextractor','GALEX'],scatterpoints=1,loc=2)
 
 
-ax1.legend([a1,a2,a3],['Sextractor','GALEX','Pickles'],scatterpoints=1,loc=2)
-
-
-ax2.set_title('3", J < 13.5, Deeper Field, gb < '+str(gbrange))
-ax2.set_xlim((-1.0,2))
-ax2.set_ylim((-1.5,14))
+ax2.set_title('3", J < 13.5, VPHAS, 5 < gb < 10')
+ax2.set_xlim((-0.5,2.5))
+ax2.set_ylim((0,14))
 ax2.set_xlabel('J - K')
 ax2.set_ylabel('NUV - J')
-ax2.plot([-1.0,1.5],[-1.5,14])
-b2 = ax2.scatter(newt['j'][ncut2]-newt['k'][ncut2],newt['nuv_mag'][ncut2]-newt['j'][ncut2],facecolor='none',edgecolor='red',s=30,alpha=0.3)
-b3 = ax2.scatter(pickles['j']-pickles['k'],pickles['nuv']-pickles['j'],c='black',s=5)
-for j in range(len(pickles)):
-    ax2.annotate(pickles['name'][j][:-4],xy=(pickles['j'][j]-pickles['k'][j],pickles['nuv'][j]-pickles['j'][j]),size=12)
+#ax2.plot([-1.0,1.5],[-1.5,14])
+ax2.axhline(y=4,color='black')
+#b3 = ax2.scatter(pickles['j']-pickles['k'],pickles['nuv']-pickles['j'],c='black',s=5)
+#for j in range(len(pickles)):
+#    ax2.annotate(pickles['name'][j][:-4],xy=(pickles['j'][j]-pickles['k'][j],pickles['nuv'][j]-pickles['j'][j]),size=12)
 
 b1 = ax2.scatter(star['j'][scut2]-star['k'][scut2],star['nuv'][scut2]-star['j'][scut2],edgecolor='none',alpha=0.3)
-ax2.legend([b1,b2,b3],['Sextractor','GALEX','Pickles'],scatterpoints=1,loc=2)
+b2 = ax2.scatter(newt['j'][ncut2]-newt['k'][ncut2],newt['nuv_mag'][ncut2]-newt['j'][ncut2],facecolor='none',edgecolor='red',s=30,alpha=0.3)
+ax2.legend([b1,b2],['Sextractor','GALEX'],scatterpoints=1,loc=2)
 plt.show()
 
 
@@ -239,24 +242,24 @@ plt.show()
 ####################################################################
 # Rename 2MASS catalog columns
 ####################################################################
-a1.rename_column('cntr_01','cntr')
-a1.rename_column('number_01','number')
-a1.rename_column('x_image_01','x_image')
-a1.rename_column('y_image_01','y_image')
-a1.rename_column('flux_auto_01','flux_auto')
-a1.rename_column('fluxerr_auto_01','fluxerr_auto')
-a1.rename_column('x_new_01','x_new')
-a1.rename_column('y_new_01','y_new')
-a1.rename_column('nuv_01','nuv')
-a1.rename_column('gl_01','gl_sex')
-a1.rename_column('gb_01','gb_sex')
-a1.rename_column('ra_01','ra_sex')
-a1.rename_column('dec_01','dec_sex')
-a1.rename_column('ra','ra_2mass')
-a1.rename_column('dec','dec_2mass')
-a1.rename_column('j_m','j')
-a1.rename_column('h_m','h')
-a1.rename_column('k_m','k')
+star.rename_column('cntr_01','cntr')
+star.rename_column('number_01','number')
+star.rename_column('x_image_01','x_image')
+star.rename_column('y_image_01','y_image')
+star.rename_column('flux_auto_01','flux_auto')
+star.rename_column('fluxerr_auto_01','fluxerr_auto')
+star.rename_column('x_new_01','x_new')
+star.rename_column('y_new_01','y_new')
+star.rename_column('nuv_01','nuv')
+star.rename_column('gl_01','gl_sex')
+star.rename_column('gb_01','gb_sex')
+star.rename_column('ra_01','ra_sex')
+star.rename_column('dec_01','dec_sex')
+star.rename_column('ra','ra_2mass')
+star.rename_column('dec','dec_2mass')
+star.rename_column('j_m','j')
+star.rename_column('h_m','h')
+star.rename_column('k_m','k')
 
 
 ####################################################################
@@ -427,6 +430,7 @@ plt.imshow(img,vmin=0,vmax=1,origin='lower',interpolation='nearest',aspect='auto
 
 #plt.scatter(star['gl_sex'],star['gb_sex'],edgecolor='red',facecolor='none',s=20)
 plt.scatter(galex['gl_galex'],galex['gb_galex'],edgecolor='red',facecolor='red',s=5)
+plt.scatter(vphas['l'],vphas['b'],edgecolor='blue',facecolor='blue',s=5,alpha=0.1)
 plt.gca().invert_xaxis()
 plt.xlabel('Galactic Longitude')
 plt.ylabel('Galactic Latitude')
@@ -441,7 +445,142 @@ plt.scatter(star['x_new'],star['y_new'],edgecolor='red',facecolor='none',s=20)
 plt.show()
 
 ####################################################################
-# 
+# VPHAS matching
+####################################################################
+sex = Table.read('newfield_gal_ipac_tests.txt',format='ascii')
+vphas = Table.read('vphas_gl_0_to_7.fits',format='fits')
+
+vpgal = SkyCoord(vphas['RAJ2000']*u.deg,vphas['DEJ2000']*u.deg,frame='icrs')
+sexind, vpind, angsep, dist3d = search_around_sky(sexgal,vpgal,5*u.arcsec)
+plt.hist(angsep*3600),plt.title('SEx+VPHAS'),plt.show()
+sex2 = sex[sexind]
+vp2 = vphas[vpind]
+
+sv = hstack([sex2,vp2])
+
+sex2mass = Table.read('newfield_gal_ipac_2mass_matches_3arcsec_j_lt13.5_tests.txt',format='ascii')
+sex2massgal = SkyCoord(sex2mass['ra_2mass']*u.deg,sex2mass['dec_2mass']*u.deg,frame='icrs')
+sex2mind, vp2mind, angsep, dist3d = search_around_sky(sex2massgal,vpgal,1*u.arcsec)
+plt.hist(angsep*3600),plt.title('SEx+2MASS+VPHAS'),plt.show()
+s2m2 = sex2mass[sex2mind]
+vpm2 = vphas[vp2mind]
+
+s2mv = hstack([s2m2,vpm2])
+
+
+
+'''
+sex = Sextractor
+sv = sextractor + vphas
+sex2mass = sextractor + 2MASS
+s2mv = sextractor + 2mass + vphas
+'''
+
+
+
+plt.scatter(sv['g_AB']-sv['i_AB'],sv['nuv']-sv['g_AB'],edgecolor='none',alpha=0.3,label='VPHAS')
+plt.scatter(vs2m['g_AB']-vs2m['i_AB'],vs2m['nuv']-vs2m['g_AB'],edgecolor='red',facecolor='none',alpha=0.3,label='VPHAS+2MASS')
+plt.xlabel('g - i (ABmag)')
+plt.ylabel('NUV - g (ABmag)')
+plt.title('VPHAS only vs 2MASS+VPHAS ')
+plt.xlim((-0.5,2))
+plt.ylim((2.5,6.5))
+plt.gca().invert_yaxis()
+plt.legend(loc=2,scatterpoints=1)
+plt.show()
+
+
+plt.scatter(vgalex['g_AB']-vgalex['i_AB'],vgalex['nuv_mag']-vgalex['g_AB'],edgecolor='none',alpha=0.3,label='GALEX+VPHAS')
+plt.scatter(sv['g_AB']-sv['i_AB'],sv['nuv']-sv['g_AB'],edgecolor='red',facecolor='none',alpha=0.3,label='SExtractor+VPHAS')
+plt.xlabel('g - i (ABmag)')
+plt.ylabel('NUV - g (ABmag)')
+plt.title('VPHAS only vs 2MASS+VPHAS ')
+plt.xlim((-0.5,2))
+plt.ylim((2.5,6.5))
+plt.gca().invert_yaxis()
+plt.legend(loc=2,scatterpoints=1)
+plt.show()
+
+
+
+
+####################################################################
+# Sky plot
 ####################################################################
 
+from astropy.wcs import WCS
+
+img = fits.open('newfield/count_map_05-68_gPr_cata_10_corr_gal.fits')[0].data
+galex = Table.read('galex0data.txt',format='ascii')
+gallim = np.where((galex['gl_galex'] > 0) & (galex['gl_galex'] < 7.5) & (galex['gb_galex']> -10) & (galex['gb_galex'] < 10))
+galex = galex[gallim]
+header = fits.getheader('newfield/count_map_05-68_gPr_cata_10_corr_gal.fits')
+w = WCS(header)
+x0,y0 = w.wcs_pix2world(0,0,0)
+xn,yn = w.wcs_pix2world(4860,12840,0)
+xn = xn - 360
+
+vphas = Table.read('vphas_gl_0_to_7.fits',format='fits')
+vpgal = SkyCoord(vphas['RAJ2000']*u.deg,vphas['DEJ2000']*u.deg,frame='icrs')
+galexgal = SkyCoord(galex['ra']*u.deg,galex['dec']*u.deg,frame='icrs')
+galind, vpasind, angsep, dist3d = search_around_sky(galexgal,vpgal,2*u.arcsec)
+galex2 = galex[galind]
+vgalex = vphas[vpasind]
+vgalex = hstack([galex2,vgalex])
+
+plt.imshow(img,vmin=0,vmax=1,origin='lower',interpolation='nearest',aspect='auto',cmap=cm.gray,extent=[x0,xn,y0,yn])
+plt.scatter(galex['gl_galex'],galex['gb_galex'],edgecolor='red',facecolor='red',s=5,label='GALEX')
+plt.scatter(vphas['l'],vphas['b'],edgecolor='blue',facecolor='blue',s=5,label='VPHAS')
+plt.scatter(vgalex['l'],vgalex['b'],edgecolor='yellow',facecolor='yellow',s=5,label='VPHAS+GALEX')
+plt.legend(loc=3,scatterpoints=1,prop={'size':12})
+plt.xlabel('Galactic Longitude')
+plt.ylabel('Galactic Latitude')
+#plt.xlim((-0.5,8))
+#plt.ylim((-10.5,11))
+plt.gca().invert_xaxis()
+plt.show()
+
+
+
+
+plt.hist(sv['nuv'],bins=bins,label='VPHAS+SExtractor',color='green')
+plt.hist(sex2mass['nuv'][s2masscut],bins=bins,label='2MASS+SExtractor',alpha=0.7,color='red')
+plt.title('VPHAS vs 2MASS for abs(gb) < 4')
+plt.xlabel('NUV')
+plt.legend(loc=2)
+plt.show()
+
+
+
+
+####################################################################
+# Comparing 
+####################################################################
+# Only detections
+sex = Table.read('newfield_gal_ipac_tests.txt',format='ascii')
+sexgal = SkyCoord(sex['ra']*u.degree, sex['dec']*u.degree, frame='icrs')
+galex = Table.read('galex0data.txt',format='ascii')
+galexgal = SkyCoord(galex['ra']*u.deg,galex['dec']*u.deg,frame='icrs')
+sexind, galexind, angsep, dist3d = search_around_sky(sexgal,galexgal,5*u.arcsec)
+s2 = sex[sexind]
+g2 = galex[galexind]
+
+# With 2MASS data
+star = Table.read('newfield_gal_ipac_2mass_matches_3arcsec_j_lt13.5_tests.txt',format='ascii')
+galex2m = Table.read('galex0data_2mass.txt',format='ascii')
+stargal = SkyCoord(star['ra_2mass']*u.deg,star['dec_2mass']*u.deg,frame='icrs')
+galex2mgal = SkyCoord(galex2m['ra_2mass']*u.deg,galex2m['dec_2mass']*u.deg,frame='icrs')
+starind, galex2mind, angsep,dist3d = search_around_sky(stargal,galex2mgal,1*u.arcsec)
+star2 = star[starind]
+g2mass = galex2m[galex2mind]
+
+plt.scatter(g2['nuv_mag'],s2['nuv']-g2['nuv_mag'],edgecolor='none',alpha=0.5,label='Detections')
+plt.scatter(g2mass['nuv_mag'],star2['nuv']-g2mass['nuv_mag'],edgecolor='none',facecolor='red',alpha=0.5,label='2MASS matches')
+plt.xlabel('GALEX NUV')
+plt.ylabel('SExtractor - GALEX NUV')
+plt.xlim((10,24))
+plt.ylim((-6,3))
+plt.axhline(y=0,c='black')
+plt.legend(loc=3,scatterpoints=1)
+plt.show()
 

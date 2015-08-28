@@ -9,7 +9,7 @@ import sys
 import os
 import matplotlib
 matplotlib.rcParams['figure.figsize'] = 16, 8
-matplotlib.rcParams['font.size'] = 20
+imagmatplotlib.rcParams['font.size'] = 20
 
 # Files written:
 # 1. rand_deadtime.fits images
