@@ -63,7 +63,7 @@ plt.show()
 # NUV - J vs J - K
 ####################################################################
 star = Table.read('newfield_2mass_t2_jlim_13.5_3arcsec.txt',format='ascii')
-newt = Table.read('galex0data_2mass_t2.txt', format='ascii')
+newt = Table.read('galex0data_2mass.txt', format='ascii')
 pickles = Table.read('picklemags_laphare.txt', format='ascii')
 
 gbrange = 5.
@@ -76,7 +76,7 @@ ncut2 = np.where((newt['gb_galex'] > 0) & (newt['gb_galex'] < 5))
 f, (ax1, ax2) = plt.subplots(1, 2)
 plt.rc('legend',**{'fontsize':15})
 
-ax1.set_title('3", J < 13.5, VPHAS, -5 < gb < 0')
+ax1.set_title('3", J < 13.5,    VPHAS+T2, -5 < gb < 0')
 ax1.set_xlim((-0.5,2.5))
 ax1.set_ylim((0,14))
 ax1.set_xlabel('J - K')
@@ -87,14 +87,14 @@ ax1.axhline(y=4,color='black')
 #a3 = ax1.scatter(pickles['j']-pickles['k'],pickles['nuv']-pickles['j'],c='black',s=5)
 #for j in range(len(pickles)):
 #    ax1.annotate(pickles['name'][j][:-4],xy=(pickles['j'][j]-pickles['k'][j],pickles['nuv'][j]-pickles['j'][j]),size=12)
+a2 = ax1.scatter(newt['j'][ncut]-newt['k'][ncut],newt['nuv_mag'][ncut]-newt['j'][ncut],facecolor='none',edgecolor='red',s=30,alpha=0.3)
 
 a1 = ax1.scatter(star['j'][scut]-star['k'][scut],star['nuv'][scut]-star['j'][scut],edgecolor='none',alpha=0.3)
-a2 = ax1.scatter(newt['j'][ncut]-newt['k'][ncut],newt['nuv_mag'][ncut]-newt['j'][ncut],facecolor='none',edgecolor='red',s=30,alpha=0.3)
 
 ax1.legend([a1,a2],['Sextractor','GALEX'],scatterpoints=1,loc=2)
 
 
-ax2.set_title('3", J < 13.5, VPHAS, 5 < gb < 10')
+ax2.set_title('3", J < 13.5, 5 < gb < 10')
 ax2.set_xlim((-0.5,2.5))
 ax2.set_ylim((0,14))
 ax2.set_xlabel('J - K')
@@ -104,9 +104,9 @@ ax2.axhline(y=4,color='black')
 #b3 = ax2.scatter(pickles['j']-pickles['k'],pickles['nuv']-pickles['j'],c='black',s=5)
 #for j in range(len(pickles)):
 #    ax2.annotate(pickles['name'][j][:-4],xy=(pickles['j'][j]-pickles['k'][j],pickles['nuv'][j]-pickles['j'][j]),size=12)
+b2 = ax2.scatter(newt['j'][ncut2]-newt['k'][ncut2],newt['nuv_mag'][ncut2]-newt['j'][ncut2],facecolor='none',edgecolor='red',s=30,alpha=0.3)
 
 b1 = ax2.scatter(star['j'][scut2]-star['k'][scut2],star['nuv'][scut2]-star['j'][scut2],edgecolor='none',alpha=0.3)
-b2 = ax2.scatter(newt['j'][ncut2]-newt['k'][ncut2],newt['nuv_mag'][ncut2]-newt['j'][ncut2],facecolor='none',edgecolor='red',s=30,alpha=0.3)
 ax2.legend([b1,b2],['Sextractor','GALEX'],scatterpoints=1,loc=2)
 plt.show()
 
@@ -242,24 +242,24 @@ plt.show()
 ####################################################################
 # Rename 2MASS catalog columns
 ####################################################################
-star.rename_column('cntr_01','cntr')
-star.rename_column('number_01','number')
-star.rename_column('x_image_01','x_image')
-star.rename_column('y_image_01','y_image')
-star.rename_column('flux_auto_01','flux_auto')
-star.rename_column('fluxerr_auto_01','fluxerr_auto')
-star.rename_column('x_new_01','x_new')
-star.rename_column('y_new_01','y_new')
-star.rename_column('nuv_01','nuv')
-star.rename_column('gl_01','gl_sex')
-star.rename_column('gb_01','gb_sex')
-star.rename_column('ra_01','ra_sex')
-star.rename_column('dec_01','dec_sex')
-star.rename_column('ra','ra_2mass')
-star.rename_column('dec','dec_2mass')
-star.rename_column('j_m','j')
-star.rename_column('h_m','h')
-star.rename_column('k_m','k')
+newt.rename_column('cntr_01','cntr')
+newt.rename_column('number_01','number')
+newt.rename_column('x_image_01','x_image')
+newt.rename_column('y_image_01','y_image')
+newt.rename_column('flux_auto_01','flux_auto')
+newt.rename_column('fluxerr_auto_01','fluxerr_auto')
+newt.rename_column('x_new_01','x_new')
+newt.rename_column('y_new_01','y_new')
+newt.rename_column('nuv_01','nuv')
+newt.rename_column('gl_01','gl_sex')
+newt.rename_column('gb_01','gb_sex')
+newt.rename_column('ra_01','ra_sex')
+newt.rename_column('dec_01','dec_sex')
+newt.rename_column('ra','ra_2mass')
+newt.rename_column('dec','dec_2mass')
+newt.rename_column('j_m','j')
+newt.rename_column('h_m','h')
+newt.rename_column('k_m','k')
 
 
 ####################################################################
