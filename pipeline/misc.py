@@ -339,51 +339,49 @@ plt.show()
 ####################################################################
 # Import different Jlim and arcsec search radii from 2MASS
 ####################################################################
-from astropy.io import ascii
-a2125 = Table.read('newfield_ipac_2mass_matches_2arcsec_J_lt12.5.txt',format='ascii')
-a213 = Table.read('newfield_ipac_2mass_matches_2arcsec_J_lt13.txt',format='ascii')
-a2135 = Table.read('newfield_ipac_2mass_matches_2arcsec_J_lt13.5.txt',format='ascii')
-a214 = Table.read('newfield_ipac_2mass_matches_2arcsec_J_lt14.txt',format='ascii')
-a2145 = Table.read('newfield_ipac_2mass_matches_2arcsec_J_lt14.5.txt',format='ascii')
-b3125 = Table.read('newfield_ipac_2mass_matches_3arcsec_J_lt12.5.txt',format='ascii')
-b313 = Table.read('newfield_ipac_2mass_matches_3arcsec_J_lt13.txt',format='ascii')
-b3135 = Table.read('newfield_ipac_2mass_matches_3arcsec_J_lt13.5.txt',format='ascii')
-b314 = Table.read('newfield_ipac_2mass_matches_3arcsec_J_lt14.txt',format='ascii')
-b3145 = Table.read('newfield_ipac_2mass_matches_3arcsec_J_lt14.5.txt',format='ascii')
-c4125 = Table.read('newfield_ipac_2mass_matches_4arcsec_J_lt12.5.txt',format='ascii')
-c413 = Table.read('newfield_ipac_2mass_matches_4arcsec_J_lt13.txt',format='ascii')
-c4135 = Table.read('newfield_ipac_2mass_matches_4arcsec_J_lt13.5.txt',format='ascii')
-c414 = Table.read('newfield_ipac_2mass_matches_4arcsec_J_lt14.txt',format='ascii')
-c4145 = Table.read('newfield_ipac_2mass_matches_4arcsec_J_lt14.5.txt',format='ascii')
+a2125 = Table.read('newfield_gal_ipac_2mass_matches_2arcsec_j_lt12.5_tests.txt',format='ascii')
+a213 = Table.read('newfield_gal_ipac_2mass_matches_2arcsec_j_lt13_tests.txt',format='ascii')
+a2135 = Table.read('newfield_gal_ipac_2mass_matches_2arcsec_j_lt13.5_tests.txt',format='ascii')
+a214 = Table.read('newfield_gal_ipac_2mass_matches_2arcsec_j_lt14_tests.txt',format='ascii')
+a2145 = Table.read('newfield_gal_ipac_2mass_matches_2arcsec_j_lt14.5_tests.txt',format='ascii')
+b3125 = Table.read('newfield_gal_ipac_2mass_matches_3arcsec_j_lt12.5_tests.txt',format='ascii')
+b313 = Table.read('newfield_gal_ipac_2mass_matches_3arcsec_j_lt13_tests.txt',format='ascii')
+b3135 = Table.read('newfield_gal_ipac_2mass_matches_3arcsec_j_lt13.5_tests.txt',format='ascii')
+b314 = Table.read('newfield_gal_ipac_2mass_matches_3arcsec_j_lt14_tests.txt',format='ascii')
+b3145 = Table.read('newfield_gal_ipac_2mass_matches_3arcsec_j_lt14.5_tests.txt',format='ascii')
+c4125 = Table.read('newfield_gal_ipac_2mass_matches_4arcsec_j_lt12.5_tests.txt',format='ascii')
+c413 = Table.read('newfield_gal_ipac_2mass_matches_4arcsec_j_lt13_tests.txt',format='ascii')
+c4135 = Table.read('newfield_gal_ipac_2mass_matches_4arcsec_j_lt13.5_tests.txt',format='ascii')
+c414 = Table.read('newfield_gal_ipac_2mass_matches_4arcsec_j_lt14_tests.txt',format='ascii')
+c4145 = Table.read('newfield_gal_ipac_2mass_matches_4arcsec_j_lt14.5_tests.txt',format='ascii')
 
 
 #Plot radius search vs J mag search limits 
 files = [a2125,a213,a2135,a214,a2145,b3125,b313,b3135,b314,b3145,c4125,c413,c4135,c414,c4145]
 jlim = [12.5,13,13.5,14,14.5,12.5,13,13.5,14,14.5,12.5,13,13.5,14,14.5]
 arcsec = [2,2,2,2,2,3,3,3,3,3,4,4,4,4,4]
-dx = []
-for i in files:
-    dx.append(np.median(i['dist_x']))
-
-plt.scatter(jlim,dx,c=arcsec,edgecolor='none',s=40)
-plt.xlabel('Jlim [mag]')
-plt.ylabel('dist_x [arcsec]')
-cm = plt.colorbar()
-cm.set_label('Limiting radius [arcsec]')
-for i in range(len(files)):
-    plt.annotate(str(len(files[i])),xy=(jlim[i]+0.05,dx[i]))
-plt.show()
-
 
 # Field density plot vs J mag search limits
-field = (6*5.5)*3*3600./2
-denlo,denhi = [],[]
+field = (20*7.4)*3600.
+den, denlo,denhi = [],[],[]
 for i in files:
+    den.append(len(i)/field)    
     denlo.append(len(i[np.where(np.abs(i['gb_sex']) < 5.)])/field)
     denhi.append(len(i[np.where(np.abs(i['gb_sex']) > 5.)])/field)
 
-plt.scatter(jlim,denlo,c=arcsec,edgecolor='none',s=80,marker='s',label='b < 5')
-plt.scatter(jlim,denhi,c=arcsec,edgecolor='none',s=80,marker='o',label='b > 5')
+# For whole field
+plt.scatter(jlim,den,c=arcsec,edgecolor='none',s=40)
+plt.xlabel('Jlim [mag]')
+plt.ylabel('Counts/area [#/arcsec$^2$]')
+cm = plt.colorbar()
+cm.set_label('Limiting radius [arcsec]')
+for i in range(len(files)):
+    plt.annotate(str(len(files[i])),xy=(jlim[i]+0.05,den[i]))
+plt.show()
+
+# Now broken up by lower/upper galactic plane
+plt.scatter(jlim,denlo,c=arcsec,edgecolor='none',s=80,marker='s',label='abs(b) < 5')
+plt.scatter(jlim,denhi,c=arcsec,edgecolor='none',s=80,marker='o',label='abs(b) > 5')
 plt.xlabel('Jlim [mag]')
 plt.ylabel('Counts/area [#/arcsec$^2$]')
 cm = plt.colorbar()
@@ -583,4 +581,20 @@ plt.ylim((-6,3))
 plt.axhline(y=0,c='black')
 plt.legend(loc=3,scatterpoints=1)
 plt.show()
+
+
+
+ccut = np.where(c['g_AB']-c['i_AB'] < 0)
+
+plt.scatter(c['g_AB']-c['i_AB'],c['nuv']-c['g_AB'],edgecolor='none',facecolor='blue',alpha=0.3,label='All VPHAS')
+plt.scatter(c['g_AB'][ccut]-c['i_AB'][ccut],c['nuv'][ccut]-c['g_AB'][ccut],edgecolor='none',facecolor='red',label='NUV < 16')
+plt.xlim((-0.5,2.5))
+plt.ylim((-3,6.5))
+plt.ylabel('NUV - g (ABmag)')
+plt.xlabel('g - i (ABmag)')
+plt.legend(loc=2,scatterpoints=1)
+plt.gca().invert_yaxis()
+
+plt.show()
+
 
