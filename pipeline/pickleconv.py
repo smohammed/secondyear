@@ -149,16 +149,16 @@ ib = [x/ifiltsum for x in ib]
 
 pbands = Table([nuv, b, v, j, h, k, u, g, r, ib], names=('nuv', 'b', 'v', 'j', 'h', 'k', 'u', 'g', 'r', 'i'))
 
-nuvfilt['col2'] = nuvfilt['col2']+0.00001
-bfilt['col2'] = bfilt['col2']+0.00001
-vfilt['col2'] = vfilt['col2']+0.00001
-jfilt['col2'] = jfilt['col2']+0.00001
-hfilt['col2'] = hfilt['col2']+0.00001
-kfilt['col2'] = kfilt['col2']+0.00001
-ufilt['col2'] = ufilt['col2']+0.00001
-gfilt['col2'] = gfilt['col2']+0.00001
-rfilt['col2'] = rfilt['col2']+0.00001
-ifilt['col2'] = ifilt['col2']+0.00001
+nuvfilt['col2'] = nuvfilt['col2']+0.0000001
+bfilt['col2'] = bfilt['col2']+0.0000001
+vfilt['col2'] = vfilt['col2']+0.0000001
+jfilt['col2'] = jfilt['col2']+0.0000001
+hfilt['col2'] = hfilt['col2']+0.0000001
+kfilt['col2'] = kfilt['col2']+0.0000001
+ufilt['col2'] = ufilt['col2']+0.0000001
+gfilt['col2'] = gfilt['col2']+0.0000001
+rfilt['col2'] = rfilt['col2']+0.0000001
+ifilt['col2'] = ifilt['col2']+0.0000001
 
 nuvlamb = np.sqrt(np.sum(nuvfilt['col2'])/(np.sum(nuvfilt['col2']*(nuvfilt['col1']+0.0)**-2)))
 blamb = np.sqrt(np.sum(bfilt['col2'])/(np.sum(bfilt['col2']*(bfilt['col1']+0.0)**-2)))
@@ -200,4 +200,4 @@ ib = -2.5*np.log10(pbands['i']*3.34*10**4 * (ilamb)**2) + 9.205
 
 
 data = [name, nuv, b, v, j, h, k, u, g, r, ib]
-ascii.write(data, '../picklemags_laphare.txt', names=['name', 'nuv', 'b', 'v', 'j', 'h', 'k','u', 'g', 'r', 'i'])
+ascii.write(data, '../picklemags_laphare_test.txt', names=['name', 'nuv', 'b', 'v', 'j', 'h', 'k','u', 'g', 'r', 'i'])
