@@ -147,21 +147,6 @@ g = [x/gfiltsum for x in g]
 r = [x/rfiltsum for x in r]
 ib = [x/ifiltsum for x in ib]
 
-# Old way
-'''
-name,nuv,b,v,j,h,k = [],[],[],[],[],[],[]
-picklefiles = np.loadtxt('PICKLES/pickles.txt', dtype='string')
-for i in picklefiles:
-    a = Table.read('PICKLES/'+i,format='ascii')
-    name.append(i)
-    nuv.append(a['col2'][224])
-    b.append(a['col2'][641])
-    v.append(a['col2'][781])
-    j.append(a['col2'][2241])
-    h.append(a['col2'][3095])
-    k.append(a['col2'][4089])
-'''
-
 pbands = Table([nuv, b, v, j, h, k, u, g, r, ib], names=('nuv', 'b', 'v', 'j', 'h', 'k', 'u', 'g', 'r', 'i'))
 
 nuvfilt['col2'] = nuvfilt['col2']+0.00001
@@ -190,16 +175,6 @@ ilamb = np.sqrt(np.sum(ifilt['col2'])/(np.sum(ifilt['col2']*(ifilt['col1']+0.0)*
 ##########################################################################
 # convert f_lambda to f_v, divide by 0 point, then conv to Jy. 1 Jy = 10^-23 erg/s/Hz/cm^2
 ##########################################################################
-
-#nuv = -2.5*np.log10((((pbands['nuv']-(2.22*10**-8))*3.34*10**4*(2300)**2))*10**-23)-48.6
-
-# Wavelengths in A
-#nuv = -2.5*np.log10(((pbands['nuv'] * 3.34*10**4 * (2300)**2)) * 10**-23) - 48.6
-#b = -2.5*np.log10(pbands['b'] * 3.34*10**4 * (4350)**2 * 10**-23) - 48.6
-#v = -2.5*np.log10(pbands['v'] * 3.34*10**4 * (5050)**2 * 10**-23) - 48.6
-#j = -2.5*np.log10(((pbands['j']*3.34*10**4 * (12350)**2) / 1594) * 10**-23) - 48.6
-#h = -2.5*np.log10(((pbands['h']*3.34*10**4 * (16620)**2) / 1024) * 10**-23) - 48.6
-#k = -2.5*np.log10(((pbands['k']*3.34*10**4 * (21590)**2) / 666.7) * 10**-23) - 48.6
 '''
 nuv = -2.5*np.log10(pbands['nuv'] * 3.34*10**4 * (2300)**2) + 8.9
 b = -2.5*np.log10(pbands['b'] * 3.34*10**4 * (4350)**2) + 8.9

@@ -583,18 +583,97 @@ plt.legend(loc=3,scatterpoints=1)
 plt.show()
 
 
+# GALEX, Pickles, SExtractor order
+nuv = ['nuv_mag', 'nuv', 'nuv', 2.9720]
+b = ['BJmag', 'b', 'BJmag', 1.3429]
+v = ['VJmag', 'v', 'VJmag', 1.0]
+j = ['j', 'j', 'j', 0.2876]
+h = ['h', 'h', 'h', 0.1783]
+k = ['k', 'k', 'k', 0.1170]
+u = ['u','u','u',1.5916]
+g = ['g','g','g',1.1838]
+r = ['r','r','r',0.8664]
+ib  = ['i','i','i',0.6418]
 
-ccut = np.where(c['g_AB']-c['i_AB'] < 0)
 
-plt.scatter(c['g_AB']-c['i_AB'],c['nuv']-c['g_AB'],edgecolor='none',facecolor='blue',alpha=0.3,label='All VPHAS')
-plt.scatter(c['g_AB'][ccut]-c['i_AB'][ccut],c['nuv'][ccut]-c['g_AB'][ccut],edgecolor='none',facecolor='red',label='NUV < 16')
-plt.xlim((-0.5,2.5))
-plt.ylim((-3,6.5))
+
+plt.scatter(sexv['g_AB']-sexv['i_AB'],sexv['nuv']-sexv['g_AB'],edgecolor='none',facecolor='blue',alpha=0.3,label='VPHAS')
+plt.scatter(starv[cut]['g_AB']-starv[cut]['i_AB'],starv[cut]['nuv']-starv[cut]['g_AB'],edgecolor='none',facecolor='red',label='VPHAS + 2MASS')
+plt.xlim((-2,3))
+plt.ylim((-2,8))
 plt.ylabel('NUV - g (ABmag)')
 plt.xlabel('g - i (ABmag)')
-plt.legend(loc=2,scatterpoints=1)
+plt.legend(loc=3,scatterpoints=1)
 plt.gca().invert_yaxis()
+plt.scatter(pickles['g']-pickles['i'], pickles['nuv']-pickles['g'], c='black', s=10)
+
+plt.arrow(-1.5, 4,g[3]-ib[3], nuv[3]-g[3], head_length=1.,head_width=0.07,color='black')
+
+for j in range(len(pickles)):
+        plt.annotate(pickles['name'][j], xy=(pickles['g'][j]-pickles['i'][j], pickles['nuv'][j]-pickles['g'][j]), size=12)
 
 plt.show()
 
 
+
+cut = np.where(starv['j']-starv['k'] > 0.6)
+plt.scatter(sexv['nuv']-sexv['g_AB'],sexv['g_AB']-sexv['r_AB'],edgecolor='none',alpha=0.3,label='VPHAS')
+plt.scatter(starv['nuv']-starv['g_AB'],starv['g_AB']-starv['r_AB'],edgecolor='none',facecolor='red',alpha=0.3,label='VPHAS+2MASS')
+plt.xlabel('NUV - g (ABmag)')
+plt.ylabel('g - r (ABmag)')
+plt.xlim((-3,9))
+plt.ylim((-1,2))
+plt.scatter(pickles['nuv']-pickles['g'], pickles['g']-pickles['r'], c='black', s=10)
+
+plt.arrow(4, -0.75,nuv[3]-g[3], g[3]-r[3], head_length=1.,head_width=0.07,color='black')
+
+plt.legend(scatterpoints=1,loc=4)
+
+
+for j in range(len(pickles)):
+        plt.annotate(pickles['name'][j], xy=(pickles['nuv'][j]-pickles['g'][j], pickles['g'][j]-pickles['r'][j]), size=12)
+
+plt.show()
+
+
+
+plt.scatter(starv['j']-starv['k'],starv['nuv']-starv['j'],edgecolor='none',alpha=0.3,label='2MASS+VPHAS')
+plt.scatter(starv['j'][a]-starv['k'][a],starv['nuv'][a]-starv['j'][a],edgecolor='none',facecolor='red',label='NUV - g < 3')
+
+
+plt.xlim((-0.25, 2.5))
+plt.ylim((0, 14))
+plt.ylabel('NUV - J')
+plt.xlabel('J - K')
+plt.legend(scatterpoints=1)
+plt.scatter(pickles['j']-pickles['k'], pickles['nuv']-pickles['j'], c='black', s=10)
+plt.axhline(y=4,color='black')
+
+plt.arrow(-0.1, 8, 0.2876-0.1170, 2.9720-0.2876, head_length=1.,head_width=0.07,color='black')
+
+
+plt.show()
+
+# GALEX, Pickles, SExtractor order
+nuv = ['nuv_mag', 'nuv', 'nuv', 2.9720]
+b = ['BJmag', 'b', 'BJmag', 1.3429]
+v = ['VJmag', 'v', 'VJmag', 1.0]
+j = ['j', 'j', 'j', 0.2876]
+h = ['h', 'h', 'h', 0.1783]
+k = ['k', 'k', 'k', 0.1170]
+u = ['u','u_AB','u_AB',1.5916]
+g = ['g','g_AB','g_AB',1.1838]
+r = ['r','r_AB','r_AB',0.8664]
+ib  = ['i','i_AB','i_AB',0.6418]
+
+if nuvjvsjk == 1:
+    x1 = j
+    x2 = k
+    y1 = nuv
+    y2 = j
+    extx = -0.1
+    exty = 8
+    #extx = 0.08
+    #exty = 3.5
+    extdx = x1[3] - x2[3]
+    extdy = y1[3] - y2[3]
