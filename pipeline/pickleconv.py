@@ -104,16 +104,16 @@ rfilt = rfilt[r_filtind]
 ifilt = ifilt[i_filtind]
 
 # Compute sums for denominator
-nuvfiltsum = np.sum(nuvfilt['col2'])
-bfiltsum = np.sum(bfilt['col2'])
-vfiltsum = np.sum(vfilt['col2'])
-jfiltsum = np.sum(jfilt['col2'])
-hfiltsum = np.sum(hfilt['col2'])
-kfiltsum = np.sum(kfilt['col2'])
-ufiltsum = np.sum(ufilt['col2'])
-gfiltsum = np.sum(gfilt['col2'])
-rfiltsum = np.sum(rfilt['col2'])
-ifiltsum = np.sum(ifilt['col2'])
+nuvfiltsum = np.sum(nuvfilt['col2']/nuvfilt['col1'])
+bfiltsum = np.sum(bfilt['col2']/bfilt['col1'])
+vfiltsum = np.sum(vfilt['col2']/vfilt['col1'])
+jfiltsum = np.sum(jfilt['col2']/jfilt['col1'])
+hfiltsum = np.sum(hfilt['col2']/hfilt['col1'])
+kfiltsum = np.sum(kfilt['col2']/kfilt['col1'])
+ufiltsum = np.sum(ufilt['col2']/ufilt['col1'])
+gfiltsum = np.sum(gfilt['col2']/gfilt['col1'])
+rfiltsum = np.sum(rfilt['col2']/rfilt['col1'])
+ifiltsum = np.sum(ifilt['col2']/ifilt['col1'])
 
 
 # Now compute numerator
@@ -123,16 +123,16 @@ picklefiles = np.loadtxt('../PICKLES/pickles.txt', dtype='string')
 for i in picklefiles:
     table = Table.read('../PICKLES/'+i, format='ascii')
     name.append(i[:-4])
-    nuv.append(np.sum(table['col2'][nuv_starind] * nuvfilt['col2']*nuvfilt['col1']**2))
-    b.append(np.sum(table['col2'][b_starind] * bfilt['col2']*bfilt['col1']**2))
-    v.append(np.sum(table['col2'][v_starind] * vfilt['col2']*vfilt['col1']**2))
-    j.append(np.sum(table['col2'][j_starind] * jfilt['col2']*jfilt['col1']**2))
-    h.append(np.sum(table['col2'][h_starind] * hfilt['col2']*hfilt['col1']**2))
-    k.append(np.sum(table['col2'][k_starind] * kfilt['col2']*kfilt['col1']**2))
-    u.append(np.sum(table['col2'][u_starind] * ufilt['col2']*ufilt['col1']**2))
-    g.append(np.sum(table['col2'][g_starind] * gfilt['col2']*gfilt['col1']**2))
-    r.append(np.sum(table['col2'][r_starind] * rfilt['col2']*rfilt['col1']**2))
-    ib.append(np.sum(table['col2'][i_starind] * ifilt['col2']*ifilt['col1']**2))
+    nuv.append(np.sum(table['col2'][nuv_starind] * nuvfilt['col2']*nuvfilt['col1']))
+    b.append(np.sum(table['col2'][b_starind] * bfilt['col2']*bfilt['col1']))
+    v.append(np.sum(table['col2'][v_starind] * vfilt['col2']*vfilt['col1']))
+    j.append(np.sum(table['col2'][j_starind] * jfilt['col2']*jfilt['col1']))
+    h.append(np.sum(table['col2'][h_starind] * hfilt['col2']*hfilt['col1']))
+    k.append(np.sum(table['col2'][k_starind] * kfilt['col2']*kfilt['col1']))
+    u.append(np.sum(table['col2'][u_starind] * ufilt['col2']*ufilt['col1']))
+    g.append(np.sum(table['col2'][g_starind] * gfilt['col2']*gfilt['col1']))
+    r.append(np.sum(table['col2'][r_starind] * rfilt['col2']*rfilt['col1']))
+    ib.append(np.sum(table['col2'][i_starind] * ifilt['col2']*ifilt['col1']))
 
 
 # Now compute f_lambda
@@ -204,9 +204,9 @@ nuv = -2.5*np.log10(pbands['nuv']) + 8.9
 b = -2.5*np.log10(pbands['b']) + 8.9
 v = -2.5*np.log10(pbands['v']) + 8.9
 
-j = -2.5*np.log10(pbands['j']) + 7.96
-h = -2.5*np.log10(pbands['h']) + 7.526
-k = -2.5*np.log10(pbands['k']) + 7.060
+j = -2.5*np.log10(pbands['j']) + 8.9
+h = -2.5*np.log10(pbands['h']) + 8.9
+k = -2.5*np.log10(pbands['k']) + 8.9
 
 u = -2.5*np.log10(pbands['u']) + 8.9
 g = -2.5*np.log10(pbands['g']) + 8.9
