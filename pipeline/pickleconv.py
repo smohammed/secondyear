@@ -123,16 +123,16 @@ picklefiles = np.loadtxt('../PICKLES/pickles.txt', dtype='string')
 for i in picklefiles:
     table = Table.read('../PICKLES/'+i, format='ascii')
     name.append(i[:-4])
-    nuv.append(np.sum(table['col2'][nuv_starind] * nuvfilt['col2']))
-    b.append(np.sum(table['col2'][b_starind] * bfilt['col2']))
-    v.append(np.sum(table['col2'][v_starind] * vfilt['col2']))
-    j.append(np.sum(table['col2'][j_starind] * jfilt['col2']))
-    h.append(np.sum(table['col2'][h_starind] * hfilt['col2']))
-    k.append(np.sum(table['col2'][k_starind] * kfilt['col2']))
-    u.append(np.sum(table['col2'][u_starind] * ufilt['col2']))
-    g.append(np.sum(table['col2'][g_starind] * gfilt['col2']))
-    r.append(np.sum(table['col2'][r_starind] * rfilt['col2']))
-    ib.append(np.sum(table['col2'][i_starind] * ifilt['col2']))
+    nuv.append(np.sum(table['col2'][nuv_starind] * nuvfilt['col2']*nuvfilt['col1']**2))
+    b.append(np.sum(table['col2'][b_starind] * bfilt['col2']*bfilt['col1']**2))
+    v.append(np.sum(table['col2'][v_starind] * vfilt['col2']*vfilt['col1']**2))
+    j.append(np.sum(table['col2'][j_starind] * jfilt['col2']*jfilt['col1']**2))
+    h.append(np.sum(table['col2'][h_starind] * hfilt['col2']*hfilt['col1']**2))
+    k.append(np.sum(table['col2'][k_starind] * kfilt['col2']*kfilt['col1']**2))
+    u.append(np.sum(table['col2'][u_starind] * ufilt['col2']*ufilt['col1']**2))
+    g.append(np.sum(table['col2'][g_starind] * gfilt['col2']*gfilt['col1']**2))
+    r.append(np.sum(table['col2'][r_starind] * rfilt['col2']*rfilt['col1']**2))
+    ib.append(np.sum(table['col2'][i_starind] * ifilt['col2']*ifilt['col1']**2))
 
 
 # Now compute f_lambda
@@ -160,6 +160,7 @@ gfilt['col2'] = gfilt['col2']+0.0000001
 rfilt['col2'] = rfilt['col2']+0.0000001
 ifilt['col2'] = ifilt['col2']+0.0000001
 
+# Compute lambda
 nuvlamb = np.sqrt(np.sum(nuvfilt['col2'])/(np.sum(nuvfilt['col2']*(nuvfilt['col1']+0.0)**-2)))
 blamb = np.sqrt(np.sum(bfilt['col2'])/(np.sum(bfilt['col2']*(bfilt['col1']+0.0)**-2)))
 vlamb = np.sqrt(np.sum(vfilt['col2'])/(np.sum(vfilt['col2']*(vfilt['col1']+0.0)**-2)))
@@ -184,8 +185,8 @@ h = -2.5*np.log10(pbands['h']*3.34*10**4 * (16620)**2) + 7.526
 k = -2.5*np.log10(pbands['k']*3.34*10**4 * (21590)**2) + 7.060
 '''
 
+'''
 nuv = -2.5*np.log10(pbands['nuv'] * 3.34*10**4 * (nuvlamb)**2) + 8.9
-
 b = -2.5*np.log10(pbands['b'] * 3.34*10**4 * (blamb)**2) + 8.9
 v = -2.5*np.log10(pbands['v'] * 3.34*10**4 * (vlamb)**2) + 8.9
 
@@ -197,6 +198,20 @@ u = -2.5*np.log10(pbands['u']*3.34*10**4 * (ulamb)**2) + 8.9
 g = -2.5*np.log10(pbands['g']*3.34*10**4 * (glamb)**2) + 8.923
 r = -2.5*np.log10(pbands['r']*3.34*10**4 * (rlamb)**2) + 9.130
 ib = -2.5*np.log10(pbands['i']*3.34*10**4 * (ilamb)**2) + 9.205
+'''
+
+nuv = -2.5*np.log10(pbands['nuv']) + 8.9
+b = -2.5*np.log10(pbands['b']) + 8.9
+v = -2.5*np.log10(pbands['v']) + 8.9
+
+j = -2.5*np.log10(pbands['j']) + 7.96
+h = -2.5*np.log10(pbands['h']) + 7.526
+k = -2.5*np.log10(pbands['k']) + 7.060
+
+u = -2.5*np.log10(pbands['u']) + 8.9
+g = -2.5*np.log10(pbands['g']) + 8.9
+r = -2.5*np.log10(pbands['r']) + 8.9
+ib = -2.5*np.log10(pbands['i'])+ 8.9
 
 
 data = [name, nuv, b, v, j, h, k, u, g, r, ib]
