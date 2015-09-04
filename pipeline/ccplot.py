@@ -5,19 +5,17 @@ import matplotlib
 matplotlib.rcParams['figure.figsize'] = 16, 8
 matplotlib.rcParams['font.size'] = 20
 
-nuvjvsjk = 0
-nuvbvsbv = 1
+nuvjvsjk = 1
+nuvbvsbv = 0
 jhvshk = 0
 grvsnuvg = 0
 
 
 #star = Table.read('newfield_gal_2mass_t2_jlim_13.5_3arcsec.txt', format='ascii')
-#star = Table.read('newfield_2mass_t2_jlim_13.5_3arcsec.txt', format='ascii')
 
+star = Table.read('newfield_gal_ipac_2mass_matches_3arcsec_j_lt13.5_tests.txt',format='ascii')
 newt = Table.read('galex0data_2mass_t2.txt', format='ascii')
-pickles = Table.read('picklemags_laphare.txt', format='ascii')
-
-#star['nuv'] = star['nuv'] - 0.5
+pickles = Table.read('picklemags_laphare_test.txt', format='ascii')
 
 # Set range
 scut = np.where((star['gb_sex'] > -10) & (star['gb_sex'] < -5))
@@ -89,6 +87,12 @@ if grvsnuvg == 1:
 f, ((ax1, ax2), (ax3, ax4)) = plt.subplots(2, 2, sharex='col', sharey='row')
 plt.rc('legend', **{'fontsize': 15})
 
+# SExtractor
+a1 = ax1.scatter(star[x1[2]][scut]-star[x2[2]][scut], star[y1[2]][scut]-star[y2[2]][scut], edgecolor='none', alpha=0.3)
+b1 = ax2.scatter(star[x1[2]][scut2]-star[x2[2]][scut2], star[y1[2]][scut2]-star[y2[2]][scut2], edgecolor='none', alpha=0.3)
+c1 = ax3.scatter(star[x1[2]][scut3]-star[x2[2]][scut3], star[y1[2]][scut3]-star[y2[2]][scut3], edgecolor='none', alpha=0.3)
+d1 = ax4.scatter(star[x1[2]][scut4]-star[x2[2]][scut4], star[y1[2]][scut4]-star[y2[2]][scut4], edgecolor='none', alpha=0.3)
+
 
 # GALEX data
 a2 = ax1.scatter(newt[x1[0]][ncut]-newt[x2[0]][ncut], newt[y1[0]][ncut]-newt[y2[0]][ncut], facecolor='red', edgecolor='none', s=30, alpha=0.3)
@@ -96,33 +100,27 @@ b2 = ax2.scatter(newt[x1[0]][ncut2]-newt[x2[0]][ncut2], newt[y1[0]][ncut2]-newt[
 c2 = ax3.scatter(newt[x1[0]][ncut3]-newt[x2[0]][ncut3], newt[y1[0]][ncut3]-newt[y2[0]][ncut3], facecolor='red', edgecolor='none', s=30, alpha=0.3)
 d2 = ax4.scatter(newt[x1[0]][ncut4]-newt[x2[0]][ncut4], newt[y1[0]][ncut4]-newt[y2[0]][ncut4], facecolor='red', edgecolor='none', s=30, alpha=0.3)
 
-
-# SExtractor
-a1 = ax1.scatter(star[x1[2]][scut]-star[x2[2]][scut], star[y1[2]][scut]-star[y2[2]][scut], edgecolor='none', alpha=0.3)
-b1 = ax2.scatter(star[x1[2]][scut2]-star[x2[2]][scut2], star[y1[2]][scut2]-star[y2[2]][scut2], edgecolor='none', alpha=0.3)
-c1 = ax3.scatter(star[x1[2]][scut3]-star[x2[2]][scut3], star[y1[2]][scut3]-star[y2[2]][scut3], edgecolor='none', alpha=0.3)
-d1 = ax4.scatter(star[x1[2]][scut4]-star[x2[2]][scut4], star[y1[2]][scut4]-star[y2[2]][scut4], edgecolor='none', alpha=0.3)
-
 #Pickles
-
 a3 = ax1.scatter(pickles[x1[1]]-pickles[x2[1]], pickles[y1[1]]-pickles[y2[1]], c='black', s=10)
 b3 = ax2.scatter(pickles[x1[1]]-pickles[x2[1]], pickles[y1[1]]-pickles[y2[1]], c='black', s=10)
 c3 = ax3.scatter(pickles[x1[1]]-pickles[x2[1]], pickles[y1[1]]-pickles[y2[1]], c='black', s=10)
 d3 = ax4.scatter(pickles[x1[1]]-pickles[x2[1]], pickles[y1[1]]-pickles[y2[1]], c='black', s=10)
 
 
-for j in range(len(pickles)):
-    ax1.annotate(pickles['name'][j], xy=(pickles[x1[1]][j]-pickles[x2[1]][j], pickles[y1[1]][j]-pickles[y2[1]][j]), size=12)
-    ax2.annotate(pickles['name'][j], xy=(pickles[x1[1]][j]-pickles[x2[1]][j], pickles[y1[1]][j]-pickles[y2[1]][j]), size=12)
-    ax3.annotate(pickles['name'][j], xy=(pickles[x1[1]][j]-pickles[x2[1]][j], pickles[y1[1]][j]-pickles[y2[1]][j]), size=12)
-    ax4.annotate(pickles['name'][j], xy=(pickles[x1[1]][j]-pickles[x2[1]][j], pickles[y1[1]][j]-pickles[y2[1]][j]), size=12)
+for j in range(0, len(pickles), 10):
+    ax1.annotate(pickles['name'][j], xy=((pickles[x1[1]][j]-pickles[x2[1]][j])+0.01, (pickles[y1[1]][j]-pickles[y2[1]][j])+0.07), size=15)
+    ax2.annotate(pickles['name'][j], xy=((pickles[x1[1]][j]-pickles[x2[1]][j])+0.01, (pickles[y1[1]][j]-pickles[y2[1]][j])+0.07), size=15)
+    ax3.annotate(pickles['name'][j], xy=((pickles[x1[1]][j]-pickles[x2[1]][j])+0.01, (pickles[y1[1]][j]-pickles[y2[1]][j])+0.07), size=15)
+    ax4.annotate(pickles['name'][j], xy=((pickles[x1[1]][j]-pickles[x2[1]][j])+0.01, (pickles[y1[1]][j]-pickles[y2[1]][j])+0.07), size=15)
+
+
 
 
 # Add Extinction vector
-ax1.arrow(extx, exty, extdx, extdy, head_length=1.,head_width=0.07,color='black')
-ax2.arrow(extx, exty, extdx, extdy, head_length=1.,head_width=0.07,color='black')
-ax3.arrow(extx, exty, extdx, extdy, head_length=1.,head_width=0.07,color='black')
-ax4.arrow(extx, exty, extdx, extdy, head_length=1.,head_width=0.07,color='black')
+ax1.arrow(extx, exty, extdx, extdy, head_length=0.1,head_width=0.07,color='black')
+ax2.arrow(extx, exty, extdx, extdy, head_length=0.1,head_width=0.07,color='black')
+ax3.arrow(extx, exty, extdx, extdy, head_length=0.1,head_width=0.07,color='black')
+ax4.arrow(extx, exty, extdx, extdy, head_length=0.1,head_width=0.07,color='black')
 
 # Set all labels
 ax1.set_title('3", J < 13.5, -10 < gb < -5')
@@ -133,13 +131,13 @@ ax4.set_title('5 < gb < 10')
 
 if nuvjvsjk == 1:
     ax1.set_xlim((-0.25, 2.5))
-    ax1.set_ylim((0, 14))
+    ax1.set_ylim((-2, 16))
     ax2.set_xlim((-0.25, 2.5))
-    ax2.set_ylim((0, 14))
+    ax2.set_ylim((-2, 16))
     ax3.set_xlim((-0.25, 2.5))
-    ax3.set_ylim((0, 14))
+    ax3.set_ylim((-2, 16))
     ax4.set_xlim((-0.25, 2.5))
-    ax4.set_ylim((0, 14))
+    ax4.set_ylim((-2, 16))
     ax1.set_ylabel('NUV - J')
     ax3.set_xlabel('J - K')
     ax3.set_ylabel('NUV - J')

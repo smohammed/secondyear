@@ -598,7 +598,7 @@ ib  = ['i','i','i',0.6418]
 
 
 plt.scatter(sexv['g_AB']-sexv['i_AB'],sexv['nuv']-sexv['g_AB'],edgecolor='none',facecolor='blue',alpha=0.3,label='VPHAS')
-plt.scatter(starv[cut]['g_AB']-starv[cut]['i_AB'],starv[cut]['nuv']-starv[cut]['g_AB'],edgecolor='none',facecolor='red',label='VPHAS + 2MASS')
+plt.scatter(starv['g_AB']-starv['i_AB'],starv['nuv']-starv['g_AB'],edgecolor='none',facecolor='red',label='VPHAS + 2MASS',alpha=0.3)
 plt.xlim((-2,3))
 plt.ylim((-2,8))
 plt.ylabel('NUV - g (ABmag)')
@@ -607,16 +607,19 @@ plt.legend(loc=3,scatterpoints=1)
 plt.gca().invert_yaxis()
 plt.scatter(pickles['g']-pickles['i'], pickles['nuv']-pickles['g'], c='black', s=10)
 
-plt.arrow(-1.5, 4,g[3]-ib[3], nuv[3]-g[3], head_length=1.,head_width=0.07,color='black')
+plt.arrow(-1.5, 4,g[3]-ib[3], nuv[3]-g[3], head_length=0.1,head_width=0.07,color='black')
 
-for j in range(len(pickles)):
-        plt.annotate(pickles['name'][j], xy=(pickles['g'][j]-pickles['i'][j], pickles['nuv'][j]-pickles['g'][j]), size=12)
+for j in range(0,len(pickles),10):
+        plt.annotate(pickles['name'][j], xy=((pickles['g'][j]-pickles['i'][j])+0.01, (pickles['nuv'][j]-pickles['g'][j]) - 0.07), size=15)
+
 
 plt.show()
 
 
+#######################################################
+# g - r vs NUV - g
+#######################################################
 
-cut = np.where(starv['j']-starv['k'] > 0.6)
 plt.scatter(sexv['nuv']-sexv['g_AB'],sexv['g_AB']-sexv['r_AB'],edgecolor='none',alpha=0.3,label='VPHAS')
 plt.scatter(starv['nuv']-starv['g_AB'],starv['g_AB']-starv['r_AB'],edgecolor='none',facecolor='red',alpha=0.3,label='VPHAS+2MASS')
 plt.xlabel('NUV - g (ABmag)')
@@ -625,22 +628,64 @@ plt.xlim((-3,9))
 plt.ylim((-1,2))
 plt.scatter(pickles['nuv']-pickles['g'], pickles['g']-pickles['r'], c='black', s=10)
 
-plt.arrow(4, -0.75,nuv[3]-g[3], g[3]-r[3], head_length=1.,head_width=0.07,color='black')
+plt.arrow(4, -0.75,nuv[3]-g[3], g[3]-r[3], head_length=0.1,head_width=0.07,color='black')
 
-plt.legend(scatterpoints=1,loc=4)
+plt.legend(scatterpoints=1,loc=2)
 
+for j in range(0,len(pickles),10):
+        plt.annotate(pickles['name'][j], xy=((pickles['nuv'][j]-pickles['g'][j])+0.01, (pickles['g'][j]-pickles['r'][j]) - 0.07), size=15)
+plt.show()
 
-for j in range(len(pickles)):
-        plt.annotate(pickles['name'][j], xy=(pickles['nuv'][j]-pickles['g'][j], pickles['g'][j]-pickles['r'][j]), size=12)
+#######################################################
+# NUV - g vs g - i
+#######################################################
+plt.scatter(sexv['g_AB']-sexv['i_AB'],sexv['nuv']-sexv['g_AB'],edgecolor='none',facecolor='blue',alpha=0.3,label='VPHAS')
+plt.scatter(starv['g_AB']-starv['i_AB'],starv['nuv']-starv['g_AB'],edgecolor='none',facecolor='red',label='VPHAS + 2MASS',alpha=0.3)
+plt.xlim((-2,3))
+plt.ylim((-2,8))
+plt.ylabel('NUV - g (ABmag)')
+plt.xlabel('g - i (ABmag)')
+plt.legend(loc=3,scatterpoints=1)
+plt.gca().invert_yaxis()
+plt.scatter(pickles['g']-pickles['i'], pickles['nuv']-pickles['g'], c='black', s=10)
 
+plt.arrow(-1.5, 4,g[3]-ib[3], nuv[3]-g[3], head_length=0.1,head_width=0.07,color='black')
+
+for j in range(0,len(pickles),10):
+        plt.annotate(pickles['name'][j], xy=((pickles['g'][j]-pickles['i'][j])+0.01, (pickles['nuv'][j]-pickles['g'][j]) - 0.07), size=15)
 plt.show()
 
 
+#######################################################
+# g - r vs u - g
+#######################################################
 
+plt.scatter(sexv['u_AB']-sexv['g_AB'],sexv['g_AB']-sexv['r_AB'],edgecolor='none',alpha=0.3,label='VPHAS')
+#plt.scatter(starv['u_AB']-starv['g_AB'],starv['g_AB']-starv['r_AB'],edgecolor='none',facecolor='red',alpha=0.3,label='VPHAS+2MASS')
+
+cut = np.where(sexv['nuv'] - sexv['g_AB'] < 3)
+plt.scatter(sexv[cut]['u_AB']-sexv[cut]['g_AB'],sexv[cut]['g_AB']-sexv[cut]['r_AB'],edgecolor='none',facecolor='red',alpha=0.3,label='NUV - g < 3')
+
+plt.xlabel('u - g (ABmag)')
+plt.ylabel('g - r (ABmag)')
+plt.xlim((-1,4))
+plt.ylim((-1,2))
+plt.scatter(pickles['u']-pickles['g'], pickles['g']-pickles['r'], c='black', s=10)
+
+plt.arrow(2, -0.5,u[3]-g[3], g[3]-r[3], head_length=0.1,head_width=0.07,color='black')
+
+plt.legend(scatterpoints=1,loc=2)
+
+for j in range(0,len(pickles),10):
+        plt.annotate(pickles['name'][j], xy=((pickles['u'][j]-pickles['g'][j])+0.01, (pickles['g'][j]-pickles['r'][j]) - 0.07), size=15)
+plt.show()
+
+
+#######################################################
+# NUV - J vs J - K
+#######################################################
 plt.scatter(starv['j']-starv['k'],starv['nuv']-starv['j'],edgecolor='none',alpha=0.3,label='2MASS+VPHAS')
 plt.scatter(starv['j'][a]-starv['k'][a],starv['nuv'][a]-starv['j'][a],edgecolor='none',facecolor='red',label='NUV - g < 3')
-
-
 plt.xlim((-0.25, 2.5))
 plt.ylim((0, 14))
 plt.ylabel('NUV - J')
@@ -648,10 +693,7 @@ plt.xlabel('J - K')
 plt.legend(scatterpoints=1)
 plt.scatter(pickles['j']-pickles['k'], pickles['nuv']-pickles['j'], c='black', s=10)
 plt.axhline(y=4,color='black')
-
 plt.arrow(-0.1, 8, 0.2876-0.1170, 2.9720-0.2876, head_length=1.,head_width=0.07,color='black')
-
-
 plt.show()
 
 # GALEX, Pickles, SExtractor order
@@ -677,3 +719,5 @@ if nuvjvsjk == 1:
     #exty = 3.5
     extdx = x1[3] - x2[3]
     extdy = y1[3] - y2[3]
+
+
