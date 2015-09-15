@@ -242,24 +242,24 @@ plt.show()
 ####################################################################
 # Rename 2MASS catalog columns
 ####################################################################
-newt.rename_column('cntr_01','cntr')
-newt.rename_column('number_01','number')
-newt.rename_column('x_image_01','x_image')
-newt.rename_column('y_image_01','y_image')
-newt.rename_column('flux_auto_01','flux_auto')
-newt.rename_column('fluxerr_auto_01','fluxerr_auto')
-newt.rename_column('x_new_01','x_new')
-newt.rename_column('y_new_01','y_new')
-newt.rename_column('nuv_01','nuv')
-newt.rename_column('gl_01','gl_sex')
-newt.rename_column('gb_01','gb_sex')
-newt.rename_column('ra_01','ra_sex')
-newt.rename_column('dec_01','dec_sex')
-newt.rename_column('ra','ra_2mass')
-newt.rename_column('dec','dec_2mass')
-newt.rename_column('j_m','j')
-newt.rename_column('h_m','h')
-newt.rename_column('k_m','k')
+star.rename_column('cntr_01','cntr')
+star.rename_column('number_01','number')
+star.rename_column('x_image_01','x_image')
+star.rename_column('y_image_01','y_image')
+star.rename_column('flux_auto_01','flux_auto')
+star.rename_column('fluxerr_auto_01','fluxerr_auto')
+star.rename_column('x_new_01','x_new')
+star.rename_column('y_new_01','y_new')
+star.rename_column('nuv_01','nuv')
+star.rename_column('gl_01','gl_sex')
+star.rename_column('gb_01','gb_sex')
+star.rename_column('ra_01','ra_sex')
+star.rename_column('dec_01','dec_sex')
+star.rename_column('ra','ra_2mass')
+star.rename_column('dec','dec_2mass')
+star.rename_column('j_m','j')
+star.rename_column('h_m','h')
+star.rename_column('k_m','k')
 
 
 ####################################################################
@@ -526,6 +526,7 @@ galex2 = galex[galind]
 vgalex = vphas[vpasind]
 vgalex = hstack([galex2,vgalex])
 
+
 plt.imshow(img,vmin=0,vmax=1,origin='lower',interpolation='nearest',aspect='auto',cmap=cm.gray,extent=[x0,xn,y0,yn])
 plt.scatter(galex['gl_galex'],galex['gb_galex'],edgecolor='red',facecolor='red',s=5,label='GALEX')
 plt.scatter(vphas['l'],vphas['b'],edgecolor='blue',facecolor='blue',s=5,label='VPHAS')
@@ -533,10 +534,48 @@ plt.scatter(vgalex['l'],vgalex['b'],edgecolor='yellow',facecolor='yellow',s=5,la
 plt.legend(loc=3,scatterpoints=1,prop={'size':12})
 plt.xlabel('Galactic Longitude')
 plt.ylabel('Galactic Latitude')
-#plt.xlim((-0.5,8))
-#plt.ylim((-10.5,11))
+plt.xlim((0,7.45))
+plt.ylim((-10,10))
 plt.gca().invert_xaxis()
 plt.show()
+
+
+from astropy.wcs import WCS
+
+img = fits.open('newfield/count_map_05-68_gPr_cata_10_corr_gal.fits')[0].data
+galex = Table.read('galex0data.txt',format='ascii')
+gallim = np.where((galex['gl_galex'] > 0) & (galex['gl_galex'] < 7.5) & (galex['gb_galex']> -10) & (galex['gb_galex'] < 10))
+galex = galex[gallim]
+header = fits.getheader('newfield/count_map_05-68_gPr_cata_10_corr_gal.fits')
+w = WCS(header)
+x0,y0 = w.wcs_pix2world(0,0,0)
+xn,yn = w.wcs_pix2world(4860,12840,0)
+xn = xn - 360
+
+vgalex = Table.read('galex0vphas.txt',format='ascii')
+
+f, ((ax1, ax2)) = plt.subplots(1, 2, sharex='col')
+
+ax1.imshow(img,vmin=0,vmax=1,origin='lower',interpolation='nearest',aspect='auto',cmap=cm.gray,extent=[x0,xn,y0,yn])
+
+ax1.set_xlabel('Galactic Longitude')
+ax1.set_ylabel('Galactic Latitude')
+ax1.invert_xaxis()
+ax1.set_xlim((0,7.45))
+ax1.set_ylim((-10,10))
+
+ax2.imshow(img,vmin=0,vmax=1,origin='lower',interpolation='nearest',aspect='auto',cmap=cm.gray,extent=[x0,xn,y0,yn])
+ax2.scatter(galex['gl_galex'],galex['gb_galex'],edgecolor='red',facecolor='red',s=5,label='GALEX')
+ax2.scatter(vphas['l'],vphas['b'],edgecolor='blue',facecolor='blue',s=5,label='VPHAS')
+ax2.scatter(vgalex['l'],vgalex['b'],edgecolor='yellow',facecolor='yellow',s=5,label='VPHAS+GALEX')
+ax2.set_xlabel('Galactic Longitude')
+ax2.set_xlim((0,7.45))
+ax2.set_ylim((-10,10))
+#ax2.invert_xaxis()
+ax2.get_yaxis().set_visible(False)
+f.subplots_adjust(wspace=0)
+plt.show()
+
 
 
 
@@ -621,7 +660,7 @@ plt.show()
 #######################################################
 
 plt.scatter(sexv['nuv']-sexv['g_AB'],sexv['g_AB']-sexv['r_AB'],edgecolor='none',alpha=0.3,label='VPHAS')
-plt.scatter(starv['nuv']-starv['g_AB'],starv['g_AB']-starv['r_AB'],edgecolor='none',facecolor='red',alpha=0.3,label='VPHAS+2MASS')
+#plt.scatter(starv['nuv']-starv['g_AB'],starv['g_AB']-starv['r_AB'],edgecolor='none',facecolor='red',alpha=0.3,label='VPHAS+2MASS')
 plt.xlabel('NUV - g (ABmag)')
 plt.ylabel('g - r (ABmag)')
 plt.xlim((-3,9))
@@ -630,10 +669,10 @@ plt.scatter(pickles['nuv']-pickles['g'], pickles['g']-pickles['r'], c='black', s
 
 plt.arrow(4, -0.75,nuv[3]-g[3], g[3]-r[3], head_length=0.1,head_width=0.07,color='black')
 
-plt.legend(scatterpoints=1,loc=2)
+#plt.legend(scatterpoints=1,loc=2)
 
-for j in range(0,len(pickles),10):
-        plt.annotate(pickles['name'][j], xy=((pickles['nuv'][j]-pickles['g'][j])+0.01, (pickles['g'][j]-pickles['r'][j]) - 0.07), size=15)
+#for j in range(0,len(pickles),10):
+#        plt.annotate(pickles['name'][j], xy=((pickles['nuv'][j]-pickles['g'][j])+0.01, (pickles['g'][j]-pickles['r'][j]) - 0.07), size=15)
 plt.show()
 
 #######################################################
@@ -643,8 +682,8 @@ plt.scatter(sexv['g_AB']-sexv['i_AB'],sexv['nuv']-sexv['g_AB'],edgecolor='none',
 plt.scatter(starv['g_AB']-starv['i_AB'],starv['nuv']-starv['g_AB'],edgecolor='none',facecolor='red',label='VPHAS + 2MASS',alpha=0.3)
 plt.xlim((-2,3))
 plt.ylim((-2,8))
-plt.ylabel('NUV - g (ABmag)')
 plt.xlabel('g - i (ABmag)')
+plt.ylabel('NUV - g (ABmag)')
 plt.legend(loc=3,scatterpoints=1)
 plt.gca().invert_yaxis()
 plt.scatter(pickles['g']-pickles['i'], pickles['nuv']-pickles['g'], c='black', s=10)
@@ -660,11 +699,11 @@ plt.show()
 # g - r vs u - g
 #######################################################
 
-plt.scatter(sexv['u_AB']-sexv['g_AB'],sexv['g_AB']-sexv['r_AB'],edgecolor='none',alpha=0.3,label='VPHAS')
+plt.scatter(sexv['u_AB']-sexv['g_AB'],sexv['g_AB']-sexv['r_AB'],edgecolor='none',alpha=0.3,label='VPHAS',color='blue')
 #plt.scatter(starv['u_AB']-starv['g_AB'],starv['g_AB']-starv['r_AB'],edgecolor='none',facecolor='red',alpha=0.3,label='VPHAS+2MASS')
 
 cut = np.where(sexv['nuv'] - sexv['g_AB'] < 3)
-plt.scatter(sexv[cut]['u_AB']-sexv[cut]['g_AB'],sexv[cut]['g_AB']-sexv[cut]['r_AB'],edgecolor='none',facecolor='red',alpha=0.3,label='NUV - g < 3')
+plt.scatter(sexv[cut]['u_AB']-sexv[cut]['g_AB'],sexv[cut]['g_AB']-sexv[cut]['r_AB'],edgecolor='none',facecolor='violet',alpha=0.3,label='NUV - g < 3')
 
 plt.xlabel('u - g (ABmag)')
 plt.ylabel('g - r (ABmag)')
@@ -676,6 +715,8 @@ plt.arrow(2, -0.5,u[3]-g[3], g[3]-r[3], head_length=0.1,head_width=0.07,color='b
 
 plt.legend(scatterpoints=1,loc=2)
 
+plt.annotate('White Dwarfs',xy=(-0.95,0))
+plt.annotate('M+WD Binaries',xy=(1.5,1.5))
 for j in range(0,len(pickles),10):
         plt.annotate(pickles['name'][j], xy=((pickles['u'][j]-pickles['g'][j])+0.01, (pickles['g'][j]-pickles['r'][j]) - 0.07), size=15)
 plt.show()
@@ -721,3 +762,12 @@ if nuvjvsjk == 1:
     extdy = y1[3] - y2[3]
 
 
+
+cut = np.where(((sexv['g_AB'] - sexv['r_AB']) > 0.6) & ((sexv['g_AB'] - sexv['r_AB']) < 1.5) & ((sexv['nuv'] - sexv['g_AB']) > 0) & ((sexv['nuv'] - sexv['g_AB']) < 2))
+
+cutstar = np.where(((starv['g_AB'] - starv['r_AB']) > 0.6) & ((starv['g_AB'] - starv['r_AB']) < 1.5) & ((starv['nuv'] - starv['g_AB']) > 0) & ((starv['nuv'] - starv['g_AB']) < 2))
+
+
+cutstar = np.where(((starv['u_AB'] - starv['g_AB']) > -1) & ((starv['u_AB'] - starv['g_AB']) < 0.5))
+
+g2['ra_2mass'][(min(g2['ra_2mass']) < 10.) & (g2['ra_2mass'] > 350.)] = g2['ra_2mass'][(min(g2['ra_2mass']) < 10.) & (g2['ra_2mass'] > 350.)] - 360.

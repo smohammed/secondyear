@@ -67,8 +67,8 @@ if jhvshk == 1:
     x2 = k
     y1 = j
     y2 = h
-    extx = 0.25
-    exty = -0.1
+    extx = -0.07
+    exty = 0.6
     extdx = x1[3] - x2[3]
     extdy = y1[3] - y2[3]
 
@@ -117,14 +117,22 @@ for j in range(0, len(pickles), 10):
 
 
 # Add Extinction vector
-ax1.arrow(extx, exty, extdx, extdy, head_length=0.1,head_width=0.07,color='black')
-ax2.arrow(extx, exty, extdx, extdy, head_length=0.1,head_width=0.07,color='black')
-ax3.arrow(extx, exty, extdx, extdy, head_length=0.1,head_width=0.07,color='black')
-ax4.arrow(extx, exty, extdx, extdy, head_length=0.1,head_width=0.07,color='black')
+if jhvshk == 1:
+    ax1.arrow(extx, exty, extdx, extdy, head_length=0.05,head_width=0.02,color='black')
+    ax2.arrow(extx, exty, extdx, extdy, head_length=0.05,head_width=0.02,color='black')
+    ax3.arrow(extx, exty, extdx, extdy, head_length=0.05,head_width=0.02,color='black')
+    ax4.arrow(extx, exty, extdx, extdy, head_length=0.05,head_width=0.02,color='black')
+else: 
+    ax1.arrow(extx, exty, extdx, extdy, head_length=0.1,head_width=0.07,color='black')
+    ax2.arrow(extx, exty, extdx, extdy, head_length=0.1,head_width=0.07,color='black')
+    ax3.arrow(extx, exty, extdx, extdy, head_length=0.1,head_width=0.07,color='black')
+    ax4.arrow(extx, exty, extdx, extdy, head_length=0.1,head_width=0.07,color='black')
+
+
 
 # Set all labels
-ax1.set_title('3", J < 13.5, -10 < gb < -5')
-#ax1.set_title('6", -10 < gb < -5')
+#ax1.set_title('3", J < 13.5, -10 < gb < -5')
+ax1.set_title('6", -10 < gb < -5')
 ax2.set_title('-5 < gb < 0')
 ax3.set_title('0 < gb < 5')
 ax4.set_title('5 < gb < 10')
@@ -158,14 +166,14 @@ if nuvbvsbv == 1:
     ax4.set_xlabel('B - V')
 
 if jhvshk == 1:
-    ax1.set_xlim((-0.1,0.4))
-    ax1.set_ylim((-0.2,1.0))
-    ax2.set_xlim((-0.1,0.4))
-    ax2.set_ylim((-0.2,1.0))
-    ax3.set_xlim((-0.1,0.4))
-    ax3.set_ylim((-0.2,1.0))
-    ax4.set_xlim((-0.1,0.4))
-    ax4.set_ylim((-0.2,1.0))
+    ax1.set_xlim((-0.15,0.4))
+    ax1.set_ylim((-0.3,1.0))
+    ax2.set_xlim((-0.15,0.4))
+    ax2.set_ylim((-0.3,1.0))
+    ax3.set_xlim((-0.15,0.4))
+    ax3.set_ylim((-0.3,1.0))
+    ax4.set_xlim((-0.15,0.4))
+    ax4.set_ylim((-0.3,1.0))
     ax1.set_ylabel('J - H')
     ax3.set_xlabel('H - K')
     ax3.set_ylabel('J - H')
@@ -186,15 +194,15 @@ if grvsnuvg == 1:
     ax4.set_xlabel('g - r (AB mag)')
 
 if nuvjvsjk == 1:
-    ax1.legend([a1, a2, a3], ['SExtractor', 'GALEX', 'Pickles'], scatterpoints=1, loc=4)
-    #ax1.legend([a1, a2], ['SExtractor','GALEX'], scatterpoints=1, loc=1)
+    #ax1.legend([a1, a2, a3], ['2MASS', 'GALEX', 'Pickles'], scatterpoints=1, loc=4)
+    ax1.legend([a1, a2], ['2MASS','GALEX'], scatterpoints=1, loc=1)
 
 if nuvbvsbv == 1:
     ax1.legend([a1, a2, a3], ['SExtractor', 'GALEX', 'Pickles'], scatterpoints=1, loc=2)  
     #ax1.legend([a1, a2], ['SExtractor','GALEX'], scatterpoints=1, loc=2)
 
 if jhvshk == 1:
-    ax1.legend([a1, a2, a3], ['SExtractor', 'GALEX', 'Pickles'], scatterpoints=1, loc=2)
+    ax4.legend([a1, a2, a3], ['2MASS', 'GALEX', 'Pickles'], scatterpoints=1, loc=4)
 
 if grvsnuvg == 1:
     ax1.legend([a1, a2, a3], ['SExtractor', 'GALEX', 'Pickles'], scatterpoints=1, loc=4)
