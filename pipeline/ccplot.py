@@ -5,27 +5,29 @@ import matplotlib
 matplotlib.rcParams['figure.figsize'] = 16, 8
 matplotlib.rcParams['font.size'] = 20
 
-nuvjvsjk = 1
+nuvjvsjk = 0
 nuvbvsbv = 0
-jhvshk = 0
+jhvshk = 1
 grvsnuvg = 0
 
 
 #star = Table.read('newfield_gal_2mass_t2_jlim_13.5_3arcsec.txt', format='ascii')
 
-star = Table.read('newfield_gal_ipac_2mass_matches_3arcsec_j_lt13.5_tests.txt',format='ascii')
-newt = Table.read('galex0data_2mass_t2.txt', format='ascii')
+#star = Table.read('newfield_gal_ipac_2mass_matches_3arcsec_j_lt13.5_tests.txt', format='ascii')
+#newt = Table.read('galex0data_2mass_t2.txt', format='ascii')
 pickles = Table.read('picklemags_laphare_test.txt', format='ascii')
 
+
 # Set range
-scut = np.where((star['gb_sex'] > -10) & (star['gb_sex'] < -5))
+'''scut = np.where((star['gb_sex'] > -10) & (star['gb_sex'] < -5))
 scut2 = np.where((star['gb_sex'] > -5) & (star['gb_sex'] < 0))
 scut3 = np.where((star['gb_sex'] > 0) & (star['gb_sex'] < 5))
 scut4 = np.where((star['gb_sex'] > 5) & (star['gb_sex'] < 10))
-ncut = np.where((newt['gb_galex'] > -10) & (newt['gb_galex'] < -5))
-ncut2 = np.where((newt['gb_galex'] > -5) & (newt['gb_galex'] < 0))
-ncut3 = np.where((newt['gb_galex'] > 0) & (newt['gb_galex'] < 5))
-ncut4 = np.where((newt['gb_galex'] > 5) & (newt['gb_galex'] < 10))
+'''
+ncut = np.where((newt['glat_galex'] > -10) & (newt['glat_galex'] < -5))
+ncut2 = np.where((newt['glat_galex'] > -5) & (newt['glat_galex'] < 0))
+ncut3 = np.where((newt['glat_galex'] > 0) & (newt['glat_galex'] < 5))
+ncut4 = np.where((newt['glat_galex'] > 5) & (newt['glat_galex'] < 10))
 
 
 # GALEX, Pickles, SExtractor order
@@ -35,10 +37,10 @@ v = ['VJmag', 'v', 'VJmag', 1.0]
 j = ['j', 'j', 'j', 0.2876]
 h = ['h', 'h', 'h', 0.1783]
 k = ['k', 'k', 'k', 0.1170]
-u = ['u','u_AB','u_AB',1.5916]
-g = ['g','g_AB','g_AB',1.1838]
-r = ['r','r_AB','r_AB',0.8664]
-ib  = ['i','i_AB','i_AB',0.6418]
+u = ['u', 'u_AB', 'u_AB', 1.5916]
+g = ['g', 'g_AB', 'g_AB', 1.1838]
+r = ['r', 'r_AB', 'r_AB', 0.8664]
+ib = ['i', 'i_AB', 'i_AB', 0.6418]
 
 if nuvjvsjk == 1:
     x1 = j
@@ -87,12 +89,13 @@ if grvsnuvg == 1:
 f, ((ax1, ax2), (ax3, ax4)) = plt.subplots(2, 2, sharex='col', sharey='row')
 plt.rc('legend', **{'fontsize': 15})
 
+'''
 # SExtractor
 a1 = ax1.scatter(star[x1[2]][scut]-star[x2[2]][scut], star[y1[2]][scut]-star[y2[2]][scut], edgecolor='none', alpha=0.3)
 b1 = ax2.scatter(star[x1[2]][scut2]-star[x2[2]][scut2], star[y1[2]][scut2]-star[y2[2]][scut2], edgecolor='none', alpha=0.3)
 c1 = ax3.scatter(star[x1[2]][scut3]-star[x2[2]][scut3], star[y1[2]][scut3]-star[y2[2]][scut3], edgecolor='none', alpha=0.3)
 d1 = ax4.scatter(star[x1[2]][scut4]-star[x2[2]][scut4], star[y1[2]][scut4]-star[y2[2]][scut4], edgecolor='none', alpha=0.3)
-
+'''
 
 # GALEX data
 a2 = ax1.scatter(newt[x1[0]][ncut]-newt[x2[0]][ncut], newt[y1[0]][ncut]-newt[y2[0]][ncut], facecolor='red', edgecolor='none', s=30, alpha=0.3)
@@ -118,34 +121,34 @@ for j in range(0, len(pickles), 10):
 
 # Add Extinction vector
 if jhvshk == 1:
-    ax1.arrow(extx, exty, extdx, extdy, head_length=0.05,head_width=0.02,color='black')
-    ax2.arrow(extx, exty, extdx, extdy, head_length=0.05,head_width=0.02,color='black')
-    ax3.arrow(extx, exty, extdx, extdy, head_length=0.05,head_width=0.02,color='black')
-    ax4.arrow(extx, exty, extdx, extdy, head_length=0.05,head_width=0.02,color='black')
-else: 
-    ax1.arrow(extx, exty, extdx, extdy, head_length=0.1,head_width=0.07,color='black')
-    ax2.arrow(extx, exty, extdx, extdy, head_length=0.1,head_width=0.07,color='black')
-    ax3.arrow(extx, exty, extdx, extdy, head_length=0.1,head_width=0.07,color='black')
-    ax4.arrow(extx, exty, extdx, extdy, head_length=0.1,head_width=0.07,color='black')
+    ax1.arrow(extx, exty, extdx, extdy, head_length=0.05, head_width=0.02, color='black')
+    ax2.arrow(extx, exty, extdx, extdy, head_length=0.05, head_width=0.02, color='black')
+    ax3.arrow(extx, exty, extdx, extdy, head_length=0.05, head_width=0.02, color='black')
+    ax4.arrow(extx, exty, extdx, extdy, head_length=0.05, head_width=0.02, color='black')
+else:
+    ax1.arrow(extx, exty, extdx, extdy, head_length=0.1, head_width=0.07, color='black')
+    ax2.arrow(extx, exty, extdx, extdy, head_length=0.1, head_width=0.07, color='black')
+    ax3.arrow(extx, exty, extdx, extdy, head_length=0.1, head_width=0.07, color='black')
+    ax4.arrow(extx, exty, extdx, extdy, head_length=0.1, head_width=0.07, color='black')
 
 
 
 # Set all labels
 #ax1.set_title('3", J < 13.5, -10 < gb < -5')
-ax1.set_title('6", -10 < gb < -5')
+ax1.set_title('GAIS, J < 13.5, 6", -10 < gb < -5')
 ax2.set_title('-5 < gb < 0')
 ax3.set_title('0 < gb < 5')
 ax4.set_title('5 < gb < 10')
 
 if nuvjvsjk == 1:
-    ax1.set_xlim((-0.25, 2.5))
-    ax1.set_ylim((-2, 16))
-    ax2.set_xlim((-0.25, 2.5))
-    ax2.set_ylim((-2, 16))
-    ax3.set_xlim((-0.25, 2.5))
-    ax3.set_ylim((-2, 16))
-    ax4.set_xlim((-0.25, 2.5))
-    ax4.set_ylim((-2, 16))
+    ax1.set_xlim((-2,5))
+    ax1.set_ylim((-2,20))
+    ax2.set_xlim((-2,5))
+    ax2.set_ylim((-2,20))
+    ax3.set_xlim((-2,5))
+    ax3.set_ylim((-2,20))
+    ax4.set_xlim((-2,5))
+    ax4.set_ylim((-2,20))
     ax1.set_ylabel('NUV - J')
     ax3.set_xlabel('J - K')
     ax3.set_ylabel('NUV - J')
@@ -166,28 +169,28 @@ if nuvbvsbv == 1:
     ax4.set_xlabel('B - V')
 
 if jhvshk == 1:
-    ax1.set_xlim((-0.15,0.4))
-    ax1.set_ylim((-0.3,1.0))
-    ax2.set_xlim((-0.15,0.4))
-    ax2.set_ylim((-0.3,1.0))
-    ax3.set_xlim((-0.15,0.4))
-    ax3.set_ylim((-0.3,1.0))
-    ax4.set_xlim((-0.15,0.4))
-    ax4.set_ylim((-0.3,1.0))
+    ax1.set_xlim((-0.4,1))
+    ax1.set_ylim((-0.3,1.4))
+    ax2.set_xlim((-0.4,1))
+    ax2.set_ylim((-0.3,1.4))
+    ax3.set_xlim((-0.4,1))
+    ax3.set_ylim((-0.3,1.4))
+    ax4.set_xlim((-0.4,1))
+    ax4.set_ylim((-0.3,1.4))
     ax1.set_ylabel('J - H')
     ax3.set_xlabel('H - K')
     ax3.set_ylabel('J - H')
     ax4.set_xlabel('H - K')
 
 if grvsnuvg == 1:
-    ax1.set_xlim((-3,8))
-    ax1.set_ylim((-1.,2.0))
-    ax2.set_xlim((-3,8))
-    ax2.set_ylim((-1.,2.0))
-    ax3.set_xlim((-3,8))
-    ax3.set_ylim((-1.,2.0))
-    ax4.set_xlim((-3,8))
-    ax4.set_ylim((-1.,2.0))
+    ax1.set_xlim((-3, 8))
+    ax1.set_ylim((-1., 2.0))
+    ax2.set_xlim((-3, 8))
+    ax2.set_ylim((-1., 2.0))
+    ax3.set_xlim((-3, 8))
+    ax3.set_ylim((-1., 2.0))
+    ax4.set_xlim((-3, 8))
+    ax4.set_ylim((-1., 2.0))
     ax1.set_ylabel('NUV - g (AB mag)')
     ax3.set_xlabel('g - r (AB mag)')
     ax3.set_ylabel('NUV - g (AB mag)')
@@ -195,14 +198,15 @@ if grvsnuvg == 1:
 
 if nuvjvsjk == 1:
     #ax1.legend([a1, a2, a3], ['2MASS', 'GALEX', 'Pickles'], scatterpoints=1, loc=4)
-    ax1.legend([a1, a2], ['2MASS','GALEX'], scatterpoints=1, loc=1)
+    ax1.legend([a3, a2], ['Pickles', 'GALEX'], scatterpoints=1, loc=1)
 
 if nuvbvsbv == 1:
-    ax1.legend([a1, a2, a3], ['SExtractor', 'GALEX', 'Pickles'], scatterpoints=1, loc=2)  
+    ax1.legend([a1, a2, a3], ['SExtractor', 'GALEX', 'Pickles'], scatterpoints=1, loc=2)
     #ax1.legend([a1, a2], ['SExtractor','GALEX'], scatterpoints=1, loc=2)
 
 if jhvshk == 1:
-    ax4.legend([a1, a2, a3], ['2MASS', 'GALEX', 'Pickles'], scatterpoints=1, loc=4)
+    #ax4.legend([a1, a2, a3], ['2MASS', 'GALEX', 'Pickles'], scatterpoints=1, loc=4)
+    ax4.legend([a3, a2], ['Pickles', 'GALEX'], scatterpoints=1, loc=4)
 
 if grvsnuvg == 1:
     ax1.legend([a1, a2, a3], ['SExtractor', 'GALEX', 'Pickles'], scatterpoints=1, loc=4)
@@ -210,13 +214,10 @@ if grvsnuvg == 1:
 
 # Reference line
 if nuvjvsjk == 1:
-    ax1.axhline(y=4,color='black')
-    ax2.axhline(y=4,color='black')
-    ax3.axhline(y=4,color='black')
-    ax4.axhline(y=4,color='black')
+    ax1.axhline(y=4, color='black')
+    ax2.axhline(y=4, color='black')
+    ax3.axhline(y=4, color='black')
+    ax4.axhline(y=4, color='black')
 
 f.subplots_adjust(wspace=0)
 plt.show()
-
-
-

@@ -771,3 +771,6 @@ cutstar = np.where(((starv['g_AB'] - starv['r_AB']) > 0.6) & ((starv['g_AB'] - s
 cutstar = np.where(((starv['u_AB'] - starv['g_AB']) > -1) & ((starv['u_AB'] - starv['g_AB']) < 0.5))
 
 g2['ra_2mass'][(min(g2['ra_2mass']) < 10.) & (g2['ra_2mass'] > 350.)] = g2['ra_2mass'][(min(g2['ra_2mass']) < 10.) & (g2['ra_2mass'] > 350.)] - 360.
+
+
+delang = 2*np.arcsin(np.sqrt(np.sin((star['dec_sex']-star['dec_2mass'])/2)**2+np.cos(star['dec_sex'])*np.cos(star['dec_2mass'])*np.sin((star['ra_sex']-star['ra_2mass'])/2)**2))
