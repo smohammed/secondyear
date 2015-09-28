@@ -9,8 +9,8 @@ matplotlib.rcParams['font.size'] = 20
 
 nuvjvsjk = 0
 nuvbvsbv = 0
-jhvshk = 0
-grvsnuvg = 1
+jhvshk = 1
+grvsnuvg = 0
 
 
 #star = Table.read('newfield_gal_2mass_t2_jlim_13.5_3arcsec.txt', format='ascii')
@@ -148,7 +148,7 @@ else:
 
 # Set all labels
 #ax1.set_title('3", J < 13.5, -10 < gb < -5')
-ax1.set_title('GAIS, J < 13.5, 2", -10 < gb < -5')
+ax1.set_title('GAIS, 6", -10 < gb < -5')
 ax2.set_title('-5 < gb < 0')
 ax3.set_title('0 < gb < 5')
 ax4.set_title('5 < gb < 10')
