@@ -7,9 +7,9 @@ from astroML.plotting import scatter_contour
 matplotlib.rcParams['figure.figsize'] = 16, 8
 matplotlib.rcParams['font.size'] = 20
 
-nuvjvsjk = 0
+nuvjvsjk = 1
 nuvbvsbv = 0
-jhvshk = 1
+jhvshk = 0
 grvsnuvg = 0
 
 
@@ -110,11 +110,16 @@ density_contour(newt[x1[0]][ncut2]-newt[x2[0]][ncut2], newt[y1[0]][ncut2]-newt[y
 density_contour(newt[x1[0]][ncut3]-newt[x2[0]][ncut3], newt[y1[0]][ncut3]-newt[y2[0]][ncut3],100,100,ax=ax3,colors='k')
 density_contour(newt[x1[0]][ncut4]-newt[x2[0]][ncut4], newt[y1[0]][ncut4]-newt[y2[0]][ncut4],100,100,ax=ax4,colors='k')
 '''
-
+'''
 scatter_contour(newt[x1[0]][ncut]-newt[x2[0]][ncut], newt[y1[0]][ncut]-newt[y2[0]][ncut],threshold=1000,log_counts=True,histogram2d_args=dict(bins=(40)),plot_args=dict(color='k',markersize=1),ax=ax1)
 scatter_contour(newt[x1[0]][ncut2]-newt[x2[0]][ncut2], newt[y1[0]][ncut2]-newt[y2[0]][ncut2],threshold=1000,log_counts=True,histogram2d_args=dict(bins=(40)),plot_args=dict(color='k',markersize=1),ax=ax2)
 scatter_contour(newt[x1[0]][ncut3]-newt[x2[0]][ncut3], newt[y1[0]][ncut3]-newt[y2[0]][ncut3],threshold=1000,log_counts=True,histogram2d_args=dict(bins=(40)),plot_args=dict(color='k',markersize=1),ax=ax3)
 scatter_contour(newt[x1[0]][ncut4]-newt[x2[0]][ncut4], newt[y1[0]][ncut4]-newt[y2[0]][ncut4],threshold=1000,log_counts=True,histogram2d_args=dict(bins=(40)),plot_args=dict(color='k',markersize=1),ax=ax4)
+'''
+scatter_contour(x[ncut], y[ncut],threshold=1000,log_counts=True,histogram2d_args=dict(bins=(40)),plot_args=dict(color='k',markersize=1),ax=ax1)
+scatter_contour(x[ncut2], y[ncut2],threshold=1000,log_counts=True,histogram2d_args=dict(bins=(40)),plot_args=dict(color='k',markersize=1),ax=ax2)
+scatter_contour(x[ncut3], y[ncut3],threshold=1000,log_counts=True,histogram2d_args=dict(bins=(40)),plot_args=dict(color='k',markersize=1),ax=ax3)
+scatter_contour(x[ncut4], y[ncut4],threshold=1000,log_counts=True,histogram2d_args=dict(bins=(40)),plot_args=dict(color='k',markersize=1),ax=ax4)
 
 #Pickles
 a3 = ax1.scatter(pickles[x1[1]]-pickles[x2[1]], pickles[y1[1]]-pickles[y2[1]],edgecolor='blue', facecolor='blue', s=5)
@@ -148,7 +153,7 @@ else:
 
 # Set all labels
 #ax1.set_title('3", J < 13.5, -10 < gb < -5')
-ax1.set_title('GAIS, 6", -10 < gb < -5')
+ax1.set_title('GAIS, 3", -10 < gb < -5')
 ax2.set_title('-5 < gb < 0')
 ax3.set_title('0 < gb < 5')
 ax4.set_title('5 < gb < 10')
@@ -183,14 +188,14 @@ if nuvbvsbv == 1:
     ax4.set_xlabel('B - V')
 
 if jhvshk == 1:
-    ax1.set_xlim((-0.4,1.2))
-    ax1.set_ylim((-0.3,1.8))
-    ax2.set_xlim((-0.4,1.2))
-    ax2.set_ylim((-0.3,1.8))
-    ax3.set_xlim((-0.4,1.2))
-    ax3.set_ylim((-0.3,1.8))
-    ax4.set_xlim((-0.4,1.2))
-    ax4.set_ylim((-0.3,1.8))
+    ax1.set_xlim((-1.1,1.5))
+    ax1.set_ylim((-0.5,2.5))
+    ax2.set_xlim((-1.1,1.5))
+    ax2.set_ylim((-0.5,2.5))
+    ax3.set_xlim((-1.1,1.5))
+    ax3.set_ylim((-0.5,2.5))
+    ax4.set_xlim((-1.1,1.5))
+    ax4.set_ylim((-0.5,2.5))
     ax1.set_ylabel('J - H')
     ax3.set_xlabel('H - K')
     ax3.set_ylabel('J - H')
