@@ -774,3 +774,6 @@ g2['ra_2mass'][(min(g2['ra_2mass']) < 10.) & (g2['ra_2mass'] > 350.)] = g2['ra_2
 
 
 delang = 2*np.arcsin(np.sqrt(np.sin((star['dec_sex']-star['dec_2mass'])/2)**2+np.cos(star['dec_sex'])*np.cos(star['dec_2mass'])*np.sin((star['ra_sex']-star['ra_2mass'])/2)**2))
+
+
+
