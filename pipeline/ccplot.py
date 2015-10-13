@@ -35,7 +35,7 @@ ncut4 = np.where((newt['glat_galex'] > 5) & (newt['glat_galex'] < 10))
 # GALEX, Pickles, SExtractor order
 nuv = ['nuv_mag', 'nuv', 'nuv', 2.9720]
 b = ['BJmag', 'b', 'BJmag', 1.3429]
-v = ['VJmag', 'v', 'VJmag', 1.0]
+v = ['VJmag', 'v's, 'VJmag', 1.0]
 j = ['j', 'j', 'j', 0.2876]
 h = ['h', 'h', 'h', 0.1783]
 k = ['k', 'k', 'k', 0.1170]
@@ -60,7 +60,7 @@ if nuvbvsbv == 1:
     x2 = v
     y1 = nuv
     y2 = b
-    extx = 1.4
+    extx = 1.4gv
     exty = 3
     #extx = 0.2
     #exty = 3.4

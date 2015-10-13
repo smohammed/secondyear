@@ -733,7 +733,7 @@ plt.ylabel('NUV - J')
 plt.xlabel('J - K')
 plt.legend(scatterpoints=1)
 plt.scatter(pickles['j']-pickles['k'], pickles['nuv']-pickles['j'], c='black', s=10)
-plt.axhline(y=4,color='black')
+plt.axhline(y=4,clor='black')
 plt.arrow(-0.1, 8, 0.2876-0.1170, 2.9720-0.2876, head_length=1.,head_width=0.07,color='black')
 plt.show()
 
@@ -777,3 +777,30 @@ delang = 2*np.arcsin(np.sqrt(np.sin((star['dec_sex']-star['dec_2mass'])/2)**2+np
 
 
 
+
+
+
+
+gv = Table.read('GAIS_VPHAS.txt',format='ascii')
+ncut = np.where((gv['g_AB'] > 18.) & (gv['g_AB'] < 22.) & (gv['g_AB']-gv['r_AB'] > -0.5) & (gv['g_AB']-gv['r_AB'] < 0.4))
+wdgv = gv[ncut]
+test = np.ones(len(wdgv)*4)
+test[0+3525*1:3525*2] = 2
+test[0+3525*2:3525*3] = 3
+test[0+3525*3:3525*4] = 4
+nuvi = wdgv['nuv_mag'] - wdgv['i_AB']
+ui = wdgv['u_AB'] - wdgv['i_AB']
+gi = wdgv['g_AB'] - wdgv['i_AB']
+ri = wdgv['r_AB'] - wdgv['i_AB']
+
+cols = np.ones(len(wdgv)*4)
+cols[0+3525*0:3525*1] = nuvi
+cols[0+3525*1:3525*2] = ui
+cols[0+3525*2:3525*3] = gi
+cols[0+3525*3:3525*4] = ri
+
+labels = ['2300','3543','4470','6231']
+plt.xticks([1,2,3,4],labels)
+
+plt.scatter(test,cols)
+plt.show()
