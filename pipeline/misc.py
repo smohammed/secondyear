@@ -776,31 +776,98 @@ g2['ra_2mass'][(min(g2['ra_2mass']) < 10.) & (g2['ra_2mass'] > 350.)] = g2['ra_2
 delang = 2*np.arcsin(np.sqrt(np.sin((star['dec_sex']-star['dec_2mass'])/2)**2+np.cos(star['dec_sex'])*np.cos(star['dec_2mass'])*np.sin((star['ra_sex']-star['ra_2mass'])/2)**2))
 
 
+# Match GAIS + VPHAS 
+galex = fits.open('GALEXAIS.fits')[1].data
+vphas = fits.open('vphas_allg_gl0-40.fits')[1].data
+galexgal = SkyCoord(galex['ra']*u.deg,galex['dec']*u.deg,frame='icrs')
+vphasgal = SkyCoord(vphas['RAJ2000']*u.deg,vphas['DEJ2000']*u.deg,frame='icrs')
+galexind,vphasind, angsep,sep3d = search_around_sky(galexgal,vphasgal,3.5*u.arcsec)
 
+g2 = Table(galex[galexind])
+v2 = Table(vphas[vphasind])
+tot = hstack([g2,v2])
+tot['angsep'] = angsep
 
+print 'part 1 done'
+vp1 = fits.open('vphas_allg_gl200-250.fits')[1].data
+vpgal = SkyCoord(vp1['RAJ2000']*u.deg,vp1['DEJ2000']*u.deg,frame='icrs')
+galexind,vpind, angsep1,sep3d = search_around_sky(galexgal,vpgal,3.5*u.arcsec)
+g2 = Table(galex[galexind])
+v12 = Table(vp1[vpind])
+tot1 = hstack([g2,v12])
+tot1['angsep'] = angsep1
+
+print 'part 2 done'
+vp1 = fits.open('vphas_allg_gl250-300.fits')[1].data
+vpgal = SkyCoord(vp1['RAJ2000']*u.deg,vp1['DEJ2000']*u.deg,frame='icrs')
+galexind,vpind, angsep2,sep3d = search_around_sky(galexgal,vpgal,3.5*u.arcsec)
+g2 = Table(galex[galexind])
+v12 = Table(vp1[vpind])
+tot2 = hstack([g2,v12])
+tot2['angsep'] = angsep2
+
+print 'part 3 done'
+vp1 = fits.open('vphas_allg_gl300-360.fits')[1].data
+vpgal = SkyCoord(vp1['RAJ2000']*u.deg,vp1['DEJ2000']*u.deg,frame='icrs')
+galexind,vpind, angsep3,sep3d = search_around_sky(galexgal,vpgal,3.5*u.arcsec)
+g2 = Table(galex[galexind])
+v12 = Table(vp1[vpind])
+tot3 = hstack([g2,v12])
+tot3['angsep'] = angsep3
+totall = vstack([tot,tot1,tot2,tot3])
 
 
 
 gv = Table.read('GAIS_VPHAS.txt',format='ascii')
-ncut = np.where((gv['g_AB'] > 18.) & (gv['g_AB'] < 22.) & (gv['g_AB']-gv['r_AB'] > -0.5) & (gv['g_AB']-gv['r_AB'] < 0.4))
-wdgv = gv[ncut]
-test = np.ones(len(wdgv)*4)
-test[0+3525*1:3525*2] = 2
-test[0+3525*2:3525*3] = 3
-test[0+3525*3:3525*4] = 4
-nuvi = wdgv['nuv_mag'] - wdgv['i_AB']
-ui = wdgv['u_AB'] - wdgv['i_AB']
-gi = wdgv['g_AB'] - wdgv['i_AB']
-ri = wdgv['r_AB'] - wdgv['i_AB']
 
-cols = np.ones(len(wdgv)*4)
-cols[0+3525*0:3525*1] = nuvi
-cols[0+3525*1:3525*2] = ui
-cols[0+3525*2:3525*3] = gi
-cols[0+3525*3:3525*4] = ri
+# SED plot
+nuvi = wd2m['nuv_mag'] - wd2m['i_AB']
+ui = wd2m['u_AB'] - wd2m['i_AB']
+gi = wd2m['g_AB'] - wd2m['i_AB']
+ri = wd2m['r_AB'] - wd2m['i_AB']
+ji = wd2m['j'] - wd2m['i_AB']
+hi = wd2m['h'] - wd2m['i_AB']
+ki = wd2m['k'] - wd2m['i_AB']
 
-labels = ['2300','3543','4470','6231']
-plt.xticks([1,2,3,4],labels)
+cut = np.where(wd2m['j'] > 0)
+nuvi2 = nuvi[cut]
+ui2 = ui[cut]
+gi2 = gi[cut]
+ri2 = ri[cut]
+ji2 = ji[cut]
+hi2 = hi[cut]
+ki2 = ki[cut]
 
-plt.scatter(test,cols)
+cols = np.ones(len(wd2m)*7)
+cols[0+len(wd2m)*0:len(wd2m)*1] = nuvi
+cols[0+len(wd2m)*1:len(wd2m)*2] = ui
+cols[0+len(wd2m)*2:len(wd2m)*3] = gi
+cols[0+len(wd2m)*3:len(wd2m)*4] = ri
+cols[0+len(wd2m)*4:len(wd2m)*5] = ji
+cols[0+len(wd2m)*5:len(wd2m)*6] = hi
+cols[0+len(wd2m)*6:len(wd2m)*7] = ki
+cols2 = np.ones(len(wd2m[cut])*7)
+cols2[0+len(wd2m[cut])*0:len(wd2m[cut])*1] = nuvi2
+cols2[0+len(wd2m[cut])*1:len(wd2m[cut])*2] = ui2
+cols2[0+len(wd2m[cut])*2:len(wd2m[cut])*3] = gi2
+cols2[0+len(wd2m[cut])*3:len(wd2m[cut])*4] = ri2
+cols2[0+len(wd2m[cut])*4:len(wd2m[cut])*5] = ji2
+cols2[0+len(wd2m[cut])*5:len(wd2m[cut])*6] = hi2
+cols2[0+len(wd2m[cut])*6:len(wd2m[cut])*7] = ki2
+
+
+labels = ['NUV-i','u-i','g-i','r-i','J-i','H-i','K-i']
+plt.xticks([1,2,3,4,5,6,7],labels)
+for i in range(len(wd2m)):
+    plt.plot([1,2,3,4,5,6,7],cols[[i,i+len(wd2m),i+len(wd2m)*2,i+len(wd2m)*3,i+len(wd2m)*4,i+len(wd2m)*5,i+len(wd2m)*6]],alpha=0.01,color='black')
+for i in range(len(wd2m[cut])):
+    plt.plot([1,2,3,4,5,6,7],cols2[[i,i+len(wd2m[cut]),i+len(wd2m[cut])*2,i+len(wd2m[cut])*3,i+len(wd2m[cut])*4,i+len(wd2m[cut])*5,i+len(wd2m[cut])*6]],alpha=0.05,color='red')
+
+plt.plot([1,2,3,4,5,6,7],cols[[1,1+len(wd2m),1+len(wd2m)*2,1+len(wd2m)*3,1+len(wd2m)*4,1+len(wd2m)*5,1+len(wd2m)*6]],alpha=0.1,color='black',label='VPHAS')
+plt.plot([1,2,3,4,5,6,7],cols2[[1,1+len(wd2m[cut]),1+len(wd2m[cut])*2,1+len(wd2m[cut])*3,1+len(wd2m[cut])*4,1+len(wd2m[cut])*5,1+len(wd2m[cut])*6]],alpha=0.1,color='red',label='VPHAS + 2MASS')
+plt.legend(loc=2)
+plt.xlabel('$\lambda$')
+plt.ylabel('$\lambda$ - i (ABmag)')
+plt.ylim((5,-12))
+plt.title('VPHAS + 2MASS, Verbeek WDs')
 plt.show()
