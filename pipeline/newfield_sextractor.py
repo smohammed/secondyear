@@ -9,7 +9,7 @@ import sys
 import os
 import matplotlib
 matplotlib.rcParams['figure.figsize'] = 16, 8
-imagmatplotlib.rcParams['font.size'] = 20
+matplotlib.rcParams['font.size'] = 20
 
 # Files written:
 # 1. rand_deadtime.fits images
@@ -185,6 +185,7 @@ if olddata == 1:
 if newdata == 1:
     coord = Table([glval, gbval, raval, decval], names=('gl', 'gb', 'ra', 'dec'))
     alldata = hstack([tottable, coord])
+    '''
     alldata.rename_column('cntr_01','cntr')
     alldata.rename_column('number_01','number')
     alldata.rename_column('x_image_01','x_image')
@@ -203,7 +204,7 @@ if newdata == 1:
     alldata.rename_column('j_m','j')
     alldata.rename_column('h_m','h')
     alldata.rename_column('k_m','k')
-
+    '''
     ascii.write(alldata, '../newfield/starcatalog_05-68_gal_tests_2.txt',format='ipac')
 
 
@@ -214,7 +215,7 @@ if newdata == 1:
 ##################################################
 # Now match with Tycho 2/2MASS catalogs
 ##################################################
-
+'''
 sex = Table.read('newfield_ipac_gal_2mass_matches_3arcsec_J_lt13.5.txt', format='ascii')
 tycho = Table.read('tycho2.fits', format='fits')
 
@@ -241,3 +242,4 @@ ascii.write(combtable, '../newfield_gal_2mass_t2_jlim_13.5_3arcsec_tests.txt')
 print 'Matched with T2 and 2MASS, finished'
 print 'Total objects matched =', len(combtable)
 
+'''
