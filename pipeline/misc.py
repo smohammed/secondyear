@@ -871,3 +871,70 @@ plt.ylabel('$\lambda$ - i (ABmag)')
 plt.ylim((5,-12))
 plt.title('VPHAS + 2MASS, Verbeek WDs')
 plt.show()
+
+
+
+galex = fits.open('GALEXAIS.fits')[1].data
+
+galexcut = np.where((galex['glon'] > 0) & (galex['glon'] < 40))
+g2 = galex[galexcut]
+galexgal = SkyCoord(g2['glon']*u.deg,g2['glat']*u.deg,frame='galactic')
+vp = fits.open('vphas_allg_gl0-40.fits')[1].data
+vpgal = SkyCoord(vp['RAJ2000']*u.deg,vp['DEJ2000']*u.deg,frame='icrs').galactic
+galexind,vpind,angsep,ang3d = search_around_sky(galexgal,vpgal,3*u.arcsec)
+
+g3 = g2[galexind]
+
+plt.scatter(g2['glon'],g2['glat'],edgecolor='none')
+plt.scatter(vpgal.l.degree,vpgal.b.degree,edgecolor='none',facecolor='red')
+plt.scatter(g3['glon'],g3['glat'],edgecolor='none',facecolor='yellow')
+plt.show()
+
+
+
+galexcut = np.where((galex['glon'] > 200) & (galex['glon'] < 250))
+g2 = galex[galexcut]
+galexgal = SkyCoord(g2['glon']*u.deg,g2['glat']*u.deg,frame='galactic')
+vp = fits.open('vphas_allg_gl200-250.fits')[1].data
+vpgal = SkyCoord(vp['RAJ2000']*u.deg,vp['DEJ2000']*u.deg,frame='icrs').galactic
+galexind,vpind,angsep,ang3d = search_around_sky(galexgal,vpgal,3*u.arcsec)
+g3 = g2[galexind]
+plt.scatter(g2['glon'],g2['glat'],edgecolor='none')
+plt.scatter(vpgal.l.degree,vpgal.b.degree,edgecolor='none',facecolor='red')
+plt.scatter(g3['glon'],g3['glat'],edgecolor='none',facecolor='yellow')
+plt.show()
+
+
+galexcut = np.where((galex['glon'] > 250) & (galex['glon'] < 300))
+g2 = galex[galexcut]
+galexgal = SkyCoord(g2['glon']*u.deg,g2['glat']*u.deg,frame='galactic')
+vp = fits.open('vphas_allg_gl250-300.fits')[1].data
+vpgal = SkyCoord(vp['RAJ2000']*u.deg,vp['DEJ2000']*u.deg,frame='icrs').galactic
+galexind,vpind,angsep,ang3d = search_around_sky(galexgal,vpgal,3*u.arcsec)
+g3 = g2[galexind]
+plt.scatter(g2['glon'],g2['glat'],edgecolor='none')
+plt.scatter(vpgal.l.degree,vpgal.b.degree,edgecolor='none',facecolor='red')
+plt.scatter(g3['glon'],g3['glat'],edgecolor='none',facecolor='yellow')
+plt.show()
+
+
+galexcut = np.where((galex['glon'] > 300) & (galex['glon'] < 360))
+g2 = galex[galexcut]
+galexgal = SkyCoord(g2['glon']*u.deg,g2['glat']*u.deg,frame='galactic')
+vp = fits.open('vphas_allg_gl300-360.fits')[1].data
+vpgal = SkyCoord(vp['RAJ2000']*u.deg,vp['DEJ2000']*u.deg,frame='icrs').galactic
+galexind,vpind,angsep,ang3d = search_around_sky(galexgal,vpgal,3*u.arcsec)
+g3 = g2[galexind]
+plt.scatter(g2['glon'],g2['glat'],edgecolor='none')
+plt.scatter(vpgal.l.degree,vpgal.b.degree,edgecolor='none',facecolor='red')
+plt.scatter(g3['glon'],g3['glat'],edgecolor='none',facecolor='yellow')
+plt.show()
+
+
+# for GALEX - count up circles, * by diamater of aperture
+# For VPHAS - 
+
+# 0-40: Basically same as paper
+# 200-250: 
+# 250-300:
+# 300-360: 
