@@ -26,5 +26,11 @@ glval = np.array(glval)
 gbval = np.array(gbval)
 numwd = np.array(numwd)
 
+gl = wds['gl_galex'].tolist()
+gb = wds['gb_galex'].tolist()
+dresult = query(gl,gb,coordsys='gal')
 
-for i in range()
+dist = 10**(1.+np.array(dresult['distmod'])/5.)/1000.
+
+for i in range(len(gl)):
+    plt.plot(dist,dresult['best'][i],c=gl[i])
