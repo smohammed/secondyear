@@ -505,6 +505,8 @@ delang = 2*np.arcsin(np.sqrt(np.sin((star['dec_sex']-star['dec_2mass'])/2)**2+np
 # Match GAIS + VPHAS 
 galex = fits.open('GALEXAIS.fits')[1].data
 vphas = fits.open('vphas_allg_gl0-40.fits')[1].data
+vpcut = np.where(vphas['u_AB']-vphas['g_AB'] < 1.25)
+vphas = vphas[vpcut]
 galexgal = SkyCoord(galex['ra']*u.deg,galex['dec']*u.deg,frame='icrs')
 vphasgal = SkyCoord(vphas['RAJ2000']*u.deg,vphas['DEJ2000']*u.deg,frame='icrs')
 galexind,vphasind, angsep,sep3d = search_around_sky(galexgal,vphasgal,3.5*u.arcsec)
@@ -516,6 +518,8 @@ tot['angsep'] = angsep
 
 print 'part 1 done'
 vp1 = fits.open('vphas_allg_gl200-250.fits')[1].data
+vp1cut = np.where(vp1['u_AB']-vp1['g_AB'] < 1.25)
+vp1 = vp1[vp1cut]
 vpgal = SkyCoord(vp1['RAJ2000']*u.deg,vp1['DEJ2000']*u.deg,frame='icrs')
 galexind,vpind, angsep1,sep3d = search_around_sky(galexgal,vpgal,3.5*u.arcsec)
 g2 = Table(galex[galexind])
@@ -525,6 +529,8 @@ tot1['angsep'] = angsep1
 
 print 'part 2 done'
 vp1 = fits.open('vphas_allg_gl250-300.fits')[1].data
+vp1cut = np.where(vp1['u_AB']-vp1['g_AB'] < 1.25)
+vp1 = vp1[vp1cut]
 vpgal = SkyCoord(vp1['RAJ2000']*u.deg,vp1['DEJ2000']*u.deg,frame='icrs')
 galexind,vpind, angsep2,sep3d = search_around_sky(galexgal,vpgal,3.5*u.arcsec)
 g2 = Table(galex[galexind])
@@ -534,6 +540,8 @@ tot2['angsep'] = angsep2
 
 print 'part 3 done'
 vp1 = fits.open('vphas_allg_gl300-360.fits')[1].data
+vp1cut = np.where(vp1['u_AB']-vp1['g_AB'] < 1.25)
+vp1 = vp1[vp1cut]
 vpgal = SkyCoord(vp1['RAJ2000']*u.deg,vp1['DEJ2000']*u.deg,frame='icrs')
 galexind,vpind, angsep3,sep3d = search_around_sky(galexgal,vpgal,3.5*u.arcsec)
 g2 = Table(galex[galexind])
@@ -661,14 +669,19 @@ plt.show()
 
 fig,axes = plt.subplots(2,2,sharey=True)
 
-axes[0,0].scatter(gl,gb,label='All WDs')
-axes[0,1].scatter(gl,gb)
-axes[1,1].scatter(gl,gb)
-axes[1,0].scatter(gl,gb)
-axes[0,0].scatter(gl[cut],gb[cut],c='red',label='NUV-g > 3')
-axes[0,1].scatter(gl[cut],gb[cut],c='red')
-axes[1,1].scatter(gl[cut],gb[cut],c='red')
-axes[1,0].scatter(gl[cut],gb[cut],c='red')
+axes[0,0].scatter(gv['glon'],gv['glat'],edgecolor='none')
+axes[0,1].scatter(gv['glon'],gv['glat'],edgecolor='none')
+axes[1,1].scatter(gv['glon'],gv['glat'],edgecolor='none')
+axes[1,0].scatter(gv['glon'],gv['glat'],edgecolor='none')
+
+axes[0,0].scatter(gl,gb,c='red',label='All WDs')
+axes[0,1].scatter(gl,gb,c='red')
+axes[1,1].scatter(gl,gb,c='red')
+axes[1,0].scatter(gl,gb,c='red')
+axes[0,0].scatter(gl[cut],gb[cut],c='green',label='NUV-g > 3')
+axes[0,1].scatter(gl[cut],gb[cut],c='green')
+axes[1,1].scatter(gl[cut],gb[cut],c='green')
+axes[1,0].scatter(gl[cut],gb[cut],c='green')
 
 axes[0,0].set_xlim(-2,40)
 axes[0,1].set_xlim(205,252)
@@ -688,4 +701,14 @@ plt.show()
 
 
 
+
+scatter_contour(gv['nuv_mag']-gv['g_AB'],gv['g_AB']-gv['r_AB'],threshold=1000,log_counts=True,histogram2d_args=dict(bins=40),contour_args=dict(),plot_args=dict(color='k',markersize=1))
+plt.scatter(pickles['nuv']-pickles['g'],pickles['g']-pickles['r'],color='darkgreen')
+plt.gca().add_patch(matplotlib.patches.Rectangle((-0.5,0.6),2.5,0.5,facecolor='yellow',alpha=0.5))
+plt.gca().add_patch(matplotlib.patches.Rectangle((-0.5,1.1),6.5,0.5,facecolor='yellow',alpha=0.5))
+plt.gca().add_patch(matplotlib.patches.Rectangle((2,0.1),6,0.6,facecolor='red',alpha=0.5,angle=5))
+plt.gca().add_patch(matplotlib.patches.Rectangle((-2,-0.75),3,0.65,facecolor='gray',alpha=0.5))
+plt.xlim((-3,9))
+plt.ylim((-1,3))
+plt.show()
 
