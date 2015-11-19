@@ -42,11 +42,11 @@ for i in range(len(dresult['best'][0])):    # 31 different distances
     avnum = np.array(avnum) * 9.
     
     fig,axes = plt.subplots(2,2,sharey=True)
-    axes[0,0].scatter(wds['gl_galex'],avnum,c='red',label='All WDs')
-    axes[0,1].scatter(wds['gl_galex'],avnum,c='red')
-    axes[1,1].scatter(wds['gl_galex'],avnum,c='red')
-    axes[1,0].scatter(wds['gl_galex'],avnum,c='red')
-    
+    a1 = axes[0,0].scatter(wds['gl_galex'],avnum,c=wds['angsep_vphas']*3600.,label='All WDs')
+    axes[0,1].scatter(wds['gl_galex'],avnum,c=wds['angsep_vphas']*3600.)
+    axes[1,1].scatter(wds['gl_galex'],avnum,c=wds['angsep_vphas']*3600.)
+    axes[1,0].scatter(wds['gl_galex'],avnum,c=wds['angsep_vphas']*3600.)
+    fig.colorbar(a1,label='angular separation')
     axes[0,0].set_xlim(-2,40)
     axes[0,1].set_xlim(205,252)
     axes[1,0].set_xlim(252,300)
@@ -61,7 +61,8 @@ for i in range(len(dresult['best'][0])):    # 31 different distances
     axes[0,0].set_ylabel('A$_V$')
     axes[0,0].legend(scatterpoints=1)
     fig.subplots_adjust(wspace=0)
-    axes[0,0].set_title('Distance = '+str(dist[i])+' kpc')
-    plt.savefig('wdplots/wds_d'+str(dist[i])[:4])+'kpc.png')
+    axes[0,0].set_title('Distance = '+str(dist[i])[:4]+' kpc')
+    plt.savefig('wdplots/wds_vsangsep_d'+str(dist[i])[:4]+'.png')
+    plt.clf()
     #plt.show()
     
