@@ -668,33 +668,39 @@ plt.show()
 
 
 fig,axes = plt.subplots(2,2,sharey=True)
+xco = gv['glon']
+yco = gv['g_AB'] - gv['r_AB']
+axes[0,0].scatter(xco,yco,edgecolor='none')
+axes[0,1].scatter(xco,yco,edgecolor='none')
+axes[1,1].scatter(xco,yco,edgecolor='none')
+axes[1,0].scatter(xco,yco,edgecolor='none')
 
-axes[0,0].scatter(gv['glon'],gv['glat'],edgecolor='none')
-axes[0,1].scatter(gv['glon'],gv['glat'],edgecolor='none')
-axes[1,1].scatter(gv['glon'],gv['glat'],edgecolor='none')
-axes[1,0].scatter(gv['glon'],gv['glat'],edgecolor='none')
+wdx = wds['gl_galex']
+wdy = wds['g_AB'] - wds['r_AB']
 
-axes[0,0].scatter(gl,gb,c='red',label='All WDs')
-axes[0,1].scatter(gl,gb,c='red')
-axes[1,1].scatter(gl,gb,c='red')
-axes[1,0].scatter(gl,gb,c='red')
+axes[0,0].scatter(wdx,wdy,c='red',label='All WDs')
+axes[0,1].scatter(wdx,wdy,c='red')
+axes[1,1].scatter(wdx,wdy,c='red')
+axes[1,0].scatter(wdx,wdy,c='red')
+'''
 axes[0,0].scatter(gl[cut],gb[cut],c='green',label='NUV-g > 3')
 axes[0,1].scatter(gl[cut],gb[cut],c='green')
 axes[1,1].scatter(gl[cut],gb[cut],c='green')
 axes[1,0].scatter(gl[cut],gb[cut],c='green')
+'''
 
 axes[0,0].set_xlim(-2,40)
 axes[0,1].set_xlim(205,252)
 axes[1,0].set_xlim(252,300)
 axes[1,1].set_xlim(300,362)
-axes[0,0].set_ylim(-6,6)
+'''axes[0,0].set_ylim(-6,6)
 axes[0,1].set_ylim(-6,6)
 axes[1,0].set_ylim(-6,6)
-axes[1,1].set_ylim(-6,6)
+axes[1,1].set_ylim(-6,6)'''
 axes[1,0].set_xlabel('gl')
 axes[1,1].set_xlabel('gl')
-axes[1,0].set_ylabel('gb')
-axes[0,0].set_ylabel('gb')
+axes[1,0].set_ylabel('g - r')
+axes[0,0].set_ylabel('g - r')
 axes[0,0].legend(scatterpoints=1)
 fig.subplots_adjust(wspace=0)
 plt.show()
