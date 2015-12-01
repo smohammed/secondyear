@@ -718,3 +718,133 @@ plt.xlim((-3,9))
 plt.ylim((-1,3))
 plt.show()
 
+
+v1 = fits.open('vphas_allg_gl0-40.fits')[1].data
+
+scatter_contour((v1['g_AB']-v1['r_AB']),v1['g_AB'],threshold=1000,log_counts=True,histogram2d_args=dict(bins=40),contour_args=dict(),plot_args=dict(color='k',markersize=1))
+plt.xlim((-1,3))
+plt.ylim((22,12))
+plt.title('VPHAS only, 0 < gl < 40')
+plt.xlabel('g - r')
+plt.ylabel('g')
+plt.show()
+v1cut = np.where(v1['u_AB']-v1['g_AB'] < 1.)
+scatter_contour((v1['g_AB']-v1['r_AB'])[v1cut],v1['g_AB'][v1cut],threshold=1000,log_counts=True,histogram2d_args=dict(bins=40),contour_args=dict(),plot_args=dict(color='k',markersize=1))
+plt.xlim((-1,3))
+plt.ylim((22,12))
+plt.title('VPHAS only, 0 < gl < 40, u - g < 1')
+plt.xlabel('g - r')
+plt.ylabel('g')
+plt.show()
+
+
+v1 = fits.open('vphas_allg_gl200-250.fits')[1].data
+scatter_contour((v1['g_AB']-v1['r_AB']),v1['g_AB'],threshold=1000,log_counts=True,histogram2d_args=dict(bins=40),contour_args=dict(),plot_args=dict(color='k',markersize=1))
+plt.xlim((-1,3))
+plt.ylim((22,12))
+plt.title('VPHAS only, 200 < gl < 250')
+plt.xlabel('g - r')
+plt.ylabel('g')
+plt.savefig('11-25-gvsgr_vphasonly_200-250.png')
+plt.clf()
+v1cut = np.where(v1['u_AB']-v1['g_AB'] < 1.)
+scatter_contour((v1['g_AB']-v1['r_AB'])[v1cut],v1['g_AB'][v1cut],threshold=1000,log_counts=True,histogram2d_args=dict(bins=40),contour_args=dict(),plot_args=dict(color='k',markersize=1))
+plt.xlim((-1,3))
+plt.ylim((22,12))
+plt.title('VPHAS only, 200 < gl < 250, u - g < 1')
+plt.xlabel('g - r')
+plt.ylabel('g')
+plt.savefig('11-25-gvsgr_vphasonly_200-250_ug1cut.png')
+plt.clf()
+
+v1 = fits.open('vphas_allg_gl250-300.fits')[1].data
+scatter_contour((v1['g_AB']-v1['r_AB']),v1['g_AB'],threshold=1000,log_counts=True,histogram2d_args=dict(bins=40),contour_args=dict(),plot_args=dict(color='k',markersize=1))
+plt.xlim((-1,3))
+plt.ylim((22,12))
+plt.title('VPHAS only, 250 < gl < 300')
+plt.xlabel('g - r')
+plt.ylabel('g')
+plt.savefig('11-25-gvsgr_vphasonly_250-300.png')
+plt.clf()
+v1cut = np.where(v1['u_AB']-v1['g_AB'] < 1.)
+scatter_contour((v1['g_AB']-v1['r_AB'])[v1cut],v1['g_AB'][v1cut],threshold=1000,log_counts=True,histogram2d_args=dict(bins=40),contour_args=dict(),plot_args=dict(color='k',markersize=1))
+plt.xlim((-1,3))
+plt.ylim((22,12))
+plt.title('VPHAS only, 250 < gl < 300, u - g < 1')
+plt.xlabel('g - r')
+plt.ylabel('g')
+plt.savefig('11-25-gvsgr_vphasonly_250-300_ug1cut.png')
+plt.clf()
+
+
+v1 = fits.open('vphas_allg_gl300-360.fits')[1].data
+scatter_contour((v1['g_AB']-v1['r_AB']),v1['g_AB'],threshold=1000,log_counts=True,histogram2d_args=dict(bins=40),contour_args=dict(),plot_args=dict(color='k',markersize=1))
+plt.xlim((-1,3))
+plt.ylim((22,12))
+plt.title('VPHAS only, 300 < gl < 360')
+plt.xlabel('g - r')
+plt.ylabel('g')
+plt.savefig('11-25-gvsgr_vphasonly_300-360.png')
+plt.clf()
+v1cut = np.where(v1['u_AB']-v1['g_AB'] < 1.)
+scatter_contour((v1['g_AB']-v1['r_AB'])[v1cut],v1['g_AB'][v1cut],threshold=1000,log_counts=True,histogram2d_args=dict(bins=40),contour_args=dict(),plot_args=dict(color='k',markersize=1))
+plt.xlim((-1,3))
+plt.ylim((22,12))
+plt.title('VPHAS only, 300 < gl < 360, u - g < 1')
+plt.xlabel('g - r')
+plt.ylabel('g')
+plt.savefig('11-25-gvsgr_vphasonly_300-360_ug1cut.png')
+plt.clf()
+
+######################################################################
+
+v1 = fits.open('vphas_allg_gl0-40.fits')[1].data
+v1 = v1[np.where((v1['g_AB'] < 19.) & (v1['g_AB']-v1['r_AB'] < 0.25))]
+
+gv = Table.read('GAIS_vphas_2mass_wd.txt',format='ascii')
+gvcut = np.where((gv['glon'] > 0) & (gv['glon'] < 40))
+
+# SED plot
+v1nuvi = np.zeros(len(v1))
+v1ui = v1['u_AB'] - v1['i_AB']
+v1gi = v1['g_AB'] - v1['i_AB']
+v1ri = v1['r_AB'] - v1['i_AB']
+
+nuvi = gv2['nuv_mag'] - gv2['i_AB']
+ui = gv2['u_AB'] - gv2['i_AB']
+gi = gv2['g_AB'] - gv2['i_AB']
+ri = gv2['r_AB'] - gv2['i_AB']
+
+
+colsv1 = np.ones(len(v1)*4)
+colsv1[0+len(v1)*0:len(v1)*1] = nuvi
+colsv1[0+len(v1)*1:len(v1)*2] = ui
+colsv1[0+len(v1)*2:len(v1)*3] = gi
+colsv1[0+len(v1)*3:len(v1)*4] = ri
+
+cols = np.ones(len(gv2)*4)
+cols[0+len(gv2)*0:len(gv2)*1] = nuvi
+cols[0+len(gv2)*1:len(gv2)*2] = ui
+cols[0+len(gv2)*2:len(gv2)*3] = gi
+cols[0+len(gv2)*3:len(gv2)*4] = ri
+
+labels = ['NUV-i','u-i','g-i','r-i']
+plt.xticks([1,2,3,4],labels)
+# All VPHAS
+for i in range(len(v1)):
+    plt.plot([1,2,3,4],colsv1[[i,i+len(v1),i+len(v1)*2,i+len(v1)*3],alpha=0.01,color='black')
+
+# VPHAS + GAIS
+for i in range(len(gv2)):
+    plt.plot([1,2,3,4],cols2[[i,i+len(gv2),i+len(gv2)*2,i+len(gv2)*3],alpha=0.05,color='red')
+
+# Plot this to make legend
+plt.plot([1,2,3,4],cols[[1,1+len(v1),1+len(v1)*2,1+len(v1)*3],alpha=0.1,color='black',label='VPHAS only')
+plt.plot([1,2,3,4],cols2[[1,1+len(gv2),1+len(gv2)*2,1+len(gv2)*3],alpha=0.1,color='red',label='VPHAS + GAIS')
+plt.legend(loc=2)
+plt.xlabel('$\lambda$')
+plt.ylabel('$\lambda$ - i (ABmag)')
+plt.ylim((5,-12))
+plt.title('VPHAS')
+plt.show()
+
