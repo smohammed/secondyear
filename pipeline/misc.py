@@ -23,9 +23,6 @@ ax1.set_ylabel('NUV - J')
 #ax1.plot([-1.0,1.5],[-1.5,14])
 ax1.axhline(y=4,color='black')
 
-#a3 = ax1.scatter(pickles['j']-pickles['k'],pickles['nuv']-pickles['j'],c='black',s=5)
-#for j in range(len(pickles)):
-#    ax1.annotate(pickles['name'][j][:-4],xy=(pickles['j'][j]-pickles['k'][j],pickles['nuv'][j]-pickles['j'][j]),size=12)
 a2 = ax1.scatter(newt['j'][ncut]-newt['k'][ncut],newt['nuv_mag'][ncut]-newt['j'][ncut],facecolor='none',edgecolor='red',s=30,alpha=0.3)
 
 a1 = ax1.scatter(star['j'][scut]-star['k'][scut],star['nuv'][scut]-star['j'][scut],edgecolor='none',alpha=0.3)
@@ -48,86 +45,6 @@ b2 = ax2.scatter(newt['j'][ncut2]-newt['k'][ncut2],newt['nuv_mag'][ncut2]-newt['
 b1 = ax2.scatter(star['j'][scut2]-star['k'][scut2],star['nuv'][scut2]-star['j'][scut2],edgecolor='none',alpha=0.3)
 ax2.legend([b1,b2],['Sextractor','GALEX'],scatterpoints=1,loc=2)
 plt.show()
-
-
-
-####################################################################
-star = Table.read('newfield_2mass_t2_jlim_13.5_3arcsec.txt',format='ascii')
-newt = Table.read('galex0data_2mass_t2.txt', format='ascii')
-pickles = Table.read('picklemags.txt', format='ascii')
-
-gbrange = 5.
-scut = np.where((star['gb_sex'] > -10) & (star['gb_sex'] < -5))
-scut2 = np.where((star['gb_sex'] > -5) & (star['gb_sex'] < 0))
-scut3 = np.where((star['gb_sex'] > 0) & (star['gb_sex'] < 5))
-scut4 = np.where((star['gb_sex'] > 5) & (star['gb_sex'] < 10))
-
-ncut = np.where((newt['gb_galex'] > -10) & (newt['gb_galex'] < -5))
-ncut2 = np.where((newt['gb_galex'] > -5) & (newt['gb_galex'] < 0))
-ncut3 = np.where((newt['gb_galex'] > 0) & (newt['gb_galex'] < 5))
-ncut4 = np.where((newt['gb_galex'] > 5) & (newt['gb_galex'] < 10))
-
-
-f, ((ax1, ax2), (ax3, ax4)) = plt.subplots(2, 2, sharex='col', sharey='row')
-plt.rc('legend',**{'fontsize':15})
-
-ax1.set_title('3", J < 13.5, DF, -10 > gb > -5')
-ax1.set_xlim((-1.0,2))
-ax1.set_ylim((-1.5,14))
-ax1.set_xlabel('J - K')
-ax1.set_ylabel('NUV - J')
-ax1.plot([-1.0,1.5],[-1.5,14])
-a2 = ax1.scatter(newt['j'][ncut]-newt['k'][ncut],newt['nuv_mag'][ncut]-newt['j'][ncut],facecolor='none',edgecolor='red',s=30,alpha=0.3)
-a3 = ax1.scatter(pickles['j']-pickles['k'],pickles['nuv']-pickles['j'],c='black',s=5)
-for j in range(len(pickles)):
-    ax1.annotate(pickles['name'][j][:-4],xy=(pickles['j'][j]-pickles['k'][j],pickles['nuv'][j]-pickles['j'][j]),size=12)
-a1 = ax1.scatter(star['j'][scut]-star['k'][scut],star['nuv'][scut]-star['j'][scut],edgecolor='none',alpha=0.3)
-ax1.legend([a1,a2,a3],['Sextractor','GALEX','Pickles'],scatterpoints=1,loc=2)
-
-
-ax2.set_title('3", J < 13.5, DF, -5 > gb > 0')
-ax2.set_xlim((-1.0,2))
-ax2.set_ylim((-1.5,14))
-ax2.set_xlabel('J - K')
-ax2.set_ylabel('NUV - J')
-ax2.plot([-1.0,1.5],[-1.5,14])
-b2 = ax2.scatter(newt['j'][ncut2]-newt['k'][ncut2],newt['nuv_mag'][ncut2]-newt['j'][ncut2],facecolor='none',edgecolor='red',s=30,alpha=0.3)
-b3 = ax2.scatter(pickles['j']-pickles['k'],pickles['nuv']-pickles['j'],c='black',s=5)
-for j in range(len(pickles)):
-    ax2.annotate(pickles['name'][j][:-4],xy=(pickles['j'][j]-pickles['k'][j],pickles['nuv'][j]-pickles['j'][j]),size=12)
-b1 = ax2.scatter(star['j'][scut2]-star['k'][scut2],star['nuv'][scut2]-star['j'][scut2],edgecolor='none',alpha=0.3)
-ax2.legend([b1,b2,b3],['Sextractor','GALEX','Pickles'],scatterpoints=1,loc=2)
-
-
-ax3.set_title('3", J < 13.5, DF, 0 > gb > 5')
-ax3.set_xlim((-1.0,2))
-ax3.set_ylim((-1.5,14))
-ax3.set_xlabel('J - K')
-ax3.set_ylabel('NUV - J')
-ax3.plot([-1.0,1.5],[-1.5,14])
-c2 = ax3.scatter(newt['j'][ncut3]-newt['k'][ncut3],newt['nuv_mag'][ncut3]-newt['j'][ncut3],facecolor='none',edgecolor='red',s=30,alpha=0.3)
-c3 = ax3.scatter(pickles['j']-pickles['k'],pickles['nuv']-pickles['j'],c='black',s=5)
-for j in range(len(pickles)):
-    ax3.annotate(pickles['name'][j][:-4],xy=(pickles['j'][j]-pickles['k'][j],pickles['nuv'][j]-pickles['j'][j]),size=12)
-c1 = ax3.scatter(star['j'][scut3]-star['k'][scut3],star['nuv'][scut3]-star['j'][scut3],edgecolor='none',alpha=0.3)
-ax3.legend([c1,c2,c3],['Sextractor','GALEX','Pickles'],scatterpoints=1,loc=2)
-
-ax4.set_title('3", J < 13.5, DF, 5 > gb > 10')
-ax4.set_xlim((-1.0,2))
-ax4.set_ylim((-1.5,14))
-ax4.set_xlabel('J - K')
-ax4.set_ylabel('NUV - J')
-ax4.plot([-1.0,1.5],[-1.5,14])
-d2 = ax4.scatter(newt['j'][ncut4]-newt['k'][ncut4],newt['nuv_mag'][ncut4]-newt['j'][ncut4],facecolor='none',edgecolor='red',s=30,alpha=0.3)
-d3 = ax4.scatter(pickles['j']-pickles['k'],pickles['nuv']-pickles['j'],c='black',s=5)
-for j in range(len(pickles)):
-    ax4.annotate(pickles['name'][j][:-4],xy=(pickles['j'][j]-pickles['k'][j],pickles['nuv'][j]-pickles['j'][j]),size=12)
-d1 = ax4.scatter(star['j'][scut4]-star['k'][scut4],star['nuv'][scut4]-star['j'][scut4],edgecolor='none',alpha=0.3)
-ax4.legend([d1,d2,d3],['Sextractor','GALEX','Pickles'],scatterpoints=1,loc=2)
-
-
-plt.show()
-
 
 ####################################################################
 # J-H vs H-K
@@ -158,10 +75,7 @@ for j in range(len(pickles)):
 
 a1 = ax1.scatter(star['h'][scut]-star['k'][scut],star['j'][scut]-star['h'][scut],edgecolor='none',alpha=0.1)
 
-
 ax1.legend([a1,a2,a3],['Sextractor','GALEX','Pickles'],scatterpoints=1,loc=2)
-
-
 ax2.set_title('3", J < 13.5, Deeper Field, gb < '+str(gbrange))
 ax2.set_xlim((-0.4,0.6))
 ax2.set_ylim((-0.3,1.0))
@@ -199,25 +113,6 @@ star.rename_column('dec','dec_2mass')
 star.rename_column('j_m','j')
 star.rename_column('h_m','h')
 star.rename_column('k_m','k')
-
-
-####################################################################
-# Plot data w/ J limits
-####################################################################
-staroutcut = np.where(((star['j']-star['k']) >  0.6) & ((star['nuv']-star['j']) < 8))
-zoutcut = np.where(((z['j']-z['k']) >  0.6) & ((z['nuv']-z['j']) < 8))
-
-z = Table.read('newfield_ipac_2mass_matches_3arcsec.txt',format='ascii')
-zoutcut = np.where(((z['j']-z['k']) >  0.6) & ((z['nuv']-z['j']) < 8))
-
-img = fits.open('newfield/count_05-68_gPr_cata_10_corr.fits')[0].data
-plt.imshow(img,vmin=0,vmax=1,origin='lower',interpolation='nearest',aspect='auto',cmap=cm.gray)
-plt.scatter(z['x_new'],z['y_new'],facecolor='none',edgecolor='green',s=20,label='All')
-plt.scatter(z['x_new'][zoutcut],z['y_new'][zoutcut],facecolor='none',edgecolor='red',s=20,label='J-K > 0.6')
-plt.legend(loc=2,scatterpoints=1)
-plt.title('Deep field, J-K > 0.6 outliers')
-plt.show()
-
 
 ####################################################################
 # Import different Jlim and arcsec search radii from 2MASS
@@ -313,60 +208,9 @@ plt.scatter(star['x_new'],star['y_new'],edgecolor='red',facecolor='none',s=20)
 plt.show()
 
 ####################################################################
-# VPHAS matching
-####################################################################
-sex = Table.read('newfield_gal_ipac_tests.txt',format='ascii')
-vphas = Table.read('vphas_gl_0_to_7.fits',format='fits')
-
-vpgal = SkyCoord(vphas['RAJ2000']*u.deg,vphas['DEJ2000']*u.deg,frame='icrs')
-sexind, vpind, angsep, dist3d = search_around_sky(sexgal,vpgal,5*u.arcsec)
-plt.hist(angsep*3600),plt.title('SEx+VPHAS'),plt.show()
-sex2 = sex[sexind]
-vp2 = vphas[vpind]
-
-sv = hstack([sex2,vp2])
-
-sex2mass = Table.read('newfield_gal_ipac_2mass_matches_3arcsec_j_lt13.5_tests.txt',format='ascii')
-sex2massgal = SkyCoord(sex2mass['ra_2mass']*u.deg,sex2mass['dec_2mass']*u.deg,frame='icrs')
-sex2mind, vp2mind, angsep, dist3d = search_around_sky(sex2massgal,vpgal,1*u.arcsec)
-plt.hist(angsep*3600),plt.title('SEx+2MASS+VPHAS'),plt.show()
-s2m2 = sex2mass[sex2mind]
-vpm2 = vphas[vp2mind]
-
-s2mv = hstack([s2m2,vpm2])
-
-plt.scatter(sv['g_AB']-sv['i_AB'],sv['nuv']-sv['g_AB'],edgecolor='none',alpha=0.3,label='VPHAS')
-plt.scatter(vs2m['g_AB']-vs2m['i_AB'],vs2m['nuv']-vs2m['g_AB'],edgecolor='red',facecolor='none',alpha=0.3,label='VPHAS+2MASS')
-plt.xlabel('g - i (ABmag)')
-plt.ylabel('NUV - g (ABmag)')
-plt.title('VPHAS only vs 2MASS+VPHAS ')
-plt.xlim((-0.5,2))
-plt.ylim((2.5,6.5))
-plt.gca().invert_yaxis()
-plt.legend(loc=2,scatterpoints=1)
-plt.show()
-
-
-plt.scatter(vgalex['g_AB']-vgalex['i_AB'],vgalex['nuv_mag']-vgalex['g_AB'],edgecolor='none',alpha=0.3,label='GALEX+VPHAS')
-plt.scatter(sv['g_AB']-sv['i_AB'],sv['nuv']-sv['g_AB'],edgecolor='red',facecolor='none',alpha=0.3,label='SExtractor+VPHAS')
-plt.xlabel('g - i (ABmag)')
-plt.ylabel('NUV - g (ABmag)')
-plt.title('VPHAS only vs 2MASS+VPHAS ')
-plt.xlim((-0.5,2))
-plt.ylim((2.5,6.5))
-plt.gca().invert_yaxis()
-plt.legend(loc=2,scatterpoints=1)
-plt.show()
-
-
-
-
-####################################################################
 # Sky plot
 ####################################################################
-
 from astropy.wcs import WCS
-
 img = fits.open('newfield/count_map_05-68_gPr_cata_10_corr_gal.fits')[0].data
 galex = Table.read('galex0data.txt',format='ascii')
 gallim = np.where((galex['gl_galex'] > 0) & (galex['gl_galex'] < 7.5) & (galex['gb_galex']> -10) & (galex['gb_galex'] < 10))
@@ -385,7 +229,6 @@ galex2 = galex[galind]
 vgalex = vphas[vpasind]
 vgalex = hstack([galex2,vgalex])
 
-
 plt.imshow(img,vmin=0,vmax=1,origin='lower',interpolation='nearest',aspect='auto',cmap=cm.gray,extent=[x0,xn,y0,yn])
 plt.scatter(galex['gl_galex'],galex['gb_galex'],edgecolor='red',facecolor='red',s=5,label='GALEX')
 plt.scatter(vphas['l'],vphas['b'],edgecolor='blue',facecolor='blue',s=5,label='VPHAS')
@@ -398,9 +241,7 @@ plt.ylim((-10,10))
 plt.gca().invert_xaxis()
 plt.show()
 
-
 from astropy.wcs import WCS
-
 img = fits.open('newfield/count_map_05-68_gPr_cata_10_corr_gal.fits')[0].data
 galex = Table.read('galex0data.txt',format='ascii')
 gallim = np.where((galex['gl_galex'] > 0) & (galex['gl_galex'] < 7.5) & (galex['gb_galex']> -10) & (galex['gb_galex'] < 10))
@@ -414,15 +255,12 @@ xn = xn - 360
 vgalex = Table.read('galex0vphas.txt',format='ascii')
 
 f, ((ax1, ax2)) = plt.subplots(1, 2, sharex='col')
-
 ax1.imshow(img,vmin=0,vmax=1,origin='lower',interpolation='nearest',aspect='auto',cmap=cm.gray,extent=[x0,xn,y0,yn])
-
 ax1.set_xlabel('Galactic Longitude')
 ax1.set_ylabel('Galactic Latitude')
 ax1.invert_xaxis()
 ax1.set_xlim((0,7.45))
 ax1.set_ylim((-10,10))
-
 ax2.imshow(img,vmin=0,vmax=1,origin='lower',interpolation='nearest',aspect='auto',cmap=cm.gray,extent=[x0,xn,y0,yn])
 ax2.scatter(galex['gl_galex'],galex['gb_galex'],edgecolor='red',facecolor='red',s=5,label='GALEX')
 ax2.scatter(vphas['l'],vphas['b'],edgecolor='blue',facecolor='blue',s=5,label='VPHAS')
@@ -435,9 +273,8 @@ ax2.get_yaxis().set_visible(False)
 f.subplots_adjust(wspace=0)
 plt.show()
 
-
 ####################################################################
-# Comparing 
+# Compare NUV
 ####################################################################
 # Only detections
 sex = Table.read('newfield_gal_ipac_tests.txt',format='ascii')
@@ -467,8 +304,9 @@ plt.axhline(y=0,c='black')
 plt.legend(loc=3,scatterpoints=1)
 plt.show()
 
-
-# GALEX, Pickles, SExtractor order
+######################################################################
+# GALEX, Pickles, SExtractor with extinction
+######################################################################
 nuv = ['nuv_mag', 'nuv', 'nuv', 2.9720]
 b = ['BJmag', 'b', 'BJmag', 1.3429]
 v = ['VJmag', 'v', 'VJmag', 1.0]
@@ -479,8 +317,6 @@ u = ['u','u','u',1.5916]
 g = ['g','g','g',1.1838]
 r = ['r','r','r',0.8664]
 ib  = ['i','i','i',0.6418]
-
-
 
 plt.scatter(sexv['g_AB']-sexv['i_AB'],sexv['nuv']-sexv['g_AB'],edgecolor='none',facecolor='blue',alpha=0.3,label='VPHAS')
 plt.scatter(starv['g_AB']-starv['i_AB'],starv['nuv']-starv['g_AB'],edgecolor='none',facecolor='red',label='VPHAS + 2MASS',alpha=0.3)
@@ -498,11 +334,11 @@ for j in range(0,len(pickles),10):
         plt.annotate(pickles['name'][j], xy=((pickles['g'][j]-pickles['i'][j])+0.01, (pickles['nuv'][j]-pickles['g'][j]) - 0.07), size=15)
 plt.show()
 
-
 delang = 2*np.arcsin(np.sqrt(np.sin((star['dec_sex']-star['dec_2mass'])/2)**2+np.cos(star['dec_sex'])*np.cos(star['dec_2mass'])*np.sin((star['ra_sex']-star['ra_2mass'])/2)**2))
 
-
+####################################################################
 # Match GAIS + VPHAS 
+####################################################################
 galex = fits.open('GALEXAIS.fits')[1].data
 vphas = fits.open('vphas_allg_gl0-40.fits')[1].data
 vpcut = np.where(vphas['u_AB']-vphas['g_AB'] < 1.25)
@@ -550,11 +386,11 @@ tot3 = hstack([g2,v12])
 tot3['angsep'] = angsep3
 totall = vstack([tot,tot1,tot2,tot3])
 
-
-
+####################################################################
+# SED plot
+####################################################################
 gv = Table.read('GAIS_VPHAS.txt',format='ascii')
 
-# SED plot
 nuvi = wd2m['nuv_mag'] - wd2m['i_AB']
 ui = wd2m['u_AB'] - wd2m['i_AB']
 gi = wd2m['g_AB'] - wd2m['i_AB']
@@ -606,10 +442,10 @@ plt.ylim((5,-12))
 plt.title('VPHAS + 2MASS, Verbeek WDs')
 plt.show()
 
-
-
+####################################################################
+# GALEX and VPHAS sky plot
+####################################################################
 galex = fits.open('GALEXAIS.fits')[1].data
-
 galexcut = np.where((galex['glon'] > 0) & (galex['glon'] < 40))
 g2 = galex[galexcut]
 galexgal = SkyCoord(g2['glon']*u.deg,g2['glat']*u.deg,frame='galactic')
@@ -624,8 +460,6 @@ plt.scatter(vpgal.l.degree,vpgal.b.degree,edgecolor='none',facecolor='red',label
 plt.scatter(g3['glon'],g3['glat'],edgecolor='none',facecolor='yellow',label='both')
 plt.legend(scatterpoints=1)
 plt.show()
-
-
 
 galexcut = np.where((galex['glon'] > 200) & (galex['glon'] < 250))
 g2 = galex[galexcut]
@@ -666,7 +500,6 @@ plt.scatter(g3['glon'],g3['glat'],edgecolor='none',facecolor='yellow',label='bot
 plt.legend(scatterpoints=1)
 plt.show()
 
-
 fig,axes = plt.subplots(2,2,sharey=True)
 xco = gv['glon']
 yco = gv['g_AB'] - gv['r_AB']
@@ -677,7 +510,6 @@ axes[1,0].scatter(xco,yco,edgecolor='none')
 
 wdx = wds['gl_galex']
 wdy = wds['g_AB'] - wds['r_AB']
-
 axes[0,0].scatter(wdx,wdy,c='red',label='All WDs')
 axes[0,1].scatter(wdx,wdy,c='red')
 axes[1,1].scatter(wdx,wdy,c='red')
@@ -705,9 +537,9 @@ axes[0,0].legend(scatterpoints=1)
 fig.subplots_adjust(wspace=0)
 plt.show()
 
-
-
-
+####################################################################
+# g - r vs NUV - g with boxes
+####################################################################
 scatter_contour(gv['nuv_mag']-gv['g_AB'],gv['g_AB']-gv['r_AB'],threshold=1000,log_counts=True,histogram2d_args=dict(bins=40),contour_args=dict(),plot_args=dict(color='k',markersize=1))
 plt.scatter(pickles['nuv']-pickles['g'],pickles['g']-pickles['r'],color='darkgreen')
 plt.gca().add_patch(matplotlib.patches.Rectangle((-0.5,0.6),2.5,0.5,facecolor='yellow',alpha=0.5))
@@ -718,9 +550,10 @@ plt.xlim((-3,9))
 plt.ylim((-1,3))
 plt.show()
 
-
+####################################################################
+# g vs g-r by gl
+####################################################################
 v1 = fits.open('vphas_allg_gl0-40.fits')[1].data
-
 m = 8./1.5
 b = 22 - m*0.5
 scatter_contour((v1['g_AB']-v1['r_AB']),v1['g_AB'],threshold=1000,log_counts=True,histogram2d_args=dict(bins=40),contour_args=dict(),plot_args=dict(color='k',markersize=1))
@@ -733,6 +566,7 @@ plt.xlabel('g - r')
 plt.ylabel('g')
 plt.savefig('11-25-gvsgr_vphasonly_0-40.png')
 plt.clf()
+
 v1cut = np.where(v1['u_AB']-v1['g_AB'] < 1.)
 v1 = v1[v1cut]
 scatter_contour((v1['g_AB']-v1['r_AB']),v1['g_AB'],threshold=1000,log_counts=True,histogram2d_args=dict(bins=40),contour_args=dict(),plot_args=dict(color='k',markersize=1))
@@ -746,7 +580,6 @@ plt.ylabel('g')
 plt.savefig('11-25-gvsgr_vphasonly_0-40_ug1cut.png')
 plt.clf()
 
-
 v1 = fits.open('vphas_allg_gl200-250.fits')[1].data
 scatter_contour((v1['g_AB']-v1['r_AB']),v1['g_AB'],threshold=1000,log_counts=True,histogram2d_args=dict(bins=40),contour_args=dict(),plot_args=dict(color='k',markersize=1))
 cut = np.where(((v1['g_AB']-v1['r_AB'])*m+b < v1['g_AB']) & (v1['g_AB'] > 19.))
@@ -758,7 +591,6 @@ plt.xlabel('g - r')
 plt.ylabel('g')
 plt.savefig('11-25-gvsgr_vphasonly_200-250.png')
 plt.clf()
-
 
 v1cut = np.where(v1['u_AB']-v1['g_AB'] < 1.)
 v1 = v1[v1cut]
@@ -797,7 +629,6 @@ plt.ylabel('g')
 plt.savefig('11-25-gvsgr_vphasonly_250-300_ug1cut.png')
 plt.clf()
 
-
 v1 = fits.open('vphas_allg_gl300-360.fits')[1].data
 scatter_contour((v1['g_AB']-v1['r_AB']),v1['g_AB'],threshold=1000,log_counts=True,histogram2d_args=dict(bins=40),contour_args=dict(),plot_args=dict(color='k',markersize=1))
 cut = np.where(((v1['g_AB']-v1['r_AB'])*m+b < v1['g_AB']) & (v1['g_AB'] > 19.))
@@ -823,7 +654,8 @@ plt.savefig('11-25-gvsgr_vphasonly_300-360_ug1cut.png')
 plt.clf()
 
 ######################################################################
-
+# lambda - i SEDs
+######################################################################
 v1 = Table.read('wds_vphasonly.txt',format='ascii')
 m = 8/1.5
 b = 22-8/1.5*0.5
@@ -879,4 +711,64 @@ plt.ylim((5,-1.5))
 plt.title('VPHAS + GAIS WDs, new gr cut, 0 < gl < 40')
 plt.show()
 
-12-01-SED_wds_vphas_GAIS_gl0-40_ugcut.png
+
+######################################################################
+# lambda - i histograms
+######################################################################
+v = Table.read('wds_vphasonly.txt',format='ascii')
+wd = Table.read('wds_gais_vphas_newgrcut.txt',format='ascii')
+v1cut = np.where((v['gl'] > 0) & (v['gl'] < 40))
+v2cut = np.where((v['gl'] > 200) & (v['gl'] < 250))
+v3cut = np.where((v['gl'] > 250) & (v['gl'] < 300))
+v4cut = np.where((v['gl'] > 300) & (v['gl'] < 360))
+wd1cut = np.where((wd['gl_galex'] > 0) & (wd['gl_galex'] < 40))
+wd2cut = np.where((wd['gl_galex'] > 200) & (wd['gl_galex'] < 250))
+wd3cut = np.where((wd['gl_galex'] > 250) & (wd['gl_galex'] < 300))
+wd4cut = np.where((wd['gl_galex'] > 300) & (wd['gl_galex'] < 360))
+
+bins= np.linspace(-2,3,20)
+fig,axes = plt.subplots(2,2,sharey=True,sharex=True)
+axes[0,0].hist((v['r_AB']-v['i_AB'])[v1cut],bins=bins,label='VPHAS only WDs')
+axes[0,1].hist((v['r_AB']-v['i_AB'])[v2cut],bins=bins)
+axes[1,0].hist((v['r_AB']-v['i_AB'])[v3cut],bins=bins)
+axes[1,1].hist((v['r_AB']-v['i_AB'])[v4cut],bins=bins)
+axes[0,0].hist((wd['r_AB']-wd['i_AB'])[wd1cut],bins=bins, label='VPHAS+GAIS WDs')
+axes[0,1].hist((wd['r_AB']-wd['i_AB'])[wd2cut],bins=bins)
+axes[1,0].hist((wd['r_AB']-wd['i_AB'])[wd3cut],bins=bins)
+axes[1,1].hist((wd['r_AB']-wd['i_AB'])[wd4cut],bins=bins)
+axes[0,0].annotate('0 < gl < 40',xy=(1,400),size=15)
+axes[0,1].annotate('200 < gl < 250',xy=(1,400),size=15)
+axes[1,0].annotate('250 < gl < 300',xy=(1,400),size=15)
+axes[1,1].annotate('300 < gl < 360',xy=(1,400),size=15)
+fig.subplots_adjust(wspace=0,hspace=0)
+fig.suptitle(r'WDs, $\Delta \theta_{max}$ = 1.5", gr cut')
+axes[1,0].set_xlabel('r - i (ABmag)')
+axes[1,1].set_xlabel('r - i (ABmag)')
+axes[0,0].legend(scatterpoints=1)
+plt.show()
+
+# NUV only
+bins= np.linspace(-3,5,20)
+fig,axes = plt.subplots(2,2,sharey=True,sharex=True)
+axes[0,0].hist((wd['nuv_mag']-wd['i_AB'])[wd1cut],bins=bins, label='VPHAS+GAIS WDs')
+axes[0,1].hist((wd['nuv_mag']-wd['i_AB'])[wd2cut],bins=bins)
+axes[1,0].hist((wd['nuv_mag']-wd['i_AB'])[wd3cut],bins=bins)
+axes[1,1].hist((wd['nuv_mag']-wd['i_AB'])[wd4cut],bins=bins)
+axes[0,0].annotate('0 < gl < 40',xy=(2,80),size=15)
+axes[0,1].annotate('200 < gl < 250',xy=(2,80),size=15)
+axes[1,0].annotate('250 < gl < 300',xy=(2,80),size=15)
+axes[1,1].annotate('300 < gl < 360',xy=(2,80),size=15)
+
+fig.subplots_adjust(wspace=0,hspace=0)
+
+fig.suptitle(r'WDs, $\Delta \theta_{max}$ = 1.5", gr cut')
+
+axes[1,0].set_xlabel('NUV - i (ABmag)')
+axes[1,1].set_xlabel('NUV - i (ABmag)')
+axes[0,0].legend(scatterpoints=1)
+plt.show()
+
+
+
+
+

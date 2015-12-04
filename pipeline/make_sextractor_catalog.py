@@ -21,6 +21,9 @@ glstart = 0
 
 img = fits.open('../combmaps12000/comb12000_gl'+str(glstart)+'to'+str(glstart+20)+'.fits')[0].data
 
+##################################################
+# Make cutouts 
+##################################################
 if glstart == 0:
     im1xmin,im1xmax,im1ymin,im1ymax = 0,4400,0,11999
     im2xmin,im2xmax,im2ymin,im2ymax = 4840,7630,6590,11999
