@@ -665,7 +665,7 @@ v1cut = np.where((v1['gl'] > 0) & (v1['gl'] < 40))
 v1 = v1[v1cut]
 
 wd = Table.read('wds_gais_vphas_newgrcut.txt',format='ascii')
-wdcut = np.where((wd['gl_galex'] > 0) & (wd['gl_galex'] < 40))
+wdcut = np.where((wd['gl_galex'] > 300) & (wd['gl_galex'] < 360))
 wd2 = wd[wdcut]
 
 # SED plot
@@ -691,12 +691,11 @@ cols[0+len(wd2)*1:len(wd2)*2] = ui
 cols[0+len(wd2)*2:len(wd2)*3] = gi
 cols[0+len(wd2)*3:len(wd2)*4] = ri
 
-labels = ['NUV-i','u-i','g-i','r-i']
-plt.xticks([1,2,3,4],labels)
 # All VPHAS
+'''
 for i in range(len(v1)):
     plt.plot([1,2,3,4],colsv1[[i,i+len(v1),i+len(v1)*2,i+len(v1)*3]],alpha=0.05,color='black')
-
+'''
 # VPHAS + GAIS
 for i in range(len(wd2)):
     plt.plot([1,2,3,4],cols[[i,i+len(wd2),i+len(wd2)*2,i+len(wd2)*3]],alpha=0.1,color='red')
@@ -709,7 +708,35 @@ plt.xlabel('$\lambda$')
 plt.ylabel('$\lambda$ - i (ABmag)')
 plt.ylim((5,-1.5))
 plt.title('VPHAS + GAIS WDs, new gr cut, 0 < gl < 40')
+labels = ['NUV-i','u-i','g-i','r-i']
+plt.xticks([1,2,3,4],labels)
 plt.show()
+
+
+
+# Or, Pickles SED points with only GAIS+VPHAS points
+for i in range(len(pickles)):
+    plt.plot([1,2,3,4],[pickles[i]['nuv']-pickles[i]['i'],pickles[i]['u']-pickles[i]['i'],pickles[i]['g']-pickles[i]['i'],pickles[i]['r']-pickles[i]['i']],color='blue',alpha=0.3)
+# VPHAS + GAIS
+for i in range(len(wd2)):
+    plt.plot([1,2,3,4],cols[[i,i+len(wd2),i+len(wd2)*2,i+len(wd2)*3]],alpha=0.1,color='red')
+
+# Plot this to make legend
+plt.plot([1,2,3,4],cols[[1,1+len(wd2),1+len(wd2)*2,1+len(wd2)*3]],alpha=0.4,color='red',label='VPHAS + GAIS')
+plt.plot([1,2,3,4],[pickles[1]['nuv']-pickles[1]['i'],pickles[1]['u']-pickles[1]['i'],pickles[1]['g']-pickles[1]['i'],pickles[1]['r']-pickles[1]['i']],color='blue',alpha=0.4,label='Pickles')
+plt.legend(loc=4)
+plt.xlabel('$\lambda$')
+plt.ylabel('$\lambda$ - i (ABmag)')
+plt.ylim((3,-1.5))
+plt.title('VPHAS + GAIS WDs, new gr cut, 300 < gl < 360')
+labels = ['NUV-i','u-i','g-i','r-i']
+plt.xticks([1,2,3,4],labels)
+plt.show()
+
+
+
+
+
 
 
 ######################################################################
@@ -769,6 +796,7 @@ axes[0,0].legend(scatterpoints=1)
 plt.show()
 
 
-
+def sed(lam, mag):
+    return (2.997924*10**10/(lam*10**-5)) * (3631/10**(mag/2.5)) * 10**-23
 
 
