@@ -11,6 +11,7 @@ from astropy.table import Table
 # 3. Compute: (Sum PICKLE_lambda * LePHARE_lambda) / sum(LePHARE_lambda)
 # 4. Make table
 
+
 # Open LePHARE files
 directory = '../PICKLES/filt/'
 nuvfilt = Table.read(directory+'galex/NUV.pb', format='ascii')
