@@ -82,14 +82,13 @@ for filename in picklesfiles:
     rfilt = rfilt[r_filtind]
     ifilt = ifilt[i_filtind]
 
-    print len(nuvfilt)
-    print len(bfilt)
-    print len(vfilt)
-    print len(ufilt)
-    print len(gfilt)
-    print len(rfilt)
-    print len(ifilt)
-
+    print len(nuv_starind) - len(nuv_filtind)
+    print len(b_starind) - len(b_filtind)
+    print len(v_starind) - len(v_filtind)
+    print len(u_starind) - len(u_filtind)
+    print len(g_starind) - len(g_filtind)
+    print len(r_starind) - len(r_filtind)
+    print len(i_starind) - len(i_filtind)
 
     # Compute sums for denominator
     nuvfiltsum = np.sum(nuvfilt['col2']/nuvfilt['col1'])

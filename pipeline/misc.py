@@ -661,55 +661,61 @@ m = 8/1.5
 b = 22-8/1.5*0.5
 #cut = np.where(((v1['g_AB']-v1['r_AB'])*m+b < v1['g_AB']) & (v1['g_AB'] > 19.))
 
-v1cut = np.where((v1['gl'] > 0) & (v1['gl'] < 40))
+v1cut = np.where((v1['gl'] > 300) & (v1['gl'] < 360))
 v1 = v1[v1cut]
 
 wd = Table.read('wds_gais_vphas_newgrcut.txt',format='ascii')
 wdcut = np.where((wd['gl_galex'] > 300) & (wd['gl_galex'] < 360))
 wd2 = wd[wdcut]
 
+pwds = Table.read('picklemags_wds.txt',format='ascii')
+
 # SED plot
 v1nuvi = np.zeros(len(v1))
-v1ui = v1['u_AB'] - v1['i_AB']
-v1gi = v1['g_AB'] - v1['i_AB']
-v1ri = v1['r_AB'] - v1['i_AB']
+v1ui = v1['u_AB'] - v1['r_AB']
+v1gi = v1['g_AB'] - v1['r_AB']
+#v1ri = v1['r_AB'] - v1['r_AB']
 
-nuvi = wd2['nuv_mag'] - wd2['i_AB']
-ui = wd2['u_AB'] - wd2['i_AB']
-gi = wd2['g_AB'] - wd2['i_AB']
-ri = wd2['r_AB'] - wd2['i_AB']
+nuvi = wd2['nuv_mag'] - wd2['r_AB']
+ui = wd2['u_AB'] - wd2['r_AB']
+gi = wd2['g_AB'] - wd2['r_AB']
+#ri = wd2['r_AB'] - wd2['r_AB']
 
-colsv1 = np.ones(len(v1)*4)
+colsv1 = np.ones(len(v1)*3)
 colsv1[0+len(v1)*0:len(v1)*1] = v1nuvi
 colsv1[0+len(v1)*1:len(v1)*2] = v1ui
 colsv1[0+len(v1)*2:len(v1)*3] = v1gi
-colsv1[0+len(v1)*3:len(v1)*4] = v1ri
+#colsv1[0+len(v1)*3:len(v1)*4] = v1ri
 
-cols = np.ones(len(wd2)*4)
+cols = np.ones(len(wd2)*3)
 cols[0+len(wd2)*0:len(wd2)*1] = nuvi
 cols[0+len(wd2)*1:len(wd2)*2] = ui
 cols[0+len(wd2)*2:len(wd2)*3] = gi
-cols[0+len(wd2)*3:len(wd2)*4] = ri
+#cols[0+len(wd2)*3:len(wd2)*4] = ri
 
 # All VPHAS
-'''
+
 for i in range(len(v1)):
-    plt.plot([1,2,3,4],colsv1[[i,i+len(v1),i+len(v1)*2,i+len(v1)*3]],alpha=0.05,color='black')
-'''
+    plt.plot([1,2,3],colsv1[[i,i+len(v1),i+len(v1)*2]],alpha=0.05,color='blue')
+
 # VPHAS + GAIS
 for i in range(len(wd2)):
-    plt.plot([1,2,3,4],cols[[i,i+len(wd2),i+len(wd2)*2,i+len(wd2)*3]],alpha=0.1,color='red')
+    plt.plot([1,2,3],cols[[i,i+len(wd2),i+len(wd2)*2]],alpha=0.1,color='red')
 
 # Plot this to make legend
-plt.plot([1,2,3,4],colsv1[[1,1+len(v1),1+len(v1)*2,1+len(v1)*3]],alpha=0.4,color='black',label='VPHAS only')
-plt.plot([1,2,3,4],cols[[1,1+len(wd2),1+len(wd2)*2,1+len(wd2)*3]],alpha=0.4,color='red',label='VPHAS + GAIS')
+plt.plot([1,2,3],colsv1[[1,1+len(v1),1+len(v1)*2]],alpha=0.4,color='black',label='VPHAS only')
+plt.plot([1,2,3],cols[[1,1+len(wd2),1+len(wd2)*2]],alpha=0.4,color='red',label='VPHAS + GAIS')
+
+plt.plot([1,2,3],[pwds['nuv']-pwds['r'],pwds['u']-pwds['r'],pwds['g']-pwds['r']],color='black')
+plt.plot([1],[pwds['nuv'][0]-pwds['r'][0]],color='black',label='SED')
 plt.legend(loc=4)
 plt.xlabel('$\lambda$')
 plt.ylabel('$\lambda$ - i (ABmag)')
-plt.ylim((5,-1.5))
-plt.title('VPHAS + GAIS WDs, new gr cut, 0 < gl < 40')
-labels = ['NUV-i','u-i','g-i','r-i']
-plt.xticks([1,2,3,4],labels)
+plt.ylim((4,-2))
+plt.title('VPHAS + GAIS WDs, new gr cut, 300 < gl < 360')
+labels = ['NUV-r','u-r','g-r']
+plt.xticks([1,2,3],labels)
+
 plt.show()
 
 
@@ -724,7 +730,7 @@ for i in range(len(wd2)):
 # Plot this to make legend
 plt.plot([1,2,3,4],cols[[1,1+len(wd2),1+len(wd2)*2,1+len(wd2)*3]],alpha=0.4,color='red',label='VPHAS + GAIS')
 plt.plot([1,2,3,4],[pickles[1]['nuv']-pickles[1]['i'],pickles[1]['u']-pickles[1]['i'],pickles[1]['g']-pickles[1]['i'],pickles[1]['r']-pickles[1]['i']],color='blue',alpha=0.4,label='Pickles')
-plt.legend(loc=4)
+plt.legend(loc=3)
 plt.xlabel('$\lambda$')
 plt.ylabel('$\lambda$ - i (ABmag)')
 plt.ylim((3,-1.5))
@@ -763,10 +769,10 @@ axes[0,0].hist((wd['r_AB']-wd['i_AB'])[wd1cut],bins=bins, label='VPHAS+GAIS')
 axes[0,1].hist((wd['r_AB']-wd['i_AB'])[wd2cut],bins=bins)
 axes[1,0].hist((wd['r_AB']-wd['i_AB'])[wd3cut],bins=bins)
 axes[1,1].hist((wd['r_AB']-wd['i_AB'])[wd4cut],bins=bins)
-axes[0,0].axvline(x=0,c='black',linewidth=2)
-axes[0,1].axvline(x=0,c='black',linewidth=2)
-axes[1,0].axvline(x=0,c='black',linewidth=2)
-axes[1,1].axvline(x=0,c='black',linewidth=2)
+axes[0,0].axvline(x=pwds['r'][0]-pwds['i'][0],c='black',linewidth=2,label='SED')
+axes[0,1].axvline(x=pwds['r'][0]-pwds['i'][0],c='black',linewidth=2)
+axes[1,0].axvline(x=pwds['r'][0]-pwds['i'][0],c='black',linewidth=2)
+axes[1,1].axvline(x=pwds['r'][0]-pwds['i'][0],c='black',linewidth=2)
 axes[0,0].annotate('0 < gl < 40',xy=(1,400),size=15)
 axes[0,1].annotate('200 < gl < 250',xy=(1,400),size=15)
 axes[1,0].annotate('250 < gl < 300',xy=(1,400),size=15)
@@ -789,10 +795,10 @@ axes[0,0].annotate('0 < gl < 40',xy=(2,80),size=15)
 axes[0,1].annotate('200 < gl < 250',xy=(2,80),size=15)
 axes[1,0].annotate('250 < gl < 300',xy=(2,80),size=15)
 axes[1,1].annotate('300 < gl < 360',xy=(2,80),size=15)
-axes[0,0].axvline(x=0,c='black',linewidth=2)
-axes[0,1].axvline(x=0,c='black',linewidth=2)
-axes[1,0].axvline(x=0,c='black',linewidth=2)
-axes[1,1].axvline(x=0,c='black',linewidth=2)
+axes[0,0].axvline(x=pwds['nuv'][0]-pwds['i'][0],c='black',linewidth=2,label='avg SED')
+axes[0,1].axvline(x=pwds['nuv'][0]-pwds['i'][0],c='black',linewidth=2)
+axes[1,0].axvline(x=pwds['nuv'][0]-pwds['i'][0],c='black',linewidth=2)
+axes[1,1].axvline(x=pwds['nuv'][0]-pwds['i'][0],c='black',linewidth=2)
 
 fig.subplots_adjust(wspace=0,hspace=0)
 
