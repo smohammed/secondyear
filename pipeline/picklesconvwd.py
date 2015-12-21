@@ -13,6 +13,7 @@ from astropy.table import Table
 
 
 # Open LePHARE files
+# col 1 = angstroms, col2 = erg/s/cm^2/A
 directory = '../PICKLES/filt/'
 nuvfilt = Table.read(directory+'galex/NUV.pb', format='ascii')
 bfilt = Table.read(directory+'wfi/B.pb', format='ascii', data_start=1)
@@ -38,6 +39,7 @@ for filename in picklesfiles:
     r_starind, r_filtind = [], []
     i_starind, i_filtind = [], []
 
+    # Match wavelengths between filters and reference stars
     for i in range(len(test)):
         for j in range(len(nuvfilt)-1):
             if (test['WAVELENGTH'][i] > nuvfilt['col1'][j]) and (test['WAVELENGTH'][i] < nuvfilt['col1'][j+1]):
@@ -74,6 +76,7 @@ for filename in picklesfiles:
                 i_starind.append(i)
                 i_filtind.append(j)
 
+    # Pull out indices
     nuvfilt = nuvfilt[nuv_filtind]
     bfilt = bfilt[b_filtind]
     vfilt = vfilt[v_filtind]
@@ -82,6 +85,7 @@ for filename in picklesfiles:
     rfilt = rfilt[r_filtind]
     ifilt = ifilt[i_filtind]
 
+    # Make sure they're the same length
     print len(nuv_starind) - len(nuv_filtind)
     print len(b_starind) - len(b_filtind)
     print len(v_starind) - len(v_filtind)
@@ -90,7 +94,7 @@ for filename in picklesfiles:
     print len(r_starind) - len(r_filtind)
     print len(i_starind) - len(i_filtind)
 
-    # Compute sums for denominator
+    # Compute sums for denominator. Units = erg/s/cm^2/A^2
     nuvfiltsum = np.sum(nuvfilt['col2']/nuvfilt['col1'])
     bfiltsum = np.sum(bfilt['col2']/bfilt['col1'])
     vfiltsum = np.sum(vfilt['col2']/vfilt['col1'])
@@ -102,6 +106,7 @@ for filename in picklesfiles:
     # Now compute numerator
     name1, nuv1, b1, v1, u1, g1, r1, ib1 = [], [], [], [], [], [], [], []
 
+    # Units = flux [erg/s/cm^2/A] * A * erg/s/cm^2/A * A
     name1.append(filename[:-4])
     nuv1.append(np.sum(test['FLUX'][nuv_starind] * nuvfilt['col2']*nuvfilt['col1']))
     b1.append(np.sum(test['FLUX'][b_starind] * bfilt['col2']*bfilt['col1']))
@@ -111,7 +116,7 @@ for filename in picklesfiles:
     r1.append(np.sum(test['FLUX'][r_starind] * rfilt['col2']*rfilt['col1']))
     ib1.append(np.sum(test['FLUX'][i_starind] * ifilt['col2']*ifilt['col1']))
 
-    # Now compute f_lambda
+    # Now compute f_lambda. Units = erg/s/cm^2/A^2
     nuv1 = [x/nuvfiltsum for x in nuv1]
     b1 = [x/bfiltsum for x in b1]
     v1 = [x/vfiltsum for x in v1]
