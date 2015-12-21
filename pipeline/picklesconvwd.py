@@ -106,7 +106,7 @@ for filename in picklesfiles:
     # Now compute numerator
     name1, nuv1, b1, v1, u1, g1, r1, ib1 = [], [], [], [], [], [], [], []
 
-    # Units = flux [erg/s/cm^2/A] * A * erg/s/cm^2/A * A
+    # Units = erg/s/cm^2/A * erg/s/cm^2/A * A
     name1.append(filename[:-4])
     nuv1.append(np.sum(test['FLUX'][nuv_starind] * nuvfilt['col2']*nuvfilt['col1']))
     b1.append(np.sum(test['FLUX'][b_starind] * bfilt['col2']*bfilt['col1']))

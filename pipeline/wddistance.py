@@ -12,7 +12,7 @@ wd = wd[wdcut]
 
 sigma = 5.6704 * 10**-5     # erg/cm^2/s/K^4
 radius = 637.1 * 10**6/2      # cm
-Temp = 40 * 10**3           # K
+Temp = 30 * 10**3           # K
 Lsun = 3.846*10**33         # erg/s
 Lum = sigma * Temp**4 * radius**2 * 4 * np.pi   # erg/s
 
