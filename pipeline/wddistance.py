@@ -3,6 +3,8 @@ import numpy as np
 from astropy.table import Table
 from dustquery import *
 
+band = 'u'
+
 # Load all tables
 vphas = Table.read('wds_vphasonly.txt', format='ascii')
 wd = Table.read('wds_gais_vphas_newgrcut.txt', format='ascii')
@@ -19,7 +21,11 @@ Temp = np.arange(10, 31, 5)*10**3  # K
 Lsun = 3.846*10**33         # erg/s
 Lum = sigma * Temp**4 * radius**2 * 4 * np.pi   # erg/s
 Mabs = -2.5 * np.log10(Lum/Lsun) + 4.75
-freq = 3*10**10/(2.267*10**-5)
+#freq = 3*10**10/(2.267 * 10**-5)  # NUV
+#freq = 3*10**10/(3.543 * 10**-5)  # u
+#freq = 3*10**10/(4.770 * 10**-5)  # g
+#freq = 3*10**10/(6.231 * 10**-5)  # r
+freq = 3*10**10/(7.625 * 10**-5)  # i
 
 comptable = wd
 #comptable = vphas[:5000]
@@ -28,10 +34,10 @@ DL1 = np.empty((len(comptable), len(Mabs)))
 DL2 = np.empty((len(comptable), len(Mabs)))
 
 if len(comptable) == len(wd):
-    mag = 'i_AB'
+    mag = band+'_AB'
 
 elif len(comptable) == len(vphas[:5000]):
-    mag = 'u_AB'
+    mag = band+'_AB'
 
 
 for i in range(len(comptable)):
@@ -132,3 +138,17 @@ avdl2['15k'] = avdl2['15k']*3.1
 avdl2['20k'] = avdl2['20k']*3.1
 avdl2['25k'] = avdl2['25k']*3.1
 avdl2['30k'] = avdl2['30k']*3.1
+
+# Include which surveys used, the method, what radius used and the band
+if len(comptable) == len(wd):
+    ascii.write(DL2, 'wd_GV_dist2_flux_1ER'+band+'.txt', format='basic')
+    ascii.write(avdl1, 'wd_GV_av1_dm_1ER_'+band+'.txt', format='basic')
+    ascii.write(avdl2, 'wd_GV_av2_flux_1ER_'+band+'.txt', format='basic')
+
+if len(comptable) == len(vphas[:5000]):
+    ascii.write(DL2, 'wd_V_dist2_flux_1ER_'+band+'.txt', format='basic')
+    ascii.write(avdl1, 'wd_V_av1_dm_1ER_'+band+'.txt', format='basic')
+    ascii.write(avdl2, 'wd_V_av2_flux_1ER_'+band+'.txt', format='basic')
+
+
+print band
