@@ -740,16 +740,13 @@ plt.xticks([1,2,3,4],labels)
 plt.show()
 
 
-
-
-
-
-
 ######################################################################
 # lambda - i histograms
 ######################################################################
 v = Table.read('wds_vphasonly.txt',format='ascii')
 wd = Table.read('wds_gais_vphas_newgrcut.txt',format='ascii')
+pwds = Table.read('picklemags_wds.txt',format='ascii')
+
 v1cut = np.where((v['gl'] > 0) & (v['gl'] < 40))
 v2cut = np.where((v['gl'] > 200) & (v['gl'] < 250))
 v3cut = np.where((v['gl'] > 250) & (v['gl'] < 300))
@@ -810,7 +807,62 @@ axes[0,0].legend(scatterpoints=1)
 plt.show()
 
 
-def sed(lam, mag):
-    return (2.997924*10**10/(lam*10**-5)) * (3631/10**(mag/2.5)) * 10**-23
+######################################################################
+# lambda - i histograms WITH DUST
+######################################################################
+vphas = Table.read('wds_vphasonly.txt', format='ascii')
+wd = Table.read('wds_gais_vphas_newgrcut.txt', format='ascii')
+vpcut = np.where((vphas['gl'] > 200) & (vphas['gl'] < 250))
+wdcut = np.where((wd['gl_galex'] > 200) & (wd['gl_galex'] < 250))
+vphas = vphas[vpcut][:5000]
+wd = wd[wdcut]
 
 
+pwds = Table.read('picklemags_wds.txt', format='ascii')
+# VPHAS + WD
+nuv_wdav = Table.read('wd_GV_av1_dm_1ER_nuv.txt', format='ascii')
+u_wdav = Table.read('wd_GV_av1_dm_1ER_u.txt', format='ascii')
+g_wdav = Table.read('wd_GV_av1_dm_1ER_g.txt', format='ascii')
+r_wdav = Table.read('wd_GV_av1_dm_1ER_r.txt', format='ascii')
+i_wdav = Table.read('wd_GV_av1_dm_1ER_i.txt', format='ascii')
+# VPHAS only
+u_vpav = Table.read('wd_V_av1_dm_1ER_u.txt', format='ascii')
+g_vpav = Table.read('wd_V_av1_dm_1ER_g.txt', format='ascii')
+r_vpav = Table.read('wd_V_av1_dm_1ER_r.txt', format='ascii')
+i_vpav = Table.read('wd_V_av1_dm_1ER_i.txt', format='ascii')
+
+temp = '10k'
+
+fig,axes = plt.subplots(2,2,sharex=True)
+bins= np.linspace(-2,3,20)
+#axes[0,0].hist((vphas['_AB']-vphas['i_AB'])[v1cut],bins=bins)
+axes[0,1].hist((vphas['u_AB']-u_vpav[temp])-(vphas['i_AB']-i_vpav[temp]),bins=bins,label='VP')
+axes[1,0].hist((vphas['g_AB']-g_vpav[temp])-(vphas['i_AB']-i_vpav[temp]),bins=bins)
+axes[1,1].hist((vphas['r_AB']-r_vpav[temp])-(vphas['i_AB']-i_vpav[temp]),bins=bins)
+
+axes[0,0].hist((wd['nuv_mag']-nuv_wdav[temp])-(wd['i_AB']-i_wdav[temp]),bins=bins)
+axes[0,1].hist((wd['u_AB']-u_wdav[temp])-(wd['i_AB']-i_wdav[temp]),bins=bins, label='VP+G')
+axes[1,0].hist((wd['g_AB']-g_wdav[temp])-(wd['i_AB']-i_wdav[temp]),bins=bins)
+axes[1,1].hist((wd['r_AB']-r_wdav[temp])-(wd['i_AB']-i_wdav[temp]),bins=bins)
+
+
+axes[0,0].axvline(x=pwds['nuv'][0]-pwds['i'][0],c='black',linewidth=2)
+axes[0,1].axvline(x=pwds['u'][0]-pwds['i'][0],c='black',linewidth=2,label='SED')
+axes[1,0].axvline(x=pwds['g'][0]-pwds['i'][0],c='black',linewidth=2)
+axes[1,1].axvline(x=pwds['r'][0]-pwds['i'][0],c='black',linewidth=2)
+axes[0,0].annotate('NUV - i',xy=(1,80),size=15)
+axes[0,1].annotate('u - i',xy=(1,300),size=15)
+axes[1,0].annotate('g - i',xy=(1,400),size=15)
+axes[1,1].annotate('r - i',xy=(1,400),size=15)
+fig.subplots_adjust(hspace=0)
+fig.suptitle(r'WDCs, 200 < gl < 250, with dust corr, 10k K')
+
+axes[0,0].set_ylim((0,180))
+axes[0,1].set_ylim((0,1400))
+axes[1,0].set_ylim((0,1600))
+axes[1,1].set_ylim((0,2500))
+
+axes[1,0].set_xlabel('$\lambda$ - i (ABmag)')
+axes[1,1].set_xlabel('$\lambda$ - i (ABmag)')
+axes[0,1].legend(scatterpoints=1)
+plt.show()

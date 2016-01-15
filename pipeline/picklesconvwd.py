@@ -134,16 +134,6 @@ for filename in picklesfiles:
     r.append(r1)
     ib.append(ib1)
 
-
-print 'name =', len(name)
-print 'nuv =', len(nuv)
-print 'b =', len(b)
-print 'v =', len(v)
-print 'u =', len(u)
-print 'g =', len(g)
-print 'r =', len(r)
-print 'i =', len(ib)
-
 ib[np.isnan(ib)] = 0
 
 # Now to combine all the data
