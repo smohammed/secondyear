@@ -880,3 +880,15 @@ plt.ylabel('A$_{V}$')
 plt.title('WDC, VP+G')
 plt.ylim((0,4))
 plt.show()
+
+
+temp = '20k'
+scatter_contour(vp['g_AB']-vp['r_AB'],vp['g_AB'],threshold=1000,log_counts=True,histogram2d_args=dict(bins=40),contour_args=dict(),plot_args=dict(color='k',markersize=1))
+plt.scatter((vphas['g_AB']-g_vpav[temp])-(vphas['r_AB']-r_vpav[temp]),vphas['g_AB']-g_vpav[temp],alpha=0.3)
+plt.xlim((-1,3))
+plt.ylim((23,12))
+plt.xlabel('g - r (AB)')
+plt.ylabel('g (AB)')
+plt.title('VPHAS + WDs, 200 < gl < 250, dust, 20k K')
+plt.show()
+
