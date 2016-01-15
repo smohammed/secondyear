@@ -866,3 +866,17 @@ axes[1,0].set_xlabel('$\lambda$ - i (ABmag)')
 axes[1,1].set_xlabel('$\lambda$ - i (ABmag)')
 axes[0,1].legend(scatterpoints=1)
 plt.show()
+
+
+
+plt.scatter(vphas['i_AB'],i_vpav['10k'],label='10k')
+plt.scatter(vphas['i_AB'],i_vpav['15k'],label='15k',c='red')
+plt.scatter(vphas['i_AB'],i_vpav['20k'],label='20k',c='green')
+plt.scatter(vphas['i_AB'],i_vpav['25k'],label='25k',c='orange',alpha=0.5)
+plt.scatter(vphas['i_AB'],i_vpav['30k'],label='30k',c='purple',alpha=0.5)
+plt.legend(scatterpoints=1,loc=2)
+plt.xlabel('i (AB)')
+plt.ylabel('A$_{V}$')
+plt.title('WDC, VP+G')
+plt.ylim((0,4))
+plt.show()
