@@ -892,3 +892,39 @@ plt.ylabel('g (AB)')
 plt.title('VPHAS + WDs, 200 < gl < 250, dust, 20k K')
 plt.show()
 
+
+v1cut = np.where(vphas['u_AB']-vphas['g_AB'] < 1.)
+v1 = v1[v1cut]
+
+scatter_contour((v1['g_AB']-v1['r_AB']),v1['g_AB'],threshold=1000,log_counts=True,histogram2d_args=dict(bins=40),contour_args=dict(),plot_args=dict(color='k',markersize=1))
+cut = np.where(((v1['g_AB']-v1['r_AB'])*m+b < v1['g_AB']) & (v1['g_AB'] > 19.))
+plt.scatter((v1['g_AB']-v1['r_AB'])[cut],v1['g_AB'][cut],edgecolor='none',facecolor='red')
+plt.xlim((-1,3))
+plt.ylim((22,12))
+plt.title('VPHAS only, 0 < gl < 40, u - g < 1')
+plt.xlabel('g - r')
+plt.ylabel('g')
+plt.savefig('11-25-gvsgr_vphasonly_0-40_ug1cut.png')
+plt.clf()
+
+v1cut = np.where(v1['u_AB']-v1['g_AB'] < 1.)
+
+cut = np.where(((v1['g_AB']-v1['r_AB'])*m+b < v1['g_AB']) & (v1['g_AB'] > 19.))
+
+
+cut = np.where((vpgal.galactic.l.degree > 0.) & (vpgal.galactic.l.degree < 40.))
+v1 = v1[cut]
+
+wdcut = np.where((vpwdgal.l.degree > 0.) & (vpwdgal.l.degree < 40.))
+wdv1 = vpwd[wdcut]
+
+scatter_contour((v1['g_AB']-v1['r_AB']),v1['g_AB'],threshold=1000,log_counts=True,histogram2d_args=dict(bins=40),contour_args=dict(),plot_args=dict(color='k',markersize=1))
+
+plt.scatter((wdv1['g_AB']-wdv1['r_AB']),wdv1['g_AB'],edgecolor='none',facecolor='red')
+plt.xlim((-1,3))
+plt.ylim((23,12))
+plt.title('VPHAS only, 0 < gl < 40')#, u - g < 1')
+plt.xlabel('g - r')
+plt.ylabel('g')
+#plt.savefig('11-25-gvsgr_vphasonly_0-40_ug1cut.png')
+#plt.clf()

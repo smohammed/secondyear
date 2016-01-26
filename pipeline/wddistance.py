@@ -65,6 +65,14 @@ table.rename_column('col6', 'chi2')
 
 ascii.write(table, 'wd_GV_model_0.5ER.txt', format='basic')
 
+
+
+# Find minimum chi^2 value and only plot those
+chiind = []
+for i in range(0, len(table), 31*5):
+    chiind.append(np.argmin(table['chi2'][i:i+31*5])+i)
+table = table[chiind]
+
 cut = np.where(table['chi2'] < 10)
 newtable = table[cut]
 DM = np.unique(newtable['DM'])
@@ -86,7 +94,7 @@ plt.ylabel('Temperature [K]')
 cm = plt.colorbar()
 #cm.set_label('$\chi^2$ (NUV$_{obs}$ - NUV$_{mod}$)$^2$')
 cm.set_label('n$_{WDs}$')
-plt.title('GV WD model using 3D dust map, 1 R$_{Earth}$')
+plt.title('GV WD model using 3D dust map, 1 R$_{Earth}$, $\chi^2 < 10$ vals')
 plt.xlim((4,18))
 plt.show()
 
