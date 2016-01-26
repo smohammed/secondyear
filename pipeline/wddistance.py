@@ -12,19 +12,30 @@ vphas = vphas[vpcut]
 wd = wd[wdcut]
 
 # Input constants, set Teff and Radius
-sigma = 5.6704 * 10**-5     # erg/cm^2/s/K^4
-radius = 637.1 * 10**6     # cm
-#Temp = 30 * 10**3           # K
-Temp = np.arange(10, 31, 5)*10**3  # K
-Lstar = 3.0128 * 10**35         # erg/s
+sigma = 5.6704 * 10**-5             # erg/cm^2/s/K^4
+radius = 637.1 * 10**6/2.              # cm
+Temp = np.arange(10, 31, 5)*10**3   # K
+Lsun = 3.828 * 10**33               # erg/s
+#Lstar = 3.0128 * 10**35             # erg/s, bolometric abs mag
 Lum = sigma * Temp**4 * radius**2 * 4 * np.pi   # erg/s
-Mabs = -2.5 * np.log10(Lum/Lstar)
+Msun_nuv = 10.18 # mag, from CALSPEC at STScI
+Msun_u = 6.44
+Msun_g = 5.11
+Msun_r = 4.65
+Msun_i = 4.54
+Mabs_nuv = -2.5 * np.log10(Lum/Lsun) + Msun_nuv
+Mabs_u = -2.5 * np.log10(Lum/Lsun) + Msun_u
+Mabs_g = -2.5 * np.log10(Lum/Lsun) + Msun_g
+Mabs_r = -2.5 * np.log10(Lum/Lsun) + Msun_r
+Mabs_i = -2.5 * np.log10(Lum/Lsun) + Msun_i
+#Mabs = -2.5 * np.log10(Lum/Lstar)
 #freq = 3*10**10/(2.267 * 10**-5)  # NUV
 #freq = 3*10**10/(3.543 * 10**-5)  # u
 #freq = 3*10**10/(4.770 * 10**-5)  # g
 #freq = 3*10**10/(6.231 * 10**-5)  # r
 #freq = 3*10**10/(7.625 * 10**-5)  # i
 
+# What table should we use?
 comptable = wd
 #comptable = vphas[:5000]
 
@@ -32,17 +43,14 @@ comptable = wd
 if len(comptable) == len(wd):
     gl = list(comptable['gl_galex'])
     gb = list(comptable['gb_galex'])
-
 if len(comptable) == len(vphas[:5000]):
     gl = list(comptable['gl'])
     gb = list(comptable['gb'])
-
 dust = query(gl, gb, coordsys='gal')
-
 DM = dust['distmod']
 
 # Table will be len(comptable) * len(DM) * len(Mabs) long
-table = Table(np.empty((0, 7)))
+table = Table(np.empty((0, 19)))
 
 for i in range(len(comptable)):
     for j in range(len(DM)):
@@ -50,20 +58,42 @@ for i in range(len(comptable)):
             EBV = dust['best'][i][j]
             distmod = DM[j]
             tem = Temp[k]
-            mmodel = -2.5*np.log10(sigma * tem**4 * 4 * np.pi * radius**2 / Lstar) + distmod + EBV
-            chi2 = (comptable['u_AB'][i] - mmodel)**2
-            a = [i, comptable['u_AB'][i], distmod, tem, EBV, mmodel, chi2]
+            # Calculate apparent magnitude model
+            mmodel_nuv = -2.5*np.log10(sigma * tem**4 * 4 * np.pi * radius**2 / Lsun) + Msun_nuv + distmod + EBV
+            mmodel_u = -2.5*np.log10(sigma * tem**4 * 4 * np.pi * radius**2 / Lsun) + Msun_u + distmod + EBV
+            mmodel_g = -2.5*np.log10(sigma * tem**4 * 4 * np.pi * radius**2 / Lsun) + Msun_g + distmod + EBV
+            mmodel_r = -2.5*np.log10(sigma * tem**4 * 4 * np.pi * radius**2 / Lsun) + Msun_r + distmod + EBV
+            mmodel_i = -2.5*np.log10(sigma * tem**4 * 4 * np.pi * radius**2 / Lsun) + Msun_i + distmod + EBV
+            # Compute chi^2
+            chi2nuv = (comptable['nuv_mag'][i] - mmodel_nuv)**2
+            chi2u = (comptable['u_AB'][i] - mmodel_u)**2
+            chi2g = (comptable['g_AB'][i] - mmodel_g)**2
+            chi2r = (comptable['r_AB'][i] - mmodel_r)**2
+            chi2i = (comptable['i_AB'][i] - mmodel_i)**2
+            a = [i, comptable['nuv_mag'][i], comptable['u_AB'][i], comptable['g_AB'][i], comptable['r_AB'][i], comptable['i_AB'][i], distmod, tem, EBV, mmodel_nuv, mmodel_u, mmodel_g, mmodel_r, mmodel_i, chi2nuv, chi2u, chi2g, chi2r, chi2i]
             table.add_row(a)
 
 table.rename_column('col0', 'wdnum')
-table.rename_column('col1', 'u_obs')
-table.rename_column('col2', 'DM')
-table.rename_column('col3', 'Temp')
-table.rename_column('col4', 'EBV')
-table.rename_column('col5', 'u_mod')
-table.rename_column('col6', 'chi2')
+table.rename_column('col1', 'nuv_obs')
+table.rename_column('col2', 'u_obs')
+table.rename_column('col3', 'g_obs')
+table.rename_column('col4', 'r_obs')
+table.rename_column('col5', 'i_obs')
+table.rename_column('col6', 'DM')
+table.rename_column('col7', 'Temp')
+table.rename_column('col8', 'EBV')
+table.rename_column('col9', 'nuv_mod')
+table.rename_column('col10', 'u_mod')
+table.rename_column('col11', 'g_mod')
+table.rename_column('col12', 'r_mod')
+table.rename_column('col13', 'i_mod')
+table.rename_column('col14', 'chi2_nuv')
+table.rename_column('col15', 'chi2_u')
+table.rename_column('col16', 'chi2_g')
+table.rename_column('col17', 'chi2_r')
+table.rename_column('col18', 'chi2_i')
 
-ascii.write(table, 'wd_GV_model_1ER_u_AB.txt', format='basic')
+ascii.write(table, 'wd_GV_model_0.5ER_Msuncalc.txt', format='basic')
 
 
 
@@ -74,7 +104,7 @@ for i in range(0, len(table), 31*5):
 table = table[chiind]
 
 #cut = np.where(table['chi2'] < 10)
-newtable = table#[cut]
+newtable = table  # [cut]
 DM = np.unique(newtable['DM'])
 temp = np.unique(newtable['Temp'])
 
@@ -84,18 +114,18 @@ chimap[np.isnan(chimap)] = 0
 for i in range(len(DM)):
     for j in range(len(temp)):
         chicut = np.where((DM[i] == newtable['DM']) & (temp[j] == newtable['Temp']))
-        chimap[i][j] = chimap[i][j] + sum(newtable['chi2'][chicut])
+        chimap[i][j] = chimap[i][j] + sum(newtable['chi2_nuv'][chicut])
         #chimap[i][j] = len(newtable['chi2'][chicut])
 
 yv, xv = np.meshgrid(temp, DM)
-plt.pcolormesh(xv, yv, chimap/len(newtable))
+plt.pcolormesh(xv, yv, chimap/len(newtable), vmin=0, vmax=1)
 plt.xlabel('Distance Modulus')
 plt.ylabel('Temperature [K]')
 cm = plt.colorbar()
 cm.set_label('$\chi^2$ (NUV$_{obs}$ - NUV$_{mod}$)$^2$')
 #cm.set_label('n$_{WDs}$')
-plt.title('GV WD model using 3D dust map, 1 R$_{Earth}$, $\chi^2 < 10$ vals')
-plt.xlim((4,18))
+plt.title('GV WD model, 3D dust map, NUV AB, 1 R$_{Earth}$')
+plt.xlim((4, 18))
 plt.show()
 
 
