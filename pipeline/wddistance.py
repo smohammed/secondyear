@@ -13,7 +13,7 @@ wd = wd[wdcut]
 
 # Input constants, set Teff and Radius
 sigma = 5.6704 * 10**-5     # erg/cm^2/s/K^4
-radius = 637.1 * 10**6/2.     # cm
+radius = 637.1 * 10**6     # cm
 #Temp = 30 * 10**3           # K
 Temp = np.arange(10, 31, 5)*10**3  # K
 Lstar = 3.0128 * 10**35         # erg/s
@@ -51,19 +51,19 @@ for i in range(len(comptable)):
             distmod = DM[j]
             tem = Temp[k]
             mmodel = -2.5*np.log10(sigma * tem**4 * 4 * np.pi * radius**2 / Lstar) + distmod + EBV
-            chi2 = (comptable['nuv_mag'][i] - mmodel)**2
-            a = [i, comptable['nuv_mag'][i], distmod, tem, EBV, mmodel, chi2]
+            chi2 = (comptable['u_AB'][i] - mmodel)**2
+            a = [i, comptable['u_AB'][i], distmod, tem, EBV, mmodel, chi2]
             table.add_row(a)
 
 table.rename_column('col0', 'wdnum')
-table.rename_column('col1', 'nuv_obs')
+table.rename_column('col1', 'u_obs')
 table.rename_column('col2', 'DM')
 table.rename_column('col3', 'Temp')
 table.rename_column('col4', 'EBV')
-table.rename_column('col5', 'nuv_mod')
+table.rename_column('col5', 'u_mod')
 table.rename_column('col6', 'chi2')
 
-ascii.write(table, 'wd_GV_model_0.5ER.txt', format='basic')
+ascii.write(table, 'wd_GV_model_1ER_u_AB.txt', format='basic')
 
 
 
@@ -73,8 +73,8 @@ for i in range(0, len(table), 31*5):
     chiind.append(np.argmin(table['chi2'][i:i+31*5])+i)
 table = table[chiind]
 
-cut = np.where(table['chi2'] < 10)
-newtable = table[cut]
+#cut = np.where(table['chi2'] < 10)
+newtable = table#[cut]
 DM = np.unique(newtable['DM'])
 temp = np.unique(newtable['Temp'])
 
@@ -84,16 +84,16 @@ chimap[np.isnan(chimap)] = 0
 for i in range(len(DM)):
     for j in range(len(temp)):
         chicut = np.where((DM[i] == newtable['DM']) & (temp[j] == newtable['Temp']))
-        #chimap[i][j] = chimap[i][j] + sum(newtable['chi2'][chicut])
-        chimap[i][j] = len(newtable['chi2'][chicut])
+        chimap[i][j] = chimap[i][j] + sum(newtable['chi2'][chicut])
+        #chimap[i][j] = len(newtable['chi2'][chicut])
 
 yv, xv = np.meshgrid(temp, DM)
-plt.pcolormesh(xv, yv, chimap)
+plt.pcolormesh(xv, yv, chimap/len(newtable))
 plt.xlabel('Distance Modulus')
 plt.ylabel('Temperature [K]')
 cm = plt.colorbar()
-#cm.set_label('$\chi^2$ (NUV$_{obs}$ - NUV$_{mod}$)$^2$')
-cm.set_label('n$_{WDs}$')
+cm.set_label('$\chi^2$ (NUV$_{obs}$ - NUV$_{mod}$)$^2$')
+#cm.set_label('n$_{WDs}$')
 plt.title('GV WD model using 3D dust map, 1 R$_{Earth}$, $\chi^2 < 10$ vals')
 plt.xlim((4,18))
 plt.show()
