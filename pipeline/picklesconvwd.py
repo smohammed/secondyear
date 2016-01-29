@@ -6,14 +6,14 @@ from astropy.table import Table
 # Add LePHARE fix
 ##########################################################################
 #to do:
-# 1. Figure out range for each band
+# 1. Get range for each band
 # 2. Make array for that range and pull data from Pickles
 # 3. Compute: (Sum PICKLE_lambda * LePHARE_lambda) / sum(LePHARE_lambda)
 # 4. Make table
 
 
 # Open LePHARE files
-# col 1 = angstroms, col2 = erg/s/cm^2/A
+# col 1 = angstroms, col2 = erg/cm^2/s/A
 directory = '../PICKLES/filt/'
 nuvfilt = Table.read(directory+'galex/NUV.pb', format='ascii')
 bfilt = Table.read(directory+'wfi/B.pb', format='ascii', data_start=1)
@@ -40,6 +40,8 @@ for filename in picklesfiles:
     i_starind, i_filtind = [], []
 
     # Match wavelengths between filters and reference stars
+    # Becuase the wavelengths don't match up exactly, find wavelengths in star file that
+    # match with bins with Pickles wavelengths and grab both star and filter indices
     for i in range(len(test)):
         for j in range(len(nuvfilt)-1):
             if (test['WAVELENGTH'][i] > nuvfilt['col1'][j]) and (test['WAVELENGTH'][i] < nuvfilt['col1'][j+1]):
@@ -76,7 +78,7 @@ for filename in picklesfiles:
                 i_starind.append(i)
                 i_filtind.append(j)
 
-    # Pull out indices
+    # extract filter data that correspond to the wavelengths for each band using indices from last step
     nuvfilt = nuvfilt[nuv_filtind]
     bfilt = bfilt[b_filtind]
     vfilt = vfilt[v_filtind]
@@ -85,7 +87,7 @@ for filename in picklesfiles:
     rfilt = rfilt[r_filtind]
     ifilt = ifilt[i_filtind]
 
-    # Make sure they're the same length
+    # Make sure the star and filter indices are the same length
     print len(nuv_starind) - len(nuv_filtind)
     print len(b_starind) - len(b_filtind)
     print len(v_starind) - len(v_filtind)
@@ -94,7 +96,7 @@ for filename in picklesfiles:
     print len(r_starind) - len(r_filtind)
     print len(i_starind) - len(i_filtind)
 
-    # Compute sums for denominator. Units = erg/s/cm^2/A^2
+    # Compute sums for denominator sum((hv)^-1 * e(v) dv). Units = (erg/s/cm^2/A) / A = erg/s/cm^2/A^2 
     nuvfiltsum = np.sum(nuvfilt['col2']/nuvfilt['col1'])
     bfiltsum = np.sum(bfilt['col2']/bfilt['col1'])
     vfiltsum = np.sum(vfilt['col2']/vfilt['col1'])
