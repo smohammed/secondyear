@@ -10,6 +10,7 @@ vpcut = np.where((vphas['gl'] > 200) & (vphas['gl'] < 250))
 wdcut = np.where((wd['gl_galex'] > 200) & (wd['gl_galex'] < 250))
 vphas = vphas[vpcut]
 wd = wd[wdcut]
+pickleswd = Table.read('../picklemags_wds.txt', format='ascii')
 
 # Input constants, set Teff and Radius
 sigma = 5.6704 * 10**-5             # erg/cm^2/s/K^4
@@ -18,6 +19,26 @@ Temp = np.arange(10, 31, 5)*10**3   # K
 Lsun = 3.828 * 10**33               # erg/s
 #Lstar = 3.0128 * 10**35             # erg/s, bolometric abs mag
 Lum = sigma * Temp**4 * radius**2 * 4 * np.pi   # erg/s
+
+mp_nuv = np.average(pickleswd['nuv'])
+mp_u = np.average(pickleswd['u'])
+mp_g = np.average(pickleswd['g'])
+mp_r = np.average(pickleswd['r'])
+mp_i = np.average(pickleswd['i'])
+Lp_nuv = (10**(-mp_nuv/2.5) * 3631.) * (3.086*10**18 * 10)**2 * 4 * np.pi
+Lp_u = (10**(-mp_u/2.5) * 3631.) * (3.086*10**18 * 10)**2 * 4 * np.pi
+Lp_g = (10**(-mp_g/2.5) * 3631.) * (3.086*10**18 * 10)**2 * 4 * np.pi
+Lp_r = (10**(-mp_r/2.5) * 3631.) * (3.086*10**18 * 10)**2 * 4 * np.pi
+Lp_i = (10**(-mp_i/2.5) * 3631.) * (3.086*10**18 * 10)**2 * 4 * np.pi
+
+Mabs_nuv = -2.5 * np.log10(Lum/Lp_nuv)
+Mabs_u = -2.5 * np.log10(Lum/Lp_u)
+Mabs_g = -2.5 * np.log10(Lum/Lp_g)
+Mabs_r = -2.5 * np.log10(Lum/Lp_r)
+Mabs_i = -2.5 * np.log10(Lum/Lp_i)
+
+
+'''
 Msun_nuv = 10.18  # mag, from CALSPEC at STScI
 Msun_u = 6.44
 Msun_g = 5.11
@@ -28,6 +49,7 @@ Mabs_u = -2.5 * np.log10(Lum/Lsun) + Msun_u
 Mabs_g = -2.5 * np.log10(Lum/Lsun) + Msun_g
 Mabs_r = -2.5 * np.log10(Lum/Lsun) + Msun_r
 Mabs_i = -2.5 * np.log10(Lum/Lsun) + Msun_i
+'''
 #Mabs = -2.5 * np.log10(Lum/Lstar)
 #freq = 3*10**10/(2.267 * 10**-5)  # NUV
 #freq = 3*10**10/(3.543 * 10**-5)  # u

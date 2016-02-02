@@ -909,7 +909,7 @@ plt.clf()
 
 v1cut = np.where(v1['u_AB']-v1['g_AB'] < 1.)
 
-cut = np.where(((v1['g_AB']-v1['r_AB'])*m+b < v1['g_AB']) & (v1['g_AB'] > 19.))
+cut = np.where(( v1['g_AB'] > (v1['g_AB']-v1['r_AB'])*m+b) & (v1['g_AB'] > 19.))
 
 
 cut = np.where((vpgal.galactic.l.degree > 0.) & (vpgal.galactic.l.degree < 40.))

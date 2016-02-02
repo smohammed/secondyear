@@ -232,28 +232,3 @@ for i in sexlist:
 ascii.write(tottable, '../sex_total_'+str(glstart)+'_rand_deadtime.txt')
 
 print 'Combined all data tables'
-
-##################################################
-# Now match with Tycho 2/2MASS catalogs
-##################################################
-sex = Table.read('../sex_total_'+str(glstart)+'_rand_deadtime.txt', format='ascii')
-t2 = Table.read('../tycho2_2mass_matches.txt', format='ascii')
-
-sexgal = SkyCoord(sex['gl']*u.degree, sex['gb']*u.degree, frame='galactic')
-t2gal = SkyCoord(t2['gl_t2']*u.degree, t2['gb_t2']*u.degree, frame='galactic')
-
-t2ind, sexind, angsep, dist3d = search_around_sky(t2gal, sexgal, 10.*u.arcsec)
-
-plt.hist(angsep*3600., bins=100), plt.show()
-
-sex = sex[sexind]
-t3 = t2[t2ind]
-
-print len(sex)
-
-combtable = hstack([sex, t3])
-
-ascii.write(combtable, '../sextractor_'+str(glstart)+'_rand_deadtime_t2_2mass.txt')
-
-print 'Matched with T2 and 2MASS, finished'
-print 'Total objects matched =', len(combtable)
