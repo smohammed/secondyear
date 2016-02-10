@@ -928,3 +928,69 @@ plt.xlabel('g - r')
 plt.ylabel('g')
 #plt.savefig('11-25-gvsgr_vphasonly_0-40_ug1cut.png')
 #plt.clf()
+
+
+galex = fits.open('GALEXAIS.fits')[1].data
+vpgal = SkyCoord(vp['RAJ2000']*u.deg,vp['DEJ2000']*u.deg,frame='icrs')
+galexgal = SkyCoord(galex['ra']*u.deg,galex['dec']*u.deg,frame='icrs')
+galexind,vpind,angsep,sep3d = search_around_sky(galexgal,vpgal,3.5*u.arcsec)
+
+gv1 = np.where((gv['gl_galex'] > 0.) & (gv['gl_galex'] < 40.))
+gv2 = np.where((gv['gl_galex'] > 200.) & (gv['gl_galex'] < 250.))
+gv3 = np.where((gv['gl_galex'] > 250.) & (gv['gl_galex'] < 300.))
+gv4 = np.where((gv['gl_galex'] > 300.) & (gv['gl_galex'] < 360.))
+gv1 = gv[gv1]
+gv2 = gv[gv2]
+gv3 = gv[gv3]
+gv4 = gv[gv4]
+
+
+gv1ug = np.where(gv1['u_AB']-gv1['g_AB'] < 1.)
+gv2ug = np.where(gv2['u_AB']-gv2['g_AB'] < 1.)
+gv3ug = np.where(gv3['u_AB']-gv3['g_AB'] < 1.)
+gv4ug = np.where(gv4['u_AB']-gv4['g_AB'] < 1.)
+
+gv1ug = gv1[gv1ug]
+gv2ug = gv2[gv2ug]
+gv3ug = gv3[gv3ug]
+gv4ug = gv4[gv4ug]
+
+scatter_contour(gv3ug['g_AB']-gv3ug['r_AB'],gv3ug['g_AB'],threshold=1000,log_counts=True,histogram2d_args=dict(bins=40),contour_args=dict(),plot_args=dict(color='k',markersize=1))
+plt.xlabel('g - r (ABmag)')
+plt.ylabel('g (ABmag)')
+plt.title('GAIS+VPHAS, 300 < gl < 360, u - g < 1')
+plt.xlim((-1,3))
+plt.ylim((23,12))
+plt.show()
+
+
+vp1 = np.where((vpgal.l.degree > 0.) & (vpgal.l.degree < 40.))
+vp2 = np.where((vpgal.l.degree > 200.) & (vpgal.l.degree < 250.))
+vp3 = np.where((vpgal.l.degree > 250.) & (vpgal.l.degree < 300.))
+vp4 = np.where((vpgal.l.degree > 300.) & (vpgal.l.degree < 360.))
+vp1 = vp[vp1]
+vp2 = vp[vp2]
+vp3 = vp[vp3]
+vp4 = vp[vp4]
+
+vp1ug = np.where(vp1['u_AB']-vp1['g_AB'] < 1.)
+vp2ug = np.where(vp2['u_AB']-vp2['g_AB'] < 1.)
+vp3ug = np.where(vp3['u_AB']-vp3['g_AB'] < 1.)
+vp4ug = np.where(vp4['u_AB']-vp4['g_AB'] < 1.)
+vp1ug = vp1[vp1ug]
+vp2ug = vp2[vp2ug]
+vp3ug = vp3[vp3ug]
+vp4ug = vp4[vp4ug]
+
+
+
+
+scatter_contour(vp4ug['g_AB']-vp4ug['r_AB'],vp4ug['g_AB'],threshold=1000,log_counts=True,histogram2d_args=dict(bins=40),contour_args=dict(),plot_args=dict(color='k',markersize=1))
+plt.xlabel('g - r (ABmag)')
+plt.ylabel('g (ABmag)')
+plt.title('VPHAS only, 300 < gl < 360, u - g < 1')
+plt.xlim((-1,3))
+plt.ylim((23,12))
+plt.show()
+
+
