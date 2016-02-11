@@ -4,7 +4,7 @@ from astropy.table import Table
 import pysynphot
 
 # Filter files
-directory = 'PICKLES/filt/'
+directory = '../PICKLES/filt/'
 nuvfilt = Table.read(directory+'galex/NUV.pb', format='ascii')
 Bfilt = Table.read(directory+'wfi/B.pb', format='ascii', data_start=1)
 Vfilt = Table.read(directory+'wfi/V.pb', format='ascii', data_start=1)
@@ -89,3 +89,7 @@ umag = np.array(umag)
 gmag = np.array(gmag)
 rmag = np.array(rmag)
 imag = np.array(imag)
+
+
+data = [nuvmag, Umag, Bmag, Vmag, Rmag, Imag, Jmag, Hmag, Kmag, umag, gmag, rmag, imag]
+ascii.write(data, '../pysynphot_pickles.txt', names=['nuv', 'U', 'B', 'V', 'R', 'I', 'J', 'H', 'K', 'u', 'g', 'r', 'i'])
