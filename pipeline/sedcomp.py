@@ -1,10 +1,10 @@
-from astropy.io import ascii
 import numpy as np
+import os
 from astropy.table import Table
 import pysynphot
 
 # Filter files
-directory = '/PICKLES/filt/'
+directory = 'PICKLES/filt/'
 nuvfilt = Table.read(directory+'galex/NUV.pb', format='ascii')
 Bfilt = Table.read(directory+'wfi/B.pb', format='ascii', data_start=1)
 Vfilt = Table.read(directory+'wfi/V.pb', format='ascii', data_start=1)
@@ -22,43 +22,70 @@ rfilt = Table.read(directory+'sdss/rp.pb', format='ascii', data_start=1)
 ifilt = Table.read(directory+'sdss/ip.pb', format='ascii', data_start=1)
 
 # Pysynphot Pickles files
-o5v_file = os.path.join(os.environ['PYSYN_CDBS'], 'grid/pickles/dat_uvi/', 'pickles_1.fits')
-o5v = pysynphot.FileSpectrum(o5v_file)
+nuvmag, Bmag, Vmag, Umag, Rmag, Imag, Jmag, Hmag, Kmag, umag, gmag, rmag, imag = [], [], [], [], [], [], [], [], [], [], [], [], []
 
-nuvcut = np.where((o5v.wave > nuvfilt['col1'][0]) & (o5v.wave < nuvfilt['col1'][-1]))
-Bcut = np.where((o5v.wave > Bfilt['col1'][0]) & (o5v.wave < Bfilt['col1'][-1]))
-Vcut = np.where((o5v.wave > Vfilt['col1'][0]) & (o5v.wave < Vfilt['col1'][-1]))
-Ucut = np.where((o5v.wave > Ufilt['col1'][0]) & (o5v.wave < Ufilt['col1'][-1]))
-Rcut = np.where((o5v.wave > Rfilt['col1'][0]) & (o5v.wave < Rfilt['col1'][-1]))
-Icut = np.where((o5v.wave > Ifilt['col1'][0]) & (o5v.wave < Ifilt['col1'][-1]))
+for ind in range(1, 132):
+    star_file = os.path.join(os.environ['PYSYN_CDBS'], 'grid/pickles/dat_uvi/', 'pickles_'+str(ind)+'.fits')
+    star = pysynphot.FileSpectrum(star_file)
 
-Jcut = np.where((o5v.wave > Jfilt['col1'][0]) & (o5v.wave < Jfilt['col1'][-1]))
-Hcut = np.where((o5v.wave > Hfilt['col1'][0]) & (o5v.wave < Hfilt['col1'][-1]))
-Kcut = np.where((o5v.wave > Kfilt['col1'][0]) & (o5v.wave < Kfilt['col1'][-1]))
+    nuvstarcut = np.where(np.in1d(star.wave, nuvfilt['col1']))
+    Bstarcut = np.where(np.in1d(star.wave, Bfilt['col1']))
+    Vstarcut = np.where(np.in1d(star.wave, Vfilt['col1']))
+    Ustarcut = np.where(np.in1d(star.wave, Ufilt['col1']))
+    Rstarcut = np.where(np.in1d(star.wave, Rfilt['col1']))
+    Istarcut = np.where(np.in1d(star.wave, Ifilt['col1']))
 
-ucut = np.where((o5v.wave > ufilt['col1'][0]) & (o5v.wave < ufilt['col1'][-1]))
-gcut = np.where((o5v.wave > gfilt['col1'][0]) & (o5v.wave < gfilt['col1'][-1]))
-rcut = np.where((o5v.wave > rfilt['col1'][0]) & (o5v.wave < rfilt['col1'][-1]))
-icut = np.where((o5v.wave > ifilt['col1'][0]) & (o5v.wave < ifilt['col1'][-1]))
+    Jstarcut = np.where(np.in1d(star.wave, Jfilt['col1']))
+    Hstarcut = np.where(np.in1d(star.wave, Hfilt['col1']))
+    Kstarcut = np.where(np.in1d(star.wave, Kfilt['col1']))
 
-nuvmag = -2.5*np.log10(np.sum(o5v.flux[nuvcut]*o5v.wave[nuvcut]*nuvfilt['col2'])/(np.sum(3631*3*10**10/o5v.wave[nuvcut]*nuvfilt['col2'])))
-Bmag = -2.5*np.log10(np.sum(o5v.flux[Bcut]*o5v.wave[Bcut]*Bfilt['col2'])/(np.sum(3631*3*10**10/o5v.wave[Bcut]*Bfilt['col2'])))
-Vmag = -2.5*np.log10(np.sum(o5v.flux[Vcut]*o5v.wave[Vcut]*Vfilt['col2'])/(np.sum(3631*3*10**10/o5v.wave[Vcut]*Vfilt['col2'])))
-Umag = -2.5*np.log10(np.sum(o5v.flux[Ucut]*o5v.wave[Ucut]*Ufilt['col2'])/(np.sum(3631*3*10**10/o5v.wave[Ucut]*Ufilt['col2'])))
-Rmag = -2.5*np.log10(np.sum(o5v.flux[Rcut]*o5v.wave[Rcut]*Rfilt['col2'])/(np.sum(3631*3*10**10/o5v.wave[Rcut]*Rfilt['col2'])))
-Imag = -2.5*np.log10(np.sum(o5v.flux[Icut]*o5v.wave[Icut]*Ifilt['col2'])/(np.sum(3631*3*10**10/o5v.wave[Icut]*Ifilt['col2'])))
+    ustarcut = np.where(np.in1d(star.wave, ufilt['col1']))
+    gstarcut = np.where(np.in1d(star.wave, gfilt['col1']))
+    rstarcut = np.where(np.in1d(star.wave, rfilt['col1']))
+    istarcut = np.where(np.in1d(star.wave, ifilt['col1']))
 
-Jmag = -2.5*np.log10(np.sum(o5v.flux[Jcut]*o5v.wave[Jcut]*Jfilt['col2'])/(np.sum(3631*3*10**10/o5v.wave[Jcut]*Jfilt['col2'])))
-Hmag = -2.5*np.log10(np.sum(o5v.flux[Hcut]*o5v.wave[Hcut]*Hfilt['col2'])/(np.sum(3631*3*10**10/o5v.wave[Hcut]*Hfilt['col2'])))
-Kmag = -2.5*np.log10(np.sum(o5v.flux[Kcut]*o5v.wave[Kcut]*Kfilt['col2'])/(np.sum(3631*3*10**10/o5v.wave[Kcut]*Kfilt['col2'])))
+    nuvfiltcut = np.where(np.in1d(nuvfilt['col1'], star.wave))
+    Bfiltcut = np.where(np.in1d(Bfilt['col1'], star.wave))
+    Vfiltcut = np.where(np.in1d(Vfilt['col1'], star.wave))
+    Ufiltcut = np.where(np.in1d(Ufilt['col1'], star.wave))
+    Rfiltcut = np.where(np.in1d(Rfilt['col1'], star.wave))
+    Ifiltcut = np.where(np.in1d(Ifilt['col1'], star.wave))
 
-umag = -2.5*np.log10(np.sum(o5v.flux[ucut]*o5v.wave[ucut]*ufilt['col2'])/(np.sum(3631*3*10**10/o5v.wave[ucut]*ufilt['col2'])))
-gmag = -2.5*np.log10(np.sum(o5v.flux[gcut]*o5v.wave[gcut]*gfilt['col2'])/(np.sum(3631*3*10**10/o5v.wave[gcut]*gfilt['col2'])))
-rmag = -2.5*np.log10(np.sum(o5v.flux[rcut]*o5v.wave[rcut]*rfilt['col2'])/(np.sum(3631*3*10**10/o5v.wave[rcut]*rfilt['col2'])))
-imag = -2.5*np.log10(np.sum(o5v.flux[icut]*o5v.wave[icut]*ifilt['col2'])/(np.sum(3631*3*10**10/o5v.wave[icut]*ifilt['col2'])))
+    Jfiltcut = np.where(np.in1d(Jfilt['col1'], star.wave))
+    Hfiltcut = np.where(np.in1d(Hfilt['col1'], star.wave))
+    Kfiltcut = np.where(np.in1d(Kfilt['col1'], star.wave))
 
+    ufiltcut = np.where(np.in1d(ufilt['col1'], star.wave))
+    gfiltcut = np.where(np.in1d(gfilt['col1'], star.wave))
+    rfiltcut = np.where(np.in1d(rfilt['col1'], star.wave))
+    ifiltcut = np.where(np.in1d(ifilt['col1'], star.wave))
 
+    nuvmag.append(-2.5*np.log10(np.sum(star.flux[nuvstarcut]*star.wave[nuvstarcut]*nuvfilt['col2'][nuvfiltcut])/(np.sum(3631*3*10**10/star.wave[nuvstarcut]*nuvfilt['col2'][nuvfiltcut]))))
+    Bmag.append(-2.5*np.log10(np.sum(star.flux[Bstarcut]*star.wave[Bstarcut]*Bfilt['col2'][Bfiltcut])/(np.sum(3631*3*10**10/star.wave[Bstarcut]*Bfilt['col2'][Bfiltcut]))))
+    Vmag.append(-2.5*np.log10(np.sum(star.flux[Vstarcut]*star.wave[Vstarcut]*Vfilt['col2'][Vfiltcut])/(np.sum(3631*3*10**10/star.wave[Vstarcut]*Vfilt['col2'][Vfiltcut]))))
+    Umag.append(-2.5*np.log10(np.sum(star.flux[Ustarcut]*star.wave[Ustarcut]*Ufilt['col2'][Ufiltcut])/(np.sum(3631*3*10**10/star.wave[Ustarcut]*Ufilt['col2'][Ufiltcut]))))
+    Rmag.append(-2.5*np.log10(np.sum(star.flux[Rstarcut]*star.wave[Rstarcut]*Rfilt['col2'][Rfiltcut])/(np.sum(3631*3*10**10/star.wave[Rstarcut]*Rfilt['col2'][Rfiltcut]))))
+    Imag.append(-2.5*np.log10(np.sum(star.flux[Istarcut]*star.wave[Istarcut]*Ifilt['col2'][Ifiltcut])/(np.sum(3631*3*10**10/star.wave[Istarcut]*Ifilt['col2'][Ifiltcut]))))
 
+    Jmag.append(-2.5*np.log10(np.sum(star.flux[Jstarcut]*star.wave[Jstarcut]*Jfilt['col2'][Jfiltcut])/(np.sum(3631*3*10**10/star.wave[Jstarcut]*Jfilt['col2'][Jfiltcut]))))
+    Hmag.append(-2.5*np.log10(np.sum(star.flux[Hstarcut]*star.wave[Hstarcut]*Hfilt['col2'][Hfiltcut])/(np.sum(3631*3*10**10/star.wave[Hstarcut]*Hfilt['col2'][Hfiltcut]))))
+    Kmag.append(-2.5*np.log10(np.sum(star.flux[Kstarcut]*star.wave[Kstarcut]*Kfilt['col2'][Kfiltcut])/(np.sum(3631*3*10**10/star.wave[Kstarcut]*Kfilt['col2'][Kfiltcut]))))
 
+    umag.append(-2.5*np.log10(np.sum(star.flux[ustarcut]*star.wave[ustarcut]*ufilt['col2'][ufiltcut])/(np.sum(3631*3*10**10/star.wave[ustarcut]*ufilt['col2'][ufiltcut]))))
+    gmag.append(-2.5*np.log10(np.sum(star.flux[gstarcut]*star.wave[gstarcut]*gfilt['col2'][gfiltcut])/(np.sum(3631*3*10**10/star.wave[gstarcut]*gfilt['col2'][gfiltcut]))))
+    rmag.append(-2.5*np.log10(np.sum(star.flux[rstarcut]*star.wave[rstarcut]*rfilt['col2'][rfiltcut])/(np.sum(3631*3*10**10/star.wave[rstarcut]*rfilt['col2'][rfiltcut]))))
+    imag.append(-2.5*np.log10(np.sum(star.flux[istarcut]*star.wave[istarcut]*ifilt['col2'][ifiltcut])/(np.sum(3631*3*10**10/star.wave[istarcut]*ifilt['col2'][ifiltcut]))))
 
-
+nuvmag = np.array(nuvmag)
+Bmag = np.array(Bmag)
+Vmag = np.array(Vmag)
+Umag = np.array(Umag)
+Rmag = np.array(Rmag)
+Imag = np.array(Imag)
+Jmag = np.array(Jmag)
+Hmag = np.array(Hmag)
+Kmag = np.array(Kmag)
+umag = np.array(umag)
+gmag = np.array(gmag)
+rmag = np.array(rmag)
+imag = np.array(imag)
