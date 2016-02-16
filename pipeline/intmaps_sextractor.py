@@ -16,15 +16,16 @@ matplotlib.rcParams['font.size'] = 20
 # 3. *_edit.fits
 # 4. sex_total*
 
-field1 = 0  # 0.5 - 6.8
-field2 = 0  # 17.6 - 19.4
-field3 = 0  # 20.3 - 25.7
-field4 = 0  # 8.6 - 12.2
-field5 = 0  # 205.7 - 210.2
-field6 = 0  # 211.1 - 213.8
-field7 = 0  # 214.7 - 217.4
-field8 = 1  # 218.3 - 221.0
-
+field1 = 0   # 0.5 - 6.8
+field2 = 1   # 17.6 - 19.4
+field3 = 0   # 20.3 - 25.7
+field4 = 0   # 8.6 - 12.2
+field5 = 0   # 205.7 - 210.2
+field6 = 0   # 211.1 - 213.8
+field7 = 0   # 214.7 - 217.4
+field8 = 0   # 218.3 - 221.0
+field9 = 0   # 223.7 - 226.4
+field10 = 0  # 228.2 - 231.8
 
 # Field nums are new fields created by Dun Wang ordered here as I processed them
 
@@ -62,6 +63,14 @@ if field8 == 1:  # gl 218.3 - 221.0
     img = fits.open('../Dunmaps/count_map_name2183-2210_gal_sec_in.fits')[0].data
     im1xmin, im1xmax, im1ymin, im1ymax = 310, 2650, 1449, 14056
 
+if field9 == 1:  # gl 223.7 - 226.4
+    img = fits.open('../Dunmaps/count_map_name2237-2264_gal_sec_in.fits')[0].data
+    im1xmin, im1xmax, im1ymin, im1ymax = 376, 2056, 1575, 13700
+    im2xmin, im2xmax, im2ymin, im2ymax = 2056, 2638, 1575, 12532
+
+if field10 == 1:  # gl 228.2 - 231.8
+    img = fits.open('../Dunmaps/count_map_name2282-2318_gal_sec_in.fits')[0].data
+    im1xmin, im1xmax, im1ymin, im1ymax = 234, 3050, 1554, 14000
 
 ##################################################
 # Make new fields
@@ -104,6 +113,15 @@ if field8 == 1:
     im1 = img[im1ymin:im1ymax, im1xmin:im1xmax]
     fits.HDUList([fits.PrimaryHDU(im1)]).writeto('../Dunmaps/im1_2183-2210.fits')
 
+if field9 == 1:
+    im1 = img[im1ymin:im1ymax, im1xmin:im1xmax]
+    fits.HDUList([fits.PrimaryHDU(im1)]).writeto('../Dunmaps/im1_2237-2264.fits')
+    im2 = img[im2ymin:im2ymax, im2xmin:im2xmax]
+    fits.HDUList([fits.PrimaryHDU(im2)]).writeto('../Dunmaps/im2_2237-2264.fits')
+
+if field10 == 1:
+    im1 = img[im1ymin:im1ymax, im1xmin:im1xmax]
+    fits.HDUList([fits.PrimaryHDU(im1)]).writeto('../Dunmaps/im1_2282-2318.fits')
 
 ##################################################
 # Run sextractor
@@ -134,6 +152,12 @@ if field7 == 1:
 if field8 == 1:
     os.system('sex ../Dunmaps/im1_2183-2210.fits -c ~/sextractor/daofind.sex -CATALOG_NAME ../Dunmaps/sex_im1_2183-2210.fits -CHECKIMAGE_NAME ../Dunmaps/background_im1_2183-2210.fits')
 
+if field9 == 1:
+    os.system('sex ../Dunmaps/im1_2237-2264.fits -c ~/sextractor/daofind.sex -CATALOG_NAME ../Dunmaps/sex_im1_2237-2264.fits -CHECKIMAGE_NAME ../Dunmaps/background_im1_2237-2264.fits')
+    os.system('sex ../Dunmaps/im2_2237-2264.fits -c ~/sextractor/daofind.sex -CATALOG_NAME ../Dunmaps/sex_im2_2237-2264.fits -CHECKIMAGE_NAME ../Dunmaps/background_im2_2237-2264.fits')
+
+if field10 == 1:
+    os.system('sex ../Dunmaps/im1_2282-2318.fits -c ~/sextractor/daofind.sex -CATALOG_NAME ../Dunmaps/sex_im1_2282-2318.fits -CHECKIMAGE_NAME ../Dunmaps/background_im1_2282-2318.fits')
 
 ##################################################
 # Get output from sextractor, convert to gl,gb,nuv
@@ -256,6 +280,41 @@ if field8 == 1:
     hdu = fits.BinTableHDU.from_columns(data.columns + new_cols)
     hdu.writeto('../Dunmaps/sex_im1_2183-2210_edit.fits')
 
+if field9 == 1:
+    im1sex = fits.open('../Dunmaps/sex_im1_2237-2264.fits')[1].data
+    data = im1sex
+    xfac = im1xmin
+    yfac = im1ymin
+    x_new = (data.X_IMAGE+xfac)
+    y_new = (data.Y_IMAGE+yfac)
+    nuv = -2.5*np.log10(data.FLUX_AUTO) + 20.08
+    new_cols = fits.ColDefs([fits.Column(name='x_new', format='1E', array=x_new), fits.Column(name='y_new', format='1E', array=y_new), fits.Column(name='nuv', format='1E', array=nuv)])
+    hdu = fits.BinTableHDU.from_columns(data.columns + new_cols)
+    hdu.writeto('../Dunmaps/sex_im1_2237-2264_edit.fits')
+
+    im2sex = fits.open('../Dunmaps/sex_im2_2237-2264.fits')[1].data
+    data = im2sex
+    xfac = im2xmin
+    yfac = im2ymin
+    x_new = (data.X_IMAGE+xfac)
+    y_new = (data.Y_IMAGE+yfac)
+    nuv = -2.5*np.log10(data.FLUX_AUTO) + 20.08
+    new_cols = fits.ColDefs([fits.Column(name='x_new', format='1E', array=x_new), fits.Column(name='y_new', format='1E', array=y_new), fits.Column(name='nuv', format='1E', array=nuv)])
+    hdu = fits.BinTableHDU.from_columns(data.columns + new_cols)
+    hdu.writeto('../Dunmaps/sex_im2_2237-2264_edit.fits')
+
+if field10 == 1:
+    im1sex = fits.open('../Dunmaps/sex_im1_2282-2318.fits')[1].data
+    data = im1sex
+    xfac = im1xmin
+    yfac = im1ymin
+    x_new = (data.X_IMAGE+xfac)
+    y_new = (data.Y_IMAGE+yfac)
+    nuv = -2.5*np.log10(data.FLUX_AUTO) + 20.08
+    new_cols = fits.ColDefs([fits.Column(name='x_new', format='1E', array=x_new), fits.Column(name='y_new', format='1E', array=y_new), fits.Column(name='nuv', format='1E', array=nuv)])
+    hdu = fits.BinTableHDU.from_columns(data.columns + new_cols)
+    hdu.writeto('../Dunmaps/sex_im1_2282-2318_edit.fits')
+
 
 print 'Converted coordinates to gl/gb'
 
@@ -297,6 +356,15 @@ if field8 == 1:
     tottable = Table.read('../Dunmaps/sex_im1_2183-2210_edit.fits', format='fits')
     ascii.write(tottable, '../Dunmaps/sex_total_2183-2210.txt')
 
+if field9 == 1:
+    table1 = Table.read('../Dunmaps/sex_im1_2237-2264_edit.fits', format='fits')
+    table2 = Table.read('../Dunmaps/sex_im2_2237-2264_edit.fits', format='fits')
+    tottable = vstack([table1, table2])
+    ascii.write(tottable, '../Dunmaps/sex_total_2237-2264.txt')
+
+if field10 == 1:
+    tottable = Table.read('../Dunmaps/sex_im1_2282-2318_edit.fits', format='fits')
+    ascii.write(tottable, '../Dunmaps/sex_total_2282-2318.txt')
 
 print 'Combined all data tables'
 
@@ -327,6 +395,12 @@ if field7 == 1:
 if field8 == 1:
     hdulist = fits.open('../Dunmaps/count_map_name2183-2210_gal_sec_in.fits')
 
+if field9 == 1:
+    hdulist = fits.open('../Dunmaps/count_map_name2237-2264_gal_sec_in.fits')
+
+if field10 == 1:
+    hdulist = fits.open('../Dunmaps/count_map_name2282-2318_gal_sec_in.fits')
+
 
 xpix = tottable['x_new']
 ypix = tottable['y_new']
@@ -350,7 +424,7 @@ if field1 == 1:
     raval = skygal.icrs.ra.degree
     decval = skygal.icrs.dec.degree
 
-if (field2 == 1) or (field3 == 1) or (field4 == 1) or (field5 == 1) or (field6 == 1) or (field7 == 1) or (field8 == 1):
+if (field2 == 1) or (field3 == 1) or (field4 == 1) or (field5 == 1) or (field6 == 1) or (field7 == 1) or (field8 == 1) or (field9 == 1) or (field10 == 1):
     glval = []
     gbval = []
 
@@ -403,7 +477,15 @@ if field8 == 1:
     alldata = hstack([tottable, coord])
     ascii.write(alldata, '../Dunmaps/starcatalog_2183-2210.txt', format='ipac')
 
+if field9 == 1:
+    coord = Table([glval, gbval, raval, decval], names=('gl', 'gb', 'ra', 'dec'))
+    alldata = hstack([tottable, coord])
+    ascii.write(alldata, '../Dunmaps/starcatalog_2237-2264.txt', format='ipac')
 
+if field10 == 1:
+    coord = Table([glval, gbval, raval, decval], names=('gl', 'gb', 'ra', 'dec'))
+    alldata = hstack([tottable, coord])
+    ascii.write(alldata, '../Dunmaps/starcatalog_2282-2318.txt', format='ipac')
 
 galex = fits.open('../GALEXAIS.fits')[1].data
 galexgal = SkyCoord(galex['glon']*u.deg, galex['glat']*u.deg, frame='galactic')
@@ -413,7 +495,7 @@ sexgal = SkyCoord(sex['gl']*u.deg, sex['gb']*u.deg, frame='galactic')
 sexind,  galexind,  angsep,  ang3d = search_around_sky(sexgal, galexgal, 3.5*u.arcsec)
 s2 = Table(sex[sexind])
 g2 = Table(galex[galexind])
-
+'''
 delgl = g2['glon'] - s2['gl']
 delgb = g2['glat'] - s2['gb']
 dgl = np.mean(g2['glon'] - s2['gl'])
@@ -421,7 +503,7 @@ dgb = np.mean(g2['glat'] - s2['gb'])
 plt.scatter(delgl*3600, delgb*3600, alpha=0.1)
 plt.xlabel('$\Delta$ gl')
 plt.ylabel('$\Delta$ gb')
-plt.title('len = '+str(len(delgl))+', dgl = '+str(dgl*3600)[:6]+' dgb = '+str(dgb*3600)[:6])
+plt.title('len = '+str(len(delgl))+', dgl = '+str(dgl*3600)[:4]+' dgb = '+str(dgb*3600)[:4])
 plt.savefig('../Dunmaps/coord_2183-2210.png')
 plt.clf()
 
@@ -444,9 +526,10 @@ dgb = np.mean(g2['glat'] - s2['gb'])
 plt.scatter(delgl*3600, delgb*3600, alpha=0.1)
 plt.xlabel('$\Delta$ gl')
 plt.ylabel('$\Delta$ gb')
-plt.title('Fix, len = '+str(len(delgl))+', dgl = '+str(dgl*3600)[:6]+' dgb = '+str(dgb*3600)[:6])
+plt.title('Fix, len = '+str(len(delgl))+', dgl = '+str(dgl*3600)[:4]+' dgb = '+str(dgb*3600)[:4])
 plt.savefig('../Dunmaps/coord_2183-2210_fix.png')
 plt.clf()
+'''
 
 comb = hstack([s2, g2])
 comb['angsep'] = angsep
@@ -463,86 +546,30 @@ comb.rename_column('glat', 'gb_galex')
 
 combcut = np.where(comb['nuv_galex'] == -999.)
 comb.remove_rows(combcut)
-
-ascii.write(comb, '../sex_galex_matches_2183-2210.txt', format='basic')
-
+ascii.write(comb, '../sex_galex_matches_2282-2318_nofix.txt', format='basic')
 
 
-'''
-a = Table.read('../sex_galex_matches_176-194.txt', format='ascii')
-plt.scatter(a['nuv_galex'],a['nuv_sex']-a['nuv_galex'],alpha=0.1)
-plt.axhline(y=0,c='black')
-plt.xlabel('NUV$_{GAIS}$')
-plt.ylabel('NUV$_{SEx}$ - NUV$_{GAIS}$')
-plt.xlim((11,22))
-plt.ylim((-2,2))
-plt.title('gl = (17.6-19.4)')
-plt.savefig('02-10-nuvcomp_sextractor_gais_176-194.png')
-plt.clf()
+# Plot NUV comparisons
+skyrange = ['205.7-210.2', '211.1-213.8', '214.7-217.4', '218.3-221.0', '223.7-226.4', '228.2-231.8']
 
-a = Table.read('../sex_galex_matches_203-257.txt', format='ascii')
-plt.scatter(a['nuv_galex'],a['nuv_sex']-a['nuv_galex'],alpha=0.1)
-plt.axhline(y=0,c='black')
-plt.xlabel('NUV$_{GAIS}$')
-plt.ylabel('NUV$_{SEx}$ - NUV$_{GAIS}$')
-plt.xlim((11,22))
-plt.ylim((-2,2))
-plt.title('gl = (20.3-25.7)')
-plt.savefig('02-10-nuvcomp_sextractor_gais_203-257.png')
-plt.clf()
+for region in skyrange:
+    a = Table.read('../sex_galex_matches_'+region+'.txt', format='ascii')
 
-a = Table.read('../sex_galex_matches_86-122.txt', format='ascii')
-plt.scatter(a['nuv_galex'],a['nuv_sex']-a['nuv_galex'],alpha=0.1)
-plt.axhline(y=0,c='black')
-plt.xlabel('NUV$_{GAIS}$')
-plt.ylabel('NUV$_{SEx}$ - NUV$_{GAIS}$')
-plt.xlim((11,22))
-plt.ylim((-2,2))
-plt.title('gl = (8.6-12.2)')
-plt.savefig('02-10-nuvcomp_sextractor_gais_86-122.png')
-plt.clf()
+    mean, median, std = [], [], []
+    for magrange in np.arange(11.5, 22, 1):
+        mag = np.where((a['nuv_galex'] > magrange) & (a['nuv_galex'] < magrange+1))
+        mean.append(np.mean(a[magrange]))
+        std.append(np.std(a[magrange]))
+        median.append(np.median(a[magrange]))
 
-a = Table.read('../sex_galex_matches_2057-2102.txt', format='ascii')
-plt.scatter(a['nuv_galex'],a['nuv_sex']-a['nuv_galex'],alpha=0.1)
-plt.axhline(y=0,c='black')
-plt.xlabel('NUV$_{GAIS}$')
-plt.ylabel('NUV$_{SEx}$ - NUV$_{GAIS}$')
-plt.xlim((11,22))
-plt.ylim((-2,2))
-plt.title('gl = (205.7-210.2)')
-plt.savefig('02-10-nuvcomp_sextractor_gais_2057-2102.png')
-plt.clf()
-
-a = Table.read('../sex_galex_matches_2111-2138.txt', format='ascii')
-plt.scatter(a['nuv_galex'],a['nuv_sex']-a['nuv_galex'],alpha=0.1)
-plt.axhline(y=0,c='black')
-plt.xlabel('NUV$_{GAIS}$')
-plt.ylabel('NUV$_{SEx}$ - NUV$_{GAIS}$')
-plt.xlim((11,22))
-plt.ylim((-2,2))
-plt.title('gl = (211.1-213.8)')
-plt.savefig('02-10-nuvcomp_sextractor_gais_2111-2138.png')
-plt.clf()
-
-a = Table.read('../sex_galex_matches_2147-2174.txt', format='ascii')
-plt.scatter(a['nuv_galex'],a['nuv_sex']-a['nuv_galex'],alpha=0.1)
-plt.axhline(y=0,c='black')
-plt.xlabel('NUV$_{GAIS}$')
-plt.ylabel('NUV$_{SEx}$ - NUV$_{GAIS}$')
-plt.xlim((11,22))
-plt.ylim((-2,2))
-plt.title('gl = (214.7-217.4)')
-plt.savefig('02-10-nuvcomp_sextractor_gais_2147-2174.png')
-plt.clf()
-
-a = Table.read('../sex_galex_matches_2183-2210.txt', format='ascii')
-plt.scatter(a['nuv_galex'],a['nuv_sex']-a['nuv_galex'],alpha=0.1)
-plt.axhline(y=0,c='black')
-plt.xlabel('NUV$_{GAIS}$')
-plt.ylabel('NUV$_{GAIS}$ - NUV$_{GAIS}$')
-plt.xlim((11,22))
-plt.ylim((-2,2))
-plt.title('gl = (218.3-221.0)')
-plt.savefig('02-10-nuvcomp_sextractor_gais_2183-2210.png')
-plt.clf()
-'''
+    plt.scatter(a['nuv_galex'], a['nuv_sex']-a['nuv_galex'], alpha=0.1)
+    plt.errorbar(np.arange(12,22), mean, yerr=std, color='black',ecolor='black')
+    plt.axhline(y=0, c='black')
+    plt.xlabel('NUV$_{GAIS}$')
+    plt.ylabel('NUV$_{SEx}$ - NUV$_{GAIS}$')
+    plt.xlim((11, 22))
+    plt.ylim((-2, 2))
+    plt.title('gl ='+region)
+    plt.show()
+    #plt.savefig('02-10-nuvcomp_sextractor_gais_'+skyrange+'.png')
+    #plt.clf()
