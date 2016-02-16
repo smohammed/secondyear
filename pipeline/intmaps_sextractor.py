@@ -552,24 +552,76 @@ ascii.write(comb, '../sex_galex_matches_2282-2318_nofix.txt', format='basic')
 # Plot NUV comparisons
 skyrange = ['205.7-210.2', '211.1-213.8', '214.7-217.4', '218.3-221.0', '223.7-226.4', '228.2-231.8']
 
+
+
 for region in skyrange:
     a = Table.read('../sex_galex_matches_'+region+'.txt', format='ascii')
+    a0 = a[np.where((a['gb_galex'] > -10) & (a['gb_galex'] < -5))]
+    a1 = a[np.where((a['gb_galex'] > -5) & (a['gb_galex'] < 0))]
+    a2 = a[np.where((a['gb_galex'] > 0) & (a['gb_galex'] < 5))]
+    a3 = a[np.where((a['gb_galex'] > 5) & (a['gb_galex'] < 10))]
 
-    mean, median, std = [], [], []
+    m0, med0, std0 = [], [], []
+    m1, med1, std1 = [], [], []
+    m2, med2, std2 = [], [], []
+    m3, med3, std3 = [], [], []
+
     for magrange in np.arange(11.5, 22, 1):
-        mag = np.where((a['nuv_galex'] > magrange) & (a['nuv_galex'] < magrange+1))
-        mean.append(np.mean(a[magrange]))
-        std.append(np.std(a[magrange]))
-        median.append(np.median(a[magrange]))
+        mag0 = np.where((a0['nuv_galex'] > magrange) & (a0['nuv_galex'] < magrange+1))
+        m0.append(np.mean((a0['nuv_sex']-a0['nuv_galex'])[magrange]))
+        std0.append(np.std((a0['nuv_sex']-a0['nuv_galex'])[magrange]))
+        med0.append(np.median((a0['nuv_sex']-a0['nuv_galex'])[magrange]))
 
-    plt.scatter(a['nuv_galex'], a['nuv_sex']-a['nuv_galex'], alpha=0.1)
-    plt.errorbar(np.arange(12,22), mean, yerr=std, color='black',ecolor='black')
-    plt.axhline(y=0, c='black')
-    plt.xlabel('NUV$_{GAIS}$')
-    plt.ylabel('NUV$_{SEx}$ - NUV$_{GAIS}$')
-    plt.xlim((11, 22))
-    plt.ylim((-2, 2))
-    plt.title('gl ='+region)
+        mag1 = np.where((a1['nuv_galex'] > magrange) & (a1['nuv_galex'] < magrange+1))
+        m1.append(np.mean((a1['nuv_sex']-a1['nuv_galex'])[magrange]))
+        std1.append(np.std((a1['nuv_sex']-a1['nuv_galex'])[magrange]))
+        med1.append(np.median((a1['nuv_sex']-a1['nuv_galex'])[magrange]))
+
+        mag2 = np.where((a2['nuv_galex'] > magrange) & (a2['nuv_galex'] < magrange+1))
+        m2.append(np.mean((a2['nuv_sex']-a2['nuv_galex'])[magrange]))
+        std2.append(np.std((a2['nuv_sex']-a2['nuv_galex'])[magrange]))
+        med2.append(np.median((a2['nuv_sex']-a2['nuv_galex'])[magrange]))
+
+        mag3 = np.where((a3['nuv_galex'] > magrange) & (a3['nuv_galex'] < magrange+1))
+        m3.append(np.mean((a3['nuv_sex']-a3['nuv_galex'])[magrange]))
+        std3.append(np.std((a3['nuv_sex']-a3['nuv_galex'])[magrange]))
+        med3.append(np.median((a3['nuv_sex']-a3['nuv_galex'])[magrange]))
+
+    fig,(ax0, ax1, ax2, ax3) = plt.subplots(4, sharex=True, sharey=True)
+
+    ax0.scatter(a0['nuv_galex'], a0['nuv_sex']-a0['nuv_galex'], alpha=0.1)
+    ax0.errorbar(np.arange(12,22), m0, yerr=std0, color='black',linewidth=3)
+    ax0.axhline(y=0, c='black')
+
+    ax1.scatter(a1['nuv_galex'], a1['nuv_sex']-a1['nuv_galex'], alpha=0.1)
+    ax1.errorbar(np.arange(12,22), m1, yerr=std1, color='black',linewidth=3)
+    ax1.axhline(y=0, c='black')
+
+    ax2.scatter(a2['nuv_galex'], a2['nuv_sex']-a2['nuv_galex'], alpha=0.1)
+    ax2.errorbar(np.arange(12,22), m2, yerr=std2, color='black',linewidth=3)
+    ax2.axhline(y=0, c='black')
+
+    ax3.scatter(a3['nuv_galex'], a3['nuv_sex']-a3['nuv_galex'], alpha=0.1)
+    ax3.errorbar(np.arange(12,22), m3, yerr=std3, color='black',linewidth=3)
+    ax3.axhline(y=0, c='black')
+
+    ax3.xlabel('NUV$_{GAIS}$')
+    ax2.ylabel('NUV$_{SEx}$ - NUV$_{GAIS}$')
+    ax0.title('gl ='+region)
+    ax0.xlim((11, 22))
+    ax0.ylim((-2, 2))
+    ax1.xlim((11, 22))
+    ax1.ylim((-2, 2))
+    ax2.xlim((11, 22))
+    ax2.ylim((-2, 2))
+    ax3.xlim((11, 22))
+    ax3.ylim((-2, 2))
+
+    fig.subplots_adjust(hspace=0)
+    plt.setp([lab.get_xticklabels() for lab in fig.axes[:-1]], visible=False)
+
     plt.show()
     #plt.savefig('02-10-nuvcomp_sextractor_gais_'+skyrange+'.png')
     #plt.clf()
+
+
