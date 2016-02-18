@@ -860,7 +860,7 @@ for region in skyrange:
     plt.ylabel('$\Delta$ gb')
     plt.title('gl='+region+', len = '+str(len(delgl))+', dgl = '+str(dgl*3600)[:4]+'", dgb = '+str(dgb*3600)[:4]+'"')
     #plt.show()
-    plt.savefig('Dunmaps/02-18-coord_sex_tycho_'+region+'.png')
+    plt.savefig('images/02-18-coord_sex_tycho_'+region+'.png')
     plt.clf()
 
     print 'dgl1 = ', dgl * 3600
@@ -884,7 +884,7 @@ for region in skyrange:
     plt.ylabel('$\Delta$ gb')
     plt.title('Fix, gl='+region+', len = '+str(len(delgl))+', dgl = '+str(dgl*3600)[:4]+'", dgb = '+str(dgb*3600)[:4]+'"')
     #plt.show()
-    plt.savefig('Dunmaps/02-18-coord_sex_tycho_'+region+'_fix.png')
+    plt.savefig('images/02-18-coord_sex_tycho_'+region+'_fix.png')
     plt.clf()
     
     comb = hstack([s2, t2])
@@ -898,4 +898,4 @@ for region in skyrange:
     comb.rename_column('DEJ2000', 'dec_tycho')
     comb.rename_column('Glon', 'gl_tycho')
     comb.rename_column('Glat', 'gb_tycho')
-    ascii.write(comb, 'sex_tycho_matches_'+region+'_nofix.txt', format='basic')
+    ascii.write(comb, 'sex_tycho_matches_'+region+'_fix.txt', format='basic')
