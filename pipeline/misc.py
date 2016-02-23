@@ -837,35 +837,66 @@ vp2ug = vp2[vp2ug]
 vp3ug = vp3[vp3ug]
 vp4ug = vp4[vp4ug]
 
-
-
+dgl1tot = []
+dgb1tot = []
+dgl2tot = []
+dgb2tot = []
 skyrange = ['17.6-19.4', '20.3-25.7', '8.6-12.2', '205.7-210.2', '211.1-213.8', '214.7-217.4', '218.3-221.0', '223.7-226.4', '228.2-231.8']
 tycho = fits.open('tycho2.fits')[1].data
 tychogal = SkyCoord(tycho['Glon']*u.deg, tycho['Glat']*u.deg, frame='galactic')
 
 for region in skyrange:
     sex = Table.read('Dunmaps/starcatalog_'+region.replace('.', '')+'.txt', format='ascii')
-    sexgal = SkyCoord(sex['gl']*u.deg, sex['gb']*u.deg, frame='galactic')
 
-    sexind,  tychoind,  angsep,  ang3d = search_around_sky(sexgal, tychogal, 3.5*u.arcsec)
-    s2 = Table(sex[sexind])
-    t2 = Table(tycho[tychoind])
+    scut1 = np.where(sex['gb'] < 0)
+    scut2 = np.where(sex['gb'] > 0)
 
-    delgl = t2['Glon'] - s2['gl']
-    delgb = t2['Glat'] - s2['gb']
-    dgl = np.mean(t2['Glon'] - s2['gl'])
-    dgb = np.mean(t2['Glat'] - s2['gb'])
-    plt.scatter(delgl*3600, delgb*3600, alpha=0.1)
-    plt.xlabel('$\Delta$ gl')
-    plt.ylabel('$\Delta$ gb')
-    plt.title('gl='+region+', len = '+str(len(delgl))+', dgl = '+str(dgl*3600)[:4]+'", dgb = '+str(dgb*3600)[:4]+'"')
-    #plt.show()
-    plt.savefig('images/02-18-coord_sex_tycho_'+region+'.png')
+    sex1gal = SkyCoord(sex[scut1]['gl']*u.deg, sex[scut1]['gb']*u.deg, frame='galactic')
+    sex2gal = SkyCoord(sex[scut2]['gl']*u.deg, sex[scut2]['gb']*u.deg, frame='galactic')
+
+    sex1ind,  tycho1ind,  angsep1,  ang3d = search_around_sky(sex1gal, tychogal, 3.5*u.arcsec)
+    s12 = Table(sex[scut1][sex1ind])
+    t12 = Table(tycho[tycho1ind])
+
+    sex2ind,  tycho2ind,  angsep2,  ang3d = search_around_sky(sex2gal, tychogal, 3.5*u.arcsec)
+    s22 = Table(sex[scut2][sex2ind])
+    t22 = Table(tycho[tycho2ind])
+
+    fig, (ax1, ax2) = plt.subplots(2)
+
+    del1gl = t12['Glon'] - s12['gl']
+    del1gb = t12['Glat'] - s12['gb']
+    dgl1 = np.mean(t12['Glon'] - s12['gl'])
+    dgb1 = np.mean(t12['Glat'] - s12['gb'])
+
+    del2gl = t22['Glon'] - s22['gl']
+    del2gb = t22['Glat'] - s22['gb']
+    dgl2 = np.mean(t22['Glon'] - s22['gl'])
+    dgb2 = np.mean(t22['Glat'] - s22['gb'])
+
+    dgl1tot.append(dgl1)
+    dgb1tot.append(dgb1)
+    dgl2tot.append(dgl2)
+    dgb2tot.append(dgb2)
+
+
+    ax1.scatter(del1gl*3600, del1gb*3600, alpha=0.1)
+    ax2.scatter(del2gl*3600, del2gb*3600, alpha=0.1)
+    ax2.set_xlabel('$\Delta$ gl')
+    ax1.set_ylabel('$\Delta$ gb, gb < 0')
+    ax2.set_ylabel('$\Delta$ gb, gb > 0')
+    ax1.set_title('gl='+region+',gb < 0, len = '+str(len(del1gl))+', dgl = '+str(dgl1*3600)[:4]+'", dgb = '+str(dgb1*3600)[:4]+'"')
+    ax2.set_title('gl='+region+',gb > 0, len = '+str(len(del2gl))+', dgl = '+str(dgl2*3600)[:4]+'", dgb = '+str(dgb2*3600)[:4]+'"')
+    #fig.subplots_adjust(hspace=0)
+    #plt.setp([lab.get_xticklabels() for lab in fig.axes[:-1]], visible=False)    
+ 
+    plt.savefig('images/02-18-coord_sex_tycho_gbcut_'+region+'.png')
     plt.clf()
 
     print 'dgl1 = ', dgl * 3600
     print 'dgb1 = ', dgb * 3600
 
+    '''
     sex['gl'] = sex['gl'] + dgl
     sex['gb'] = sex['gb'] + dgb
 
@@ -886,6 +917,7 @@ for region in skyrange:
     #plt.show()
     plt.savefig('images/02-18-coord_sex_tycho_'+region+'_fix.png')
     plt.clf()
+    '''
     
     comb = hstack([s2, t2])
     comb['angsep'] = angsep
@@ -899,3 +931,20 @@ for region in skyrange:
     comb.rename_column('Glon', 'gl_tycho')
     comb.rename_column('Glat', 'gb_tycho')
     ascii.write(comb, 'sex_tycho_matches_'+region+'_fix.txt', format='basic')
+
+
+dgl1tot = np.array(dgl1tot)
+dgb1tot = np.array(dgb1tot)
+dgl2tot = np.array(dgl2tot)
+dgb2tot = np.array(dgb2tot)
+
+plt.scatter(dgl1tot*3600,dgb1tot*3600,label='gb < 0')
+plt.scatter(dgl2tot*3600,dgb2tot*3600,c='red', label='gb > 0')
+plt.xlabel('$\Delta$ gl')
+plt.ylabel('$\Delta$ gb')
+plt.legend(scatterpoints=1)
+
+for region in skyrange:
+    plt.annotate(region,xy=(dgl1tot*3600,dgb1tot*3600))
+
+plt.show()
