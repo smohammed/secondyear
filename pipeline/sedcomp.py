@@ -3,6 +3,21 @@ import os
 from astropy.table import Table
 import pysynphot
 
+pickles  = Table.read('picklemags_laphare_final.txt',format='ascii')
+pa = fits.open('pickles_paper.fits')[1].data
+
+
+obs_wfc3 = pysynphot.Observation(o5v, pysynphot.ObsBandpass('wfc3,uvis1,f814w'),force='extrap')
+obs_star_U = pysynphot.Observation(o5v, pysynphot.ObsBandpass('johnson,u'),binset=obs_wfc3.binwave)
+obs_star_B = pysynphot.Observation(o5v, pysynphot.ObsBandpass('johnson,b'),binset=obs_wfc3.binwave)
+obs_star_V = pysynphot.Observation(o5v, pysynphot.ObsBandpass('johnson,v'),binset=obs_wfc3.binwave)
+obs_star_R = pysynphot.Observation(o5v, pysynphot.ObsBandpass('johnson,r'),binset=obs_wfc3.binwave)
+obs_star_I = pysynphot.Observation(o5v, pysynphot.ObsBandpass('johnson,i'),binset=obs_wfc3.binwave)
+
+obs_star_U.effstim('ABmag') - obs_wfc3.effstim('ABmag')
+obs_star_U.effstim('ABmag') - obs_star_B.effstim('ABmag')
+
+
 # Filter files
 directory = '../PICKLES/filt/'
 nuvfilt = Table.read(directory+'galex/NUV.pb', format='ascii')
