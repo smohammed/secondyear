@@ -25,7 +25,7 @@ matplotlib.rcParams['font.size'] = 20
 #########################################################################
 # Select desired field from list
 #########################################################################
-field1 = '0.5-6.8'
+field1 = '0.5'
 field2 = '8.6-12.2'
 field3 = '17.6-19.4'
 field4 = '20.3-25.7'
@@ -35,6 +35,10 @@ field7 = '214.7-217.4'
 field8 = '218.3-221.0'
 field9 = '223.7-226.4'
 field10 = '228.2-231.8'
+field11 = '1.4'
+field12 = '2.3'
+field13 = '3.2'
+field14 = '4.1'
 skyrange = ['8.6-12.2', '17.6-19.4', '20.3-25.7', '205.7-210.2', '211.1-213.8', '214.7-217.4', '218.3-221.0', '223.7-226.4', '228.2-231.8']
 
 chosenfield = field2
@@ -49,10 +53,10 @@ region = [x for x in skyrange if chosenfield in x][0].replace('.', '')
 #########################################################################
 img = fits.open('../Dunmaps/count_map_name'+region+'_gal_sec_in.fits')[0].data
 
-if region == field1.replace('.', ''):  # gl 0.5 - 6.8
-    img = fits.open('../Dunmaps/count_map_05-68_gPr_cata_10_corr_gal.fits')[0].data
+if region == field1.replace('.', ''):  # gl 0.5
     #img = fits.open('../Dunmaps/count_map_name'+region+'_gal_sec_in.fits')[0].data
-    im1xmin, im1xmax, im1ymin, im1ymax = 720, 4350, 1160, 11400
+    #im1xmin, im1xmax, im1ymin, im1ymax = 720, 4350, 1160, 11400
+    im1xmin, im1xmax, im1ymin, im1ymax = 1214, 3870, 3572, 51230
 
 if region == field2.replace('.', ''):  # gl 8.6 - 12.2
     im1xmin, im1xmax, im1ymin, im1ymax = 420, 3240, 3500, 13700
@@ -83,6 +87,13 @@ if region == field9.replace('.', ''):  # gl 223.7 - 226.4
 
 if region == field10.replace('.', ''):  # gl 228.2 - 231.8
     im1xmin, im1xmax, im1ymin, im1ymax = 234, 3050, 1554, 14000
+
+if region == field10.replace('.', ''):  # gl 228.2 - 231.8
+    im1xmin, im1xmax, im1ymin, im1ymax = 234, 3050, 1554, 14000
+
+if region == field11.replace('.', ''):  # gl 1.4
+    im1xmin, im1xmax, im1ymin, im1ymax = 1232, 3960, 3469, 51082
+
 
 #########################################################################
 # Make cutouts of initial image to help with background correction
