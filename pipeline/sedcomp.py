@@ -11,8 +11,8 @@ from matplotlib import pyplot as plt
 matplotlib.rcParams['figure.figsize'] = 16, 8
 matplotlib.rcParams['font.size'] = 20
 
-pickles = Table.read('picklemags_laphare_final.txt', format='ascii')
-pa = fits.open('pickles_paper.fits')[1].data
+#pickles = Table.read('picklemags_laphare_final.txt', format='ascii')
+#pa = fits.open('pickles_paper.fits')[1].data
 
 nuvmag, Bmag, Vmag, Umag, Rmag, Imag, Jmag, Hmag, Kmag, umag, gmag, rmag, imag = [], [], [], [], [], [], [], [], [], [], [], [], []
 for ind in range(1, 132):
@@ -71,5 +71,5 @@ rmag = np.array(rmag)
 imag = np.array(imag)
 
 
-obs_star_U.effstim('ABmag') - obs_star_B.effstim('ABmag')
-
+data = [nuvmag, Umag, Bmag, Vmag, Rmag, umag, gmag, rmag, imag]
+ascii.write(data, '../picklemags_pysynphot.txt', names=['name', 'nuv', 'U', 'B', 'V', 'R', 'u', 'g', 'r', 'i'])

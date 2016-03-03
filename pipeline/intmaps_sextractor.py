@@ -25,7 +25,7 @@ matplotlib.rcParams['font.size'] = 20
 #########################################################################
 # Select desired field from list
 #########################################################################
-field1 = '0.5'
+field1 = '5'
 field2 = '8.6-12.2'
 field3 = '17.6-19.4'
 field4 = '20.3-25.7'
@@ -39,9 +39,9 @@ field11 = '1.4'
 field12 = '2.3'
 field13 = '3.2'
 field14 = '4.1'
-skyrange = ['8.6-12.2', '17.6-19.4', '20.3-25.7', '205.7-210.2', '211.1-213.8', '214.7-217.4', '218.3-221.0', '223.7-226.4', '228.2-231.8']
+skyrange = ['5', '8.6-12.2', '17.6-19.4', '20.3-25.7', '205.7-210.2', '211.1-213.8', '214.7-217.4', '218.3-221.0', '223.7-226.4', '228.2-231.8', '1.4']
 
-chosenfield = field2
+chosenfield = field11
 
 #########################################################################
 # Choose a field as defined above
@@ -123,6 +123,8 @@ if region == field2.replace('.', ''):
 elif region == field9.replace('.', ''):
     os.system('sex ../Dunmaps/im2_'+region+'.fits -c ~/sextractor/daofind.sex -CATALOG_NAME ../Dunmaps/sex_im2_'+region+'.fits -CHECKIMAGE_NAME ../Dunmaps/background_im2_'+region+'.fits')
 
+print 'SExtractor ran'
+
 #########################################################################
 # Get output from sextractor, convert to gl, gb, NUV
 #########################################################################
@@ -201,9 +203,6 @@ print 'Combined all data tables'
 #########################################################################
 hdulist = fits.open('../Dunmaps/count_map_name'+region+'_gal_sec_in.fits')
 
-if region == field1.replace('.', ''):
-    hdulist = fits.open('../Dunmaps/count_map_05-68_gPr_cata_10_corr_gal.fits')
-
 xpix = tottable['x_new']
 ypix = tottable['y_new']
 w = wcs.WCS(hdulist[0].header)
@@ -229,6 +228,8 @@ coord = Table([glval, gbval, raval, decval], names=('gl', 'gb', 'ra', 'dec'))
 alldata = hstack([tottable, coord])
 ascii.write(alldata, '../Dunmaps/starcatalog_'+region+'.txt', format='ipac')
 
+print 'Added WCS info, finished'
+
 #########################################################################
 # Now match to other catalogs
 #########################################################################
@@ -249,7 +250,7 @@ plt.scatter(delgl*3600, delgb*3600, alpha=0.1)
 plt.xlabel('$\Delta$ gl')
 plt.ylabel('$\Delta$ gb')
 plt.title('len = '+str(len(delgl))+', dgl = '+str(dgl*3600)[:4]+' dgb = '+str(dgb*3600)[:4])
-plt.savefig('../Dunmaps/coord_2183-2210.png')
+plt.savefig('../Dunmaps/coord_'+region+'.png')
 plt.clf()
 
 print 'dgl1 = ', dgl * 3600
@@ -272,7 +273,7 @@ plt.scatter(delgl*3600, delgb*3600, alpha=0.1)
 plt.xlabel('$\Delta$ gl')
 plt.ylabel('$\Delta$ gb')
 plt.title('Fix, len = '+str(len(delgl))+', dgl = '+str(dgl*3600)[:4]+' dgb = '+str(dgb*3600)[:4])
-plt.savefig('../Dunmaps/coord_2183-2210_fix.png')
+plt.savefig('../Dunmaps/coord_'+region+'_fix.png')
 plt.clf()
 
 
