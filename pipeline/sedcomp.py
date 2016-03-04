@@ -72,4 +72,4 @@ imag = np.array(imag)
 
 
 data = [nuvmag, Umag, Bmag, Vmag, Rmag, umag, gmag, rmag, imag]
-ascii.write(data, '../picklemags_pysynphot.txt', names=['name', 'nuv', 'U', 'B', 'V', 'R', 'u', 'g', 'r', 'i'])
+ascii.write(data, '../picklemags_pysynphot.txt', names=['nuv', 'U', 'B', 'V', 'R', 'u', 'g', 'r', 'i'])
