@@ -4,9 +4,10 @@ from matplotlib import pyplot as plt
 import matplotlib
 matplotlib.rcParams['figure.figsize'] = 16, 8
 matplotlib.rcParams['font.size'] = 20
+from astropy.io import fits, ascii
 
-fourfields = 1
-twofields = 0
+fourfields = 0
+twofields = 1
 
 # Plot NUV comparisons
 skyrange = ['17.6-19.4', '20.3-25.7', '8.6-12.2', '205.7-210.2', '211.1-213.8', '214.7-217.4', '218.3-221.0', '223.7-226.4', '228.2-231.8']
@@ -15,9 +16,11 @@ mean1, median1, stdev1 = [], [], []
 mean2, median2, stdev2 = [], [], []
 mean3, median3, stdev3 = [], [], []
 
-for region in skyrange:
+alldata = fits.open('../sextractor_galex_matches_1-4.fits')[1].data
+
+for region in range(0,360,5):
     if fourfields == 1:
-        a = Table.read('../sex_galex_matches_'+region.replace('.', '')+'.txt', format='ascii')
+        a = alldata[np.where((alldata['gl_galex'] > region) & (alldata['gl_galex'] < region + 5))]
         a0 = a[np.where((a['gb_galex'] > -10) & (a['gb_galex'] < -5))]
         a1 = a[np.where((a['gb_galex'] > -5) & (a['gb_galex'] < 0))]
         a2 = a[np.where((a['gb_galex'] > 0) & (a['gb_galex'] < 5))]
@@ -88,10 +91,10 @@ for region in skyrange:
         ax3.set_ylim((-2, 1))
         fig.subplots_adjust(hspace=0)
         plt.setp([lab.get_xticklabels() for lab in fig.axes[:-1]], visible=False)
-        plt.savefig('../images/02-18-nuvcomp_sextractor_gl4split_gais_'+region+'.png')
+        plt.savefig('../images/03-10-nuvcomp_sextractor_gl4split_gais_'+region+'.png')
         plt.clf()
 
-        w = np.array(np.arange(11.5, 22, 0.5).tolist()*9)
+        w = np.array(np.arange(11.5, 22, 0.5).tolist()*len(range(0,360,5)))
         mean0 = np.array(mean0)
         median0 = np.array(median0)
         stdev0 = np.array(stdev0)
@@ -145,7 +148,7 @@ for region in skyrange:
         plt.savefig('../images/02-18-nuvcomp_sextractor_gl4split_gais_mean.png')
 
     if twofields == 1:
-        a = Table.read('../sex_galex_matches_'+region.replace('.', '')+'.txt', format='ascii')
+        a = alldata[np.where((alldata['gl_galex'] > region) & (alldata['gl_galex'] < region + 5))]
         a0 = a[np.where((a['gb_galex'] > -10) & (a['gb_galex'] < 0))]
         a1 = a[np.where((a['gb_galex'] > 0) & (a['gb_galex'] < 10))]
 
@@ -182,7 +185,7 @@ for region in skyrange:
 
         ax1.set_xlabel('NUV$_{GAIS}$')
         ax1.set_ylabel('NUV$_{SEx}$ - NUV$_{GAIS}$')
-        ax0.set_title('gl ='+region)
+        ax0.set_title('gl ='+str(region)+'-'+str(region+5))
         ax0.set_xlim((11, 22))
         ax0.set_ylim((-2, 1))
         ax1.set_xlim((11, 22))
@@ -191,10 +194,10 @@ for region in skyrange:
         fig.subplots_adjust(hspace=0)
         plt.setp([lab.get_xticklabels() for lab in fig.axes[:-1]], visible=False)
         #plt.show()
-        plt.savefig('../images/02-18-nuvcomp_sextractor_gl2split_gais_'+region+'.png')
+        plt.savefig('../images/03-10-nuvcomp_sextractor_gl2split_gais_'+str(region)+'.png')
         plt.clf()
-
-        w = np.array(np.arange(11.5, 22, 0.5).tolist()*9)
+        '''
+        w = np.array(np.arange(11.5, 22, 0.5).tolist()*len(range(0,360,5)))
 
         mean0 = np.array(mean0)
         median0 = np.array(median0)
@@ -225,4 +228,5 @@ for region in skyrange:
         ax1.set_ylim((-2, 1))
         fig.subplots_adjust(hspace=0)
         plt.setp([lab.get_xticklabels() for lab in fig.axes[:-1]], visible=False)
-        plt.savefig('../images/02-18-nuvcomp_sextractor_gl2split_gais_mean.png')
+        plt.savefig('../images/03-10-nuvcomp_sextractor_gl2split_gais_mean.png')
+        '''
