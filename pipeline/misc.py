@@ -69,7 +69,7 @@ plt.scatter(jlim,denhi,c=arcsec,edgecolor='none',s=80,marker='o',label='abs(b) >
 plt.xlabel('Jlim [mag]')
 plt.ylabel('Counts/area [#/arcsec$^2$]')
 cm = plt.colorbar()
-cm.set_label('Limiting radius [arcsec]')
+cm.set_label('Limiting radius [arcsec]')7
 for i in range(len(files)):
     plt.annotate(str(len(files[i][np.where(np.abs(files[i]['gb_sex']) < 5.)])),xy=(jlim[i]+0.05,denlo[i]))
     plt.annotate(str(len(files[i][np.where(np.abs(files[i]['gb_sex']) > 5.)])),xy=(jlim[i]+0.05,denhi[i]))
@@ -819,139 +819,9 @@ plt.ylim((23,12))
 plt.show()
 
 
-vp1 = np.where((vpgal.l.degree > 0.) & (vpgal.l.degree < 40.))
-vp2 = np.where((vpgal.l.degree > 200.) & (vpgal.l.degree < 250.))
-vp3 = np.where((vpgal.l.degree > 250.) & (vpgal.l.degree < 300.))
-vp4 = np.where((vpgal.l.degree > 300.) & (vpgal.l.degree < 360.))
-vp1 = vp[vp1]
-vp2 = vp[vp2]
-vp3 = vp[vp3]
-vp4 = vp[vp4]
+skyrange = ['1.4', '2.3', '3.2', '4.1', '5.0', '5.9', '6.8', '8.6', '9.5', '10.4', '11.3', '12.2', '14.0', '14.9', '15.8', '16.7', '17.6', '18.5', '19.4', '20.3', '21.2', '22.1', '23.0', '23.9', '24.8', '25.7', '28.4', '29.3', '30.2', '31.1', '32.0', '32.9', '33.8', '34.7', '35.6', '39.2', '42.8', '43.7', '44.6', '45.5', '46.4', '47.3', '48.2', '49.1', '50.0', '67.1', '68.9', '71.6', '74.3', '75.2', '76.1', '77.0', '77.9', '78.8', '79.7', '80.6', '81.5', '82.4', '83.3', '87.8', '88.7', '89.6', '90.5', '91.4', '92.3', '93.2', '94.1', '95.0', '95.9', '96.8', '97.7', '98.6', '99.5', '100.4', '101.3', '110.3', '102.2', '103.1', '104.0', '104.9', '105.8', '106.7', '107.6', '111.2', '112.1', '113.0', '113.9', '114.8', '119.3', '121.1', '122.9', '124.7', '125.6', '126.5', '127.4', '128.3', '129.2', '260.6', '261.5', '264.2', '265.1', '266.0', '266.9', '268.7', '269.6', '271.4', '272.3', '273.2', '274.1', '275.0', '275.9', '276.8', '278.6', '279.5', '281.3', '283.1', '284.0', '285.8', '286.7', '289.4', '290.3', '291.2', '292.1', '293.0', '295.7', '297.5', '298.4', '301.1', '302.0', '302.9', '303.8', '304.7', '305.6', '306.5', '308.3', '309.2', '310.1', '315.5', '316.4', '317.3', '318.2', '319.1', '320.0', '320.9', '321.8', '322.7', '323.6', '324.5', '325.4', '326.3', '327.2', '328.1', '329.0', '329.9', '331.7', '332.6', '333.5', '334.4', '335.3', '338.0', '338.9', '339.8', '341.6', '342.5', '343.4', '345.2', '348.8', '349.7', '350.6', '351.5', '352.4', '353.3', '354.2', '355.1', '356.0', '357.8', '358.7', '359.6']
 
-vp1ug = np.where(vp1['u_AB']-vp1['g_AB'] < 1.)
-vp2ug = np.where(vp2['u_AB']-vp2['g_AB'] < 1.)
-vp3ug = np.where(vp3['u_AB']-vp3['g_AB'] < 1.)
-vp4ug = np.where(vp4['u_AB']-vp4['g_AB'] < 1.)
-vp1ug = vp1[vp1ug]
-vp2ug = vp2[vp2ug]
-vp3ug = vp3[vp3ug]
-vp4ug = vp4[vp4ug]
-
-dgl1tot = []
-dgb1tot = []
-dgl2tot = []
-dgb2tot = []
-skyrange = ['17.6-19.4', '20.3-25.7', '8.6-12.2', '205.7-210.2', '211.1-213.8', '214.7-217.4', '218.3-221.0', '223.7-226.4', '228.2-231.8']
-tycho = fits.open('tycho2.fits')[1].data
-tychogal = SkyCoord(tycho['Glon']*u.deg, tycho['Glat']*u.deg, frame='galactic')
-
-for region in skyrange:
-    sex = Table.read('Dunmaps/starcatalog_'+region.replace('.', '')+'.txt', format='ascii')
-
-    scut1 = np.where(sex['gb'] < 0)
-    scut2 = np.where(sex['gb'] > 0)
-
-    sex1gal = SkyCoord(sex[scut1]['gl']*u.deg, sex[scut1]['gb']*u.deg, frame='galactic')
-    sex2gal = SkyCoord(sex[scut2]['gl']*u.deg, sex[scut2]['gb']*u.deg, frame='galactic')
-
-    sex1ind,  tycho1ind,  angsep1,  ang3d = search_around_sky(sex1gal, tychogal, 3.5*u.arcsec)
-    s12 = Table(sex[scut1][sex1ind])
-    t12 = Table(tycho[tycho1ind])
-
-    sex2ind,  tycho2ind,  angsep2,  ang3d = search_around_sky(sex2gal, tychogal, 3.5*u.arcsec)
-    s22 = Table(sex[scut2][sex2ind])
-    t22 = Table(tycho[tycho2ind])
-
-    fig, (ax1, ax2) = plt.subplots(2)
-
-    del1gl = t12['Glon'] - s12['gl']
-    del1gb = t12['Glat'] - s12['gb']
-    dgl1 = np.mean(t12['Glon'] - s12['gl'])
-    dgb1 = np.mean(t12['Glat'] - s12['gb'])
-
-    del2gl = t22['Glon'] - s22['gl']
-    del2gb = t22['Glat'] - s22['gb']
-    dgl2 = np.mean(t22['Glon'] - s22['gl'])
-    dgb2 = np.mean(t22['Glat'] - s22['gb'])
-
-    dgl1tot.append(dgl1)
-    dgb1tot.append(dgb1)
-    dgl2tot.append(dgl2)
-    dgb2tot.append(dgb2)
-
-
-    ax1.scatter(del1gl*3600, del1gb*3600, alpha=0.1)
-    ax2.scatter(del2gl*3600, del2gb*3600, alpha=0.1)
-    ax2.set_xlabel('$\Delta$ gl')
-    ax1.set_ylabel('$\Delta$ gb, gb < 0')
-    ax2.set_ylabel('$\Delta$ gb, gb > 0')
-    ax1.set_title('gl='+region+',gb < 0, len = '+str(len(del1gl))+', dgl = '+str(dgl1*3600)[:4]+'", dgb = '+str(dgb1*3600)[:4]+'"')
-    ax2.set_title('gl='+region+',gb > 0, len = '+str(len(del2gl))+', dgl = '+str(dgl2*3600)[:4]+'", dgb = '+str(dgb2*3600)[:4]+'"')
-    #fig.subplots_adjust(hspace=0)
-    #plt.setp([lab.get_xticklabels() for lab in fig.axes[:-1]], visible=False)    
- 
-    plt.savefig('images/02-18-coord_sex_tycho_gbcut_'+region+'.png')
-    plt.clf()
-
-    print 'dgl1 = ', dgl * 3600
-    print 'dgb1 = ', dgb * 3600
-
-    '''
-    sex['gl'] = sex['gl'] + dgl
-    sex['gb'] = sex['gb'] + dgb
-
-    sexgal = SkyCoord(sex['gl']*u.deg, sex['gb']*u.deg, frame='galactic')
-    sexind,  tychoind,  angsep,  ang3d = search_around_sky(sexgal, tychogal, 3.5*u.arcsec)
-    s2 = Table(sex[sexind])
-    t2 = Table(tycho[tychoind])
-
-    delgl = t2['Glon'] - s2['gl']
-    delgb = t2['Glat'] - s2['gb']
-    dgl = np.mean(t2['Glon'] - s2['gl'])
-    dgb = np.mean(t2['Glat'] - s2['gb'])
-
-    plt.scatter(delgl*3600, delgb*3600, alpha=0.1)
-    plt.xlabel('$\Delta$ gl')
-    plt.ylabel('$\Delta$ gb')
-    plt.title('Fix, gl='+region+', len = '+str(len(delgl))+', dgl = '+str(dgl*3600)[:4]+'", dgb = '+str(dgb*3600)[:4]+'"')
-    #plt.show()
-    plt.savefig('images/02-18-coord_sex_tycho_'+region+'_fix.png')
-    plt.clf()
-    '''
-    
-    comb = hstack([s2, t2])
-    comb['angsep'] = angsep
-    comb.rename_column('nuv', 'nuv_sex')
-    comb.rename_column('gl', 'gl_sex')
-    comb.rename_column('gb', 'gb_sex')
-    comb.rename_column('ra', 'ra_sex')
-    comb.rename_column('dec', 'dec_sex')
-    comb.rename_column('RAJ2000', 'ra_tycho')
-    comb.rename_column('DEJ2000', 'dec_tycho')
-    comb.rename_column('Glon', 'gl_tycho')
-    comb.rename_column('Glat', 'gb_tycho')
-    ascii.write(comb, 'sex_tycho_matches_'+region+'_fix.txt', format='basic')
-
-
-dgl1tot = np.array(dgl1tot)
-dgb1tot = np.array(dgb1tot)
-dgl2tot = np.array(dgl2tot)
-dgb2tot = np.array(dgb2tot)
-
-plt.scatter(dgl1tot*3600,dgb1tot*3600,label='gb < 0')
-plt.scatter(dgl2tot*3600,dgb2tot*3600,c='red', label='gb > 0')
-plt.xlabel('$\Delta$ gl')
-plt.ylabel('$\Delta$ gb')
-plt.legend(scatterpoints=1)
-
-for region in skyrange:
-    plt.annotate(region,xy=(dgl1tot*3600,dgb1tot*3600))
-
-plt.show()
-
-
-skyrange = ['1.4', '2.3', '3.2', '4.1', '5.0', '5.9', '6.8', '8.6', '9.5', '10.4', '11.3', '12.2', '14.0', '14.9', '15.8', '16.7', '17.6', '18.5', '19.4', '20.3', '21.2', '22.1', '23.0', '23.9', '24.8', '25.7', '28.4', '29.3', '30.2', '31.1', '32.0', '32.9', '33.8', '34.7', '35.6', '39.2', '42.8', '43.7', '44.6', '45.5', '46.4', '47.3', '48.2', '49.1', '50.0', '67.1', '68.9', '71.6', '74.3', '75.2', '76.1', '77.0', '77.9', '78.8', '79.7', '80.6', '81.5', '82.4', '83.3', '87.8', '88.7', '89.6', '90.5', '91.4', '92.3', '93.2', '94.1', '95.0', '95.9', '96.8', '97.7', '98.6', '99.5', '102.2', '103.1', '104.0', '104.9', '105.8', '106.7', '107.6', '111.2', '112.1', '113.0', '113.9', '114.8', '119.3', '271.4', '272.3', '273.2', '274.1', '278.6', '279.5', '281.3', '283.1', '284.0', '290.3', '291.2', '292.1', '293.0', '295.7', '297.5', '298.4', '301.1', '302.0', '302.9', '303.8', '304.7', '305.6', '306.5', '308.3', '309.2', '310.1', '315.5', '316.4', '317.3', '318.2', '319.1', '320.0', '320.9', '321.8', '322.7', '323.6', '324.5', '325.4', '326.3', '327.2', '328.1', '329.0', '329.9', '331.7', '332.6', '333.5', '334.4', '335.3', '338.0', '338.9', '339.8', '341.6', '342.5', '343.4', '345.2', '348.8', '349.7', '350.6', '351.5', '352.4', '353.3', '354.2', '355.1', '356.0', '357.8', '358.7', '359.6']
-
+skyrange = ['102.2', '103.1', '104.0', '104.9', '10.4', '105.8', '106.7', '107.6', '111.2', '112.1', '113.0', '113.9', '11.3', '114.8', '119.3', '12.2', '14.0', '14.9', '1.4', '15.8', '16.7', '17.6', '18.5', '19.4', '20.3', '21.2', '22.1', '23.0', '23.9', '2.3', '24.8', '25.7', '271.4', '272.3', '273.2', '274.1', '278.6', '279.5', '281.3', '283.1', '284.0', '28.4', '289.4', '290.3', '291.2', '292.1', '293.0', '29.3', '295.7', '297.5', '298.4', '301.1', '302.0', '302.9', '30.2', '303.8', '304.7', '305.6', '306.5', '308.3', '309.2', '310.1', '31.1', '315.5', '316.4', '317.3', '318.2', '319.1', '320.0', '320.9', '32.0', '321.8', '322.7', '323.6', '324.5', '325.4', '326.3', '327.2', '328.1', '329.0', '329.9', '32.9', '3.2', '331.7', '332.6', '333.5', '334.4', '335.3', '338.0', '338.9', '33.8', '339.8', '341.6', '342.5', '343.4', '345.2', '34.7', '348.8', '349.7', '350.6', '351.5', '352.4', '353.3', '354.2', '355.1', '356.0', '35.6', '357.8', '358.7', '359.6', '39.2', '4.1', '42.8', '43.7', '44.6', '45.5', '46.4', '47.3', '48.2', '49.1', '50.0', '5.0', '5.9', '5', '67.1', '68.9', '6.8', '71.6', '74.3', '75.2', '76.1', '77.0', '77.9', '78.8', '79.7', '80.6', '81.5', '82.4', '83.3', '8.6', '87.8', '88.7', '89.6', '90.5', '91.4', '92.3', '93.2', '94.1', '95.0', '95.9', '9.5', '96.8', '97.7', '98.6', '99.5']
 data = Table.read('starcat_5.txt',format='ascii')
 
 for region in skyrange:
@@ -961,9 +831,56 @@ for region in skyrange:
 
 ascii.write(data,'starcat_1-4.txt',format='basic')
 
-skyrange = ['5', '1.4', '2.3', '3.2', '4.1', '5.0', '5.9', '6.8', '8.6', '9.5', '10.4', '11.3', '12.2', '14.0', '14.9', '15.8', '16.7', '17.6', '18.5', '19.4', '20.3', '21.2', '22.1', '23.0', '23.9', '24.8', '25.7', '28.4', '29.3', '30.2', '31.1', '32.0', '32.9', '33.8', '34.7', '35.6', '39.2', '42.8', '43.7', '44.6', '45.5', '46.4', '47.3', '48.2', '49.1', '50.0', '67.1', '68.9', '71.6', '74.3', '75.2', '76.1', '77.0', '77.9', '78.8', '79.7', '80.6', '81.5', '82.4', '83.3', '87.8', '88.7', '89.6', '90.5', '91.4', '92.3', '93.2', '94.1', '95.0', '95.9', '96.8', '97.7', '98.6', '99.5', '102.2', '103.1', '104.0', '104.9', '105.8', '106.7', '107.6', '111.2', '112.1', '113.0', '113.9', '114.8', '119.3', '271.4', '272.3', '273.2', '274.1', '278.6', '279.5', '281.3', '283.1', '284.0', '290.3', '291.2', '292.1', '293.0', '295.7', '297.5', '298.4', '301.1', '302.0', '302.9', '303.8', '304.7', '305.6', '306.5', '308.3', '309.2', '310.1', '315.5', '316.4', '317.3', '318.2', '319.1', '320.0', '320.9', '321.8', '322.7', '323.6', '324.5', '325.4', '326.3', '327.2', '328.1', '329.0', '329.9', '331.7', '332.6', '333.5', '334.4', '335.3', '338.0', '338.9', '339.8', '341.6', '342.5', '343.4', '345.2', '348.8', '349.7', '350.6', '351.5', '352.4', '353.3', '354.2', '355.1', '356.0', '357.8', '358.7', '359.6']
+skyrange = ['5', '1.4', '2.3', '3.2', '4.1', '5.0', '5.9', '6.8', '8.6', '9.5', '10.4', '11.3', '12.2', '14.0', '14.9', '15.8', '16.7', '17.6', '18.5', '19.4', '20.3', '21.2', '22.1', '23.0', '23.9', '24.8', '25.7', '28.4', '29.3', '30.2', '31.1', '32.0', '32.9', '33.8', '34.7', '35.6', '39.2', '42.8', '43.7', '44.6', '45.5', '46.4', '47.3', '48.2', '49.1', '50.0', '67.1', '68.9', '71.6', '74.3', '75.2', '76.1', '77.0', '77.9', '78.8', '79.7', '80.6', '81.5', '82.4', '83.3', '87.8', '88.7', '89.6', '90.5', '91.4', '92.3', '93.2', '94.1', '95.0', '95.9', '96.8', '97.7', '98.6', '99.5', '100.4', '101.3', '110.3', '102.2', '103.1', '104.0', '104.9', '105.8', '106.7', '107.6', '111.2', '112.1', '113.0', '113.9', '114.8', '119.3', '121.1', '122.9', '124.7', '125.6', '126.5', '127.4', '128.3', '129.2', '260.6', '261.5', '264.2', '265.1', '266.0', '266.9', '268.7', '269.6', '271.4', '272.3', '273.2', '274.1', '275.0', '275.9', '276.8', '278.6', '279.5', '281.3', '283.1', '284.0', '285.8', '286.7', '289.4', '290.3', '291.2', '292.1', '293.0', '295.7', '297.5', '298.4', '301.1', '302.0', '302.9', '303.8', '304.7', '305.6', '306.5', '308.3', '309.2', '310.1', '315.5', '316.4', '317.3', '318.2', '319.1', '320.0', '320.9', '321.8', '322.7', '323.6', '324.5', '325.4', '326.3', '327.2', '328.1', '329.0', '329.9', '331.7', '332.6', '333.5', '334.4', '335.3', '338.0', '338.9', '339.8', '341.6', '342.5', '343.4', '345.2', '348.8', '349.7', '350.6', '351.5', '352.4', '353.3', '354.2', '355.1', '356.0', '357.8', '358.7', '359.6']
 
 count = []
 for region in skyrange:
     t1 = Table.read('starcat_'+region+'.txt', format='ascii')
     count.append(len(t1))
+
+comb1.rename_column('nuv','nuv_sex')
+comb1.rename_column('gl','gl_sex')
+comb1.rename_column('gb','gb_sex')
+comb1.rename_column('ra','ra_sex')
+comb1.rename_column('dec','dec_sex')
+comb1.rename_column('Glon','gl_t2')
+comb1.rename_column('Glat','gb_t2')
+comb1.rename_column('RAJ2000','ra_t2')
+comb1.rename_column('DEJ2000','dec_t2')
+
+cat1 = fits.open('Dunmaps/starcat_total_1-5.fits')[1].data
+cat1gal = SkyCoord(cat1['gl']*u.deg,cat1['gb']*u.deg,frame='galactic')
+
+cat2 = fits.open('Dunmaps/starcat_total_1-4.fits')[1].data
+cat2gal = SkyCoord(cat2['gl']*u.deg,cat2['gb']*u.deg,frame='galactic')
+
+tycho = fits.open('tycho2.fits')[1].data
+tychogal = SkyCoord(tycho['Glon']*u.deg,tycho['Glat']*u.deg,frame='galactic')
+
+for region in range(0,360,5):
+    cat1 = comb1[np.where((comb1['gl_t2'] > region) & (comb1['gl_t2'] < region+5))]
+    dgl1 = (cat1['gl_sex']-cat1['gl_t2'])
+    dgb1 = (cat1['gb_sex']-cat1['gb_t2'])
+
+    cat2 = comb2[np.where((comb2['gl_t2'] > region) & (comb2['gl_t2'] < region+5))]
+    dgl2 = (cat2['gl_sex']-cat2['gl_t2'])
+    dgb2 = (cat2['gb_sex']-cat2['gb_t2'])
+
+    fig, (ax1, ax2) = plt.subplots(1, 2, sharey=True)
+    ax1.scatter(dgl1*3600, dgb1*3600, edgecolor='none', alpha=0.1)
+    ax1.axhline(y=0,c='black')
+    ax1.axvline(x=0,c='black')
+    ax2.scatter(dgl2*3600, dgb2*3600, edgecolor='none', alpha=0.1)
+    ax2.axhline(y=0,c='black')
+    ax2.axvline(x=0,c='black')
+
+    ax1.set_xlabel('$\Delta$ gl')
+    ax2.set_xlabel('$\Delta$ gl')
+    ax1.set_ylabel('$\Delta$ gb')
+    ax1.set_title('old, gl = '+str(region)+'-'+str(region+5)+', avg=('+str(np.mean(dgl1)*3600)[:4]+', '+str(np.mean(dgb1)*3600)[:4]+')')
+    ax2.set_title('new, gl = '+str(region)+'-'+str(region+5)+', avg=('+str(np.mean(dgl2)*3600)[:4]+', '+str(np.mean(dgb2)*3600)[:4]+')')
+    fig.subplots_adjust(wspace=0)
+
+    plt.savefig('03-11-sex-t2_offset_'+str(region)+'-'+str(region+5)+'.png')
+    plt.clf()
+    print region

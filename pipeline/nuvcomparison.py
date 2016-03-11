@@ -16,7 +16,7 @@ mean1, median1, stdev1 = [], [], []
 mean2, median2, stdev2 = [], [], []
 mean3, median3, stdev3 = [], [], []
 
-alldata = fits.open('../sextractor_galex_matches_1-4.fits')[1].data
+alldata = fits.open('../sextractor_galex_matches_1-5.fits')[1].data
 
 for region in range(0,360,5):
     if fourfields == 1:
