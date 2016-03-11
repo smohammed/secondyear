@@ -130,7 +130,7 @@ for currregion in skyrange:
     os.remove('../Dunmaps/im1_'+region+'.fits')
 
     print 'Added WCS info, finished'
-
+ 
 '''
 #########################################################################
 # Now match to other catalogs
