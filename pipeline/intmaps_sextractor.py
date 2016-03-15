@@ -125,12 +125,12 @@ for currregion in skyrange:
 
     coord = Table([glval, gbval, raval, decval], names=('gl', 'gb', 'ra', 'dec'))
     alldata = hstack([tottable, coord])
-    ascii.write(alldata, '../Dunmaps/starcat_'+currregion+'_gaus2.5_5x5.txt', format='ipac')
+    ascii.write(alldata, '../Dunmaps/starcat_'+currregion+'_tophat5.0_5x5.txt', format='ipac')
 
     os.remove('../Dunmaps/im1_'+region+'.fits')
 
     print 'Added WCS info, finished'
- 
+
 '''
 #########################################################################
 # Now match to other catalogs
