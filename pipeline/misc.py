@@ -955,4 +955,3 @@ plt.scatter(b['gl'], b['gb'], c='red', edgecolor='none')
 plt.scatter(a2['gl'], a2['gb'], color='green', alpha=0.5)
 plt.scatter(b2['gl'], b2['gb'], color='orange', alpha=0.5)
 
-scp smohammed@bbq.cosmo.fas.nyu.edu:../../export/bbq2/dw1519/galex/7/**in.fits ../galexfiles/
