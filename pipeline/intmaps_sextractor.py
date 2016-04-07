@@ -35,8 +35,12 @@ skyrange = ['5', '1.4', '2.3', '3.2', '4.1', '5.0', '5.9', '6.8', '8.6', '9.5', 
 filt = 'mexhat_4.0_9x9'
 code = 'det_thresh2.5_phot_autopar2.5_3.5'
 
-#galex = fits.open('../GALEXAIS.fits')[1].data
-#galexgal = SkyCoord(galex['glon']*u.deg, galex['glat']*u.deg, frame='galactic')
+#######################
+# Det Thresh = 4, Analysis Thresh = 3.5
+#######################
+
+galex = fits.open('../GALEXAIS.fits')[1].data
+galexgal = SkyCoord(galex['glon']*u.deg, galex['glat']*u.deg, frame='galactic')
 
 #########################################################################
 # Choose a field as defined above
@@ -76,7 +80,11 @@ for currregion in skyrange:
     #########################################################################
     #os.system('sex ../Dunmaps/im1_'+region+'.fits -c ~/sextractor/daofind.sex -CATALOG_NAME ../Dunmaps/sex_im1_'+region+'.fits -CHECKIMAGE_NAME ../Dunmaps/background_im1_'+region+'.fits')
 
-    os.system('sex ../Dunmaps/im1_'+region+'.fits -c ~/sextractor/daofind.sex -CATALOG_NAME ../Dunmaps/sex_im1_'+region+'.fits')
+    # With no background
+    #os.system('sex ../Dunmaps/im1_'+region+'.fits -c ~/sextractor/daofind.sex -CATALOG_NAME ../Dunmaps/sex_im1_'+region+'.fits')
+
+    # With weights
+    os.system('sex ../Dunmaps/im1_'+region+'.fits -c ~/sextractor/daofind.sex -CATALOG_NAME ../Dunmaps/sex_im1_'+region+'.fits -WEIGHT_IMAGE ../Dunmaps/background_im1_'+region+'.fits')
 
     print 'SExtractor finished'
 
@@ -94,6 +102,8 @@ for currregion in skyrange:
     data['x_new'] = x_new
     data['y_new'] = y_new
     data['nuv'] = nuv
+
+    data = data[~np.isnan(data['nuv'])]
 
     print 'Converted coordinates to gl/gb'
 
@@ -135,11 +145,45 @@ for currregion in skyrange:
 
     coord = Table([glval, gbval, raval, decval], names=('gl', 'gb', 'ra', 'dec'))
     alldata = hstack([tottable, coord])
-    ascii.write(alldata, '../Dunmaps/starcat_'+currregion+'.txt', format='ipac')
+    ascii.write(alldata, '../Dunmaps/starcat_'+currregion+'mapweight.txt', format='ipac')
 
     os.remove('../Dunmaps/im1_'+region+'.fits')
 
     print 'Added WCS info, finished'
+
+'''
+a = alldata
+agal = SkyCoord(a['gl']*u.deg, a['gb']*u.deg, frame='galactic')
+aind,  gaind,  angsepa,  ang3d = search_around_sky(agal, galexgal, 3.5*u.arcsec)
+a2 = Table(a[aind])
+g2 = Table(galex[gaind])
+comb = hstack([a2, g2])
+comb['angsep'] = angsepa
+comb.rename_column('nuv', 'nuv_sex')
+comb.rename_column('nuv_mag', 'nuv_galex')
+comb.rename_column('gl', 'gl_sex')
+comb.rename_column('gb', 'gb_sex')
+comb.rename_column('ra_1', 'ra_sex')
+comb.rename_column('dec_1', 'dec_sex')
+comb.rename_column('ra_2', 'ra_galex')
+comb.rename_column('dec_2', 'dec_galex')
+comb.rename_column('glon', 'gl_galex')
+comb.rename_column('glat', 'gb_galex')
+combcut = np.where(comb['nuv_galex'] == -999.)
+comb.remove_rows(combcut)
+
+plt.scatter(comb['nuv_galex'], comb['nuv_sex']-comb['nuv_galex'], alpha=0.1, edgecolor='none')
+plt.axhline(y=0, c='green')
+plt.xlabel('NUV$_{GAIS}$')
+plt.ylabel('NUV$_{SEx}$ - NUV$_{GAIS}$')
+plt.title('gl = 329.0')
+plt.xlim((12, 23))
+plt.ylim((-3, 2))
+plt.xlim((12, 23))
+plt.ylim((-3, 2))
+plt.annotate('N = '+str(len(comb)), xy=(13, -2.5))
+plt.show()
+'''
 
 '''
     sex = alldata
