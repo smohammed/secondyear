@@ -10,13 +10,15 @@ fourfields = 0
 twofields = 1
 
 # Plot NUV comparisons
-skyrange = ['17.6-19.4', '20.3-25.7', '8.6-12.2', '205.7-210.2', '211.1-213.8', '214.7-217.4', '218.3-221.0', '223.7-226.4', '228.2-231.8']
+#skyrange = ['17.6-19.4', '20.3-25.7', '8.6-12.2', '205.7-210.2', '211.1-213.8', '214.7-217.4', '218.3-221.0', '223.7-226.4', '228.2-231.8']
 mean0, median0, stdev0 = [], [], []
 mean1, median1, stdev1 = [], [], []
 mean2, median2, stdev2 = [], [], []
 mean3, median3, stdev3 = [], [], []
 
-alldata = fits.open('../sextractor_galex_matches_1-5.fits')[1].data
+#alldata = fits.open('../sextractor_galex_matches_1-5.fits')[1].data
+
+alldata = comb
 
 for region in range(0,360,5):
     if fourfields == 1:
@@ -186,16 +188,17 @@ for region in range(0,360,5):
         ax1.set_xlabel('NUV$_{GAIS}$')
         ax1.set_ylabel('NUV$_{SEx}$ - NUV$_{GAIS}$')
         ax0.set_title('gl ='+str(region)+'-'+str(region+5))
-        ax0.set_xlim((11, 24))
-        ax0.set_ylim((-6, 3))
-        ax1.set_xlim((11, 24))
-        ax1.set_ylim((-6, 3))
+        ax0.set_xlim((12, 23))
+        ax0.set_ylim((-3, 2))
+        ax1.set_xlim((12, 23))
+        ax1.set_ylim((-3, 2))
 
         fig.subplots_adjust(hspace=0)
         plt.setp([lab.get_xticklabels() for lab in fig.axes[:-1]], visible=False)
         #plt.show()
-        plt.savefig('../images/03-10-nuvcomp_sextractor_gl2split_gais_'+str(region)+'.png')
+        plt.savefig('04-08-nuvcomp_sextractor_gl2split_gais_'+str(region)+'.png')
         plt.clf()
+
         '''
         w = np.array(np.arange(11.5, 22, 0.5).tolist()*len(range(0,360,5)))
 
