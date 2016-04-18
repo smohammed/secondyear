@@ -52,14 +52,14 @@ for currregion in skyrange:
     #########################################################################
     print 'current region = ' + currregion
     region = currregion.replace('.', '')
-    img = fits.open('../Dunmaps/count_map_name_'+region+'_gal_sec_in.fits')[0].data
+    img = fits.open('../Dunmaps/countmaps/count_map_name_'+region+'_gal_sec_in.fits')[0].data
     im1xmin, im1xmax, im1ymin, im1ymax = 1214, 3950, 3532, 51230
 
     #########################################################################
     # Make cutouts of initial image to help with background correction
     #########################################################################
     img = img[im1ymin:im1ymax, im1xmin:im1xmax]
-    bkgd = fits.open('../Dunmaps/background_im1_'+region+'.fits')[0].data
+    bkgd = fits.open('../Dunmaps/background/background_im1_'+region+'.fits')[0].data
     im1 = img - bkgd
     #gauss = Gaussian2DKernel(stddev=3)
     #im1 = convolve(img, gauss)
@@ -85,7 +85,7 @@ for currregion in skyrange:
     #os.system('sex ../Dunmaps/im1_'+region+'.fits -c ~/sextractor/daofind.sex -CATALOG_NAME ../Dunmaps/sex_im1_'+region+'.fits')
 
     # With weights
-    os.system('sex ../Dunmaps/im1_'+region+'.fits -c ~/sextractor/daofind.sex -CATALOG_NAME ../Dunmaps/sex_im1_'+region+'.fits -WEIGHT_IMAGE ../Dunmaps/background_im1_'+region+'.fits')
+    os.system('sex ../Dunmaps/im1_'+region+'.fits -c ~/sextractor/daofind.sex -CATALOG_NAME ../Dunmaps/sex_im1_'+region+'.fits -WEIGHT_IMAGE ../Dunmaps/background/background_im1_'+region+'.fits')
 
     print 'SExtractor finished'
 
@@ -109,22 +109,12 @@ for currregion in skyrange:
     print 'Converted coordinates to gl/gb'
 
     #########################################################################
-    # Combine all tables
-    #########################################################################
-    #tottable = Table.read('../Dunmaps/sex_im1_'+region+'_edit.fits', format='fits')
-    #ascii.write(tottable, '../Dunmaps/sex_total_'+region+'.txt')
-
-    tottable = data
-
-    print 'Combined all data tables'
-
-    #########################################################################
     # Get WCS info
     #########################################################################
     hdulist = fits.open('../Dunmaps/count_map_name_'+region+'_gal_sec_in.fits')
 
-    xpix = tottable['x_new']
-    ypix = tottable['y_new']
+    xpix = data['x_new']
+    ypix = data['y_new']
     w = wcs.WCS(hdulist[0].header)
     pixels = np.array([xpix, ypix]).T
     world = w.wcs_pix2world(pixels, 1)
@@ -145,7 +135,7 @@ for currregion in skyrange:
     decval = skygal.icrs.dec.degree
 
     coord = Table([glval, gbval, raval, decval], names=('gl', 'gb', 'ra', 'dec'))
-    alldata = hstack([tottable, coord])
+    alldata = hstack([data, coord])
     ascii.write(alldata, '../Dunmaps/starcat_'+currregion+'mapweight.txt', format='ipac')
 
     os.remove('../Dunmaps/im1_'+region+'.fits')

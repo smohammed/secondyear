@@ -21,64 +21,6 @@ star.rename_column('h_m','h')
 star.rename_column('k_m','k')
 
 ####################################################################
-# Import different Jlim and arcsec search radii from 2MASS
-####################################################################
-a2125 = Table.read('newfield_gal_ipac_2mass_matches_2arcsec_j_lt12.5_tests.txt',format='ascii')
-a213 = Table.read('newfield_gal_ipac_2mass_matches_2arcsec_j_lt13_tests.txt',format='ascii')
-a2135 = Table.read('newfield_gal_ipac_2mass_matches_2arcsec_j_lt13.5_tests.txt',format='ascii')
-a214 = Table.read('newfield_gal_ipac_2mass_matches_2arcsec_j_lt14_tests.txt',format='ascii')
-a2145 = Table.read('newfield_gal_ipac_2mass_matches_2arcsec_j_lt14.5_tests.txt',format='ascii')
-b3125 = Table.read('newfield_gal_ipac_2mass_matches_3arcsec_j_lt12.5_tests.txt',format='ascii')
-b313 = Table.read('newfield_gal_ipac_2mass_matches_3arcsec_j_lt13_tests.txt',format='ascii')
-b3135 = Table.read('newfield_gal_ipac_2mass_matches_3arcsec_j_lt13.5_tests.txt',format='ascii')
-b314 = Table.read('newfield_gal_ipac_2mass_matches_3arcsec_j_lt14_tests.txt',format='ascii')
-b3145 = Table.read('newfield_gal_ipac_2mass_matches_3arcsec_j_lt14.5_tests.txt',format='ascii')
-c4125 = Table.read('newfield_gal_ipac_2mass_matches_4arcsec_j_lt12.5_tests.txt',format='ascii')
-c413 = Table.read('newfield_gal_ipac_2mass_matches_4arcsec_j_lt13_tests.txt',format='ascii')
-c4135 = Table.read('newfield_gal_ipac_2mass_matches_4arcsec_j_lt13.5_tests.txt',format='ascii')
-c414 = Table.read('newfield_gal_ipac_2mass_matches_4arcsec_j_lt14_tests.txt',format='ascii')
-c4145 = Table.read('newfield_gal_ipac_2mass_matches_4arcsec_j_lt14.5_tests.txt',format='ascii')
-
-
-#Plot radius search vs J mag search limits 
-files = [a2125,a213,a2135,a214,a2145,b3125,b313,b3135,b314,b3145,c4125,c413,c4135,c414,c4145]
-jlim = [12.5,13,13.5,14,14.5,12.5,13,13.5,14,14.5,12.5,13,13.5,14,14.5]
-arcsec = [2,2,2,2,2,3,3,3,3,3,4,4,4,4,4]
-
-# Field density plot vs J mag search limits
-field = (20*7.4)*3600.
-den, denlo,denhi = [],[],[]
-for i in files:
-    den.append(len(i)/field)    
-    denlo.append(len(i[np.where(np.abs(i['gb_sex']) < 5.)])/field)
-    denhi.append(len(i[np.where(np.abs(i['gb_sex']) > 5.)])/field)
-
-# For whole field
-plt.scatter(jlim,den,c=arcsec,edgecolor='none',s=40)
-plt.xlabel('Jlim [mag]')
-plt.ylabel('Counts/area [#/arcsec$^2$]')
-cm = plt.colorbar()
-cm.set_label('Limiting radius [arcsec]')
-for i in range(len(files)):
-    plt.annotate(str(len(files[i])),xy=(jlim[i]+0.05,den[i]))
-plt.show()
-
-# Now broken up by lower/upper galactic plane
-plt.scatter(jlim,denlo,c=arcsec,edgecolor='none',s=80,marker='s',label='abs(b) < 5')
-plt.scatter(jlim,denhi,c=arcsec,edgecolor='none',s=80,marker='o',label='abs(b) > 5')
-plt.xlabel('Jlim [mag]')
-plt.ylabel('Counts/area [#/arcsec$^2$]')
-cm = plt.colorbar()
-cm.set_label('Limiting radius [arcsec]')7
-for i in range(len(files)):
-    plt.annotate(str(len(files[i][np.where(np.abs(files[i]['gb_sex']) < 5.)])),xy=(jlim[i]+0.05,denlo[i]))
-    plt.annotate(str(len(files[i][np.where(np.abs(files[i]['gb_sex']) > 5.)])),xy=(jlim[i]+0.05,denhi[i]))
-
-plt.title('2MASS match counts by J_lim and radius search')
-plt.legend(scatterpoints=1,loc=2)
-plt.show()
-
-####################################################################
 # Add WCS coords to plots
 ####################################################################
 img = fits.open('newfield/count_map_05-68_gPr_cata_10_corr_gal.fits')[0].data
@@ -108,75 +50,7 @@ plt.ylim((-10,10))
 plt.show()
 
 plt.imshow(img,vmin=0,vmax=1,origin='lower',interpolation='nearest',aspect='auto',cmap=cm.gray)
-
 plt.scatter(star['x_new'],star['y_new'],edgecolor='red',facecolor='none',s=20)
-
-plt.show()
-
-####################################################################
-# Sky plot
-####################################################################
-from astropy.wcs import WCS
-img = fits.open('newfield/count_map_05-68_gPr_cata_10_corr_gal.fits')[0].data
-galex = Table.read('galex0data.txt',format='ascii')
-gallim = np.where((galex['gl_galex'] > 0) & (galex['gl_galex'] < 7.5) & (galex['gb_galex']> -10) & (galex['gb_galex'] < 10))
-galex = galex[gallim]
-header = fits.getheader('newfield/count_map_05-68_gPr_cata_10_corr_gal.fits')
-w = WCS(header)
-x0,y0 = w.wcs_pix2world(0,0,0)
-xn,yn = w.wcs_pix2world(4860,12840,0)
-xn = xn - 360
-
-vphas = Table.read('vphas_gl_0_to_7.fits',format='fits')
-vpgal = SkyCoord(vphas['RAJ2000']*u.deg,vphas['DEJ2000']*u.deg,frame='icrs')
-galexgal = SkyCoord(galex['ra']*u.deg,galex['dec']*u.deg,frame='icrs')
-galind, vpasind, angsep, dist3d = search_around_sky(galexgal,vpgal,2*u.arcsec)
-galex2 = galex[galind]
-vgalex = vphas[vpasind]
-vgalex = hstack([galex2,vgalex])
-
-plt.imshow(img,vmin=0,vmax=1,origin='lower',interpolation='nearest',aspect='auto',cmap=cm.gray,extent=[x0,xn,y0,yn])
-plt.scatter(galex['gl_galex'],galex['gb_galex'],edgecolor='red',facecolor='red',s=5,label='GALEX')
-plt.scatter(vphas['l'],vphas['b'],edgecolor='blue',facecolor='blue',s=5,label='VPHAS')
-plt.scatter(vgalex['l'],vgalex['b'],edgecolor='yellow',facecolor='yellow',s=5,label='VPHAS+GALEX')
-plt.legend(loc=3,scatterpoints=1,prop={'size':12})
-plt.xlabel('Galactic Longitude')
-plt.ylabel('Galactic Latitude')
-plt.xlim((0,7.45))
-plt.ylim((-10,10))
-plt.gca().invert_xaxis()
-plt.show()
-
-from astropy.wcs import WCS
-img = fits.open('newfield/count_map_05-68_gPr_cata_10_corr_gal.fits')[0].data
-galex = Table.read('galex0data.txt',format='ascii')
-gallim = np.where((galex['gl_galex'] > 0) & (galex['gl_galex'] < 7.5) & (galex['gb_galex']> -10) & (galex['gb_galex'] < 10))
-galex = galex[gallim]
-header = fits.getheader('newfield/count_map_05-68_gPr_cata_10_corr_gal.fits')
-w = WCS(header)
-x0,y0 = w.wcs_pix2world(0,0,0)
-xn,yn = w.wcs_pix2world(4860,12840,0)
-xn = xn - 360
-
-vgalex = Table.read('galex0vphas.txt',format='ascii')
-
-f, ((ax1, ax2)) = plt.subplots(1, 2, sharex='col')
-ax1.imshow(img,vmin=0,vmax=1,origin='lower',interpolation='nearest',aspect='auto',cmap=cm.gray,extent=[x0,xn,y0,yn])
-ax1.set_xlabel('Galactic Longitude')
-ax1.set_ylabel('Galactic Latitude')
-ax1.invert_xaxis()
-ax1.set_xlim((0,7.45))
-ax1.set_ylim((-10,10))
-ax2.imshow(img,vmin=0,vmax=1,origin='lower',interpolation='nearest',aspect='auto',cmap=cm.gray,extent=[x0,xn,y0,yn])
-ax2.scatter(galex['gl_galex'],galex['gb_galex'],edgecolor='red',facecolor='red',s=5,label='GALEX')
-ax2.scatter(vphas['l'],vphas['b'],edgecolor='blue',facecolor='blue',s=5,label='VPHAS')
-ax2.scatter(vgalex['l'],vgalex['b'],edgecolor='yellow',facecolor='yellow',s=5,label='VPHAS+GALEX')
-ax2.set_xlabel('Galactic Longitude')
-ax2.set_xlim((0,7.45))
-ax2.set_ylim((-10,10))
-#ax2.invert_xaxis()
-ax2.get_yaxis().set_visible(False)
-f.subplots_adjust(wspace=0)
 plt.show()
 
 ######################################################################
@@ -192,56 +66,6 @@ u = 1.5916
 g = 1.1838
 r = 0.8664
 i = 0.6418
-
-####################################################################
-# Match GAIS + VPHAS 
-####################################################################
-galex = fits.open('GALEXAIS.fits')[1].data
-vphas = fits.open('vphas_allg_gl0-40.fits')[1].data
-vpcut = np.where(vphas['u_AB']-vphas['g_AB'] < 1.25)
-vphas = vphas[vpcut]
-galexgal = SkyCoord(galex['ra']*u.deg,galex['dec']*u.deg,frame='icrs')
-vphasgal = SkyCoord(vphas['RAJ2000']*u.deg,vphas['DEJ2000']*u.deg,frame='icrs')
-galexind,vphasind, angsep,sep3d = search_around_sky(galexgal,vphasgal,3.5*u.arcsec)
-
-g2 = Table(galex[galexind])
-v2 = Table(vphas[vphasind])
-tot = hstack([g2,v2])
-tot['angsep'] = angsep
-
-print 'part 1 done'
-vp1 = fits.open('vphas_allg_gl200-250.fits')[1].data
-vp1cut = np.where(vp1['u_AB']-vp1['g_AB'] < 1.25)
-vp1 = vp1[vp1cut]
-vpgal = SkyCoord(vp1['RAJ2000']*u.deg,vp1['DEJ2000']*u.deg,frame='icrs')
-galexind,vpind, angsep1,sep3d = search_around_sky(galexgal,vpgal,3.5*u.arcsec)
-g2 = Table(galex[galexind])
-v12 = Table(vp1[vpind])
-tot1 = hstack([g2,v12])
-tot1['angsep'] = angsep1
-
-print 'part 2 done'
-vp1 = fits.open('vphas_allg_gl250-300.fits')[1].data
-vp1cut = np.where(vp1['u_AB']-vp1['g_AB'] < 1.25)
-vp1 = vp1[vp1cut]
-vpgal = SkyCoord(vp1['RAJ2000']*u.deg,vp1['DEJ2000']*u.deg,frame='icrs')
-galexind,vpind, angsep2,sep3d = search_around_sky(galexgal,vpgal,3.5*u.arcsec)
-g2 = Table(galex[galexind])
-v12 = Table(vp1[vpind])
-tot2 = hstack([g2,v12])
-tot2['angsep'] = angsep2
-
-print 'part 3 done'
-vp1 = fits.open('vphas_allg_gl300-360.fits')[1].data
-vp1cut = np.where(vp1['u_AB']-vp1['g_AB'] < 1.25)
-vp1 = vp1[vp1cut]
-vpgal = SkyCoord(vp1['RAJ2000']*u.deg,vp1['DEJ2000']*u.deg,frame='icrs')
-galexind,vpind, angsep3,sep3d = search_around_sky(galexgal,vpgal,3.5*u.arcsec)
-g2 = Table(galex[galexind])
-v12 = Table(vp1[vpind])
-tot3 = hstack([g2,v12])
-tot3['angsep'] = angsep3
-totall = vstack([tot,tot1,tot2,tot3])
 
 ####################################################################
 # SED plot
@@ -886,59 +710,6 @@ for region in range(0,360,5):
     print region
 
 ####################################################################
-#check sextractor nuv filter comparisons
-####################################################################
-
-sky = ['4.1', '5.0', '19.4', '18.5', '328.1', '329.0']
-galex = fits.open('../../GALEXAIS.fits')[1].data
-galexgal = SkyCoord(galex['glon']*u.deg, galex['glat']*u.deg, frame='galactic')
-
-convlist = ['gauss2.0_5x5', 'gauss2.5_5x5', 'gauss3.0_5x5', 'gauss1.5_3x3', 'gauss2.0_3x3', 'gauss3.0_7x7', 'gauss4.0_7x7', 'gauss5.0_9x9', 'mexhat1.5_5x5', 'mexhat2.0_7x7', 'mexhat2.5_7x7', 'mexhat3.0_9x9', 'mexhat4.0_9x9', 'mexhat5.0_11x11', 'tophat1.5_3x3', 'tophat2.0_3x3', 'tophat2.5_3x3', 'tophat3.0_3x3', 'tophat4.0_5x5', 'tophat5.0_5x5']
-
-for conv in convlist:
-    for region in sky:
-        a20 = Table.read('starcat_'+region+'_'+conv+'.txt', format='ascii')
-        norm = Table.read('../starcat_'+region+'.txt', format='ascii')
-
-        a20gal = SkyCoord(a20['gl']*u.deg, a20['gb']*u.deg, frame='galactic')
-        normgal = SkyCoord(norm['gl']*u.deg, norm['gb']*u.deg, frame='galactic')
-
-        a20ind,  galex20ind,  angsep20,  ang3d = search_around_sky(a20gal, galexgal, 3.5*u.arcsec)
-        normind,  galexnormind,  angsepnorm,  ang3d = search_around_sky(normgal, galexgal, 3.5*u.arcsec)
-
-        a20 = a20[a20ind]
-        norm = norm[normind]
-        g20 = Table(galex[galex20ind])
-        gnorm = Table(galex[galexnormind])
-
-        comb20 = hstack([a20, g20])
-        combnorm = hstack([norm, gnorm])
-
-        comb20['angsep'] = angsep20
-        combnorm['angsep'] = angsepnorm
-        ascii.write(comb20, 'sextractor_galex_matches'+region+'_'+conv+'.txt', format='basic')
-
-        fig, (ax0, ax1) = plt.subplots(2, sharex=True)
-        ax0.scatter(combnorm['nuv_mag'], combnorm['nuv']-combnorm['nuv_mag'], edgecolor='none', alpha=0.1)
-        ax0.axhline(y=0, c='black')
-        ax1.scatter(comb20['nuv_mag'], comb20['nuv']-comb20['nuv_mag'], edgecolor='none', alpha=0.1)
-        ax1.axhline(y=0, c='black')
-        ax1.set_xlabel('NUV$_{GAIS}$')
-        ax0.set_ylabel('NUV$_{SEx}$ - NUV$_{GAIS}$')
-        ax1.set_ylabel('NUV$_{SEx}$ - NUV$_{GAIS}$')
-        ax0.set_title('gl ='+str(region)+', default')
-        ax0.set_title('gl ='+str(region)+', '+conv)
-        ax0.set_xlim((12, 23))
-        ax0.set_ylim((-4, 2))
-        ax1.set_xlim((12, 23))
-        ax1.set_ylim((-4, 2))
-        ax0.annotate('Default, N = '+str(len(combnorm)), xy=(13.5, -3))
-        ax1.annotate(conv+', N = '+str(len(comb20)), xy=(13.5, -3))
-        fig.subplots_adjust(hspace=0)
-        plt.savefig('03-13-nuvcomp_gl'+region+conv+'.png')
-        plt.clf()
-
-####################################################################
 # Find duplicates in scans
 ####################################################################
 
@@ -955,22 +726,27 @@ plt.scatter(b['gl'], b['gb'], c='red', edgecolor='none')
 plt.scatter(a2['gl'], a2['gb'], color='green', alpha=0.5)
 plt.scatter(b2['gl'], b2['gb'], color='orange', alpha=0.5)
 
+s1 = ['1.4', '2.3', '3.2', '4.1', '5.0', '5.9', '6.8', '8.6', '9.5', '10.4', '11.3', '12.2', '14.0', '14.9', '15.8', '16.7', '17.6', '18.5', '19.4', '20.3', '21.2', '22.1', '23.0', '23.9', '24.8', '25.7', '28.4', '29.3', '30.2', '31.1', '32.0', '32.9', '33.8', '34.7', '35.6', '39.2', '42.8', '43.7', '44.6', '45.5', '46.4', '47.3', '48.2', '49.1', '50.0', '67.1', '68.9', '71.6', '74.3', '75.2', '76.1', '77.0', '77.9', '78.8', '79.7', '80.6', '81.5', '82.4', '83.3', '87.8', '88.7', '89.6', '90.5', '91.4', '92.3', '93.2', '94.1', '95.0', '95.9', '96.8', '97.7', '98.6', '99.5', '100.4']
 
+'101.3', 
+s2 = ['110.3', '102.2', '103.1', '104.0', '104.9', '105.8', '106.7', '107.6', '111.2', '112.1', '113.0', '113.9', '114.8', '119.3', '121.1', '122.9', '124.7', '125.6', '126.5', '127.4', '128.3', '129.2', '130.1', '131.0', '131.9', '132.8', '133.7', '134.6', '135.5', '136.4', '137.3', '138.2', '139.1', '140.0', '140.9', '141.8', '143.6', '144.5', '148.1', '149.0', '149.9', '150.8', '151.7', '152.6', '153.5', '145.4', '155.3', '156.2', '157.1', '158.0', '160.7', '161.6', '163.4', '167.0', '167.9', '172.4', '173.3', '174.2', '175.1', '176.0', '176.9', '177.8', '178.7', '179.6', '180.5', '183.2', '185.0', '190.4', '191.3', '197.6', '198.5']
 
-s1 = ['1.4', '2.3', '3.2', '4.1', '5.0', '5.9', '6.8', '8.6', '9.5', '10.4', '11.3', '12.2', '14.0', '14.9', '15.8', '16.7', '17.6', '18.5', '19.4', '20.3', '21.2', '22.1', '23.0', '23.9', '24.8', '25.7', '28.4', '29.3', '30.2', '31.1', '32.0', '32.9', '33.8', '34.7', '35.6', '39.2', '42.8', '43.7', '44.6', '45.5', '46.4', '47.3', '48.2', '49.1', '50.0', '67.1', '68.9', '71.6', '74.3', '75.2', '76.1', '77.0', '77.9', '78.8', '79.7', '80.6', '81.5', '82.4', '83.3', '87.8', '88.7', '89.6', '90.5', '91.4', '92.3', '93.2', '94.1', '95.0', '95.9', '96.8', '97.7', '98.6', '99.5', '100.4', '101.3', '110.3', '102.2', '103.1', '104.0', '104.9', '105.8', '106.7', '107.6', '111.2', '112.1', '113.0', '113.9', '114.8', '119.3', '121.1', '122.9', '124.7', '125.6', '126.5', '127.4', '128.3', '129.2', '130.1', '131.0', '131.9', '132.8', '133.7', '134.6', '135.5', '136.4', '137.3', '138.2', '139.1', '140.0', '140.9', '141.8', '143.6', '144.5', '148.1', '149.0', '149.9', '150.8', '151.7', '152.6', '153.5', '145.4', '155.3', '156.2', '157.1', '158.0', '160.7', '161.6', '163.4', '167.0', '167.9', '172.4', '173.3', '174.2', '175.1', '176.0', '176.9', '177.8', '178.7', '179.6', '180.5', '183.2', '185.0', '190.4', '191.3', '197.6', '198.5', '200.3', '201.2', '203.0', '203.9', '205.7', '206.6', '207.5', '208.4', '209.3', '210.2', '211.1', '212.0', '212.9', '213.8', '214.7', '215.6', '216.5', '217.4', '218.3', '219.2', '220.1', '221.0', '221.9', '222.8', '223.7', '224.6', '225.5', '226.4', '228.2', '229.1', '230.0', '230.9', '231.8', '234.5', '235.4', '236.3', '237.2', '238.1', '239.0', '239.9', '240.8', '241.7', '242.6', '243.5', '244.4', '245.3', '246.2', '247.1', '248.0', '248.9', '249.8', '250.7', '251.6', '252.5', '253.4', '254.3', '255.2', '256.1', '257.0', '258.8', '259.7', '260.6', '261.5', '263.3', '264.2', '265.1', '266.0', '266.9', '268.7', '269.6', '270.5', '271.4', '272.3', '273.2', '274.1', '275.0', '275.9', '276.8', '278.6', '279.5', '281.3', '283.1', '284.0', '285.8', '286.7', '288.5', '289.4', '290.3', '291.2', '292.1', '293.0', '293.9', '295.7', '297.5', '298.4', '301.1', '302.0', '302.9', '303.8', '304.7', '305.6', '306.5', '308.3', '309.2', '310.1', '315.5', '316.4', '317.3', '318.2', '319.1', '320.0', '320.9', '321.8', '322.7', '323.6', '324.5', '325.4', '326.3', '327.2', '328.1', '329.0', '329.9', '331.7', '332.6', '333.5', '334.4', '335.3', '338.0', '338.9', '339.8', '341.6', '342.5', '343.4', '345.2', '348.8', '349.7', '350.6', '351.5', '352.4', '353.3', '354.2', '355.1', '356.0', '357.8', '358.7', '359.6']
+'200.3', 
 
-table = Table.read('starcat_5mapweight.txt', format='ascii')
-n = list(itertools.repeat('0.5', len(table)))
+s3 = ['201.2', '203.0', '203.9', '205.7', '206.6', '207.5', '208.4', '209.3', '210.2', '211.1', '212.0', '212.9', '213.8', '214.7', '215.6', '216.5', '217.4', '218.3', '219.2', '220.1', '221.0', '221.9', '222.8', '223.7', '224.6', '225.5', '226.4', '228.2', '229.1', '230.0', '230.9', '231.8', '234.5', '235.4', '236.3', '237.2', '238.1', '239.0', '239.9', '240.8', '241.7', '242.6', '243.5', '244.4', '245.3', '246.2', '247.1', '248.0', '248.9', '249.8', '250.7', '251.6', '252.5', '253.4', '254.3', '255.2', '256.1', '257.0', '258.8', '259.7', '260.6', '261.5', '263.3', '264.2', '265.1', '266.0', '266.9', '268.7', '269.6', '270.5', '271.4', '272.3', '273.2', '274.1', '275.0', '275.9', '276.8', '278.6', '279.5', '281.3', '283.1', '284.0', '285.8', '286.7', '288.5', '289.4', '290.3', '291.2', '292.1', '293.0', '293.9', '295.7', '297.5', '298.4', '301.1', '302.0', '302.9', '303.8', '304.7', '305.6', '306.5', '308.3', '309.2', '310.1', '315.5', '316.4', '317.3', '318.2', '319.1', '320.0', '320.9', '321.8', '322.7', '323.6', '324.5', '325.4', '326.3', '327.2', '328.1', '329.0', '329.9', '331.7', '332.6', '333.5', '334.4', '335.3', '338.0', '338.9', '339.8', '341.6', '342.5', '343.4', '345.2', '348.8', '349.7', '350.6', '351.5', '352.4', '353.3', '354.2', '355.1', '356.0', '357.8', '358.7', '359.6']
+
+table = Table.read('starcat_200.3mapweight.txt', format='ascii')
+n = list(itertools.repeat('200.3', len(table)))
 table['region'] = n
 
-for region in s1:
+for region in s3:
     print region
     a = Table.read('starcat_'+region+'mapweight.txt',format='ascii')
     n = list(itertools.repeat(region, len(a)))
     a['region'] = n
     table = vstack((table, a))
 
-ascii.write(table, 'starcat_set1-10.txt',format='basic')
+ascii.write(table, 'starcat_set200-360.txt',format='basic')
 
 
 galex = fits.open('../GALEXAIS.fits')[1].data
@@ -1079,3 +855,295 @@ plt.xlim((12, 23))
 plt.ylim((-3, 2))
 plt.annotate('N = '+str(len(comb)), xy=(13, -2.5))
 plt.show()
+
+for x in range(0,100):
+    for y in range(0,20):
+        cut = np.where((cat['gl'] > x) & (cat['gl'] < x+1) & (cat['gb'] > y-10) & (cat['gb'] < y-10+1))
+        cmap[x][y] = len(cat[cut])
+
+
+
+cat = Table.read('sex_vphas_matches_total_mapweight.txt', format='ascii')
+
+
+
+for region in range(0,360,10):
+    cat1 = c1[np.where((c1['gl_tycho'] > region) & (c1['gl_tycho'] < region+5))]
+    dgl1 = (cat1['gl_sex']-cat1['gl_tycho'])
+    dgb1 = (cat1['gb_sex']-cat1['gb_tycho'])
+
+    cat2 = c2[np.where((c2['gl_tycho'] > region) & (c2['gl_tycho'] < region+5))]
+    dgl2 = (cat2['gl_sex']-cat2['gl_tycho'])
+    dgb2 = (cat2['gb_sex']-cat2['gb_tycho'])
+
+    fig, (ax1, ax2) = plt.subplots(1, 2, sharey=True)
+    ax1.scatter(dgl1*3600, dgb1*3600, edgecolor='none', alpha=0.1)
+    ax1.axhline(y=0,c='black')
+    ax1.axvline(x=0,c='black')
+    ax2.scatter(dgl2*3600, dgb2*3600, edgecolor='none', alpha=0.1)
+    ax2.axhline(y=0,c='black')
+    ax2.axvline(x=0,c='black')
+
+    ax1.set_xlabel('gl$_{SEx}$ - gl$_{Tycho2}$ [arcsec]')
+    ax2.set_xlabel('gl$_{SEx}$ - gl$_{Tycho2}$ [arcsec]')
+    ax1.set_ylabel('gb$_{SEx}$ - gb$_{Tycho2}$ [arcsec]')
+    ax1.set_xlim((-4,4))
+    ax1.set_ylim((-4,4))
+    ax2.set_xlim((-4,4))
+    ax2.set_ylim((-4,4))
+    ax1.annotate('N$_{lower}$ = '+str(len(cat1)), xy=(-3.9,-3.9))
+    ax2.annotate('N$_{upper}$ = '+str(len(cat2)), xy=(-3.9,-3.9))
+    ax1.set_title('gb<0, gl='+str(region)+'-'+str(region+5)+', avg=('+str(np.mean(dgl1)*3600)[:4]+', '+str(np.mean(dgb1)*3600)[:4]+')')
+    ax2.set_title('gb>0, avg=('+str(np.mean(dgl2)*3600)[:4]+', '+str(np.mean(dgb2)*3600)[:4]+')')
+    fig.subplots_adjust(wspace=0)
+
+    plt.savefig('04-13-sex-tycho_offset_'+str(region)+'-'+str(region+5)+'.png')
+    plt.clf()
+    print region
+
+
+for i in range(0, 360, 60):
+    c2 = cat[np.where((cat['nuv'] < 19) & (cat['gl'] > i) & (cat['gl'] < i+60))]
+    plt.hist2d(c2['gl'],c2['gb'], bins=[600,240], vmin=0,vmax=20, cmap=cm.gray)
+    plt.title('SExtractor, NUV < 19, 600x240')
+    plt.xlim((i, i+60))
+    plt.ylim((-10,10))
+    plt.savefig('04-18-sky_'+str(i)+'-'+str(i+60)+'sex.png')
+    plt.clf()
+    
+    cg2 = gcat[np.where((gcat['nuv_sex'] < 19) & (gcat['nuv_galex'] < 19) & (gcat['gl_sex'] > i) & (gcat['gl_sex'] < i+60))]
+    plt.hist2d(cg2['gl_sex'],cg2['gb_sex'], bins=[600,240], vmin=0,vmax=20, cmap=cm.gray)
+    plt.title('SEx+GALEX, NUV < 19, 600x240')
+    plt.xlim((i, i+60))
+    plt.ylim((-10,10))
+    plt.savefig('04-18-sky_'+str(i)+'-'+str(i+60)+'galex_sex.png')
+    plt.clf()
+
+    gal2 = galex[np.where((galex['nuv_mag'] < 19) & (galex['glon'] > i) & (galex['glon'] < i+60))]
+    plt.hist2d(gal2['glon'],gal2['glat'], bins=[600,240], vmin=0,vmax=20, cmap=cm.gray)
+    plt.title('GALEX, NUV < 19, 600x240')
+    plt.xlim((i, i+60))
+    plt.ylim((-10,10))
+    plt.savefig('04-18-sky_'+str(i)+'-'+str(i+60)+'galex.png')
+    plt.clf()
+
+
+##########################################################
+#g vs g-r
+##########################################################
+s1 = vcat[np.where((vcat['gl_sex'] > 0) & (vcat['gl_sex'] < 40))]
+s2 = vcat[np.where((vcat['gl_sex'] > 200) & (vcat['gl_sex'] < 250))]
+s3 = vcat[np.where((vcat['gl_sex'] > 250) & (vcat['gl_sex'] < 300))]
+s4 = vcat[np.where((vcat['gl_sex'] > 300) & (vcat['gl_sex'] < 360))]
+
+m = 8./1.5
+b = 22 - m*0.5
+cut1 = np.where(((s1['g_AB']-s1['r_AB'])*m+b < s1['g_AB']) & (s1['g_AB'] > 19.))
+cut2 = np.where(((s2['g_AB']-s2['r_AB'])*m+b < s2['g_AB']) & (s2['g_AB'] > 19.))
+cut3 = np.where(((s3['g_AB']-s3['r_AB'])*m+b < s3['g_AB']) & (s3['g_AB'] > 19.))
+cut4 = np.where(((s4['g_AB']-s4['r_AB'])*m+b < s4['g_AB']) & (s4['g_AB'] > 19.))
+wd1 = s1[cut1]
+wd2 = s2[cut2]
+wd3 = s3[cut3]
+wd4 = s4[cut4]
+
+scatter_contour(s1['g_AB']-s1['r_AB'],s1['g_AB'],threshold=1000,log_counts=True,histogram2d_args=dict(bins=(40)),plot_args=dict(color='k',markersize=1))
+plt.scatter(wd1['g_AB']-wd1['r_AB'],wd1['g_AB'],edgecolor='none',facecolor='red')
+plt.xlabel(('g - r (ABmag)'))
+plt.ylabel(('g (ABmag)'))
+plt.xlim((-1, 3))
+plt.ylim((23, 12))
+plt.title('VPHAS+SEx, 0 < gl < 40, N$_{obj}$ = '+str(len(s1)))
+plt.savefig('04-18-gvsgr_sex_vphas_0-40.png')
+plt.clf()
+
+scatter_contour(s2['g_AB']-s2['r_AB'],s2['g_AB'],threshold=1000,log_counts=True,histogram2d_args=dict(bins=(40)),plot_args=dict(color='k',markersize=1))
+plt.scatter(wd2['g_AB']-wd2['r_AB'],wd2['g_AB'],edgecolor='none',facecolor='red')
+plt.xlabel(('g - r (ABmag)'))
+plt.ylabel(('g (ABmag)'))
+plt.xlim((-1, 3))
+plt.ylim((23, 12))
+plt.title('VPHAS+SEx, 200 < gl < 250, N$_{obj}$ = '+str(len(s2)))
+plt.savefig('04-18-gvsgr_sex_vphas_200-250.png')
+plt.clf()
+
+scatter_contour(s3['g_AB']-s3['r_AB'],s3['g_AB'],threshold=1000,log_counts=True,histogram2d_args=dict(bins=(40)),plot_args=dict(color='k',markersize=1))
+plt.scatter(wd3['g_AB']-wd3['r_AB'],wd3['g_AB'],edgecolor='none',facecolor='red')
+plt.xlabel(('g - r (ABmag)'))
+plt.ylabel(('g (ABmag)'))
+plt.xlim((-1, 3))
+plt.ylim((23, 12))
+plt.title('VPHAS+SEx, 250 < gl < 300, N$_{obj}$ = '+str(len(s3)))
+plt.savefig('04-18-gvsgr_sex_vphas_250-300.png')
+plt.clf()
+
+scatter_contour(s4['g_AB']-s4['r_AB'],s4['g_AB'],threshold=1000,log_counts=True,histogram2d_args=dict(bins=(40)),plot_args=dict(color='k',markersize=1))
+plt.scatter(wd4['g_AB']-wd4['r_AB'],wd4['g_AB'],edgecolor='none',facecolor='red')
+plt.xlabel(('g - r (ABmag)'))
+plt.ylabel(('g (ABmag)'))
+plt.xlim((-1, 3))
+plt.ylim((23, 12))
+plt.title('VPHAS+SEx, 300 < gl < 360, N$_{obj}$ = '+str(len(s4)))
+plt.savefig('04-18-gvsgr_sex_vphas_300-360.png')
+plt.clf()
+
+# Now with u-g < 1 cut
+s1 = vcat[np.where((vcat['gl_sex'] > 0) & (vcat['gl_sex'] < 40) & (vcat['u_AB']-vcat['g_AB'] < 1))]
+s2 = vcat[np.where((vcat['gl_sex'] > 200) & (vcat['gl_sex'] < 250) & (vcat['u_AB']-vcat['g_AB'] < 1))]
+s3 = vcat[np.where((vcat['gl_sex'] > 250) & (vcat['gl_sex'] < 300) & (vcat['u_AB']-vcat['g_AB'] < 1))]
+s4 = vcat[np.where((vcat['gl_sex'] > 300) & (vcat['gl_sex'] < 360) & (vcat['u_AB']-vcat['g_AB'] < 1))]
+
+m = 8./1.5
+b = 22 - m*0.5
+cut1 = np.where(((s1['g_AB']-s1['r_AB'])*m+b < s1['g_AB']) & (s1['g_AB'] > 19.))
+cut2 = np.where(((s2['g_AB']-s2['r_AB'])*m+b < s2['g_AB']) & (s2['g_AB'] > 19.))
+cut3 = np.where(((s3['g_AB']-s3['r_AB'])*m+b < s3['g_AB']) & (s3['g_AB'] > 19.))
+cut4 = np.where(((s4['g_AB']-s4['r_AB'])*m+b < s4['g_AB']) & (s4['g_AB'] > 19.))
+wd1 = s1[cut1]
+wd2 = s2[cut2]
+wd3 = s3[cut3]
+wd4 = s4[cut4]
+
+scatter_contour(s1['g_AB']-s1['r_AB'],s1['g_AB'],threshold=1000,log_counts=True,histogram2d_args=dict(bins=(40)),plot_args=dict(color='k',markersize=1))
+plt.scatter(wd1['g_AB']-wd1['r_AB'],wd1['g_AB'],edgecolor='none',facecolor='red')
+plt.xlabel(('g - r (ABmag)'))
+plt.ylabel(('g (ABmag)'))
+plt.xlim((-1, 3))
+plt.ylim((23, 12))
+plt.title('VPHAS+SEx, 0 < gl < 40, u-g < 1, N$_{obj}$ = '+str(len(s1)))
+plt.savefig('04-18-gvsgr_sex_vphas_0-40_ugcut.png')
+plt.clf()
+
+scatter_contour(s2['g_AB']-s2['r_AB'],s2['g_AB'],threshold=1000,log_counts=True,histogram2d_args=dict(bins=(40)),plot_args=dict(color='k',markersize=1))
+plt.scatter(wd2['g_AB']-wd2['r_AB'],wd2['g_AB'],edgecolor='none',facecolor='red')
+plt.xlabel(('g - r (ABmag)'))
+plt.ylabel(('g (ABmag)'))
+plt.xlim((-1, 3))
+plt.ylim((23, 12))
+plt.title('VPHAS+SEx, 200 < gl < 250, u-g < 1, N$_{obj}$ = '+str(len(s2)))
+plt.savefig('04-18-gvsgr_sex_vphas_200-250_ugcut.png')
+plt.clf()
+
+scatter_contour(s3['g_AB']-s3['r_AB'],s3['g_AB'],threshold=1000,log_counts=True,histogram2d_args=dict(bins=(40)),plot_args=dict(color='k',markersize=1))
+plt.scatter(wd3['g_AB']-wd3['r_AB'],wd3['g_AB'],edgecolor='none',facecolor='red')
+plt.xlabel(('g - r (ABmag)'))
+plt.ylabel(('g (ABmag)'))
+plt.xlim((-1, 3))
+plt.ylim((23, 12))
+plt.title('VPHAS+SEx, 250 < gl < 300, u-g < 1, N$_{obj}$ = '+str(len(s3)))
+plt.savefig('04-18-gvsgr_sex_vphas_250-300_ugcut.png')
+plt.clf()
+
+scatter_contour(s4['g_AB']-s4['r_AB'],s4['g_AB'],threshold=1000,log_counts=True,histogram2d_args=dict(bins=(40)),plot_args=dict(color='k',markersize=1))
+plt.scatter(wd4['g_AB']-wd4['r_AB'],wd4['g_AB'],edgecolor='none',facecolor='red')
+plt.xlabel(('g - r (ABmag)'))
+plt.ylabel(('g (ABmag)'))
+plt.xlim((-1, 3))
+plt.ylim((23, 12))
+plt.title('VPHAS+SEx, 300 < gl < 360, u-g < 1, N$_{obj}$ = '+str(len(s4)))
+plt.savefig('04-18-gvsgr_sex_vphas_300-360_ugcut.png')
+plt.clf()
+
+
+###########################################################
+# g-r vs nuv-g
+###########################################################
+s1 = v2[np.where((v2['gl_sex'] > 0) & (v2['gl_sex'] < 40))]
+s2 = v2[np.where((v2['gl_sex'] > 200) & (v2['gl_sex'] < 250))]
+s3 = v2[np.where((v2['gl_sex'] > 250) & (v2['gl_sex'] < 300))]
+s4 = v2[np.where((v2['gl_sex'] > 300) & (v2['gl_sex'] < 360))]
+
+pickles = Table.read('../picklemags_laphare_final.txt', format='ascii')
+scatter_contour(s1['nuv_sex']-s1['g_AB'],s1['g_AB']-s1['r_AB'],threshold=1050,log_counts=True,histogram2d_args=dict(bins=(40)),plot_args=dict(color='k',markersize=1))
+plt.xlabel(('NUV - g(ABmag)'))
+plt.ylabel(('g - r (ABmag)'))
+plt.xlim((-4, 8))
+plt.ylim((-1, 3))
+plt.scatter(pickles['nuv']-pickles['g'],pickles['g']-pickles['r'],color='darkgreen')
+plt.arrow(6, -0.5, 2.972-1.1838, 1.1838-0.8664, head_length=0.05, head_width=0.02, color='red')
+plt.title('VPHAS+SEx, NUV < 19, 0 < gl < 40, N$_{obj}$ = '+str(len(s1)))
+plt.savefig('04-18-grvsnuvg_sex_vphas_0-40_nuvcut.png')
+plt.clf()
+
+scatter_contour(s2['nuv_sex']-s2['g_AB'],s2['g_AB']-s2['r_AB'],threshold=1050,log_counts=True,histogram2d_args=dict(bins=(40)),plot_args=dict(color='k',markersize=1))
+plt.xlabel(('NUV - g(ABmag)'))
+plt.ylabel(('g - r (ABmag)'))
+plt.xlim((-4, 8))
+plt.ylim((-1, 3))
+plt.scatter(pickles['nuv']-pickles['g'],pickles['g']-pickles['r'],color='darkgreen')
+plt.arrow(6, -0.5, 2.972-1.1838, 1.1838-0.8664, head_length=0.05, head_width=0.02, color='red')
+plt.title('VPHAS+SEx, NUV < 19, 200 < gl < 250, N$_{obj}$ = '+str(len(s2)))
+plt.savefig('04-18-grvsnuvg_sex_vphas_200-250_nuvcut.png')
+plt.clf()
+
+scatter_contour(s3['nuv_sex']-s3['g_AB'],s3['g_AB']-s3['r_AB'],threshold=1050,log_counts=True,histogram2d_args=dict(bins=(40)),plot_args=dict(color='k',markersize=1))
+plt.xlabel(('NUV - g(ABmag)'))
+plt.ylabel(('g - r (ABmag)'))
+plt.xlim((-4, 8))
+plt.ylim((-1, 3))
+plt.scatter(pickles['nuv']-pickles['g'],pickles['g']-pickles['r'],color='darkgreen')
+plt.arrow(6, -0.5, 2.972-1.1838, 1.1838-0.8664, head_length=0.05, head_width=0.02, color='red')
+plt.title('VPHAS+SEx, NUV < 19, 250 < gl < 300, N$_{obj}$ = '+str(len(s3)))
+plt.savefig('04-18-grvsnuvg_sex_vphas_250-300_nuvcut.png')
+plt.clf()
+
+scatter_contour(s4['nuv_sex']-s4['g_AB'],s4['g_AB']-s4['r_AB'],threshold=1050,log_counts=True,histogram2d_args=dict(bins=(40)),plot_args=dict(color='k',markersize=1))
+plt.xlabel(('NUV - g(ABmag)'))
+plt.ylabel(('g - r (ABmag)'))
+plt.xlim((-4, 8))
+plt.ylim((-1, 3))
+plt.scatter(pickles['nuv']-pickles['g'],pickles['g']-pickles['r'],color='darkgreen')
+plt.arrow(6, -0.5, 2.972-1.1838, 1.1838-0.8664, head_length=0.05, head_width=0.02, color='red')
+plt.title('VPHAS+SEx, NUV < 19, 300 < gl < 360, N$_{obj}$ = '+str(len(s4)))
+plt.savefig('04-18-grvsnuvg_sex_vphas_300-360_nuvcut.png')
+plt.clf()
+
+s1 = vcat[np.where((vcat['gl_sex'] > 0) & (vcat['gl_sex'] < 40))]
+s2 = vcat[np.where((vcat['gl_sex'] > 200) & (vcat['gl_sex'] < 250))]
+s3 = vcat[np.where((vcat['gl_sex'] > 250) & (vcat['gl_sex'] < 300))]
+s4 = vcat[np.where((vcat['gl_sex'] > 300) & (vcat['gl_sex'] < 360))]
+
+pickles = Table.read('../picklemags_laphare_final.txt', format='ascii')
+scatter_contour(s1['nuv_sex']-s1['g_AB'],s1['g_AB']-s1['r_AB'],threshold=1050,log_counts=True,histogram2d_args=dict(bins=(40)),plot_args=dict(color='k',markersize=1))
+plt.xlabel(('NUV - g(ABmag)'))
+plt.ylabel(('g - r (ABmag)'))
+plt.xlim((-4, 8))
+plt.ylim((-1, 3))
+plt.scatter(pickles['nuv']-pickles['g'],pickles['g']-pickles['r'],color='darkgreen')
+plt.arrow(6, -0.5, 2.972-1.1838, 1.1838-0.8664, head_length=0.05, head_width=0.02, color='red')
+plt.title('VPHAS+SEx, 0 < gl < 40, N$_{obj}$ = '+str(len(s1)))
+plt.savefig('04-18-grvsnuvg_sex_vphas_0-40.png')
+plt.clf()
+
+scatter_contour(s2['nuv_sex']-s2['g_AB'],s2['g_AB']-s2['r_AB'],threshold=1050,log_counts=True,histogram2d_args=dict(bins=(40)),plot_args=dict(color='k',markersize=1))
+plt.xlabel(('NUV - g(ABmag)'))
+plt.ylabel(('g - r (ABmag)'))
+plt.xlim((-4, 8))
+plt.ylim((-1, 3))
+plt.scatter(pickles['nuv']-pickles['g'],pickles['g']-pickles['r'],color='darkgreen')
+plt.arrow(6, -0.5, 2.972-1.1838, 1.1838-0.8664, head_length=0.05, head_width=0.02, color='red')
+plt.title('VPHAS+SEx, 200 < gl < 250, N$_{obj}$ = '+str(len(s2)))
+plt.savefig('04-18-grvsnuvg_sex_vphas_200-250.png')
+plt.clf()
+
+scatter_contour(s3['nuv_sex']-s3['g_AB'],s3['g_AB']-s3['r_AB'],threshold=1050,log_counts=True,histogram2d_args=dict(bins=(40)),plot_args=dict(color='k',markersize=1))
+plt.xlabel(('NUV - g(ABmag)'))
+plt.ylabel(('g - r (ABmag)'))
+plt.xlim((-4, 8))
+plt.ylim((-1, 3))
+plt.scatter(pickles['nuv']-pickles['g'],pickles['g']-pickles['r'],color='darkgreen')
+plt.arrow(6, -0.5, 2.972-1.1838, 1.1838-0.8664, head_length=0.05, head_width=0.02, color='red')
+plt.title('VPHAS+SEx, 250 < gl < 300, N$_{obj}$ = '+str(len(s3)))
+plt.savefig('04-18-grvsnuvg_sex_vphas_250-300.png')
+plt.clf()
+
+scatter_contour(s4['nuv_sex']-s4['g_AB'],s4['g_AB']-s4['r_AB'],threshold=1050,log_counts=True,histogram2d_args=dict(bins=(40)),plot_args=dict(color='k',markersize=1))
+plt.xlabel(('NUV - g(ABmag)'))
+plt.ylabel(('g - r (ABmag)'))
+plt.xlim((-4, 8))
+plt.ylim((-1, 3))
+plt.scatter(pickles['nuv']-pickles['g'],pickles['g']-pickles['r'],color='darkgreen')
+plt.arrow(6, -0.5, 2.972-1.1838, 1.1838-0.8664, head_length=0.05, head_width=0.02, color='red')
+plt.title('VPHAS+SEx, 300 < gl < 360, N$_{obj}$ = '+str(len(s4)))
+plt.savefig('04-18-grvsnuvg_sex_vphas_300-360.png')
+plt.clf()
