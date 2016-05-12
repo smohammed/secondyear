@@ -4,12 +4,12 @@ from astropy.table import Table
 from dustquery import *
 
 # Load all tables
-vphas = Table.read('wds_vphasonly.txt', format='ascii')
-wd = Table.read('wds_gais_vphas_newgrcut.txt', format='ascii')
-vpcut = np.where((vphas['gl'] > 200) & (vphas['gl'] < 250))
-wdcut = np.where((wd['gl_galex'] > 200) & (wd['gl_galex'] < 250))
-vphas = vphas[vpcut]
-wd = wd[wdcut]
+#vphas = Table.read('wds_vphasonly.txt', format='ascii')
+wd = Table.read('../Dunmaps/wds_sex_vphas.txt', format='ascii')
+#vpcut = np.where((vphas['gl'] > 200) & (vphas['gl'] < 250))
+#wdcut = np.where((wd['gl_sex'] > 200) & (wd['gl_sex'] < 250))
+#vphas = vphas[vpcut]
+#wd = wd[wdcut]
 pickleswd = Table.read('../picklemags_wds.txt', format='ascii')
 
 # Input constants, set Teff and Radius
@@ -63,11 +63,11 @@ comptable = wd
 
 # Gather dust data for all WDs
 if len(comptable) == len(wd):
-    gl = list(comptable['gl_galex'])
-    gb = list(comptable['gb_galex'])
-if len(comptable) == len(vphas[:5000]):
-    gl = list(comptable['gl'])
-    gb = list(comptable['gb'])
+    gl = list(comptable['gl_sex'])
+    gb = list(comptable['gb_sex'])
+#if len(comptable) == len(vphas[:5000]):
+#    gl = list(comptable['gl'])
+#    gb = list(comptable['gb'])
 dust = query(gl, gb, coordsys='gal')
 DM = dust['distmod']
 
@@ -205,8 +205,8 @@ if old == 1:
 
     # Gather dust data for all WDs
     if len(comptable) == len(wd):
-        gl = list(comptable['gl_galex'])
-        gb = list(comptable['gb_galex'])
+        gl = list(comptable['gl_sex'])
+        gb = list(comptable['gb_sex'])
 
     if len(comptable) == len(vphas[:5000]):
         gl = list(comptable['gl'])
