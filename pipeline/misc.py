@@ -1192,6 +1192,7 @@ for region in skyrange:
     print region
     t1 = Table.read('starcat_'+region+'mapweight_fwhm.txt',format='ascii')
     t1.remove_columns(('X_IMAGE', 'Y_IMAGE', 'FLUX_AUTO', 'A_IMAGE', 'B_IMAGE', 'THETA_IMAGE', 'x_new', 'y_new', 'FLUXERR_AUTO', 'FLUX_APER','ra', 'dec'))
+    t1 = t1[np.where((t1['FWHM_IMAGE'] < 12) & (t1['FWHM_IMAGE'] > -4))]
     t1gal = SkyCoord(t1['gl']*u.deg, t1['gb']*u.deg, frame='galactic')
     t1tyind, tychoind, angsepty, ang3d = search_around_sky(t1gal, tychogal, 3*u.arcsec)
     t1ty = hstack([t1[t1tyind], Table(tycho[tychoind])])
@@ -1221,25 +1222,38 @@ for region in skyrange:
     axes[0,0].set_title('gl (SEx-T2)')
     axes[0,0].set_ylabel('gb (SEx-T2)')
     
-    scatter_contour(t1gais['nuv_galex'],t1gais['nuv_sex']-t1gais['nuv_galex'],threshold=500,    log_counts=True,histogram2d_args=dict(bins=(30)),plot_args=dict(color='k',markersize=1),    contour_args=dict(cmap=cm.gray), ax=axes[0,1])
+    axes[0,1].scatter(t1gais['nuv_galex'],t1gais['nuv_sex']-t1gais['nuv_galex'], alpha=0.5, edgecolor='none', facecolor='black', s=1)
     axes[0,1].axhline(y=0, c='red')
     axes[0,1].set_xlim((12, 25))
     axes[0,1].set_ylim((-2, 2))
     axes[0,1].set_ylabel('NUV (SEx-GAIS)')
-    
+    axes[0,1].set_title('NUV (GAIS)')
+
+    area = 20 * 0.9 #6118 # 360*20 - blank area
+    x, bins, p = axes[1,0].hist(t1['nuv'], bins=50)
+    for item in p:
+        item.set_height(item.get_height()/area)
+    axes[1,0].set_xlim((12,25))
+    axes[1,0].set_ylim(0, 400)
+    axes[1,0].set_xlabel('NUV (only SExtractor)')
+    axes[1,0].set_ylabel('counts/area')
+
+    '''
     axes[1,0].hist(t1['nuv'], bins=50)
     axes[1,0].set_xlim((12,25))
-    axes[1,0].set_xlabel('NUV (all SExtractor)')
-    
+    axes[1,0].set_xlabel('NUV (only SExtractor)')
+    '''
+
     scatter_contour(t1['nuv'],t1['FWHM_IMAGE'],threshold=700,log_counts=True,histogram2d_args=dict  (bins=40),plot_args=dict(color='k',markersize=1), contour_args=dict(cmap=cm.gray), ax=axes    [1,1])
     axes[1,1].axhline(y=0, c='red')
     axes[1,1].set_xlim((12,25))
     axes[1,1].set_ylim((-3, 12))
-    axes[1,1].set_xlabel('NUV')
+    axes[1,1].set_xlabel('NUV (Only SExtractor)')
     axes[1,1].set_ylabel('FWHM')
     
     plt.suptitle('region = '+region)
     plt.savefig('region'+region+'matchplots.png')
+    plt.clf()
 
 
 
