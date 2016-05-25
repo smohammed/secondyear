@@ -1219,7 +1219,7 @@ for region in skyrange:
     axes[0,0].axvline(x=0, c='red')
     axes[0,0].set_xlim((-3, 3))
     axes[0,0].set_ylim((-3, 3))
-    axes[0,0].set_title('gl (SEx-T2)')
+    axes[0,0].set_title('gl (SEx-T2), N = '+str(len(t1ty)))
     axes[0,0].set_ylabel('gb (SEx-T2)')
     
     axes[0,1].scatter(t1gais['nuv_galex'],t1gais['nuv_sex']-t1gais['nuv_galex'], alpha=0.5, edgecolor='none', facecolor='black', s=1)
@@ -1227,7 +1227,7 @@ for region in skyrange:
     axes[0,1].set_xlim((12, 25))
     axes[0,1].set_ylim((-2, 2))
     axes[0,1].set_ylabel('NUV (SEx-GAIS)')
-    axes[0,1].set_title('NUV (GAIS)')
+    axes[0,1].set_title('NUV (GAIS), N = '+str(len(t1gais)))
 
     area = 20 * 0.9 #6118 # 360*20 - blank area
     x, bins, p = axes[1,0].hist(t1['nuv'], bins=50)
@@ -1248,12 +1248,12 @@ for region in skyrange:
     axes[1,1].axhline(y=0, c='red')
     axes[1,1].set_xlim((12,25))
     axes[1,1].set_ylim((-3, 12))
-    axes[1,1].set_xlabel('NUV (Only SExtractor)')
+    axes[1,1].set_xlabel('NUV (Only SExtractor), N = '+str(len(t1)))
     axes[1,1].set_ylabel('FWHM')
     
     plt.suptitle('region = '+region)
     plt.savefig('region'+region+'matchplots.png')
-    plt.clf()
+    plt.close()
 
 
 
@@ -1270,3 +1270,53 @@ for region in range(0, 361, 5):
     plt.title('gl = '+str(region)+'-'+str(region+5))
     plt.savefig('fwhmvsnuv'+str(region)+'-'+str(region+5)+'.png')
     plt.clf()
+
+
+sky = ['329.0']
+galex = fits.open('../../GALEXAIS.fits')[1].data
+galexgal = SkyCoord(galex['glon']*u.deg, galex['glat']*u.deg, frame='galactic')
+
+convlist = ['gauss2.0_5x5', 'gauss2.5_5x5', 'gauss3.0_5x5', 'gauss1.5_3x3', 'gauss2.0_3x3', 'gauss3.0_7x7', 'gauss4.0_7x7', 'gauss5.0_9x9', 'mexhat1.5_5x5', 'mexhat2.0_7x7', 'mexhat2.5_7x7', 'mexhat3.0_9x9', 'mexhat4.0_9x9', 'mexhat5.0_11x11', 'tophat1.5_3x3', 'tophat2.0_3x3', 'tophat2.5_3x3', 'tophat3.0_3x3', 'tophat4.0_5x5', 'tophat5.0_5x5']
+
+for conv in convlist:
+    for region in sky:
+        a20 = Table.read('starcat_'+region+'_'+conv+'.txt', format='ascii')
+        norm = Table.read('../starcat_'+region+'.txt', format='ascii')
+
+        a20gal = SkyCoord(a20['gl']*u.deg, a20['gb']*u.deg, frame='galactic')
+        normgal = SkyCoord(norm['gl']*u.deg, norm['gb']*u.deg, frame='galactic')
+
+        a20ind,  galex20ind,  angsep20,  ang3d = search_around_sky(a20gal, galexgal, 3.5*u.arcsec)
+        normind,  galexnormind,  angsepnorm,  ang3d = search_around_sky(normgal, galexgal, 3.5*u.arcsec)
+
+        a20 = a20[a20ind]
+        norm = norm[normind]
+        g20 = Table(galex[galex20ind])
+        gnorm = Table(galex[galexnormind])
+
+        comb20 = hstack([a20, g20])
+        combnorm = hstack([norm, gnorm])
+
+        comb20['angsep'] = angsep20
+        combnorm['angsep'] = angsepnorm
+        ascii.write(comb20, 'sextractor_galex_matches'+region+'_'+conv+'.txt', format='basic')
+
+        fig, (ax0, ax1) = plt.subplots(2, sharex=True)
+        ax0.scatter(combnorm['nuv_mag'], combnorm['nuv']-combnorm['nuv_mag'], edgecolor='none', alpha=0.1)
+        ax0.axhline(y=0, c='black')
+        ax1.scatter(comb20['nuv_mag'], comb20['nuv']-comb20['nuv_mag'], edgecolor='none', alpha=0.1)
+        ax1.axhline(y=0, c='black')
+        ax1.set_xlabel('NUV$_{GAIS}$')
+        ax0.set_ylabel('NUV$_{SEx}$ - NUV$_{GAIS}$')
+        ax1.set_ylabel('NUV$_{SEx}$ - NUV$_{GAIS}$')
+        ax0.set_title('gl ='+str(region)+', default')
+        ax0.set_title('gl ='+str(region)+', '+conv)
+        ax0.set_xlim((12, 23))
+        ax0.set_ylim((-4, 2))
+        ax1.set_xlim((12, 23))
+        ax1.set_ylim((-4, 2))
+        ax0.annotate('Default, N = '+str(len(combnorm)), xy=(13.5, -3))
+        ax1.annotate(conv+', N = '+str(len(comb20)), xy=(13.5, -3))
+        fig.subplots_adjust(hspace=0)
+        plt.savefig('03-13-nuvcomp_gl'+region+conv+'.png')
+        plt.clf()
