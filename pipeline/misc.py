@@ -220,7 +220,7 @@ plt.show()
 ####################################################################
 # g - r vs NUV - g with boxes
 ####################################################################
-scatter_contour(vcat['nuv_sex']-vcat['g_AB'],vcat['g_AB']-vcat['r_AB'],threshold=1100,log_counts=True,histogram2d_args=dict(bins=40),plot_args=dict(color='k',markersize=1), contour_args=dict(cmap=cm.gray))
+scatter_contour(v2['nuv_sex']-v2['g_AB'],v2['g_AB']-v2['r_AB'],threshold=1100,log_counts=True,histogram2d_args=dict(bins=40),plot_args=dict(color='k',markersize=1), contour_args=dict(cmap=cm.gray))
 plt.scatter(vwd['nuv_sex']-vwd['g_AB'],vwd['g_AB']-vwd['r_AB'], edgecolor='none', facecolor='blue', label='WDCs')
 plt.scatter(pickles['nuv']-pickles['g'],pickles['g']-pickles['r'],color='darkgreen', label='pickles', s=30)
 plt.gca().add_patch(matplotlib.patches.Rectangle((-0.5,0.6),2.5,0.5,facecolor='yellow',alpha=0.5))
@@ -247,7 +247,7 @@ plt.show()
 ####################################################################
 # NUV - g vs g - i
 ####################################################################
-scatter_contour(vcat['g_AB']-vcat['i_AB'],vcat['nuv_sex']-vcat['g_AB'],threshold=1100,log_counts=True,histogram2d_args=dict(bins=40),plot_args=dict(color='k',markersize=1), contour_args=dict(cmap=cm.gray))
+scatter_contour(v2['g_AB']-v2['i_AB'],v2['nuv_sex']-v2['g_AB'],threshold=1100,log_counts=True,histogram2d_args=dict(bins=40),plot_args=dict(color='k',markersize=1), contour_args=dict(cmap=cm.gray))
 plt.scatter(vwd['g_AB']-vwd['i_AB'],vwd['nuv_sex']-vwd['g_AB'], edgecolor='none', facecolor='blue', label='WDCs')
 plt.scatter(pickles['g']-pickles['i'],pickles['nuv']-pickles['g'],color='darkgreen', label='pickles', s=30)
 plt.arrow(-1.9, 2, 1.1936-0.6533, 2.9720-1.1936, head_length=0.05, head_width=0.02, color='red')
@@ -941,7 +941,7 @@ s2 = v2[np.where((v2['gl_sex'] > 200) & (v2['gl_sex'] < 250))]
 s3 = v2[np.where((v2['gl_sex'] > 250) & (v2['gl_sex'] < 300))]
 s4 = v2[np.where((v2['gl_sex'] > 300) & (v2['gl_sex'] < 360))]
 
-pickles = Table.read('../picklemags_laphare_final.txt', format='ascii')
+pickles = Table.read('../../picklemags_laphare_final.txt', format='ascii')
 scatter_contour(s1['nuv_sex']-s1['g_AB'],s1['g_AB']-s1['r_AB'],threshold=1050,log_counts=True,histogram2d_args=dict(bins=(40)),plot_args=dict(color='k',markersize=1))
 plt.xlabel(('NUV - g(ABmag)'))
 plt.ylabel(('g - r (ABmag)'))
@@ -1117,8 +1117,6 @@ for region in range(0,len(skyrange)):
     alldata = vstack([alldata, a])
     print skyrange[region]
 
-
-
 a = Table.read('starcat_5mapweight.txt', format='ascii')
 b = Table.read('starcat_1.4mapweight.txt', format='ascii')
 agal = SkyCoord(a['gl']*u.deg, a['gb']*u.deg, frame='galactic')
@@ -1132,15 +1130,65 @@ plt.scatter(a2['gl'], a2['gb'], color='green', alpha=0.5)
 plt.scatter(b2['gl'], b2['gb'], color='orange', alpha=0.5)
 
 
+#################################################
+# Combine all starcat files
+#################################################
 
-skyrange = ['1.4', '2.3', '3.2', '4.1', '5.0', '5.9', '6.8', '8.6', '9.5', '10.4', '11.3', '12.2', '14.0', '14.9', '15.8', '16.7', '17.6', '18.5', '19.4', '20.3', '21.2', '22.1', '23.0', '23.9', '24.8', '25.7', '28.4', '29.3', '30.2', '31.1', '32.0', '32.9', '33.8', '34.7', '35.6', '39.2', '42.8', '43.7', '44.6', '44.6', '45.5', '46.4', '47.3', '48.2', '49.1', '50.0', '67.1', '68.9', '71.6', '74.3', '75.2', '76.1', '77.0', '77.9', '78.8', '79.7', '80.6', '81.5', '82.4', '83.3', '87.8', '88.7', '89.6', '90.5', '91.4', '92.3', '93.2', '94.1', '95.0', '95.9', '96.8', '97.7', '98.6', '99.5', '100.4', '101.3', '110.3', '102.2', '103.1', '104.0', '104.9', '105.8', '106.7', '107.6', '111.2', '112.1', '113.0', '113.9', '114.8', '119.3', '121.1', '122.9', '124.7', '125.6', '126.5', '127.4', '128.3', '129.2', '130.1', '131.0', '131.9', '132.8', '133.7', '134.6', '135.5', '136.4', '137.3', '138.2', '139.1', '140.0', '140.9', '141.8', '143.6', '144.5', '148.1', '149.0', '149.9', '150.8', '151.7', '152.6', '153.5', '145.4', '155.3', '156.2', '157.1', '158.0', '160.7', '161.6', '163.4', '167.0', '167.9', '172.4', '173.3', '174.2', '175.1', '176.0', '176.9', '177.8', '178.7', '179.6', '180.5', '183.2', '185.0', '190.4', '191.3', '197.6', '198.5', '200.3', '201.2', '203.0', '203.9', '205.7', '206.6', '207.5', '208.4', '209.3', '210.2', '211.1', '212.0', '212.9', '213.8', '214.7', '215.6', '216.5', '217.4', '218.3', '219.2', '220.1', '221.0', '221.9', '222.8', '223.7', '224.6', '225.5', '226.4', '228.2', '229.1', '230.0', '230.9', '231.8', '234.5', '235.4', '236.3', '237.2', '238.1', '239.0', '239.9', '240.8', '241.7', '242.6', '243.5', '244.4', '245.3', '246.2', '247.1', '248.0', '248.9', '249.8', '250.7', '251.6', '252.5', '253.4', '254.3', '255.2', '256.1', '257.0', '258.8', '259.7', '260.6', '261.5', '263.3', '264.2', '265.1', '266.0', '266.9', '268.7', '269.6', '270.5', '271.4', '272.3', '273.2', '274.1', '275.0', '275.9', '276.8', '278.6', '279.5', '281.3', '283.1', '284.0', '285.8', '286.7', '288.5', '289.4', '290.3', '291.2', '292.1', '293.0', '293.9', '295.7', '297.5', '298.4', '301.1', '302.0', '302.9', '303.8', '304.7', '305.6', '306.5', '308.3', '309.2', '310.1', '315.5', '316.4', '317.3', '318.2', '319.1', '320.0', '320.9', '321.8', '322.7', '323.6', '324.5', '325.4', '326.3', '327.2', '328.1', '329.0', '329.9', '331.7', '332.6', '333.5', '334.4', '335.3', '338.0', '338.9', '339.8', '341.6', '342.5', '343.4', '345.2', '348.8', '349.7', '350.6', '351.5', '352.4', '353.3', '354.2', '355.1', '356.0', '357.8', '358.7', '359.6']
-alldata = Table.read('starcat_5mapweight.txt', format='ascii')
-alldata = alldata[np.where((alldata['gl'] < (np.max(alldata['gl']) - 0.24)) & (alldata['nuv'] < 20))]
+sky1 = ['1.4', '2.3', '3.2', '4.1', '5.0', '5.9', '6.8', '8.6', '9.5', '10.4', '11.3', '12.2', '14.0', '14.9', '15.8', '16.7', '17.6', '18.5', '19.4', '20.3', '21.2', '22.1', '23.0', '23.9', '24.8', '25.7', '28.4', '29.3', '30.2', '31.1', '32.0', '32.9', '33.8', '34.7', '35.6', '39.2', '42.8', '43.7', '44.6', '44.6', '45.5', '46.4', '47.3', '48.2', '49.1', '50.0', '67.1', '68.9', '71.6', '74.3', '75.2', '76.1', '77.0', '77.9', '78.8', '79.7', '80.6', '81.5', '82.4', '83.3', '87.8', '88.7', '89.6', '90.5', '91.4', '92.3', '93.2', '94.1', '95.0', '95.9', '96.8', '97.7', '98.6', '99.5', '100.4']
 
-for region in skyrange:
-    a = Table.read('starcat_'+region+'mapweight.txt', format='ascii')
-    a = a[np.where((a['gl'] < (np.max(a['gl']) - 0.24)) & (a['nuv'] < 20))]
+alldata = Table.read('starcat_5mapweight_fwhm.txt', format='ascii')
+alldata = alldata[np.where((alldata['FWHM_IMAGE'] < 10) & (alldata['FWHM_IMAGE'] > 3.5) & (alldata['nuv'] < 20))]
+
+for region in sky1:
+    a = Table.read('starcat_'+region+'mapweight_fwhm.txt', format='ascii')
+    a = a[np.where((a['FWHM_IMAGE'] < 10) & (a['FWHM_IMAGE'] > 3.5) & (a['nuv'] < 20))]
     alldata = vstack([alldata, a])
+    print region
+
+ascii.write(alldata, 'starcat_1-100_mapweight_fwhm_pscans.txt', format='basic')
+
+
+sky2 = ['102.2', '103.1', '104.0', '104.9', '105.8', '106.7', '107.6', '110.3', '111.2', '112.1', '113.0', '113.9', '114.8', '119.3', '121.1', '122.9', '124.7', '125.6', '126.5', '127.4', '128.3', '129.2', '130.1', '131.0', '131.9', '132.8', '133.7', '134.6', '135.5', '136.4', '137.3', '138.2', '139.1', '140.0', '140.9', '141.8', '143.6', '144.5', '148.1', '149.0', '149.9', '150.8', '151.7', '152.6', '153.5', '145.4', '155.3', '156.2', '157.1', '158.0', '160.7', '161.6', '163.4', '167.0', '167.9', '172.4', '173.3', '174.2', '175.1', '176.0', '176.9', '177.8', '178.7', '179.6', '180.5', '183.2', '185.0', '190.4', '191.3', '197.6', '198.5']
+
+alldata = Table.read('starcat_101.3mapweight_fwhm.txt', format='ascii')
+alldata = alldata[np.where((alldata['FWHM_IMAGE'] < 10) & (alldata['FWHM_IMAGE'] > 3.5) & (alldata['nuv'] < 20))]
+
+for region in sky2:
+    a = Table.read('starcat_'+region+'mapweight_fwhm.txt', format='ascii')
+    a = a[np.where((a['FWHM_IMAGE'] < 10) & (a['FWHM_IMAGE'] > 3.5) & (a['nuv'] < 20))]
+    alldata = vstack([alldata, a])
+    print region
+
+ascii.write(alldata, 'starcat100-200_mapweight_fwhm_pscans.txt', format='basic')
+
+
+sky3 =  ['201.2', '203.0', '203.9', '205.7', '206.6', '207.5', '208.4', '209.3', '210.2', '211.1', '212.0', '212.9', '213.8', '214.7', '215.6', '216.5', '217.4', '218.3', '219.2', '220.1', '221.0', '221.9', '222.8', '223.7', '224.6', '225.5', '226.4', '228.2', '229.1', '230.0', '230.9', '231.8', '234.5', '235.4', '236.3', '237.2', '238.1', '239.0', '239.9', '240.8', '241.7', '242.6', '243.5', '244.4', '245.3', '246.2', '247.1', '248.0', '248.9', '249.8', '250.7', '251.6', '252.5', '253.4', '254.3', '255.2', '256.1', '257.0', '258.8', '259.7', '260.6', '261.5', '263.3', '264.2', '265.1', '266.0', '266.9', '268.7', '269.6', '270.5', '271.4', '272.3', '273.2', '274.1', '275.0', '275.9', '276.8', '278.6', '279.5', '281.3', '283.1', '284.0', '285.8', '286.7', '288.5', '289.4', '290.3', '291.2', '292.1', '293.0', '293.9', '295.7', '297.5', '298.4']
+
+alldata = Table.read('starcat_200.3mapweight_fwhm.txt', format='ascii')
+alldata = alldata[np.where((alldata['FWHM_IMAGE'] < 10) & (alldata['FWHM_IMAGE'] > 3.5) & (alldata['nuv'] < 20))]
+
+for region in sky3:
+    a = Table.read('starcat_'+region+'mapweight_fwhm.txt', format='ascii')
+    a = a[np.where((a['FWHM_IMAGE'] < 10) & (a['FWHM_IMAGE'] > 3.5) & (a['nuv'] < 20))]
+    alldata = vstack([alldata, a])
+    print region
+
+ascii.write(alldata, 'starcat200-300_mapweight_fwhm_pscans.txt', format='basic')
+
+
+sky4 = ['302.0', '302.9', '303.8', '304.7', '305.6', '306.5', '308.3', '309.2', '310.1', '315.5', '316.4', '317.3', '318.2', '319.1', '320.0', '320.9', '321.8', '322.7', '323.6', '324.5', '325.4', '326.3', '327.2', '328.1', '329.0', '329.9', '331.7', '332.6', '333.5', '334.4', '335.3', '338.0', '338.9', '339.8', '341.6', '342.5', '343.4', '345.2', '348.8', '349.7', '350.6', '351.5', '352.4', '353.3', '354.2', '355.1', '356.0', '357.8', '358.7', '359.6']
+
+alldata = Table.read('starcat_301.1mapweight_fwhm.txt', format='ascii')
+alldata = alldata[np.where((alldata['FWHM_IMAGE'] < 10) & (alldata['FWHM_IMAGE'] > 3.5) & (alldata['nuv'] < 20))]
+
+for region in sky4:
+    a = Table.read('starcat_'+region+'mapweight_fwhm.txt', format='ascii')
+    a = a[np.where((a['FWHM_IMAGE'] < 10) & (a['FWHM_IMAGE'] > 3.5) & (a['nuv'] < 20))]
+    alldata = vstack([alldata, a])
+    print region
+
+ascii.write(alldata, 'starcat300-360_mapweight_fwhm_pscans.txt', format='basic')
+
 
 #################################################
 #normalize histogram:
@@ -1157,105 +1205,6 @@ plt.show()
 h, xed, yed = np.histogram2d(a1['gl'],a1['gb'], bins=(np.linspace(0, 90, 1500), np.linspace(-10,10,1500)))
 plt.imshow(h.T,vmin=0,vmax=20,origin='lower',interpolation='nearest',aspect='auto',cmap=cm.gray, extent=[0,90,-10,10])
 plt.show()
-
-#################################################
-# Subplots for each scan
-#################################################
-skyrange = ['5', '1.4', '2.3', '3.2', '4.1', '5.0', '5.9', '6.8', '8.6', '9.5', '10.4', '11.3', '12.2', '14.0', '14.9', '15.8', '16.7', '17.6', '18.5', '19.4', '20.3', '21.2', '22.1', '23.0', '23.9', '24.8', '25.7', '28.4', '29.3', '30.2', '31.1', '32.0', '32.9', '33.8', '34.7', '35.6', '39.2', '42.8', '43.7', '44.6', '45.5', '46.4', '47.3', '48.2', '49.1', '50.0', '67.1', '68.9', '71.6', '74.3', '75.2', '76.1', '77.0', '77.9', '78.8', '79.7', '80.6', '81.5', '82.4', '83.3', '87.8', '88.7', '89.6', '90.5', '91.4', '92.3', '93.2', '94.1', '95.0', '95.9', '96.8', '97.7', '98.6', '99.5', '100.4', '101.3', '110.3', '102.2', '103.1', '104.0', '104.9', '105.8', '106.7', '107.6', '111.2', '112.1', '113.0', '113.9', '114.8', '119.3', '121.1', '122.9', '124.7', '125.6', '126.5', '127.4', '128.3', '129.2', '130.1', '131.0', '131.9', '132.8', '133.7', '134.6', '135.5', '136.4', '137.3', '138.2', '139.1', '140.0', '140.9', '141.8', '143.6', '144.5', '148.1', '149.0', '149.9', '150.8', '151.7', '152.6', '153.5', '145.4', '155.3', '156.2', '157.1', '158.0', '160.7', '161.6', '163.4', '167.0', '167.9', '172.4', '173.3', '174.2', '175.1', '176.0', '176.9', '177.8', '178.7', '179.6', '180.5', '183.2', '185.0', '190.4', '191.3', '197.6', '198.5', '200.3', '201.2', '203.0', '203.9', '205.7', '206.6', '207.5', '208.4', '209.3', '210.2', '211.1', '212.0', '212.9', '213.8', '214.7', '215.6', '216.5', '217.4', '218.3', '219.2', '220.1', '221.0', '221.9', '222.8', '223.7', '224.6', '225.5', '226.4', '228.2', '229.1', '230.0', '230.9', '231.8', '234.5', '235.4', '236.3', '237.2', '238.1', '239.0', '239.9', '240.8', '241.7', '242.6', '243.5', '244.4', '245.3', '246.2', '247.1', '248.0', '248.9', '249.8', '250.7', '251.6', '252.5', '253.4', '254.3', '255.2', '256.1', '257.0', '258.8', '259.7', '260.6', '261.5', '263.3', '264.2', '265.1', '266.0', '266.9', '268.7', '269.6', '270.5', '271.4', '272.3', '273.2', '274.1', '275.0', '275.9', '276.8', '278.6', '279.5', '281.3', '283.1', '284.0', '285.8', '286.7', '288.5', '289.4', '290.3', '291.2', '292.1', '293.0', '293.9', '295.7', '297.5', '298.4', '301.1', '302.0', '302.9', '303.8', '304.7', '305.6', '306.5', '308.3', '309.2', '310.1', '315.5', '316.4', '317.3', '318.2', '319.1', '320.0', '320.9', '321.8', '322.7', '323.6', '324.5', '325.4', '326.3', '327.2', '328.1', '329.0', '329.9', '331.7', '332.6', '333.5', '334.4', '335.3', '338.0', '338.9', '339.8', '341.6', '342.5', '343.4', '345.2', '348.8', '349.7', '350.6', '351.5', '352.4', '353.3', '354.2', '355.1', '356.0', '357.8', '358.7', '359.6']
-
-
-
-
-tycho = Table(fits.open('../../tycho2.fits')[1].data)
-tycho.remove_columns(('RAJ2000', 'DEJ2000', 'TYC1', 'TYC2', 'TYC3', 'pmRA', 'pmDE', 'BTmag', 'e_BTmag', 'VTmag', 'e_VTmag', 'HIP', 'RA_ICRS_', 'DE_ICRS_'))
-galex = Table(fits.open('../../GALEXAIS.fits')[1].data)
-galex.remove_columns(('fuv_mag', 'ra', 'dec'))
-galexcut = np.where(galex['nuv_mag'] == -999.)
-galex.remove_rows(galexcut)
-tychogal = SkyCoord(tycho['Glon']*u.deg, tycho['Glat']*u.deg, frame='galactic')
-galexgal = SkyCoord(galex['glon']*u.deg, galex['glat']*u.deg, frame='galactic')
-
-for region in skyrange:
-    print region
-    t1 = Table.read('starcat_'+region+'mapweight_fwhm.txt',format='ascii')
-    t1.remove_columns(('X_IMAGE', 'Y_IMAGE', 'FLUX_AUTO', 'A_IMAGE', 'B_IMAGE', 'THETA_IMAGE', 'x_new', 'y_new', 'FLUXERR_AUTO', 'FLUX_APER','ra', 'dec'))
-    t1 = t1[np.where((t1['FWHM_IMAGE'] < 10) & (t1['FWHM_IMAGE'] > 3.5))]
-    t1gal = SkyCoord(t1['gl']*u.deg, t1['gb']*u.deg, frame='galactic')
-    t1tyind, tychoind, angsepty, ang3d = search_around_sky(t1gal, tychogal, 3*u.arcsec)
-    t1ty = hstack([t1[t1tyind], Table(tycho[tychoind])])
-    t1ty['angsep'] = angsepty
-    t1ty.rename_column('gl', 'gl_sex')
-    t1ty.rename_column('gb', 'gb_sex')
-    t1ty.rename_column('Glon', 'gl_tycho')
-    t1ty.rename_column('Glat', 'gb_tycho')
-    
-    if region == '5':
-        for i in range(len(t1ty)):
-            if t1ty['gl_tycho'][i] > 350:
-                t1ty['gl_tycho'][i] = t1ty['gl_tycho'][i] - 360
-    
-    t1gaisind, galexind, angsepga, ang3d = search_around_sky(t1gal, galexgal, 3*u.arcsec)
-    t1gais = hstack([t1[t1gaisind], Table(galex[galexind])])
-    t1gais['angsep'] = angsepga
-    t1gais.rename_column('nuv', 'nuv_sex')
-    t1gais.rename_column('nuv_mag', 'nuv_galex')
-    
-    fig, axes = plt.subplots(2,2)
-    axes[0,0].scatter((t1ty['gl_sex']-t1ty['gl_tycho'])*3600,(t1ty['gb_sex']-t1ty['gb_tycho'])* 3600, edgecolor='none', alpha=0.2)
-    axes[0,0].axhline(y=0, c='red')
-    axes[0,0].axvline(x=0, c='red')
-    axes[0,0].set_xlim((-3, 3))
-    axes[0,0].set_ylim((-3, 3))
-    axes[0,0].set_title('gl (SEx-T2), N = '+str(len(t1ty)))
-    axes[0,0].set_ylabel('gb (SEx-T2)')
-    
-    axes[0,1].scatter(t1gais['nuv_galex'],t1gais['nuv_sex']-t1gais['nuv_galex'], alpha=0.5, edgecolor='none', facecolor='black', s=1)
-    axes[0,1].axhline(y=0, c='red')
-    axes[0,1].set_xlim((12, 25))
-    axes[0,1].set_ylim((-2, 2))
-    axes[0,1].set_ylabel('NUV (SEx-GAIS)')
-    axes[0,1].set_title('NUV (GAIS), N = '+str(len(t1gais)))
-
-    area = 20 * 0.9 #6118 # 360*20 - blank area
-    x, bins, p = axes[1,0].hist(t1['nuv'], bins=50)
-    for item in p:
-        item.set_height(item.get_height()/area)
-    axes[1,0].set_xlim((12,25))
-    axes[1,0].set_ylim(0, 400)
-    axes[1,0].set_xlabel('NUV (only SExtractor)')
-    axes[1,0].set_ylabel('counts/area')
-
-    '''
-    axes[1,0].hist(t1['nuv'], bins=50)
-    axes[1,0].set_xlim((12,25))
-    axes[1,0].set_xlabel('NUV (only SExtractor)')
-    '''
-
-    scatter_contour(t1['nuv'],t1['FWHM_IMAGE'],threshold=700,log_counts=True,histogram2d_args=dict  (bins=40),plot_args=dict(color='k',markersize=1), contour_args=dict(cmap=cm.gray), ax=axes    [1,1])
-    axes[1,1].axhline(y=0, c='red')
-    axes[1,1].set_xlim((12,25))
-    axes[1,1].set_ylim((-3, 12))
-    axes[1,1].set_xlabel('NUV (Only SExtractor), N = '+str(len(t1)))
-    axes[1,1].set_ylabel('FWHM')
-
-    plt.suptitle('region = '+region)
-    plt.savefig('region'+region+'matchplots.png')
-    plt.close()
-
-
-# FWHM vs NUV
-for region in range(0, 361, 5):
-    a1 = a[np.where((a['gl'] > region) & (a['gl'] < region+5) & (a['FWHM_IMAGE'] > -10) & (a['FWHM_IMAGE'] < 100))]
-
-    scatter_contour(a1['nuv'],a1['FWHM_IMAGE'],threshold=1500,log_counts=True,histogram2d_args=dict(bins=40),plot_args=dict(color='k',markersize=1), contour_args=dict(cmap=cm.gray))
-    plt.xlim((14,25))
-    plt.ylim((-3, 12))
-    plt.axhline(y=0, c='red')
-    plt.xlabel('NUV')
-    plt.ylabel('FWHM')
-    plt.title('gl = '+str(region)+'-'+str(region+5))
-    plt.savefig('fwhmvsnuv'+str(region)+'-'+str(region+5)+'.png')
-    plt.clf()
 
 
 sky = ['329.0']

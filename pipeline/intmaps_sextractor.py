@@ -7,7 +7,7 @@ from astropy.coordinates import SkyCoord, search_around_sky
 from astropy import wcs
 import os
 from astropy.convolution import convolve, Gaussian2DKernel
-import matplotlib
+import matplotlib, matplotlib.cm as cm
 matplotlib.rcParams['figure.figsize'] = 16, 8
 matplotlib.rcParams['font.size'] = 20
 
@@ -158,7 +158,7 @@ for currregion in skyrange:
     alldata = hstack([data, coord])
     ascii.write(alldata, '../Dunmaps/fwhm/starcat_'+currregion+'mapweight_fwhm.txt', format='ipac')
 
-    os.remove('../Dunmaps/im1_'+region+'.fits')
+    #os.remove('../Dunmaps/im1_'+region+'.fits')
 
     print 'Added WCS info, finished'
 
