@@ -1,26 +1,4 @@
 ####################################################################
-# Rename 2MASS catalog columns
-####################################################################
-star.rename_column('cntr_01','cntr')
-star.rename_column('number_01','number')
-star.rename_column('x_image_01','x_image')
-star.rename_column('y_image_01','y_image')
-star.rename_column('flux_auto_01','flux_auto')
-star.rename_column('fluxerr_auto_01','fluxerr_auto')
-star.rename_column('x_new_01','x_new')
-star.rename_column('y_new_01','y_new')
-star.rename_column('nuv_01','nuv')
-star.rename_column('gl_01','gl_sex')
-star.rename_column('gb_01','gb_sex')
-star.rename_column('ra_01','ra_sex')
-star.rename_column('dec_01','dec_sex')
-star.rename_column('ra','ra_2mass')
-star.rename_column('dec','dec_2mass')
-star.rename_column('j_m','j')
-star.rename_column('h_m','h')
-star.rename_column('k_m','k')
-
-####################################################################
 # Add WCS coords to plots
 ####################################################################
 img = fits.open('newfield/count_map_05-68_gPr_cata_10_corr_gal.fits')[0].data
@@ -247,7 +225,7 @@ plt.show()
 ####################################################################
 # NUV - g vs g - i
 ####################################################################
-scatter_contour(v2['g_AB']-v2['i_AB'],v2['nuv_sex']-v2['g_AB'],threshold=1100,log_counts=True,histogram2d_args=dict(bins=40),plot_args=dict(color='k',markersize=1), contour_args=dict(cmap=cm.gray))
+scatter_contour(v2['g_AB']-v2['i_AB'],v2['nuv_sex']-v2['g_AB'],threshold=1000,log_counts=True,histogram2d_args=dict(bins=40),plot_args=dict(color='k',markersize=1), contour_args=dict(cmap=cm.gray))
 plt.scatter(vwd['g_AB']-vwd['i_AB'],vwd['nuv_sex']-vwd['g_AB'], edgecolor='none', facecolor='blue', label='WDCs')
 plt.scatter(pickles['g']-pickles['i'],pickles['nuv']-pickles['g'],color='darkgreen', label='pickles', s=30)
 plt.arrow(-1.9, 2, 1.1936-0.6533, 2.9720-1.1936, head_length=0.05, head_width=0.02, color='red')
@@ -824,21 +802,25 @@ s4 = v2[np.where((v2['gl_sex'] > 300) & (v2['gl_sex'] < 360))]
 
 m = 8./1.5
 b = 22 - m*0.5
-#cut1 = np.where(((s1['g_AB']-s1['r_AB'])*m+b < s1['g_AB']) & (s1['g_AB'] > 18.5))
-#cut2 = np.where(((s2['g_AB']-s2['r_AB'])*m+b < s2['g_AB']) & (s2['g_AB'] > 18.5))
-#cut3 = np.where(((s3['g_AB']-s3['r_AB'])*m+b < s3['g_AB']) & (s3['g_AB'] > 18.5))
-#cut4 = np.where(((s4['g_AB']-s4['r_AB'])*m+b < s4['g_AB']) & (s4['g_AB'] > 18.5))
-vwd1 = vwd[np.where((vwd['gl_sex'] > 0) & (vwd['gl_sex'] < 40))]
-vwd2 = vwd[np.where((vwd['gl_sex'] > 200) & (vwd['gl_sex'] < 250))]
-vwd3 = vwd[np.where((vwd['gl_sex'] > 250) & (vwd['gl_sex'] < 300))]
-vwd4 = vwd[np.where((vwd['gl_sex'] > 300) & (vwd['gl_sex'] < 360))]
+cut1 = np.where(((s1['g_AB']-s1['r_AB'])*m+b < s1['g_AB']))
+cut2 = np.where(((s2['g_AB']-s2['r_AB'])*m+b < s2['g_AB']))
+cut3 = np.where(((s3['g_AB']-s3['r_AB'])*m+b < s3['g_AB']))
+cut4 = np.where(((s4['g_AB']-s4['r_AB'])*m+b < s4['g_AB']))
+vwd1 = s1[cut1]
+vwd2 = s2[cut2]
+vwd3 = s3[cut3]
+vwd4 = s4[cut4]
+#vwd1 = vwd[np.where((vwd['gl_sex'] > 0) & (vwd['gl_sex'] < 40))]
+#vwd2 = vwd[np.where((vwd['gl_sex'] > 200) & (vwd['gl_sex'] < 250))]
+#vwd3 = vwd[np.where((vwd['gl_sex'] > 250) & (vwd['gl_sex'] < 300))]
+#vwd4 = vwd[np.where((vwd['gl_sex'] > 300) & (vwd['gl_sex'] < 360))]
 
 
 fig, axes = plt.subplots(2, 2, sharey=True, sharex=True)
 scatter_contour(s1['g_AB']-s1['r_AB'], s1['g_AB'], threshold=950, log_counts=True, histogram2d_args=dict(bins=(40)), plot_args=dict(color='k', markersize=1), contour_args=dict(cmap=cm.gray), ax=axes[0, 0])
 axes[0, 0].scatter(vwd1['g_AB']-vwd1['r_AB'], vwd1['g_AB'], edgecolor='none', facecolor='blue')
-axes[0, 0].axvline(x=0.59, c='black')
-axes[0, 0].axhline(y=14.57, c='black')
+axes[0, 0].axvline(x=0.576, c='red')
+axes[0, 0].axhline(y=14.272, c='red')
 axes[0, 0].set_ylabel(('g (ABmag)'))
 axes[0, 0].set_xlim((-1, 3))
 axes[0, 0].set_ylim((23, 12))
@@ -846,16 +828,16 @@ axes[0, 0].annotate('0<gl<40', xy=(1.75,14))
 
 scatter_contour(s2['g_AB']-s2['r_AB'],s2['g_AB'],threshold=950,log_counts=True,histogram2d_args=dict(bins=(40)),plot_args=dict(color='k',markersize=1), contour_args=dict(cmap=cm.gray), ax=axes[0,1])
 axes[0, 1].scatter(vwd2['g_AB']-vwd2['r_AB'],vwd2['g_AB'],edgecolor='none',facecolor='blue')
-axes[0, 1].axvline(x=0.35, c='black')
-axes[0, 1].axhline(y=15.1, c='black')
+axes[0, 1].axvline(x=0.271, c='red')
+axes[0, 1].axhline(y=14.69, c='red')
 axes[0, 1].set_xlim((-1, 3))
 axes[0, 1].set_ylim((23, 12))
 axes[0,1].annotate('200<gl<250', xy=(1.75,14))
 
 scatter_contour(s3['g_AB']-s3['r_AB'],s3['g_AB'],threshold=950,log_counts=True,histogram2d_args=dict(bins=(40)),plot_args=dict(color='k',markersize=1), contour_args=dict(cmap=cm.gray), ax=axes[1, 0])
 axes[1, 0].scatter(vwd3['g_AB']-vwd3['r_AB'],vwd3['g_AB'],edgecolor='none',facecolor='blue')
-axes[1, 0].axvline(x=0.37, c='black')
-axes[1, 0].axhline(y=14.5, c='black')
+axes[1, 0].axvline(x=0.369, c='red')
+axes[1, 0].axhline(y=14.25, c='red')
 axes[1, 0].set_xlabel(('g - r (ABmag)'))
 axes[1, 0].set_ylabel(('g (ABmag)'))
 axes[1, 0].set_xlim((-1, 3))
@@ -864,8 +846,8 @@ axes[1, 0].annotate('250<gl<300', xy=(1.75,14))
 
 scatter_contour(s4['g_AB']-s4['r_AB'],s4['g_AB'],threshold=950,log_counts=True,histogram2d_args=dict(bins=(40)),plot_args=dict(color='k',markersize=1), contour_args=dict(cmap=cm.gray), ax=axes[1, 1])
 axes[1, 1].scatter(vwd4['g_AB']-vwd4['r_AB'],vwd4['g_AB'],edgecolor='none',facecolor='blue')
-axes[1, 1].axvline(x=0.52, c='black')
-axes[1, 1].axhline(y=14.4, c='black')
+axes[1, 1].axvline(x=0.504, c='red')
+axes[1, 1].axhline(y=14.1, c='red')
 axes[1, 1].set_xlabel(('g - r (ABmag)'))
 axes[1, 1].set_xlim((-1, 3))
 axes[1, 1].set_ylim((23, 12))
@@ -1133,7 +1115,6 @@ plt.scatter(b2['gl'], b2['gb'], color='orange', alpha=0.5)
 #################################################
 # Combine all starcat files
 #################################################
-
 sky1 = ['1.4', '2.3', '3.2', '4.1', '5.0', '5.9', '6.8', '8.6', '9.5', '10.4', '11.3', '12.2', '14.0', '14.9', '15.8', '16.7', '17.6', '18.5', '19.4', '20.3', '21.2', '22.1', '23.0', '23.9', '24.8', '25.7', '28.4', '29.3', '30.2', '31.1', '32.0', '32.9', '33.8', '34.7', '35.6', '39.2', '42.8', '43.7', '44.6', '44.6', '45.5', '46.4', '47.3', '48.2', '49.1', '50.0', '67.1', '68.9', '71.6', '74.3', '75.2', '76.1', '77.0', '77.9', '78.8', '79.7', '80.6', '81.5', '82.4', '83.3', '87.8', '88.7', '89.6', '90.5', '91.4', '92.3', '93.2', '94.1', '95.0', '95.9', '96.8', '97.7', '98.6', '99.5', '100.4']
 
 alldata = Table.read('starcat_5mapweight_fwhm.txt', format='ascii')
@@ -1193,7 +1174,6 @@ ascii.write(alldata, 'starcat300-360_mapweight_fwhm_pscans.txt', format='basic')
 #################################################
 #normalize histogram:
 #################################################
-
 area = 2000 #6118 # 360*20 - blank area
 x, bins, p = plt.hist(vwd['gb_sex'], bins=50)
 for item in p:
@@ -1255,3 +1235,130 @@ for conv in convlist:
         fig.subplots_adjust(hspace=0)
         plt.savefig('03-13-nuvcomp_gl'+region+conv+'.png')
         plt.clf()
+
+#################################################
+# Combine all low/hi fec files
+#################################################
+files = np.loadtxt('lowfec.txt', dtype='str')
+alldata = Table()
+for region in files:
+    print region
+    a = Table.read(region, format='ascii')
+    a = a[np.where((a['FWHM_IMAGE'] < 10) & (a['FWHM_IMAGE'] > 3.5))]
+    alldata = vstack([alldata, a])
+
+ascii.write(alldata, 'lowfec_all.txt', format='basic')
+
+
+#################################################
+# Match low/hi fec with catalogs
+#################################################
+galex = Table(fits.open('../../GALEXAIS.fits')[1].data)
+galexgal = SkyCoord(galex['glon']*u.deg, galex['glat']*u.deg, frame='galactic')
+
+a = Table.read('starcat_357.8mapweight_fwhm.txt',format='ascii')
+agal = SkyCoord(a['gl']*u.deg, a['gb']*u.deg, frame='galactic')
+aind, galexind, angsep, ang3d = search_around_sky(agal, galexgal, 3*u.arcsec)
+a2 = a[aind]
+
+
+galex = Table(fits.open('../GALEXAIS.fits')[1].data)
+galexgal = SkyCoord(galex['glon']*u.deg, galex['glat']*u.deg, frame='galactic')
+
+
+high = fits.open('../highfec/sex_highfec.fits')[1].data
+low = fits.open('../lowfec/lowfec_all.fits')[1].data
+higal = SkyCoord(high['gl']*u.deg, high['gb']*u.deg, frame='galactic')
+lowgal = SkyCoord(low['gl']*u.deg, low['gb']*u.deg, frame='galactic')
+hiind, galhiind, anghi, ang3d = search_around_sky(higal, galexgal, 3*u.arcsec)
+lowind, gallowind, anglow, ang3d = search_around_sky(lowgal, galexgal, 3*u.arcsec)
+
+hi2 = Table(high[hiind])
+ghi2 = Table(galex[galhiind])
+hi2 = hstack([hi2, ghi2])
+
+lo2 = Table(low[lowind])
+glo2 = Table(galex[gallowind])
+lo2 = hstack([lo2, glo2])
+
+lo2.rename_column('nuv', 'nuv_sex')
+lo2.rename_column('gl', 'gl_sex')
+lo2.rename_column('gb', 'gb_sex')
+lo2.rename_column('ra_1', 'ra_sex')
+lo2.rename_column('dec_1', 'dec_sex')
+lo2.rename_column('nuv_mag', 'nuv_galex')
+lo2.rename_column('ra_2', 'ra_galex')
+lo2.rename_column('dec_2', 'dec_galex')
+lo2.rename_column('glon', 'gl_galex')
+lo2.rename_column('glat', 'gb_galex')
+lo2cut = np.where(lo2['nuv_galex'] == -999.)
+lo2.remove_rows(lo2cut)
+
+hi2.rename_column('nuv', 'nuv_sex')
+hi2.rename_column('gl', 'gl_sex')
+hi2.rename_column('gb', 'gb_sex')
+hi2.rename_column('ra_1', 'ra_sex')
+hi2.rename_column('dec_1', 'dec_sex')
+hi2.rename_column('nuv_mag', 'nuv_galex')
+hi2.rename_column('ra_2', 'ra_galex')
+hi2.rename_column('dec_2', 'dec_galex')
+hi2.rename_column('glon', 'gl_galex')
+hi2.rename_column('glat', 'gb_galex')
+hi2cut = np.where(hi2['nuv_galex'] == -999.)
+hi2.remove_rows(hi2cut)
+
+plt.scatter(lo2['nuv_galex'], lo2['nuv_sex']-lo2['nuv_galex'], edgecolor='none')
+plt.scatter(hi2['nuv_galex'], hi2['nuv_sex']-hi2['nuv_galex'], edgecolor='none', c='red')
+
+
+high = fits.open('../highfec/sex_highfec.fits')[1].data
+low = fits.open('../lowfec/lowfec_all.fits')[1].data
+higal = SkyCoord(high['gl']*u.deg, high['gb']*u.deg, frame='galactic')
+lowgal = SkyCoord(low['gl']*u.deg, low['gb']*u.deg, frame='galactic')
+
+vphas = fits.open('../vphas_allg.fits')[1].data
+vpgal = SkyCoord(vphas['RAJ2000']*u.deg,vphas['DEJ2000']*u.deg).galactic
+
+
+hiind, vphiind, anghi, ang3d = search_around_sky(higal, vpgal, 3*u.arcsec)
+lowind, vplowind, anglow, ang3d = search_around_sky(lowgal, vpgal, 3*u.arcsec)
+
+hi2 = Table(high[hiind])
+ghi2 = Table(vphas[vphiind])
+hi2 = hstack([hi2, ghi2])
+
+lo2 = Table(low[lowind])
+glo2 = Table(vphas[vplowind])
+lo2 = hstack([lo2, glo2])
+
+hi2['angsep'] = anghi
+lo2['angsep'] = anglow
+
+lo2.rename_column('nuv', 'nuv_sex')
+lo2.rename_column('gl', 'gl_sex')
+lo2.rename_column('gb', 'gb_sex')
+lo2.rename_column('ra', 'ra_sex')
+lo2.rename_column('dec', 'dec_sex')
+lo2.rename_column('RAJ2000', 'ra_vphas')
+lo2.rename_column('DEJ2000', 'dec_vphas')
+
+hi2.rename_column('nuv', 'nuv_sex')
+hi2.rename_column('gl', 'gl_sex')
+hi2.rename_column('gb', 'gb_sex')
+hi2.rename_column('ra', 'ra_sex')
+hi2.rename_column('dec', 'dec_sex')
+hi2.rename_column('RAJ2000', 'ra_vphas')
+hi2.rename_column('DEJ2000', 'dec_vphas')
+
+lo2 = lo2[np.unique(lo2['ra_vphas'], return_index=True)[1]]
+hi2 = hi2[np.unique(hi2['ra_vphas'], return_index=True)[1]]
+
+pickles = Table.read('../../picklemags_laphare_final.txt', format='ascii')
+
+
+plt.arrow(6, -0.5, 2.972-1.1838, 1.1838-0.8664, head_length=0.05, head_width=0.02, color='red')
+plt.scatter(pickles['nuv']-pickles['g'],pickles['g']-pickles['r'],color='darkgreen', label='pickles', s=30)
+plt.gca().add_patch(matplotlib.patches.Rectangle((-0.5,0.6),2.5,0.5,facecolor='yellow',alpha=0.5))
+plt.gca().add_patch(matplotlib.patches.Rectangle((-0.5,1.1),6.5,0.5,facecolor='yellow',alpha=0.5))
+plt.gca().add_patch(matplotlib.patches.Rectangle((2,0.1),6,0.6,facecolor='lightblue',alpha=0.5,angle=5))
+plt.gca().add_patch(matplotlib.patches.Rectangle((-2,-0.75),3,0.65,facecolor='gray',alpha=0.5))
