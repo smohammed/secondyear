@@ -1256,16 +1256,15 @@ ascii.write(alldata, 'lowfec_all.txt', format='basic')
 galex = Table(fits.open('../../GALEXAIS.fits')[1].data)
 galexgal = SkyCoord(galex['glon']*u.deg, galex['glat']*u.deg, frame='galactic')
 
-a = Table.read('starcat_357.8mapweight_fwhm.txt',format='ascii')
+a = Table.read('starcat_'+reg+'mapweight_fwhm.txt',format='ascii')
 agal = SkyCoord(a['gl']*u.deg, a['gb']*u.deg, frame='galactic')
 aind, galexind, angsep, ang3d = search_around_sky(agal, galexgal, 3*u.arcsec)
 a2 = a[aind]
+plt.scatter(a2['gl'],a2['gb']), plt.show()
 
 
 galex = Table(fits.open('../GALEXAIS.fits')[1].data)
 galexgal = SkyCoord(galex['glon']*u.deg, galex['glat']*u.deg, frame='galactic')
-
-
 high = fits.open('../highfec/sex_highfec.fits')[1].data
 low = fits.open('../lowfec/lowfec_all.fits')[1].data
 higal = SkyCoord(high['gl']*u.deg, high['gb']*u.deg, frame='galactic')
@@ -1362,3 +1361,16 @@ plt.gca().add_patch(matplotlib.patches.Rectangle((-0.5,0.6),2.5,0.5,facecolor='y
 plt.gca().add_patch(matplotlib.patches.Rectangle((-0.5,1.1),6.5,0.5,facecolor='yellow',alpha=0.5))
 plt.gca().add_patch(matplotlib.patches.Rectangle((2,0.1),6,0.6,facecolor='lightblue',alpha=0.5,angle=5))
 plt.gca().add_patch(matplotlib.patches.Rectangle((-2,-0.75),3,0.65,facecolor='gray',alpha=0.5))
+
+comb.rename_column('nuv', 'nuv_sex')
+comb.rename_column('gl', 'gl_sex')
+comb.rename_column('gb', 'gb_sex')
+comb.rename_column('ra_1', 'ra_sex')
+comb.rename_column('dec_1', 'dec_sex')
+comb.rename_column('nuv_mag', 'nuv_galex')
+comb.rename_column('ra_2', 'ra_galex')
+comb.rename_column('dec_2', 'dec_galex')
+comb.rename_column('glon', 'gl_galex')
+comb.rename_column('glat', 'gb_galex')
+combcut = np.where(comb['nuv_galex'] == -999.)
+comb.remove_rows(combcut)
