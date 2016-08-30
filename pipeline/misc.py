@@ -1374,3 +1374,40 @@ comb.rename_column('glon', 'gl_galex')
 comb.rename_column('glat', 'gb_galex')
 combcut = np.where(comb['nuv_galex'] == -999.)
 comb.remove_rows(combcut)
+
+#################################################
+# 2MASS plots
+#################################################
+cat = Table.read('sex_2mass_rand_500k.txt',format='ascii')
+obj = Table.read('wds_vstar_sex_mast_vphas_2mass.txt',format='ascii')
+wd = obj[np.where(obj['type'] == 'wd')]
+var = obj[np.where(obj['type'] == 'var')]
+p = Table.read('../../picklemags_laphare.txt', format='ascii')
+
+
+# NUV - J vs J-K
+scatter_contour(cat['j_m']-cat['k_m'], cat['nuv_sex']-cat['j_m'],threshold=1100,log_counts=True,histogram2d_args=dict(bins=40),plot_args=dict(color='k',markersize=1), contour_args=dict(cmap=cm.gray))
+plt.scatter(var['j_m']-var['k_m'], var['nuv_sex']-var['j_m'],c='red', edgecolor='none', s=30, label='var')
+plt.scatter(wd['j_m']-wd['k_m'], wd['nuv_sex']-wd['j_m'],c='orange', edgecolor='none', s=30, label='wd')
+plt.scatter(p['j']-p['k'], p['nuv']-p['j'],c='darkgreen', edgecolor='none', s=30, label='pickles')
+plt.legend(scatterpoints=1)
+plt.arrow(-0.5, 10, 0.2876-0.1170, 2.9720-0.2876, head_length=0.05, head_width=0.02, color='red')
+plt.xlim((-0.75, 5))
+plt.ylim((-1, 15))
+plt.xlabel('J - K')
+plt.ylabel('NUV$_{SEx}$ - J')
+plt.title('Rand 500k Sample + Special Objs')
+
+
+# J-H vs H-K
+scatter_contour(cat['h_m']-cat['k_m'], cat['j_m']-cat['h_m'],threshold=1100,log_counts=True,histogram2d_args=dict(bins=40),plot_args=dict(color='k',markersize=1), contour_args=dict(cmap=cm.gray))
+plt.scatter(var['h_m']-var['k_m'], var['j_m']-var['h_m'],c='red', edgecolor='none', s=30, label='var')
+plt.scatter(wd['h_m']-wd['k_m'], wd['j_m']-wd['h_m'],c='orange', edgecolor='none', s=30, label='wd')
+plt.scatter(p['h']-p['k'], p['j']-p['h'],c='darkgreen', edgecolor='none', s=30, label='pickles')
+plt.legend(scatterpoints=1, loc= 2)
+plt.arrow(-0.3, 0.75, 0.1783-0.1170, 0.2876-0.1783, head_length=0.05, head_width=0.02, color='red')
+plt.xlim((-0.5, 1.5))
+plt.ylim((-0.5, 2))
+plt.xlabel('H - K')
+plt.ylabel('J - H')
+plt.title('Rand 500k Sample + Special Objs')
