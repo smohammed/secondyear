@@ -200,10 +200,10 @@ plt.show()
 ####################################################################
 scatter_contour(v2['nuv_sex']-v2['g_AB'],v2['g_AB']-v2['r_AB'],threshold=1100,log_counts=True,histogram2d_args=dict(bins=40),plot_args=dict(color='k',markersize=1), contour_args=dict(cmap=cm.gray))
 plt.scatter(vwd['nuv_sex']-vwd['g_AB'],vwd['g_AB']-vwd['r_AB'], edgecolor='none', facecolor='blue', label='WDCs')
-plt.scatter(pickles['nuv']-pickles['g'],pickles['g']-pickles['r'],color='darkgreen', label='pickles', s=30)
+plt.scatter(pickles['nuv']-pickles['g'],pickles['g']-pickles['r'],color='red', label='Pickles spectral library', s=30)
 plt.gca().add_patch(matplotlib.patches.Rectangle((-0.5,0.6),2.5,0.5,facecolor='yellow',alpha=0.5))
 plt.gca().add_patch(matplotlib.patches.Rectangle((-0.5,1.1),6.5,0.5,facecolor='yellow',alpha=0.5))
-plt.gca().add_patch(matplotlib.patches.Rectangle((2,0.1),6,0.6,facecolor='lightblue',alpha=0.5,angle=5))
+plt.gca().add_patch(matplotlib.patches.Rectangle((2,-0.1),6,0.6,facecolor='lightblue',alpha=0.5,angle=5))
 plt.gca().add_patch(matplotlib.patches.Rectangle((-2,-0.75),3,0.65,facecolor='gray',alpha=0.5))
 plt.arrow(6, -0.5, 2.972-1.1838, 1.1838-0.8664, head_length=0.05, head_width=0.02, color='red')
 plt.xlim((-4,9))
@@ -218,8 +218,8 @@ plt.annotate('K', xy=(6.2, -0.1), size=20)
 
 plt.xlabel('NUV - g (ABmag)')
 plt.ylabel('g - r (ABmag)')
-plt.legend(scatterpoints=1, loc=2)
-plt.title('vPHAS + SExtractor')
+plt.legend(scatterpoints=1, loc=1)
+#plt.title('vPHAS + SExtractor')
 plt.show()
 
 ####################################################################
@@ -249,9 +249,13 @@ plt.show()
 ####################################################################
 # g - r vs u - g
 ####################################################################
-scatter_contour(vcat['u_AB']-vcat['g_AB'],vcat['g_AB']-vcat['r_AB'],threshold=1500,log_counts=True,histogram2d_args=dict(bins=40),plot_args=dict(color='k',markersize=1), contour_args=dict(cmap=cm.gray))
-plt.scatter(vwd['u_AB']-vwd['g_AB'],vwd['g_AB']-vwd['r_AB'], edgecolor='none', facecolor='blue', label='WDCs')
-plt.scatter(pickles['u']-pickles['g'],pickles['g']-pickles['r'],color='darkgreen', label='pickles', s=30)
+wdc1 = wdc[np.where(wdc['logg'] == 7)]
+
+scatter_contour(cat['u_AB']-cat['g_AB'], cat['g_AB']-cat['r_AB'],threshold=1100,log_counts=True,histogram2d_args=dict(bins=40),plot_args=dict(color='k',markersize=1), contour_args=dict(cmap=cm.gray))
+plt.scatter(pickles['u']-pickles['g'], pickles['g']-pickles['r'],c='red', edgecolor='none', s=30, label='SED model')
+plt.scatter(wd['u_AB']-wd['g_AB'], wd['g_AB']-wd['r_AB'],c='blue', edgecolor='none', s=30, label='WDCs')
+#plt.scatter(var['u_AB']-var['g_AB'], var['g_AB']-var['r_AB'],c='purple', edgecolor='none', s=30, label='var')
+#plt.plot(wdc1['u']-wdc1['g'], wdc1['g']-wdc1['r'],c='orange', label='DA WD')
 plt.arrow(3, -0.5, 1.5812 - 1.1936, 1.1936 - 0.8694, head_length=0.05, head_width=0.02, color='red')
 plt.xlim((-1, 5))
 plt.ylim((-1, 3))
@@ -267,7 +271,7 @@ plt.annotate('M', xy=(2.8, 0.4), size=20)
 plt.xlabel('u - g (ABmag)')
 plt.ylabel('g - r (ABmag)')
 plt.legend(scatterpoints=1, loc=2)
-plt.title('vPHAS + SExtractor')
+#plt.title('WDCs')
 plt.show()
 
 
@@ -853,7 +857,7 @@ axes[1, 1].set_xlim((-1, 3))
 axes[1, 1].set_ylim((23, 12))
 axes[1, 1].annotate('300<gl<360', xy=(1.75,14))
 fig.subplots_adjust(wspace=0, hspace=0)
-fig.suptitle('vPHAS + SExtractor with WDCs')
+fig.suptitle('WDC cut')
 plt.savefig('04-21-gvsgr_sex_vphas_allsky.png')
 
 
@@ -1398,7 +1402,6 @@ plt.xlabel('J - K')
 plt.ylabel('NUV$_{SEx}$ - J')
 plt.title('Rand 500k Sample + Special Objs')
 
-
 # J-H vs H-K
 scatter_contour(cat['h_m']-cat['k_m'], cat['j_m']-cat['h_m'],threshold=1100,log_counts=True,histogram2d_args=dict(bins=40),plot_args=dict(color='k',markersize=1), contour_args=dict(cmap=cm.gray))
 plt.scatter(var['h_m']-var['k_m'], var['j_m']-var['h_m'],c='red', edgecolor='none', s=30, label='var')
@@ -1411,3 +1414,66 @@ plt.ylim((-0.5, 2))
 plt.xlabel('H - K')
 plt.ylabel('J - H')
 plt.title('Rand 500k Sample + Special Objs')
+
+#################################################
+# Format WD files and convert from Vega to AB mag
+#################################################
+wdc['u'] = wdc['umg'] + wdc['g']
+wdc['r'] = wdc['g'] - wdc['gmr']
+wdc['i'] = wdc['r'] - wdc['rmi']
+wdc['ha'] = wdc['r'] - wdc['rmha']
+wdc.remove_columns(('umg', 'gmr', 'rmi', 'rmha'))
+
+um = wdc['u'] + 0.91
+gm = wdc['g'] - 0.08
+rm = wdc['r'] + 0.16
+im = wdc['i'] + 0.37
+
+wdc['u'] = um
+wdc['g'] = gm
+wdc['r'] = rm
+wdc['i'] = im
+
+#################################################
+# Easy sky plot
+#################################################
+im = fits.open('starcat_all_mapweight_skymaponly.fits')[1].data
+im1 = im[np.where((im['gl'] > 0) & (im['gl'] < 90))]
+im2 = im[np.where((im['gl'] > 90) & (im['gl'] < 180))]
+im3 = im[np.where((im['gl'] > 180) & (im['gl'] < 270))]
+im4 = im[np.where((im['gl'] > 270) & (im['gl'] < 360))]
+plt.hist2d(im1['gl'], im1['gb'], bins=[2000,400], cmap=cm.gray, vmin=0, vmax=15), plt.show()
+
+#################################################
+# WD cooling curve plots
+#################################################
+wdcda = Table.read('wdcool_DA.txt',format='ascii')
+wdcdb = Table.read('wdcool_DB.txt',format='ascii')
+obj = Table.read('Dunmaps/fwhm/wds_vstar_sex_mast_vphas_2mass.txt',format='ascii')
+wd = obj[np.where(obj['type'] == 'wd')]
+
+
+logg = np.arange(7, 9.1, 0.5)
+for loggval in logg:
+    wdcda1 = wdcda[np.where(wdcda['logg'] == loggval)]
+    wdcdb1 = wdcdb[np.where(wdcdb['logg'] == loggval)]
+
+    plt.scatter(wd['u_AB']-wd['g_AB'], wd['g_AB']-wd['r_AB'],c='blue', edgecolor='none', s=30, label='wd')
+    plt.plot(wdcda1['u'] - wdcda1['g'], wdcda1['g']-wdcda1['r'], c='orange', linewidth='3', label='DA')
+    plt.plot(wdcdb1['u'] - wdcdb1['g'], wdcdb1['g']-wdcdb1['r'], c='red', linewidth='3', label='DB')
+    plt.xlabel('u - g (ABmag)')
+    plt.ylabel('g - r (ABmag)')
+    plt.xlim((-1, 1))
+    plt.ylim((-1, 0.5))
+    plt.legend(scatterpoints=1, loc=2)
+    plt.title('WDCs, logg = '+str(loggval))
+    plt.savefig('09-12-wd_dadb_curve_logg'+str(loggval)+'.png')
+    plt.clf()
+    #plt.show()
+
+
+plt.scatter(wd['gl_sex'], wd['gb_sex'], edgecolor='none', label='WD')
+plt.scatter(var['gl_sex'], var['gb_sex'], edgecolor='none', facecolor='red', label='var')
+plt.xlabel('gl')
+plt.ylabel('gb')
+plt.title('WD + var dets in sextractor')
