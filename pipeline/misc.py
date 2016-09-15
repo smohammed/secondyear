@@ -1392,7 +1392,7 @@ p = Table.read('../../picklemags_laphare.txt', format='ascii')
 # NUV - J vs J-K
 scatter_contour(cat['j_m']-cat['k_m'], cat['nuv_sex']-cat['j_m'],threshold=1100,log_counts=True,histogram2d_args=dict(bins=40),plot_args=dict(color='k',markersize=1), contour_args=dict(cmap=cm.gray))
 plt.scatter(var['j_m']-var['k_m'], var['nuv_sex']-var['j_m'],c='red', edgecolor='none', s=30, label='var')
-plt.scatter(wd['j_m']-wd['k_m'], wd['nuv_sex']-wd['j_m'],c='orange', edgecolor='none', s=30, label='wd')
+plt.scatter(wd1['j_m']-wd1['k_m'], wd1['nuv_sex']-wd1['j_m'],c='orange', edgecolor='none', s=30, label='wd')
 plt.scatter(p['j']-p['k'], p['nuv']-p['j'],c='darkgreen', edgecolor='none', s=30, label='pickles')
 plt.legend(scatterpoints=1)
 plt.arrow(-0.5, 10, 0.2876-0.1170, 2.9720-0.2876, head_length=0.05, head_width=0.02, color='red')
@@ -1477,3 +1477,4 @@ plt.scatter(var['gl_sex'], var['gb_sex'], edgecolor='none', facecolor='red', lab
 plt.xlabel('gl')
 plt.ylabel('gb')
 plt.title('WD + var dets in sextractor')
+
