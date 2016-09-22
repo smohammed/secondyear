@@ -1478,3 +1478,26 @@ plt.xlabel('gl')
 plt.ylabel('gb')
 plt.title('WD + var dets in sextractor')
 
+
+#################################################
+# HR diagram with extinction
+#################################################
+sg = fits.open('../sex-gaia-dust.fits')[1].data
+
+sg1 = sg[np.where(sg['dist'] < 100)]
+sg2 = sg[np.where((sg['dist'] > 100) & (sg['dist'] < 300))]
+sg3 = sg[np.where((sg['dist'] > 300) & (sg['dist'] < 600))]
+sg4 = sg[np.where((sg['dist'] > 600) & (sg['dist'] < 1000))]
+sg5 = sg[np.where((sg['dist'] > 1000) & (sg['dist'] < 3000))]
+sg6 = sg[np.where(sg['dist'] > 3000)]
+
+
+# Extinction values from Schlafly & Finkbeiner 2011
+scatter_contour(sg6['nuv']-sg6['ebv']*7.76-sg6['phot_g_mean_mag']-3.303, sg6['Mg']-sg6['ebv']*3.303,threshold=1000,log_counts=True,histogram2d_args=dict(bins=40),plot_args=dict(color='k',markersize=1), contour_args=dict(cmap=cm.gray))
+
+plt.xlim((-6, 8))
+plt.ylim((8, -6))
+plt.xlabel('(NUV - E$_{B-V}$ * 7.76) - (g - E$_{B-V}$ * 3.303)')
+plt.ylabel('Mg - E$_{B-V}$ * 3.303')
+plt.title('S+G matches, Ext from S&F11')
+

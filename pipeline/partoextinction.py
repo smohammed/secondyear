@@ -31,23 +31,35 @@ for i in range(len(distmod)):
 dmmatch = np.array(dmmatch)
 dmmatchind = np.array(dmmatchind)
 
-sggl = sg['gl'].tolist()
-sggb = sg['gb'].tolist()
-
 ebv = []
 
-for i in range(len(sg))[:1000]:
-    gsf = query(sggl[i], sggb[i], coordsys='gal', mode='lite')
-    ebv.append(gsf['best'][dmmatchind[i]])
+count = 0
+
+for i in range(0, len(sg), 5000):
+    print i
+    sgcut = sg[i:i+5000]
+    sggl = sgcut['gl_sex'].tolist()
+    sggb = sgcut['gb_sex'].tolist()
+    dmmatchindcut = dmmatchind[i:i+5000]
+
+    gsf = query(sggl, sggb, coordsys='gal', mode='lite')
+
+    for line in range(0, 5000):
+        try:
+            ebv.append(gsf['best'][line][dmmatchindcut[line]])
+        except IndexError:
+            print 'index error'
+            count += 1
+            pass
 
 ebv = np.array(ebv)
-ebvfinal = Table([ebv])
 
-ebvfinal.rename_column('col0', 'ebv')
-ascii.write(ebvfinal, 'ebv_sex_gaia.txt', format='basic')
+sg = Table(sg)
+sg['dist'] = pc
+sg['distmod'] = distmod
+sg['Mg'] = Mg
+sg['DMdust'] = dmmatch
+sg['ebv'] = ebv
 
-
-
-#[u'b', u'GR',u'success',u'l',u'best',u'DM_reliable_max',u'ra',u'samples',u'n_stars',u'converged',u'dec',u'DM_reliable_min',u'distmod']
-
-
+print 'takes ~10 minutes to save...'
+ascii.write(sg, 'sex-gaia-dust.txt', format='ipac')
