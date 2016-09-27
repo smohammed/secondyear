@@ -12,7 +12,8 @@ def find_nearest(array, value):
         return array[idx]
 
 
-sg = fits.open('../sex-gaia.fits')[1].data
+#sg = fits.open('../sex-gaia.fits')[1].data
+sg = Table.read('../sex_vphas_gaia.txt', format='ascii')
 pc = 1000 / sg['parallax']
 negpar = np.where(pc > 0)
 pc = pc[negpar]
@@ -62,4 +63,5 @@ sg['DMdust'] = dmmatch
 sg['ebv'] = ebv
 
 print 'takes ~10 minutes to save...'
-ascii.write(sg, 'sex-gaia-dust.txt', format='ipac')
+#ascii.write(sg, 'sex-gaia-dust.txt', format='ipac')
+ascii.write(sg, 'sex_vphas_gaia_dust.txt', format='ipac')

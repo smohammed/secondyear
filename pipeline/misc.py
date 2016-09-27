@@ -250,12 +250,16 @@ plt.show()
 # g - r vs u - g
 ####################################################################
 wdc1 = wdc[np.where(wdc['logg'] == 7)]
+pickles = Table.read('../../picklemags_laphare_final.txt', format='ascii')
 
 scatter_contour(cat['u_AB']-cat['g_AB'], cat['g_AB']-cat['r_AB'],threshold=1100,log_counts=True,histogram2d_args=dict(bins=40),plot_args=dict(color='k',markersize=1), contour_args=dict(cmap=cm.gray))
-plt.scatter(pickles['u']-pickles['g'], pickles['g']-pickles['r'],c='red', edgecolor='none', s=30, label='SED model')
-plt.scatter(wd['u_AB']-wd['g_AB'], wd['g_AB']-wd['r_AB'],c='blue', edgecolor='none', s=30, label='WDCs')
+#plt.scatter(wd['u_AB']-wd['g_AB'], wd['g_AB']-wd['r_AB'],c='blue', edgecolor='none', s=30, label='WDCs')
 #plt.scatter(var['u_AB']-var['g_AB'], var['g_AB']-var['r_AB'],c='purple', edgecolor='none', s=30, label='var')
 #plt.plot(wdc1['u']-wdc1['g'], wdc1['g']-wdc1['r'],c='orange', label='DA WD')
+
+plt.scatter(comb['u_AB']-comb['g_AB'], comb['g_AB']-comb['r_AB'], edgecolor='none', c='blue',s=20, label='vphas+gaia')
+plt.scatter(pickles['u']-pickles['g'], pickles['g']-pickles['r'],c='red', edgecolor='none', s=30, label='SED model')
+
 plt.arrow(3, -0.5, 1.5812 - 1.1936, 1.1936 - 0.8694, head_length=0.05, head_width=0.02, color='red')
 plt.xlim((-1, 5))
 plt.ylim((-1, 3))
@@ -1493,7 +1497,7 @@ sg6 = sg[np.where(sg['dist'] > 3000)]
 
 
 # Extinction values from Schlafly & Finkbeiner 2011
-scatter_contour(sg6['nuv']-sg6['ebv']*7.76-sg6['phot_g_mean_mag']-3.303, sg6['Mg']-sg6['ebv']*3.303,threshold=1000,log_counts=True,histogram2d_args=dict(bins=40),plot_args=dict(color='k',markersize=1), contour_args=dict(cmap=cm.gray))
+scatter_contour(sg['nuv']-sg['ebv']*7.76-sg['phot_g_mean_mag']-3.303, sg['Mg']-sg['ebv']*3.303,threshold=1000,log_counts=True,histogram2d_args=dict(bins=40),plot_args=dict(color='k',markersize=1), contour_args=dict(cmap=cm.gray))
 
 plt.xlim((-6, 8))
 plt.ylim((8, -6))
