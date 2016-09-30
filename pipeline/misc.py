@@ -1498,10 +1498,48 @@ sg6 = sg[np.where(sg['dist'] > 3000)]
 
 # Extinction values from Schlafly & Finkbeiner 2011
 scatter_contour(sg['nuv']-sg['ebv']*7.76-sg['phot_g_mean_mag']-3.303, sg['Mg']-sg['ebv']*3.303,threshold=1000,log_counts=True,histogram2d_args=dict(bins=40),plot_args=dict(color='k',markersize=1), contour_args=dict(cmap=cm.gray))
-
 plt.xlim((-6, 8))
 plt.ylim((8, -6))
 plt.xlabel('(NUV - E$_{B-V}$ * 7.76) - (g - E$_{B-V}$ * 3.303)')
 plt.ylabel('Mg - E$_{B-V}$ * 3.303')
 plt.title('S+G matches, Ext from S&F11')
+
+# By gl
+sg1 = sg[np.where((sg['gl_sex'] > 0) & (sg['gl_sex'] < 90))]
+sg2 = sg[np.where((sg['gl_sex'] > 90) & (sg['gl_sex'] < 180))]
+sg3 = sg[np.where((sg['gl_sex'] > 180) & (sg['gl_sex'] < 270))]
+sg4 = sg[np.where((sg['gl_sex'] > 270) & (sg['gl_sex'] < 360))]
+
+fig = plt.figure()
+plt.subplot(2, 2, 1)
+plt.scatter(sg1['nuv']-sg1['ebv']*7.76 - (sg1['phot_g_mean_mag']-3.303), sg1['Mg']-sg1['ebv']*3.303, edgecolor='none', c=sg1['gl_sex'], vmin=0, vmax=90, alpha=0.3)
+plt.ylabel('Mg - E$_{B-V}$ * 3.303')
+plt.xlim((-5, 17))
+plt.ylim((10, -10))
+#plt.colorbar().set_label('gl (0 to 90)')
+
+plt.subplot(2, 2, 2)
+plt.scatter(sg2['nuv']-sg2['ebv']*7.76 - (sg2['phot_g_mean_mag']-3.303), sg2['Mg']-sg2['ebv']*3.303, edgecolor='none', c=sg2['gl_sex'], vmin=90, vmax=180, alpha=0.3)
+plt.xlim((-5, 17))
+plt.ylim((10, -10))
+#plt.colorbar().set_label('gl (90 to 180)')
+
+plt.subplot(2, 2, 3)
+plt.scatter(sg3['nuv']-sg3['ebv']*7.76 - (sg3['phot_g_mean_mag']-3.303), sg3['Mg']-sg3['ebv']*3.303, edgecolor='none', c=sg3['gl_sex'], vmin=180, vmax=270, alpha=0.3)
+plt.xlabel('(NUV - E$_{B-V}$ * 7.76) - (g - E$_{B-V}$ * 3.303)')
+plt.ylabel('Mg - E$_{B-V}$ * 3.303')
+plt.xlim((-5, 17))
+plt.ylim((10, -10))
+#plt.colorbar().set_label('gl (180 to 270)')
+
+plt.subplot(2, 2, 4)
+plt.scatter(sg4['nuv']-sg4['ebv']*7.76 - (sg4['phot_g_mean_mag']-3.303), sg4['Mg']-sg4['ebv']*3.303, edgecolor='none', c=sg4['gl_sex'], vmin=270, vmax=360, alpha=0.3)
+plt.xlabel('(NUV - E$_{B-V}$ * 7.76) - (g - E$_{B-V}$ * 3.303)')
+plt.xlim((-5, 17))
+plt.ylim((10, -10))
+
+fig.colorbar().set_label('gl (270 to 360)')
+
+plt.subplots_adjust(wspace=0.1, hspace=0)
+fig.suptitle('S+G matches by gl')
 
