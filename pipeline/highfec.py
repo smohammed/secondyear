@@ -1,12 +1,9 @@
 from astropy.io import fits, ascii
 import numpy as np
 from astropy.table import Table, hstack, vstack
-from matplotlib import pyplot as plt
 from astropy import units as u
 from astropy.coordinates import SkyCoord, search_around_sky
 from astropy import wcs
-import os
-from astropy.convolution import convolve, Gaussian2DKernel
 import matplotlib
 matplotlib.rcParams['figure.figsize'] = 16, 8
 matplotlib.rcParams['font.size'] = 20
@@ -19,7 +16,7 @@ incregions = ['9.5', '14.9', '79.7', '90.5', '91.4', '103.1', '104.0', '122.9', 
 incregiondict = dict({'9.5': [1214, 3950, 12318, 52037], '14.9': [1214, 3950, 3532, 29730], '79.7': [1214, 3950, 26493, 51563], '90.5': [1214, 3950, 13600, 51230], '91.4': [1214, 3950, 18800, 51600], '103.1': [1214, 3950, 9300, 51600], '104.0': [1214, 3950, 26400, 51600], '122.9': [1214, 3950, 35000, 51600], '127.4': [1214, 3950, 21800, 51300], '223.7': [1214, 3950, 3300, 47000], '273.2': [1214, 3950, 13100, 52300], '283.1': [1214, 3950, 5700, 51600], '289.4': [1214, 3950, 37000, 51500], '306.5': [1214, 3950, 19000, 51500], '309.2': [1214, 3950, 33400, 52400], '324.5': [1214, 3950, 3200, 45000], '329.9': [1214, 3950, 27600, 44500], '338.0': [1214, 3950, 36000, 53000], '339.8': [1605, 3490, 7200, 53000], '342.5': [1214, 3950, 3000, 42900], '343.4': [1214, 3950, 12200, 52600], '345.2': [1214, 3950, 14600, 40800], '348.8': [1214, 3950, 30400, 52600], '349.7': [1214, 3950, 12100, 52600], '350.6': [1214, 3950, 13200, 52600], '351.5': [1214, 3950, 13380, 52600], '352.4': [1214, 3950, 15500, 52700], '353.3': [1214, 3950, 16400, 52700], '354.2': [1214, 3950, 17000, 52700], '355.1': [1214, 3950, 17700, 52700], '356.0': [1214, 3950, 22700, 52700], '357.8': [1214, 3950, 23600, 52700]})
 
 
-files = np.loadtxt('../scst/scst_list_firstscan_edit.txt', dtype='str')
+files = np.loadtxt('../scst/scst_list_firstscan.txt', dtype='str')
 
 highreg = []
 
@@ -27,11 +24,12 @@ for area in range(len(regions)):
     curregion = regions[area]
     print curregion
 
-    t1 = Table.read('../Dunmaps/fwhm/starcat_'+curregion+'mapweight_fwhm.txt', format='ascii')
+    t1 = Table.read('../Dunmaps/fwhm/scans/starcat_'+curregion+'mapweight_fwhm.txt', format='ascii')
     scan = fits.open('../scst/'+files[area])[1].data
+    print files[area]
 
     # Find regions where FEC is above 200,000
-    if np.max(scan['NDCFEC']) > 200000:
+    if np.max(scan['NDCFEC']) < 200000:
         print curregion + ' lower than 200000'
         continue
 
@@ -67,6 +65,6 @@ for area in range(len(regions)):
 
         table = vstack([table, t1[indices]])
 
-    ascii.write(table, curregion+'_highfec.txt', format='basic')
+    ascii.write(table, '../highfec/'+curregion+'_highfec.txt', format='basic')
 
 
