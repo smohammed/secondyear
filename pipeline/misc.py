@@ -666,20 +666,20 @@ for region in t:
     ascii.write(comb,'sex_galex_matches_'+region+'.txt',format='basic')
 
 ####################################################################
-# Tycho match distances
+# Gaia match distances
 ####################################################################
-cat = Table.read('sex_tycho_matches_total_mapweight.txt', format='ascii')
-c1 = cat[np.where(cat['gb_tycho'] < 0)]
-c2 = cat[np.where(cat['gb_tycho'] > 0)]
+cat = fits.open('sex-gaia-dust.fits')[1].data
+c1 = cat[np.where(cat['gb_gaia'] < 0)]
+c2 = cat[np.where(cat['gb_gaia'] > 0)]
 
 for region in range(0,360,5):
-    cat1 = c1[np.where((c1['gl_tycho'] > region) & (c1['gl_tycho'] < region+5))]
-    dgl1 = (cat1['gl_sex']-cat1['gl_tycho'])
-    dgb1 = (cat1['gb_sex']-cat1['gb_tycho'])
+    cat1 = c1[np.where((c1['gl_gaia'] > region) & (c1['gl_gaia'] < region+5))]
+    dgl1 = (cat1['gl_sex']-cat1['gl_gaia'])
+    dgb1 = (cat1['gb_sex']-cat1['gb_gaia'])
 
-    cat2 = c2[np.where((c2['gl_tycho'] > region) & (c2['gl_tycho'] < region+5))]
-    dgl2 = (cat2['gl_sex']-cat2['gl_tycho'])
-    dgb2 = (cat2['gb_sex']-cat2['gb_tycho'])
+    cat2 = c2[np.where((c2['gl_gaia'] > region) & (c2['gl_gaia'] < region+5))]
+    dgl2 = (cat2['gl_sex']-cat2['gl_gaia'])
+    dgb2 = (cat2['gb_sex']-cat2['gb_gaia'])
 
     fig, (ax1, ax2) = plt.subplots(1, 2, sharey=True)
     ax1.scatter(dgl1*3600, dgb1*3600, edgecolor='none', alpha=0.1)
@@ -689,20 +689,20 @@ for region in range(0,360,5):
     ax2.axhline(y=0,c='black')
     ax2.axvline(x=0,c='black')
 
-    ax1.set_xlabel('gl$_{SEx}$ - gl$_{Tycho2}$ [arcsec]')
-    ax2.set_xlabel('gl$_{SEx}$ - gl$_{Tycho2}$ [arcsec]')
-    ax1.set_ylabel('gb$_{SEx}$ - gb$_{Tycho2}$ [arcsec]')
+    ax1.set_xlabel('gl$_{SEx}$ - gl$_{gaia2}$ [arcsec]')
+    ax2.set_xlabel('gl$_{SEx}$ - gl$_{gaia2}$ [arcsec]')
+    ax1.set_ylabel('gb$_{SEx}$ - gb$_{gaia2}$ [arcsec]')
     ax1.set_xlim((-4,4))
     ax1.set_ylim((-4,4))
     ax2.set_xlim((-4,4))
     ax2.set_ylim((-4,4))
     ax1.annotate('N$_{lower}$ = '+str(len(cat1)), xy=(-3.9,-3.9))
     ax2.annotate('N$_{upper}$ = '+str(len(cat2)), xy=(-3.9,-3.9))
-    ax1.set_title('gb<0, gl='+str(region)+'-'+str(region+5)+', avg=('+str(np.mean(dgl1)*3600)[:4]+', '+str(np.mean(dgb1)*3600)[:4]+')')
+    ax1.set_title('gl='+str(region)+'-'+str(region+5)+', gb<0, avg=('+str(np.mean(dgl1)*3600)[:4]+', '+str(np.mean(dgb1)*3600)[:4]+')')
     ax2.set_title('gb>0, avg=('+str(np.mean(dgl2)*3600)[:4]+', '+str(np.mean(dgb2)*3600)[:4]+')')
     fig.subplots_adjust(wspace=0)
 
-    plt.savefig('04-13-sex-tycho_offset_'+str(region)+'-'+str(region+5)+'.png')
+    plt.savefig('10-13-sex-gaia_offset_'+str(region)+'-'+str(region+5)+'.png')
     plt.clf()
     print region
 
