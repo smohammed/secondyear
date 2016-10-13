@@ -1126,57 +1126,57 @@ plt.scatter(b2['gl'], b2['gb'], color='orange', alpha=0.5)
 sky1 = ['1.4', '2.3', '3.2', '4.1', '5.0', '5.9', '6.8', '8.6', '9.5', '10.4', '11.3', '12.2', '14.0', '14.9', '15.8', '16.7', '17.6', '18.5', '19.4', '20.3', '21.2', '22.1', '23.0', '23.9', '24.8', '25.7', '28.4', '29.3', '30.2', '31.1', '32.0', '32.9', '33.8', '34.7', '35.6', '39.2', '42.8', '43.7', '44.6', '44.6', '45.5', '46.4', '47.3', '48.2', '49.1', '50.0', '67.1', '68.9', '71.6', '74.3', '75.2', '76.1', '77.0', '77.9', '78.8', '79.7', '80.6', '81.5', '82.4', '83.3', '87.8', '88.7', '89.6', '90.5', '91.4', '92.3', '93.2', '94.1', '95.0', '95.9', '96.8', '97.7', '98.6', '99.5', '100.4']
 
 alldata = Table.read('starcat_5mapweight_fwhm.txt', format='ascii')
-alldata = alldata[np.where((alldata['FWHM_IMAGE'] < 10) & (alldata['FWHM_IMAGE'] > 3.5) & (alldata['nuv'] < 20))]
+#alldata = alldata[np.where((alldata['FWHM_IMAGE'] < 10) & (alldata['FWHM_IMAGE'] > 3.5) & (alldata['nuv'] < 20))]
 
 for region in sky1:
     a = Table.read('starcat_'+region+'mapweight_fwhm.txt', format='ascii')
-    a = a[np.where((a['FWHM_IMAGE'] < 10) & (a['FWHM_IMAGE'] > 3.5) & (a['nuv'] < 20))]
+    #a = a[np.where((a['FWHM_IMAGE'] < 10) & (a['FWHM_IMAGE'] > 3.5) & (a['nuv'] < 20))]
     alldata = vstack([alldata, a])
     print region
 
-ascii.write(alldata, 'starcat_1-100_mapweight_fwhm_pscans.txt', format='basic')
+ascii.write(alldata, '../../starcat_1-100_mapweight_fwhm_pscans_allnuv.txt', format='basic')
 
 
 sky2 = ['102.2', '103.1', '104.0', '104.9', '105.8', '106.7', '107.6', '110.3', '111.2', '112.1', '113.0', '113.9', '114.8', '119.3', '121.1', '122.9', '124.7', '125.6', '126.5', '127.4', '128.3', '129.2', '130.1', '131.0', '131.9', '132.8', '133.7', '134.6', '135.5', '136.4', '137.3', '138.2', '139.1', '140.0', '140.9', '141.8', '143.6', '144.5', '148.1', '149.0', '149.9', '150.8', '151.7', '152.6', '153.5', '145.4', '155.3', '156.2', '157.1', '158.0', '160.7', '161.6', '163.4', '167.0', '167.9', '172.4', '173.3', '174.2', '175.1', '176.0', '176.9', '177.8', '178.7', '179.6', '180.5', '183.2', '185.0', '190.4', '191.3', '197.6', '198.5']
 
 alldata = Table.read('starcat_101.3mapweight_fwhm.txt', format='ascii')
-alldata = alldata[np.where((alldata['FWHM_IMAGE'] < 10) & (alldata['FWHM_IMAGE'] > 3.5) & (alldata['nuv'] < 20))]
+#alldata = alldata[np.where((alldata['FWHM_IMAGE'] < 10) & (alldata['FWHM_IMAGE'] > 3.5) & (alldata['nuv'] < 20))]
 
 for region in sky2:
     a = Table.read('starcat_'+region+'mapweight_fwhm.txt', format='ascii')
-    a = a[np.where((a['FWHM_IMAGE'] < 10) & (a['FWHM_IMAGE'] > 3.5) & (a['nuv'] < 20))]
+    #a = a[np.where((a['FWHM_IMAGE'] < 10) & (a['FWHM_IMAGE'] > 3.5) & (a['nuv'] < 20))]
     alldata = vstack([alldata, a])
     print region
 
-ascii.write(alldata, 'starcat100-200_mapweight_fwhm_pscans.txt', format='basic')
+ascii.write(alldata, '../../starcat100-200_mapweight_fwhm_pscans_allnuv.txt', format='basic')
 
 
 sky3 =  ['201.2', '203.0', '203.9', '205.7', '206.6', '207.5', '208.4', '209.3', '210.2', '211.1', '212.0', '212.9', '213.8', '214.7', '215.6', '216.5', '217.4', '218.3', '219.2', '220.1', '221.0', '221.9', '222.8', '223.7', '224.6', '225.5', '226.4', '228.2', '229.1', '230.0', '230.9', '231.8', '234.5', '235.4', '236.3', '237.2', '238.1', '239.0', '239.9', '240.8', '241.7', '242.6', '243.5', '244.4', '245.3', '246.2', '247.1', '248.0', '248.9', '249.8', '250.7', '251.6', '252.5', '253.4', '254.3', '255.2', '256.1', '257.0', '258.8', '259.7', '260.6', '261.5', '263.3', '264.2', '265.1', '266.0', '266.9', '268.7', '269.6', '270.5', '271.4', '272.3', '273.2', '274.1', '275.0', '275.9', '276.8', '278.6', '279.5', '281.3', '283.1', '284.0', '285.8', '286.7', '288.5', '289.4', '290.3', '291.2', '292.1', '293.0', '293.9', '295.7', '297.5', '298.4']
 
 alldata = Table.read('starcat_200.3mapweight_fwhm.txt', format='ascii')
-alldata = alldata[np.where((alldata['FWHM_IMAGE'] < 10) & (alldata['FWHM_IMAGE'] > 3.5) & (alldata['nuv'] < 20))]
+#alldata = alldata[np.where((alldata['FWHM_IMAGE'] < 10) & (alldata['FWHM_IMAGE'] > 3.5) & (alldata['nuv'] < 20))]
 
 for region in sky3:
     a = Table.read('starcat_'+region+'mapweight_fwhm.txt', format='ascii')
-    a = a[np.where((a['FWHM_IMAGE'] < 10) & (a['FWHM_IMAGE'] > 3.5) & (a['nuv'] < 20))]
+    #a = a[np.where((a['FWHM_IMAGE'] < 10) & (a['FWHM_IMAGE'] > 3.5) & (a['nuv'] < 20))]
     alldata = vstack([alldata, a])
     print region
 
-ascii.write(alldata, 'starcat200-300_mapweight_fwhm_pscans.txt', format='basic')
+ascii.write(alldata, '../../starcat200-300_mapweight_fwhm_pscans_allnuv.txt', format='basic')
 
 
 sky4 = ['302.0', '302.9', '303.8', '304.7', '305.6', '306.5', '308.3', '309.2', '310.1', '315.5', '316.4', '317.3', '318.2', '319.1', '320.0', '320.9', '321.8', '322.7', '323.6', '324.5', '325.4', '326.3', '327.2', '328.1', '329.0', '329.9', '331.7', '332.6', '333.5', '334.4', '335.3', '338.0', '338.9', '339.8', '341.6', '342.5', '343.4', '345.2', '348.8', '349.7', '350.6', '351.5', '352.4', '353.3', '354.2', '355.1', '356.0', '357.8', '358.7', '359.6']
 
 alldata = Table.read('starcat_301.1mapweight_fwhm.txt', format='ascii')
-alldata = alldata[np.where((alldata['FWHM_IMAGE'] < 10) & (alldata['FWHM_IMAGE'] > 3.5) & (alldata['nuv'] < 20))]
+#alldata = alldata[np.where((alldata['FWHM_IMAGE'] < 10) & (alldata['FWHM_IMAGE'] > 3.5) & (alldata['nuv'] < 20))]
 
 for region in sky4:
     a = Table.read('starcat_'+region+'mapweight_fwhm.txt', format='ascii')
-    a = a[np.where((a['FWHM_IMAGE'] < 10) & (a['FWHM_IMAGE'] > 3.5) & (a['nuv'] < 20))]
+    #a = a[np.where((a['FWHM_IMAGE'] < 10) & (a['FWHM_IMAGE'] > 3.5) & (a['nuv'] < 20))]
     alldata = vstack([alldata, a])
     print region
 
-ascii.write(alldata, 'starcat300-360_mapweight_fwhm_pscans.txt', format='basic')
+ascii.write(alldata, '../../starcat300-360_mapweight_fwhm_pscans_allnuv.txt', format='basic')
 
 
 #################################################
@@ -1487,7 +1487,7 @@ plt.title('WD + var dets in sextractor')
 # HR diagram with extinction colored by gl
 #################################################
 #sg = fits.open('../sex-gaia-dust.fits')[1].data
-sg = fits.open('sex_gaia_')
+sg = fits.open('sex_gaia_dust_allnuv.fits')[1].data
 
 sg1 = sg[np.where(sg['dist'] < 100)]
 sg2 = sg[np.where((sg['dist'] > 100) & (sg['dist'] < 300))]
@@ -1503,7 +1503,7 @@ plt.xlim((-6, 8))
 plt.ylim((8, -6))
 plt.xlabel('(NUV - E$_{B-V}$ * 7.76) - (g - E$_{B-V}$ * 3.303)')
 plt.ylabel('Mg - E$_{B-V}$ * 3.303')
-plt.title('S+G matches, Ext from S&F11, all FEC')
+plt.title('S+G matches, Ext from S&F11')
 
 #sg = sgcat[np.where((sgcat['dist'] > 3000) & (sgcat['dist'] < 3000))]
 sg = sgcat[np.where((sgcat['dist'] > 3000))]
@@ -1550,6 +1550,10 @@ fig.suptitle('S+G matches by gl, D > 3000 pc')
 # HR diagram with extinction by dist and 45 deg slices
 #######################################################
 sg = sgcat[np.where((sgcat['dist'] > 0) & (sgcat['dist'] < 100))]
+#sg = sgcat[np.where((sgcat['dist'] > 100) & (sgcat['dist'] < 300))]
+#sg = sgcat[np.where((sgcat['dist'] > 300) & (sgcat['dist'] < 600))]
+#sg = sgcat[np.where((sgcat['dist'] > 600) & (sgcat['dist'] < 1000))]
+#sg = sgcat[np.where((sgcat['dist'] > 1000) & (sgcat['dist'] < 3000))]
 #sg = sgcat[np.where((sgcat['dist'] > 3000))]
 
 # By gl
@@ -1564,14 +1568,14 @@ sg8 = sg[np.where((sg['gl_sex'] > 315) & (sg['gl_sex'] < 360))]
 
 
 fig, ((ax1, ax2), (ax3, ax4), (ax5, ax6), (ax7, ax8)) = plt.subplots(4, 2, sharex=True, sharey=True)
-scatter_contour(sg1['nuv']-sg1['ebv']*7.76-sg1['phot_g_mean_mag']-3.303, sg1['Mg']-sg1['ebv']*3.303,threshold=1000,log_counts=True,histogram2d_args=dict(bins=40),plot_args=dict(color='k',markersize=1), contour_args=dict(cmap=cm.gray), ax=ax1)
-scatter_contour(sg2['nuv']-sg2['ebv']*7.76-sg2['phot_g_mean_mag']-3.303, sg2['Mg']-sg2['ebv']*3.303,threshold=1000,log_counts=True,histogram2d_args=dict(bins=40),plot_args=dict(color='k',markersize=1), contour_args=dict(cmap=cm.gray), ax=ax2)
-scatter_contour(sg3['nuv']-sg3['ebv']*7.76-sg3['phot_g_mean_mag']-3.303, sg3['Mg']-sg3['ebv']*3.303,threshold=1000,log_counts=True,histogram2d_args=dict(bins=40),plot_args=dict(color='k',markersize=1), contour_args=dict(cmap=cm.gray), ax=ax3)
-scatter_contour(sg4['nuv']-sg4['ebv']*7.76-sg4['phot_g_mean_mag']-3.303, sg4['Mg']-sg4['ebv']*3.303,threshold=1000,log_counts=True,histogram2d_args=dict(bins=40),plot_args=dict(color='k',markersize=1), contour_args=dict(cmap=cm.gray), ax=ax4)
-scatter_contour(sg5['nuv']-sg5['ebv']*7.76-sg5['phot_g_mean_mag']-3.303, sg5['Mg']-sg5['ebv']*3.303,threshold=1000,log_counts=True,histogram2d_args=dict(bins=40),plot_args=dict(color='k',markersize=1), contour_args=dict(cmap=cm.gray), ax=ax5)
-scatter_contour(sg6['nuv']-sg6['ebv']*7.76-sg6['phot_g_mean_mag']-3.303, sg6['Mg']-sg6['ebv']*3.303,threshold=1000,log_counts=True,histogram2d_args=dict(bins=40),plot_args=dict(color='k',markersize=1), contour_args=dict(cmap=cm.gray), ax=ax6)
-scatter_contour(sg7['nuv']-sg7['ebv']*7.76-sg7['phot_g_mean_mag']-3.303, sg7['Mg']-sg7['ebv']*3.303,threshold=1000,log_counts=True,histogram2d_args=dict(bins=40),plot_args=dict(color='k',markersize=1), contour_args=dict(cmap=cm.gray), ax=ax7)
-scatter_contour(sg8['nuv']-sg8['ebv']*7.76-sg8['phot_g_mean_mag']-3.303, sg8['Mg']-sg8['ebv']*3.303,threshold=1000,log_counts=True,histogram2d_args=dict(bins=40),plot_args=dict(color='k',markersize=1), contour_args=dict(cmap=cm.gray), ax=ax8)
+scatter_contour(sg1['nuv_mag']-sg1['ebv']*7.76-sg1['phot_g_mean_mag']-3.303, sg1['Mg']-sg1['ebv']*3.303,threshold=1000,log_counts=True,histogram2d_args=dict(bins=40),plot_args=dict(color='k',markersize=1), contour_args=dict(cmap=cm.gray), ax=ax1)
+scatter_contour(sg2['nuv_mag']-sg2['ebv']*7.76-sg2['phot_g_mean_mag']-3.303, sg2['Mg']-sg2['ebv']*3.303,threshold=1000,log_counts=True,histogram2d_args=dict(bins=40),plot_args=dict(color='k',markersize=1), contour_args=dict(cmap=cm.gray), ax=ax2)
+scatter_contour(sg3['nuv_mag']-sg3['ebv']*7.76-sg3['phot_g_mean_mag']-3.303, sg3['Mg']-sg3['ebv']*3.303,threshold=1000,log_counts=True,histogram2d_args=dict(bins=40),plot_args=dict(color='k',markersize=1), contour_args=dict(cmap=cm.gray), ax=ax3)
+scatter_contour(sg4['nuv_mag']-sg4['ebv']*7.76-sg4['phot_g_mean_mag']-3.303, sg4['Mg']-sg4['ebv']*3.303,threshold=1000,log_counts=True,histogram2d_args=dict(bins=40),plot_args=dict(color='k',markersize=1), contour_args=dict(cmap=cm.gray), ax=ax4)
+scatter_contour(sg5['nuv_mag']-sg5['ebv']*7.76-sg5['phot_g_mean_mag']-3.303, sg5['Mg']-sg5['ebv']*3.303,threshold=1000,log_counts=True,histogram2d_args=dict(bins=40),plot_args=dict(color='k',markersize=1), contour_args=dict(cmap=cm.gray), ax=ax5)
+scatter_contour(sg6['nuv_mag']-sg6['ebv']*7.76-sg6['phot_g_mean_mag']-3.303, sg6['Mg']-sg6['ebv']*3.303,threshold=1000,log_counts=True,histogram2d_args=dict(bins=40),plot_args=dict(color='k',markersize=1), contour_args=dict(cmap=cm.gray), ax=ax6)
+scatter_contour(sg7['nuv_mag']-sg7['ebv']*7.76-sg7['phot_g_mean_mag']-3.303, sg7['Mg']-sg7['ebv']*3.303,threshold=1000,log_counts=True,histogram2d_args=dict(bins=40),plot_args=dict(color='k',markersize=1), contour_args=dict(cmap=cm.gray), ax=ax7)
+scatter_contour(sg8['nuv_mag']-sg8['ebv']*7.76-sg8['phot_g_mean_mag']-3.303, sg8['Mg']-sg8['ebv']*3.303,threshold=1000,log_counts=True,histogram2d_args=dict(bins=40),plot_args=dict(color='k',markersize=1), contour_args=dict(cmap=cm.gray), ax=ax8)
 
 ax1.set_xlim((-6, 8))
 ax1.set_ylim((8, -6))
@@ -1599,9 +1603,7 @@ ax7.annotate('gl = 270-315', xy=(-5.5, 7))
 ax8.annotate('gl = 315-360', xy=(-5.5, 7))
 fig.text(0.5, 0.04, '(NUV - E$_{B-V}$ * 7.76) - (g - E$_{B-V}$ * 3.303)', ha='center')
 fig.text(0.04, 0.5, 'Mg - E$_{B-V}$ * 3.303', va='center', rotation='vertical')
-plt.suptitle('S+G matches, Ext from S&F11, D > 3000 pc')
+plt.suptitle('S+G matches, Ext from S&F11, 0 < D < 100 pc, all NUV')
 fig.subplots_adjust(hspace=0, wspace=0)
 plt.show()
-
-
 
