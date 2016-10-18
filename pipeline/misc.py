@@ -1516,20 +1516,20 @@ sg4 = sg[np.where((sg['gl_sex'] > 270) & (sg['gl_sex'] < 360))]
 
 fig = plt.figure()
 plt.subplot(2, 2, 1)
-plt.scatter(sg1['nuv']-sg1['ebv']*7.76 - (sg1['phot_g_mean_mag']-3.303), sg1['Mg']-sg1['ebv']*3.303, edgecolor='none', c=sg1['gl_sex'], vmin=0, vmax=90, alpha=0.3)
+plt.scatter(sg1['nuv_mag']-sg1['ebv']*7.76 - (sg1['phot_g_mean_mag']-3.303), sg1['Mg']-sg1['ebv']*3.303, edgecolor='none', c=sg1['ebv'], vmin=0, vmax=90, alpha=0.3)
 plt.ylabel('Mg - E$_{B-V}$ * 3.303')
 plt.xlim((-5, 17))
 plt.ylim((10, -10))
 plt.colorbar().set_label('gl (0 to 90)')
 
 plt.subplot(2, 2, 2)
-plt.scatter(sg2['nuv']-sg2['ebv']*7.76 - (sg2['phot_g_mean_mag']-3.303), sg2['Mg']-sg2['ebv']*3.303, edgecolor='none', c=sg2['gl_sex'], vmin=90, vmax=180, alpha=0.3)
+plt.scatter(sg2['nuv_mag']-sg2['ebv']*7.76 - (sg2['phot_g_mean_mag']-3.303), sg2['Mg']-sg2['ebv']*3.303, edgecolor='none', c=sg2['ebv'], vmin=90, vmax=180, alpha=0.3)
 plt.xlim((-5, 17))
 plt.ylim((10, -10))
 plt.colorbar().set_label('gl (90 to 180)')
 
 plt.subplot(2, 2, 3)
-plt.scatter(sg3['nuv']-sg3['ebv']*7.76 - (sg3['phot_g_mean_mag']-3.303), sg3['Mg']-sg3['ebv']*3.303, edgecolor='none', c=sg3['gl_sex'], vmin=180, vmax=270, alpha=0.3)
+plt.scatter(sg3['nuv_mag']-sg3['ebv']*7.76 - (sg3['phot_g_mean_mag']-3.303), sg3['Mg']-sg3['ebv']*3.303, edgecolor='none', c=sg3['ebv'], vmin=180, vmax=270, alpha=0.3)
 plt.xlabel('(NUV - E$_{B-V}$ * 7.76) - (g - E$_{B-V}$ * 3.303)')
 plt.ylabel('Mg - E$_{B-V}$ * 3.303')
 plt.xlim((-5, 17))
@@ -1537,7 +1537,7 @@ plt.ylim((10, -10))
 plt.colorbar().set_label('gl (180 to 270)')
 
 plt.subplot(2, 2, 4)
-plt.scatter(sg4['nuv']-sg4['ebv']*7.76 - (sg4['phot_g_mean_mag']-3.303), sg4['Mg']-sg4['ebv']*3.303, edgecolor='none', c=sg4['gl_sex'], vmin=270, vmax=360, alpha=0.3)
+plt.scatter(sg4['nuv_mag']-sg4['ebv']*7.76 - (sg4['phot_g_mean_mag']-3.303), sg4['Mg']-sg4['ebv']*3.303, edgecolor='none', c=sg4['ebv'], vmin=270, vmax=360, alpha=0.3)
 plt.xlabel('(NUV - E$_{B-V}$ * 7.76) - (g - E$_{B-V}$ * 3.303)')
 plt.xlim((-5, 17))
 plt.ylim((10, -10))
@@ -1549,61 +1549,136 @@ fig.suptitle('S+G matches by gl, D > 3000 pc')
 #######################################################
 # HR diagram with extinction by dist and 45 deg slices
 #######################################################
-sg = sgcat[np.where((sgcat['dist'] > 0) & (sgcat['dist'] < 100))]
-#sg = sgcat[np.where((sgcat['dist'] > 100) & (sgcat['dist'] < 300))]
-#sg = sgcat[np.where((sgcat['dist'] > 300) & (sgcat['dist'] < 600))]
-#sg = sgcat[np.where((sgcat['dist'] > 600) & (sgcat['dist'] < 1000))]
-#sg = sgcat[np.where((sgcat['dist'] > 1000) & (sgcat['dist'] < 3000))]
-#sg = sgcat[np.where((sgcat['dist'] > 3000))]
+sgcat = fits.open('sex_gaia_dust.fits')[1].data
+sga = sgcat[np.where((sgcat['dist'] > 0) & (sgcat['dist'] < 100))]
+sgb = sgcat[np.where((sgcat['dist'] > 100) & (sgcat['dist'] < 300))]
+sgc = sgcat[np.where((sgcat['dist'] > 300) & (sgcat['dist'] < 600))]
+sgd = sgcat[np.where((sgcat['dist'] > 600) & (sgcat['dist'] < 1000))]
+sge = sgcat[np.where((sgcat['dist'] > 1000) & (sgcat['dist'] < 3000))]
+sgf = sgcat[np.where((sgcat['dist'] > 3000))]
 
-# By gl
-sg1 = sg[np.where((sg['gl_sex'] > 0) & (sg['gl_sex'] < 45))]
-sg2 = sg[np.where((sg['gl_sex'] > 45) & (sg['gl_sex'] < 90))]
-sg3 = sg[np.where((sg['gl_sex'] > 90) & (sg['gl_sex'] < 135))]
-sg4 = sg[np.where((sg['gl_sex'] > 135) & (sg['gl_sex'] < 180))]
-sg5 = sg[np.where((sg['gl_sex'] > 180) & (sg['gl_sex'] < 225))]
-sg6 = sg[np.where((sg['gl_sex'] > 225) & (sg['gl_sex'] < 270))]
-sg7 = sg[np.where((sg['gl_sex'] > 270) & (sg['gl_sex'] < 315))]
-sg8 = sg[np.where((sg['gl_sex'] > 315) & (sg['gl_sex'] < 360))]
+sg = [sga, sgb, sgc, sgd, sge]
+distrange = ['0 < D < 100 pc', '100 < D < 300 pc', '300 < D < 600 pc', '600 < D < 1000 pc', 'D > 1000 pc']
+distfilename = ['0-100', '100-300', '300-600', '600-1000', '1000']
+
+for i in range(len(sg)):
+    # By gl
+    sg1 = sg[i][np.where((sg[i]['gl_sex'] > 0) & (sg[i]['gl_sex'] < 45))]
+    sg2 = sg[i][np.where((sg[i]['gl_sex'] > 45) & (sg[i]['gl_sex'] < 90))]
+    sg3 = sg[i][np.where((sg[i]['gl_sex'] > 90) & (sg[i]['gl_sex'] < 135))]
+    sg4 = sg[i][np.where((sg[i]['gl_sex'] > 135) & (sg[i]['gl_sex'] < 180))]
+    sg5 = sg[i][np.where((sg[i]['gl_sex'] > 180) & (sg[i]['gl_sex'] < 225))]
+    sg6 = sg[i][np.where((sg[i]['gl_sex'] > 225) & (sg[i]['gl_sex'] < 270))]
+    sg7 = sg[i][np.where((sg[i]['gl_sex'] > 270) & (sg[i]['gl_sex'] < 315))]
+    sg8 = sg[i][np.where((sg[i]['gl_sex'] > 315) & (sg[i]['gl_sex'] < 360))]
 
 
-fig, ((ax1, ax2), (ax3, ax4), (ax5, ax6), (ax7, ax8)) = plt.subplots(4, 2, sharex=True, sharey=True)
-scatter_contour(sg1['nuv_mag']-sg1['ebv']*7.76-sg1['phot_g_mean_mag']-3.303, sg1['Mg']-sg1['ebv']*3.303,threshold=1000,log_counts=True,histogram2d_args=dict(bins=40),plot_args=dict(color='k',markersize=1), contour_args=dict(cmap=cm.gray), ax=ax1)
-scatter_contour(sg2['nuv_mag']-sg2['ebv']*7.76-sg2['phot_g_mean_mag']-3.303, sg2['Mg']-sg2['ebv']*3.303,threshold=1000,log_counts=True,histogram2d_args=dict(bins=40),plot_args=dict(color='k',markersize=1), contour_args=dict(cmap=cm.gray), ax=ax2)
-scatter_contour(sg3['nuv_mag']-sg3['ebv']*7.76-sg3['phot_g_mean_mag']-3.303, sg3['Mg']-sg3['ebv']*3.303,threshold=1000,log_counts=True,histogram2d_args=dict(bins=40),plot_args=dict(color='k',markersize=1), contour_args=dict(cmap=cm.gray), ax=ax3)
-scatter_contour(sg4['nuv_mag']-sg4['ebv']*7.76-sg4['phot_g_mean_mag']-3.303, sg4['Mg']-sg4['ebv']*3.303,threshold=1000,log_counts=True,histogram2d_args=dict(bins=40),plot_args=dict(color='k',markersize=1), contour_args=dict(cmap=cm.gray), ax=ax4)
-scatter_contour(sg5['nuv_mag']-sg5['ebv']*7.76-sg5['phot_g_mean_mag']-3.303, sg5['Mg']-sg5['ebv']*3.303,threshold=1000,log_counts=True,histogram2d_args=dict(bins=40),plot_args=dict(color='k',markersize=1), contour_args=dict(cmap=cm.gray), ax=ax5)
-scatter_contour(sg6['nuv_mag']-sg6['ebv']*7.76-sg6['phot_g_mean_mag']-3.303, sg6['Mg']-sg6['ebv']*3.303,threshold=1000,log_counts=True,histogram2d_args=dict(bins=40),plot_args=dict(color='k',markersize=1), contour_args=dict(cmap=cm.gray), ax=ax6)
-scatter_contour(sg7['nuv_mag']-sg7['ebv']*7.76-sg7['phot_g_mean_mag']-3.303, sg7['Mg']-sg7['ebv']*3.303,threshold=1000,log_counts=True,histogram2d_args=dict(bins=40),plot_args=dict(color='k',markersize=1), contour_args=dict(cmap=cm.gray), ax=ax7)
-scatter_contour(sg8['nuv_mag']-sg8['ebv']*7.76-sg8['phot_g_mean_mag']-3.303, sg8['Mg']-sg8['ebv']*3.303,threshold=1000,log_counts=True,histogram2d_args=dict(bins=40),plot_args=dict(color='k',markersize=1), contour_args=dict(cmap=cm.gray), ax=ax8)
+    fig, ((ax1, ax2), (ax3, ax4), (ax5, ax6), (ax7, ax8)) = plt.subplots(4, 2, sharex=True, sharey=True)
+    scatter_contour((sg1['nuv_mag']-sg1['ebv']*7.76)-(sg1['phot_g_mean_mag']-sg1['ebv']*3.303), sg1['Mg']-sg1['ebv']*3.303,threshold=1000,log_counts=True,histogram2d_args=dict(bins=40),plot_args=dict(color='k',markersize=1), contour_args=dict(cmap=cm.gray), ax=ax1)
+    scatter_contour((sg2['nuv_mag']-sg2['ebv']*7.76)-(sg2['phot_g_mean_mag']-sg2['ebv']*3.303), sg2['Mg']-sg2['ebv']*3.303,threshold=1000,log_counts=True,histogram2d_args=dict(bins=40),plot_args=dict(color='k',markersize=1), contour_args=dict(cmap=cm.gray), ax=ax2)
+    scatter_contour((sg3['nuv_mag']-sg3['ebv']*7.76)-(sg3['phot_g_mean_mag']-sg3['ebv']*3.303), sg3['Mg']-sg3['ebv']*3.303,threshold=1000,log_counts=True,histogram2d_args=dict(bins=40),plot_args=dict(color='k',markersize=1), contour_args=dict(cmap=cm.gray), ax=ax3)
+    scatter_contour((sg4['nuv_mag']-sg4['ebv']*7.76)-(sg4['phot_g_mean_mag']-sg4['ebv']*3.303), sg4['Mg']-sg4['ebv']*3.303,threshold=1000,log_counts=True,histogram2d_args=dict(bins=40),plot_args=dict(color='k',markersize=1), contour_args=dict(cmap=cm.gray), ax=ax4)
+    scatter_contour((sg5['nuv_mag']-sg5['ebv']*7.76)-(sg5['phot_g_mean_mag']-sg5['ebv']*3.303), sg5['Mg']-sg5['ebv']*3.303,threshold=1000,log_counts=True,histogram2d_args=dict(bins=40),plot_args=dict(color='k',markersize=1), contour_args=dict(cmap=cm.gray), ax=ax5)
+    scatter_contour((sg6['nuv_mag']-sg6['ebv']*7.76)-(sg6['phot_g_mean_mag']-sg6['ebv']*3.303), sg6['Mg']-sg6['ebv']*3.303,threshold=1000,log_counts=True,histogram2d_args=dict(bins=40),plot_args=dict(color='k',markersize=1), contour_args=dict(cmap=cm.gray), ax=ax6)
+    scatter_contour((sg7['nuv_mag']-sg7['ebv']*7.76)-(sg7['phot_g_mean_mag']-sg7['ebv']*3.303), sg7['Mg']-sg7['ebv']*3.303,threshold=1000,log_counts=True,histogram2d_args=dict(bins=40),plot_args=dict(color='k',markersize=1), contour_args=dict(cmap=cm.gray), ax=ax7)
+    scatter_contour((sg8['nuv_mag']-sg8['ebv']*7.76)-(sg8['phot_g_mean_mag']-sg8['ebv']*3.303), sg8['Mg']-sg8['ebv']*3.303,threshold=1000,log_counts=True,histogram2d_args=dict(bins=40),plot_args=dict(color='k',markersize=1), contour_args=dict(cmap=cm.gray), ax=ax8)
 
-ax1.set_xlim((-6, 8))
-ax1.set_ylim((8, -6))
-ax2.set_xlim((-6, 8))
-ax2.set_ylim((8, -6))
-ax3.set_xlim((-6, 8))
-ax3.set_ylim((8, -6))
-ax4.set_xlim((-6, 8))
-ax4.set_ylim((8, -6))
-ax5.set_xlim((-6, 8))
-ax5.set_ylim((8, -6))
-ax6.set_xlim((-6, 8))
-ax6.set_ylim((8, -6))
-ax7.set_xlim((-6, 8))
-ax7.set_ylim((8, -6))
-ax8.set_xlim((-6, 8))
-ax8.set_ylim((8, -6))
-ax1.annotate('gl = 0-45', xy=(-5.5, 7))
-ax2.annotate('gl = 45-90', xy=(-5.5, 7))
-ax3.annotate('gl = 90-135', xy=(-5.5, 7))
-ax4.annotate('gl = 135-180', xy=(-5.5, 7))
-ax5.annotate('gl = 180-225', xy=(-5.5, 7))
-ax6.annotate('gl = 225-270', xy=(-5.5, 7))
-ax7.annotate('gl = 270-315', xy=(-5.5, 7))
-ax8.annotate('gl = 315-360', xy=(-5.5, 7))
-fig.text(0.5, 0.04, '(NUV - E$_{B-V}$ * 7.76) - (g - E$_{B-V}$ * 3.303)', ha='center')
-fig.text(0.04, 0.5, 'Mg - E$_{B-V}$ * 3.303', va='center', rotation='vertical')
-plt.suptitle('S+G matches, Ext from S&F11, 0 < D < 100 pc, all NUV')
-fig.subplots_adjust(hspace=0, wspace=0)
-plt.show()
+    ax1.set_xlim((-4, 11))
+    ax1.set_ylim((8, -6))
+    ax2.set_xlim((-4, 11))
+    ax2.set_ylim((8, -6))
+    ax3.set_xlim((-4, 11))
+    ax3.set_ylim((8, -6))
+    ax4.set_xlim((-4, 11))
+    ax4.set_ylim((8, -6))
+    ax5.set_xlim((-4, 11))
+    ax5.set_ylim((8, -6))
+    ax6.set_xlim((-4, 11))
+    ax6.set_ylim((8, -6))
+    ax7.set_xlim((-4, 11))
+    ax7.set_ylim((8, -6))
+    ax8.set_xlim((-4, 11))
+    ax8.set_ylim((8, -6))
+    ax1.annotate('gl = 0-45', xy=(-3.5, 7))
+    ax2.annotate('gl = 45-90', xy=(-3.5, 7))
+    ax3.annotate('gl = 90-135', xy=(-3.5, 7))
+    ax4.annotate('gl = 135-180', xy=(-3.5, 7))
+    ax5.annotate('gl = 180-225', xy=(-3.5, 7))
+    ax6.annotate('gl = 225-270', xy=(-3.5, 7))
+    ax7.annotate('gl = 270-315', xy=(-3.5, 7))
+    ax8.annotate('gl = 315-360', xy=(-3.5, 7))
+    fig.text(0.5, 0.04, '(NUV - E$_{B-V}$ * 7.76) - (g - E$_{B-V}$ * 3.303)', ha='center')
+    fig.text(0.04, 0.5, 'Mg - E$_{B-V}$ * 3.303', va='center', rotation='vertical')
+    plt.suptitle('S+G matches, Ext from S&F11, Hogg parallax, '+distrange[i])
+    fig.subplots_adjust(hspace=0, wspace=0)
+    plt.savefig('10-18-Mgvsnuvg_glcuts_noext_'+distfilename[i]+'pc.png')
+    #plt.show()
 
+#######################################################
+# HR diagram with extinction by dist and 45 deg slices
+#######################################################
+sgcat = fits.open('sex_gaia_dust.fits')[1].data
+sga = sgcat[np.where((sgcat['dist'] > 0) & (sgcat['dist'] < 100))]
+sgb = sgcat[np.where((sgcat['dist'] > 100) & (sgcat['dist'] < 300))]
+sgc = sgcat[np.where((sgcat['dist'] > 300) & (sgcat['dist'] < 600))]
+sgd = sgcat[np.where((sgcat['dist'] > 600) & (sgcat['dist'] < 1000))]
+sge = sgcat[np.where((sgcat['dist'] > 1000) & (sgcat['dist'] < 3000))]
+sgf = sgcat[np.where((sgcat['dist'] > 3000))]
+
+sg = [sga, sgb, sgc, sgd, sge]
+distrange = ['0 < D < 100 pc', '100 < D < 300 pc', '300 < D < 600 pc', '600 < D < 1000 pc', 'D > 1000 pc']
+distfilename = ['0-100', '100-300', '300-600', '600-1000', '1000']
+
+for i in range(len(sg)):
+    # By gl
+    sg1 = sg[i][np.where((sg[i]['gl_sex'] > 0) & (sg[i]['gl_sex'] < 45))]
+    sg2 = sg[i][np.where((sg[i]['gl_sex'] > 45) & (sg[i]['gl_sex'] < 90))]
+    sg3 = sg[i][np.where((sg[i]['gl_sex'] > 90) & (sg[i]['gl_sex'] < 135))]
+    sg4 = sg[i][np.where((sg[i]['gl_sex'] > 135) & (sg[i]['gl_sex'] < 180))]
+    sg5 = sg[i][np.where((sg[i]['gl_sex'] > 180) & (sg[i]['gl_sex'] < 225))]
+    sg6 = sg[i][np.where((sg[i]['gl_sex'] > 225) & (sg[i]['gl_sex'] < 270))]
+    sg7 = sg[i][np.where((sg[i]['gl_sex'] > 270) & (sg[i]['gl_sex'] < 315))]
+    sg8 = sg[i][np.where((sg[i]['gl_sex'] > 315) & (sg[i]['gl_sex'] < 360))]
+
+
+    fig, ((ax1, ax2), (ax3, ax4), (ax5, ax6), (ax7, ax8)) = plt.subplots(4, 2, sharex=True, sharey=True)
+    scatter_contour(sg1['nuv_mag']-sg1['phot_g_mean_mag'], sg1['Mg'],threshold=1000,log_counts=True,histogram2d_args=dict(bins=40),plot_args=dict(color='k',markersize=1), contour_args=dict(cmap=cm.gray), ax=ax1)
+    scatter_contour(sg2['nuv_mag']-sg2['phot_g_mean_mag'], sg2['Mg'],threshold=1000,log_counts=True,histogram2d_args=dict(bins=40),plot_args=dict(color='k',markersize=1), contour_args=dict(cmap=cm.gray), ax=ax2)
+    scatter_contour(sg3['nuv_mag']-sg3['phot_g_mean_mag'], sg3['Mg'],threshold=1000,log_counts=True,histogram2d_args=dict(bins=40),plot_args=dict(color='k',markersize=1), contour_args=dict(cmap=cm.gray), ax=ax3)
+    scatter_contour(sg4['nuv_mag']-sg4['phot_g_mean_mag'], sg4['Mg'],threshold=1000,log_counts=True,histogram2d_args=dict(bins=40),plot_args=dict(color='k',markersize=1), contour_args=dict(cmap=cm.gray), ax=ax4)
+    scatter_contour(sg5['nuv_mag']-sg5['phot_g_mean_mag'], sg5['Mg'],threshold=1000,log_counts=True,histogram2d_args=dict(bins=40),plot_args=dict(color='k',markersize=1), contour_args=dict(cmap=cm.gray), ax=ax5)
+    scatter_contour(sg6['nuv_mag']-sg6['phot_g_mean_mag'], sg6['Mg'],threshold=1000,log_counts=True,histogram2d_args=dict(bins=40),plot_args=dict(color='k',markersize=1), contour_args=dict(cmap=cm.gray), ax=ax6)
+    scatter_contour(sg7['nuv_mag']-sg7['phot_g_mean_mag'], sg7['Mg'],threshold=1000,log_counts=True,histogram2d_args=dict(bins=40),plot_args=dict(color='k',markersize=1), contour_args=dict(cmap=cm.gray), ax=ax7)
+    scatter_contour(sg8['nuv_mag']-sg8['phot_g_mean_mag'], sg8['Mg'],threshold=1000,log_counts=True,histogram2d_args=dict(bins=40),plot_args=dict(color='k',markersize=1), contour_args=dict(cmap=cm.gray), ax=ax8)
+
+    ax1.set_xlim((-4, 11))
+    ax1.set_ylim((8, -6))
+    ax2.set_xlim((-4, 11))
+    ax2.set_ylim((8, -6))
+    ax3.set_xlim((-4, 11))
+    ax3.set_ylim((8, -6))
+    ax4.set_xlim((-4, 11))
+    ax4.set_ylim((8, -6))
+    ax5.set_xlim((-4, 11))
+    ax5.set_ylim((8, -6))
+    ax6.set_xlim((-4, 11))
+    ax6.set_ylim((8, -6))
+    ax7.set_xlim((-4, 11))
+    ax7.set_ylim((8, -6))
+    ax8.set_xlim((-4, 11))
+    ax8.set_ylim((8, -6))
+    ax1.annotate('gl = 0-45', xy=(-3.5, 7))
+    ax2.annotate('gl = 45-90', xy=(-3.5, 7))
+    ax3.annotate('gl = 90-135', xy=(-3.5, 7))
+    ax4.annotate('gl = 135-180', xy=(-3.5, 7))
+    ax5.annotate('gl = 180-225', xy=(-3.5, 7))
+    ax6.annotate('gl = 225-270', xy=(-3.5, 7))
+    ax7.annotate('gl = 270-315', xy=(-3.5, 7))
+    ax8.annotate('gl = 315-360', xy=(-3.5, 7))
+    fig.text(0.5, 0.04, 'NUV - G', ha='center')
+    fig.text(0.04, 0.5, 'MG', va='center', rotation='vertical')
+    plt.suptitle('S+G matches, no ext, Hogg par, '+distrange[i])
+    fig.subplots_adjust(hspace=0, wspace=0)
+    plt.savefig('10-17-Mgvsnuvg_glcuts_'+distfilename[i]+'pc_noext.png')
+    #plt.show()
+    plt.clf()
