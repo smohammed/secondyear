@@ -1611,11 +1611,11 @@ for i in range(len(sg)):
     fig.text(0.04, 0.5, 'Mg - E$_{B-V}$ * 3.303', va='center', rotation='vertical')
     plt.suptitle('S+G matches, Ext from S&F11, Hogg parallax, '+distrange[i])
     fig.subplots_adjust(hspace=0, wspace=0)
-    plt.savefig('10-18-Mgvsnuvg_glcuts_noext_'+distfilename[i]+'pc.png')
+    plt.savefig('10-19-Mgvsnuvg_gais_glcuts_'+distfilename[i]+'pc_ext.png')
     #plt.show()
 
 #######################################################
-# HR diagram with extinction by dist and 45 deg slices
+# HR diagram WITHOUT extinction by dist and 45 deg slices
 #######################################################
 sgcat = fits.open('sex_gaia_dust.fits')[1].data
 sga = sgcat[np.where((sgcat['dist'] > 0) & (sgcat['dist'] < 100))]
@@ -1679,6 +1679,6 @@ for i in range(len(sg)):
     fig.text(0.04, 0.5, 'MG', va='center', rotation='vertical')
     plt.suptitle('S+G matches, no ext, Hogg par, '+distrange[i])
     fig.subplots_adjust(hspace=0, wspace=0)
-    plt.savefig('10-17-Mgvsnuvg_glcuts_'+distfilename[i]+'pc_noext.png')
+    plt.savefig('10-19-Mgvsnuvg_glcuts_'+distfilename[i]+'pc_noext.png')
     #plt.show()
     plt.clf()
