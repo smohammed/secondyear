@@ -1549,13 +1549,14 @@ fig.suptitle('S+G matches by gl, D > 3000 pc')
 #######################################################
 # HR diagram with extinction by dist and 45 deg slices
 #######################################################
-sgcat = fits.open('sex_gaia_dust.fits')[1].data
-sga = sgcat[np.where((sgcat['dist'] > 0) & (sgcat['dist'] < 100))]
-sgb = sgcat[np.where((sgcat['dist'] > 100) & (sgcat['dist'] < 300))]
-sgc = sgcat[np.where((sgcat['dist'] > 300) & (sgcat['dist'] < 600))]
-sgd = sgcat[np.where((sgcat['dist'] > 600) & (sgcat['dist'] < 1000))]
-sge = sgcat[np.where((sgcat['dist'] > 1000) & (sgcat['dist'] < 3000))]
-sgf = sgcat[np.where((sgcat['dist'] > 3000))]
+#sgcat = fits.open('sex_gaia_dust_interp.fits')[1].data
+sgcat = fits.open('gais_gaia_dust.fits')[1].data
+sga = sgcat[np.where((sgcat['dist'] > 0) & (sgcat['dist'] < 100) & (sgcat['ebv'] > 0))]
+sgb = sgcat[np.where((sgcat['dist'] > 100) & (sgcat['dist'] < 300) & (sgcat['ebv'] > 0))]
+sgc = sgcat[np.where((sgcat['dist'] > 300) & (sgcat['dist'] < 600) & (sgcat['ebv'] > 0))]
+sgd = sgcat[np.where((sgcat['dist'] > 600) & (sgcat['dist'] < 1000) & (sgcat['ebv'] > 0))]
+sge = sgcat[np.where((sgcat['dist'] > 1000) & (sgcat['dist'] < 3000) & (sgcat['ebv'] > 0))]
+sgf = sgcat[np.where((sgcat['dist'] > 3000) & (sgcat['ebv'] > 0))]
 
 sg = [sga, sgb, sgc, sgd, sge]
 distrange = ['0 < D < 100 pc', '100 < D < 300 pc', '300 < D < 600 pc', '600 < D < 1000 pc', 'D > 1000 pc']
@@ -1563,14 +1564,14 @@ distfilename = ['0-100', '100-300', '300-600', '600-1000', '1000']
 
 for i in range(len(sg)):
     # By gl
-    sg1 = sg[i][np.where((sg[i]['gl_sex'] > 0) & (sg[i]['gl_sex'] < 45))]
-    sg2 = sg[i][np.where((sg[i]['gl_sex'] > 45) & (sg[i]['gl_sex'] < 90))]
-    sg3 = sg[i][np.where((sg[i]['gl_sex'] > 90) & (sg[i]['gl_sex'] < 135))]
-    sg4 = sg[i][np.where((sg[i]['gl_sex'] > 135) & (sg[i]['gl_sex'] < 180))]
-    sg5 = sg[i][np.where((sg[i]['gl_sex'] > 180) & (sg[i]['gl_sex'] < 225))]
-    sg6 = sg[i][np.where((sg[i]['gl_sex'] > 225) & (sg[i]['gl_sex'] < 270))]
-    sg7 = sg[i][np.where((sg[i]['gl_sex'] > 270) & (sg[i]['gl_sex'] < 315))]
-    sg8 = sg[i][np.where((sg[i]['gl_sex'] > 315) & (sg[i]['gl_sex'] < 360))]
+    sg1 = sg[i][np.where((sg[i]['gl_gais'] > 0) & (sg[i]['gl_gais'] < 45))]
+    sg2 = sg[i][np.where((sg[i]['gl_gais'] > 45) & (sg[i]['gl_gais'] < 90))]
+    sg3 = sg[i][np.where((sg[i]['gl_gais'] > 90) & (sg[i]['gl_gais'] < 135))]
+    sg4 = sg[i][np.where((sg[i]['gl_gais'] > 135) & (sg[i]['gl_gais'] < 180))]
+    sg5 = sg[i][np.where((sg[i]['gl_gais'] > 180) & (sg[i]['gl_gais'] < 225))]
+    sg6 = sg[i][np.where((sg[i]['gl_gais'] > 225) & (sg[i]['gl_gais'] < 270))]
+    sg7 = sg[i][np.where((sg[i]['gl_gais'] > 270) & (sg[i]['gl_gais'] < 315))]
+    sg8 = sg[i][np.where((sg[i]['gl_gais'] > 315) & (sg[i]['gl_gais'] < 360))]
 
 
     fig, ((ax1, ax2), (ax3, ax4), (ax5, ax6), (ax7, ax8)) = plt.subplots(4, 2, sharex=True, sharey=True)
@@ -1607,23 +1608,24 @@ for i in range(len(sg)):
     ax6.annotate('gl = 225-270', xy=(-3.5, 7))
     ax7.annotate('gl = 270-315', xy=(-3.5, 7))
     ax8.annotate('gl = 315-360', xy=(-3.5, 7))
-    fig.text(0.5, 0.04, '(NUV - E$_{B-V}$ * 7.76) - (g - E$_{B-V}$ * 3.303)', ha='center')
-    fig.text(0.04, 0.5, 'Mg - E$_{B-V}$ * 3.303', va='center', rotation='vertical')
-    plt.suptitle('S+G matches, Ext from S&F11, Hogg parallax, '+distrange[i])
+    fig.text(0.5, 0.04, '(NUV - E$_{B-V}$ * 7.76) - (G - E$_{B-V}$ * 3.303)', ha='center')
+    fig.text(0.04, 0.5, 'MG - E$_{B-V}$ * 3.303', va='center', rotation='vertical')
+    plt.suptitle('GAIS+G matches, Ext from S&F11, Hogg parallax, '+distrange[i])
     fig.subplots_adjust(hspace=0, wspace=0)
-    plt.savefig('10-19-Mgvsnuvg_gais_glcuts_'+distfilename[i]+'pc_ext.png')
+    plt.savefig('10-31-Mgvsnuvg_gais_glcuts_'+distfilename[i]+'pc_ext_interp.png')
     #plt.show()
+    plt.clf()
 
 #######################################################
 # HR diagram WITHOUT extinction by dist and 45 deg slices
 #######################################################
-sgcat = fits.open('sex_gaia_dust.fits')[1].data
-sga = sgcat[np.where((sgcat['dist'] > 0) & (sgcat['dist'] < 100))]
-sgb = sgcat[np.where((sgcat['dist'] > 100) & (sgcat['dist'] < 300))]
-sgc = sgcat[np.where((sgcat['dist'] > 300) & (sgcat['dist'] < 600))]
-sgd = sgcat[np.where((sgcat['dist'] > 600) & (sgcat['dist'] < 1000))]
-sge = sgcat[np.where((sgcat['dist'] > 1000) & (sgcat['dist'] < 3000))]
-sgf = sgcat[np.where((sgcat['dist'] > 3000))]
+sgcat = fits.open('gais_gaia_dust.fits')[1].data
+sga = sgcat[np.where((sgcat['dist'] > 0) & (sgcat['dist'] < 100) & (sgcat['ebv'] > 0))]
+sgb = sgcat[np.where((sgcat['dist'] > 100) & (sgcat['dist'] < 300) & (sgcat['ebv'] > 0))]
+sgc = sgcat[np.where((sgcat['dist'] > 300) & (sgcat['dist'] < 600) & (sgcat['ebv'] > 0))]
+sgd = sgcat[np.where((sgcat['dist'] > 600) & (sgcat['dist'] < 1000) & (sgcat['ebv'] > 0))]
+sge = sgcat[np.where((sgcat['dist'] > 1000) & (sgcat['dist'] < 3000) & (sgcat['ebv'] > 0))]
+sgf = sgcat[np.where((sgcat['dist'] > 3000) & (sgcat['ebv'] > 0))]
 
 sg = [sga, sgb, sgc, sgd, sge]
 distrange = ['0 < D < 100 pc', '100 < D < 300 pc', '300 < D < 600 pc', '600 < D < 1000 pc', 'D > 1000 pc']
@@ -1631,14 +1633,14 @@ distfilename = ['0-100', '100-300', '300-600', '600-1000', '1000']
 
 for i in range(len(sg)):
     # By gl
-    sg1 = sg[i][np.where((sg[i]['gl_sex'] > 0) & (sg[i]['gl_sex'] < 45))]
-    sg2 = sg[i][np.where((sg[i]['gl_sex'] > 45) & (sg[i]['gl_sex'] < 90))]
-    sg3 = sg[i][np.where((sg[i]['gl_sex'] > 90) & (sg[i]['gl_sex'] < 135))]
-    sg4 = sg[i][np.where((sg[i]['gl_sex'] > 135) & (sg[i]['gl_sex'] < 180))]
-    sg5 = sg[i][np.where((sg[i]['gl_sex'] > 180) & (sg[i]['gl_sex'] < 225))]
-    sg6 = sg[i][np.where((sg[i]['gl_sex'] > 225) & (sg[i]['gl_sex'] < 270))]
-    sg7 = sg[i][np.where((sg[i]['gl_sex'] > 270) & (sg[i]['gl_sex'] < 315))]
-    sg8 = sg[i][np.where((sg[i]['gl_sex'] > 315) & (sg[i]['gl_sex'] < 360))]
+    sg1 = sg[i][np.where((sg[i]['gl_gais'] > 0) & (sg[i]['gl_gais'] < 45))]
+    sg2 = sg[i][np.where((sg[i]['gl_gais'] > 45) & (sg[i]['gl_gais'] < 90))]
+    sg3 = sg[i][np.where((sg[i]['gl_gais'] > 90) & (sg[i]['gl_gais'] < 135))]
+    sg4 = sg[i][np.where((sg[i]['gl_gais'] > 135) & (sg[i]['gl_gais'] < 180))]
+    sg5 = sg[i][np.where((sg[i]['gl_gais'] > 180) & (sg[i]['gl_gais'] < 225))]
+    sg6 = sg[i][np.where((sg[i]['gl_gais'] > 225) & (sg[i]['gl_gais'] < 270))]
+    sg7 = sg[i][np.where((sg[i]['gl_gais'] > 270) & (sg[i]['gl_gais'] < 315))]
+    sg8 = sg[i][np.where((sg[i]['gl_gais'] > 315) & (sg[i]['gl_gais'] < 360))]
 
 
     fig, ((ax1, ax2), (ax3, ax4), (ax5, ax6), (ax7, ax8)) = plt.subplots(4, 2, sharex=True, sharey=True)
@@ -1677,8 +1679,36 @@ for i in range(len(sg)):
     ax8.annotate('gl = 315-360', xy=(-3.5, 7))
     fig.text(0.5, 0.04, 'NUV - G', ha='center')
     fig.text(0.04, 0.5, 'MG', va='center', rotation='vertical')
-    plt.suptitle('S+G matches, no ext, Hogg par, '+distrange[i])
+    plt.suptitle('GAIS+G matches, no ext, Hogg par, '+distrange[i])
     fig.subplots_adjust(hspace=0, wspace=0)
-    plt.savefig('10-19-Mgvsnuvg_glcuts_'+distfilename[i]+'pc_noext.png')
+    plt.savefig('10-31-Mgvsnuvg_gais_glcuts_'+distfilename[i]+'pc_noext.png')
     #plt.show()
     plt.clf()
+
+
+cols = fits.ColDefs([fits.Column(name='tilenum', format='D', array=comb['tilenum']), fits.Column(name='nuv_mag', format='D', array=comb['nuv_mag']), fits.Column(name='fuv_mag', format='D', array=comb['fuv_mag']), fits.Column(name='glon', format='D', array=comb['glon']), fits.Column(name='glat', format='D', array=comb['glat']), fits.Column(name='ra', format='D', array=comb['ra']), fits.Column(name='dec', format='D', array=comb['dec'])])
+endtable = fits.BinTableHDU.from_columns(cols)
+endtable.writeto('gais_total.fits')
+
+
+
+
+gais = fits.open('gais_total.fits')[1].data
+gaia = fits.open('gaia-tycho.fits')[1].data
+gaisgal = SkyCoord(gais['ra_gais']*u.deg, gais['dec_gais']*u.deg, frame='icrs')
+gaiagal = SkyCoord(gaia['ra']*u.deg, gaia['dec']*u.deg, frame='icrs')
+gaisind, gaiaind, angsep, ang3d = search_around_sky(gaisgal, gaiagal, 3*u.arcsec)
+comb = hstack([Table(gais[gaisind]), Table(gaia[gaiaind])])
+
+comb.remove_columns(('solution_id', 'source_id', 'random_index', 'ref_epoch', 'astrometric_n_obs_al', 'astrometric_n_obs_ac', 'astrometric_n_good_obs_al', 'astrometric_n_good_obs_ac', 'astrometric_n_bad_obs_al', 'astrometric_n_bad_obs_ac', 'astrometric_delta_q', 'astrometric_excess_noise', 'astrometric_excess_noise_sig', 'astrometric_primary_flag', 'astrometric_relegation_factor', 'astrometric_weight_al', 'astrometric_weight_ac', 'astrometric_priors_used', 'matched_observations', 'duplicated_source', 'scan_direction_strength_k1', 'scan_direction_strength_k2', 'scan_direction_strength_k3', 'scan_direction_strength_k4', 'scan_direction_mean_k1', 'scan_direction_mean_k2', 'scan_direction_mean_k3', 'scan_direction_mean_k4', 'phot_g_n_obs', 'phot_g_mean_flux', 'phot_g_mean_flux_error'))
+
+comb.rename_column('ra', 'ra_gaia')
+comb.rename_column('dec', 'dec_gaia')
+comb.rename_column('b', 'gb_gaia')
+comb.rename_column('l', 'gl_gaia')
+comb['angsep'] = angsep
+ascii.write(comb, 'gais_gaia.txt', format='ipac')
+
+
+
+

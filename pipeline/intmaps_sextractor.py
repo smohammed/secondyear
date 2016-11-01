@@ -26,7 +26,9 @@ matplotlib.rcParams['font.size'] = 20
 # Select desired field from list
 #########################################################################
 # All complete scans
-scans = ['5', '1.4', '2.3', '3.2', '4.1', '5.0', '5.9', '6.8', '8.6', '10.4', '11.3', '12.2', '14.0', '15.8', '16.7', '17.6', '18.5', '19.4', '20.3', '21.2', '22.1', '23.0', '23.9', '24.8', '25.7', '28.4', '29.3', '30.2', '31.1', '32.0', '32.9', '33.8', '34.7', '35.6', '39.2', '42.8', '43.7', '44.6', '45.5', '46.4', '47.3', '48.2', '49.1', '50.0', '67.1', '68.9', '71.6', '74.3', '75.2', '76.1', '77.0', '77.9', '78.8', '80.6', '81.5', '82.4', '83.3', '87.8', '88.7', '89.6', '92.3', '93.2', '94.1', '95.0', '95.9', '96.8', '97.7', '98.6', '99.5', '100.4', '101.3', '102.2', '104.9', '105.8', '106.7', '107.6', '110.3', '111.2', '112.1', '113.0', '113.9', '114.8', '119.3', '121.1', '124.7', '125.6', '126.5', '128.3', '129.2', '130.1', '131.0', '131.9', '132.8', '133.7', '134.6', '135.5', '136.4', '137.3', '138.2', '139.1', '140.0', '140.9', '141.8', '143.6', '144.5', '148.1', '149.0', '149.9', '150.8', '151.7', '152.6', '153.5', '145.4', '155.3', '156.2', '157.1', '158.0', '160.7', '161.6', '163.4', '167.0', '167.9', '172.4', '173.3', '174.2', '175.1', '176.0', '176.9', '177.8', '178.7', '179.6', '180.5', '183.2', '185.0', '190.4', '191.3', '197.6', '198.5', '200.3', '201.2', '203.0', '203.9', '205.7', '206.6', '207.5', '208.4', '209.3', '210.2', '211.1', '212.0', '212.9', '213.8', '214.7', '215.6', '216.5', '217.4', '218.3', '219.2', '220.1', '221.0', '221.9', '222.8', '224.6', '225.5', '226.4', '228.2', '229.1', '230.0', '230.9', '231.8', '234.5', '235.4', '236.3', '237.2', '238.1', '239.0', '239.9', '240.8', '241.7', '242.6', '243.5', '244.4', '245.3', '246.2', '247.1', '248.0', '248.9', '249.8', '250.7', '251.6', '252.5', '253.4', '254.3', '255.2', '256.1', '257.0', '258.8', '259.7', '260.6', '261.5', '263.3', '264.2', '265.1', '266.0', '266.9', '268.7', '269.6', '270.5', '271.4', '272.3', '274.1', '275.0', '275.9', '276.8', '278.6', '279.5', '281.3', '284.0', '285.8', '286.7', '288.5', '290.3', '291.2', '292.1', '293.0', '293.9', '295.7', '297.5', '298.4', '301.1', '302.0', '302.9', '303.8', '304.7', '305.6', '308.3', '310.1', '315.5', '316.4', '317.3', '318.2', '319.1', '320.0', '320.9', '321.8', '322.7', '323.6', '325.4', '326.3', '327.2', '328.1', '329.0', '331.7', '332.6', '333.5', '334.4', '335.3', '338.9', '341.6', '358.7', '359.6']
+#scans = ['5', '1.4', '2.3', '3.2', '4.1', '5.0', '5.9', '6.8', '8.6', '10.4', '11.3', '12.2', '14.0', '15.8', '16.7', '17.6', '18.5', '19.4', '20.3', '21.2', '22.1', '23.0', '23.9', '24.8', '25.7', '28.4', '29.3', '30.2', '31.1', '32.0', '32.9', '33.8', '34.7', '35.6', '39.2', '42.8', '43.7', '44.6', '45.5', '46.4', '47.3', '48.2', '49.1', '50.0', '67.1', '68.9', '71.6', '74.3', '75.2', '76.1', '77.0', '77.9', '78.8', '80.6', '81.5', '82.4', '83.3', '87.8', '88.7', '89.6', '92.3', '93.2', '94.1', '95.0', '95.9', '96.8', '97.7', '98.6', '99.5', '100.4', '101.3', '102.2', '104.9', '105.8', '106.7', '107.6', '110.3', '111.2', '112.1', '113.0', '113.9', '114.8', '119.3', '121.1', '124.7', '125.6', '126.5', '128.3', '129.2', '130.1', '131.0', '131.9', '132.8', '133.7', '134.6', '135.5', '136.4', '137.3', '138.2', '139.1', '140.0', '140.9', '141.8', '143.6', '144.5', '148.1', '149.0', '149.9', '150.8', '151.7', '152.6', '153.5', '145.4', '155.3', '156.2', '157.1', '158.0', '160.7', '161.6', '163.4', '167.0', '167.9', '172.4', '173.3', '174.2', '175.1', '176.0', '176.9', '177.8', '178.7', '179.6', '180.5', '183.2', '185.0', '190.4', '191.3', '197.6', '198.5', '200.3', '201.2', '203.0', '203.9', '205.7', '206.6', '207.5', '208.4', '209.3', '210.2', '211.1', '212.0', '212.9', '213.8', '214.7', '215.6', '216.5', '217.4', '218.3', '219.2', '220.1', '221.0', '221.9', '222.8', '224.6', '225.5', '226.4', '228.2', '229.1', '230.0', '230.9', '231.8', '234.5', '235.4', '236.3', '237.2', '238.1', '239.0', '239.9', '240.8', '241.7', '242.6', '243.5', '244.4', '245.3', '246.2', '247.1', '248.0', '248.9', '249.8', '250.7', '251.6', '252.5', '253.4', '254.3', '255.2', '256.1', '257.0', '258.8', '259.7', '260.6', '261.5', '263.3', '264.2', '265.1', '266.0', '266.9', '268.7', '269.6', '270.5', '271.4', '272.3', '274.1', '275.0', '275.9', '276.8', '278.6', '279.5', '281.3', '284.0', '285.8', '286.7', '288.5', '290.3', '291.2', '292.1', '293.0', '293.9', '295.7', '297.5', '298.4', '301.1', '302.0', '302.9', '303.8', '304.7', '305.6', '308.3', '310.1', '315.5', '316.4', '317.3', '318.2', '319.1', '320.0', '320.9', '321.8', '322.7', '323.6', '325.4', '326.3', '327.2', '328.1', '329.0', '331.7', '332.6', '333.5', '334.4', '335.3', '338.9', '341.6', '358.7', '359.6']
+
+scans = ['0014', '3209']
 
 # Incomplete scans
 incscans = ['9.5', '14.9', '79.7', '90.5', '91.4', '103.1', '104.0', '122.9', '127.4', '223.7', '273.2', '283.1', '289.4', '306.5', '309.2', '324.5', '329.9', '338.0', '339.8', '342.5', '343.4', '345.2', '348.8', '349.7', '350.6', '351.5', '352.4', '353.3', '354.2', '355.1', '356.0', '357.8']
@@ -36,7 +38,6 @@ incscandict = dict({'9.5': [1214, 3950, 12318, 52037], '14.9': [1214, 3950, 3532
 
 # Test regions
 #skyrange = ['4.1', '5.0', '18.5', '19.4', '328.1', '329.0']
-#skyrange = ['329.0']
 #filt = 'bg_64_filt3'
 filt = 'mexhat_4.0_9x9'
 code = 'det_thresh2.5_phot_autopar2.5_3.5'
@@ -51,8 +52,8 @@ code = 'det_thresh2.5_phot_autopar2.5_3.5'
 #########################################################################
 # Decide to run on full or partial scans
 #########################################################################
-full = 0
-partial = 1
+full = 1
+partial = 0
 if full == 1:
     skyrange = scans
 if partial == 1:
@@ -67,7 +68,10 @@ for currregion in skyrange:
     #########################################################################
     print 'current region = ' + currregion
     region = currregion.replace('.', '')
-    img = fits.open('../Dunmaps/countmaps/count_map_name_'+region+'_gal_sec_in.fits')[0].data
+    #img = fits.open('../Dunmaps/countmaps/count_map_name_'+region+'_gal_sec_in.fits')[0].data
+
+    # Fec
+    img = fits.open('../count_map_'+region+'-cal-sec_in.fits')[0].data
 
     if full == 1:
         im1xmin, im1xmax, im1ymin, im1ymax = 1214, 3950, 3532, 51230
@@ -78,7 +82,10 @@ for currregion in skyrange:
     # Make cutouts of initial image to help with background correction
     #########################################################################
     img = img[im1ymin:im1ymax, im1xmin:im1xmax]
-    bkgd = fits.open('../Dunmaps/background/background_im1_'+region+'.fits')[0].data
+    #bkgd = fits.open('../Dunmaps/background/background_im1_'+region+'.fits')[0].data
+
+    # FEC background
+    bkgd = fits.open('../Dunmaps/background/background_im1_'+region+'_fec.fits')[0].data
     im1 = img - bkgd
 
     # Smooth to get background map
@@ -87,22 +94,25 @@ for currregion in skyrange:
     #print 'Smoothing finished'
 
     try:
-        fits.HDUList([fits.PrimaryHDU(im1)]).writeto('../Dunmaps/im1_'+region+'.fits')
+        fits.HDUList([fits.PrimaryHDU(im1)]).writeto('../Dunmaps/im1_'+region+'_fec.fits')
     except IOError:
-        os.remove('../Dunmaps/im1_'+region+'.fits')
-        #os.remove('../Dunmaps/background_im1_'+region+'.fits')
+        os.remove('../Dunmaps/im1_'+region+'_fec.fits')
+        #os.remove('../Dunmaps/background_im1_'+region+'_fec.fits')
 
-        fits.HDUList([fits.PrimaryHDU(im1)]).writeto('../Dunmaps/im1_'+region+'.fits')
+        fits.HDUList([fits.PrimaryHDU(im1)]).writeto('../Dunmaps/im1_'+region+'_fec.fits')
 
     print 'im1 saved'
 
     #########################################################################
     # Run sextractor
     #########################################################################
-    #os.system('sex ../Dunmaps/im1_'+region+'.fits -c ~/sextractor/daofind.sex -CATALOG_NAME ../Dunmaps/sex_im1_'+region+'.fits -CHECKIMAGE_NAME ../Dunmaps/background_im1_'+region+'.fits')
+    #os.system('sex ../Dunmaps/im1_'+region+'_fec.fits -c ~/sextractor/daofind.sex -CATALOG_NAME ../Dunmaps/sex_im1_'+region+'_fec_fwhm.fits -CHECKIMAGE_NAME ../Dunmaps/background_im1_'+region+'_fec.fits')
+
+    # For new fec corrected fields
+    #os.system('sex ../Dunmaps/im1_'+region+'_fec.fits -c ~/sextractor/daofind.sex -CATALOG_NAME ../Dunmaps/sex_im1_'+region+'_fec_fwhm.fits -CHECKIMAGE_NAME ../Dunmaps/background_im1_'+region+'_fec.fits')
 
     # With no background
-    os.system('sex ../Dunmaps/im1_'+region+'.fits -c ~/sextractor/daofind.sex -CATALOG_NAME ../Dunmaps/sex_im1_'+region+'fwhm.fits')
+    os.system('sex ../Dunmaps/im1_'+region+'_fec.fits -c ~/sextractor/daofind.sex -CATALOG_NAME ../Dunmaps/sex_im1_'+region+'_fec_fwhm.fits')
 
     # With weights
     #os.system('sex ../Dunmaps/im1_'+region+'.fits -c ~/sextractor/daofind.sex -CATALOG_NAME ../Dunmaps/sex_im1_'+region+'fwhm.fits -WEIGHT_IMAGE ../Dunmaps/background/background_im1_'+region+'.fits')
@@ -112,7 +122,7 @@ for currregion in skyrange:
     #########################################################################
     # Get output from sextractor, convert to gl, gb, NUV
     #########################################################################
-    im1sex = Table.read('../Dunmaps/sex_im1_'+region+'fwhm.fits', format='fits')
+    im1sex = Table.read('../Dunmaps/sex_im1_'+region+'_fec_fwhm.fits', format='fits')
     data = im1sex
     xfac = im1xmin
     yfac = im1ymin
@@ -131,7 +141,10 @@ for currregion in skyrange:
     #########################################################################
     # Get WCS info
     #########################################################################
-    hdulist = fits.open('../Dunmaps/countmaps/count_map_name_'+region+'_gal_sec_in.fits')
+    #hdulist = fits.open('../Dunmaps/countmaps/count_map_name_'+region+'_fec_gal_sec_in.fits')
+
+    # FEC
+    hdulist = fits.open('../count_map_'+region+'-cal-sec_in.fits')
 
     xpix = data['x_new']
     ypix = data['y_new']
@@ -156,145 +169,8 @@ for currregion in skyrange:
 
     coord = Table([glval, gbval, raval, decval], names=('gl', 'gb', 'ra', 'dec'))
     alldata = hstack([data, coord])
-    ascii.write(alldata, '../Dunmaps/fwhm/starcat_'+currregion+'mapweight_fwhm.txt', format='ipac')
+    ascii.write(alldata, '../Dunmaps/fwhm/starcat_'+currregion+'mapweight_fec_fwhm.txt', format='ipac')
 
     #os.remove('../Dunmaps/im1_'+region+'.fits')
 
     print 'Added WCS info, finished'
-
-
-'''
-a = alldata
-agal = SkyCoord(a['gl']*u.deg, a['gb']*u.deg, frame='galactic')
-aind,  gaind,  angsepa,  ang3d = search_around_sky(agal, galexgal, 3.5*u.arcsec)
-a2 = Table(a[aind])
-g2 = Table(galex[gaind])
-comb = hstack([a2, g2])
-comb['angsep'] = angsepa
-comb.rename_column('nuv', 'nuv_sex')
-comb.rename_column('nuv_mag', 'nuv_galex')
-comb.rename_column('gl', 'gl_sex')
-comb.rename_column('gb', 'gb_sex')
-comb.rename_column('ra_1', 'ra_sex')
-comb.rename_column('dec_1', 'dec_sex')
-comb.rename_column('ra_2', 'ra_galex')
-comb.rename_column('dec_2', 'dec_galex')
-comb.rename_column('glon', 'gl_galex')
-comb.rename_column('glat', 'gb_galex')
-combcut = np.where(comb['nuv_galex'] == -999.)
-comb.remove_rows(combcut)
-
-plt.scatter(comb['nuv_galex'], comb['nuv_sex']-comb['nuv_galex'], alpha=0.1, edgecolor='none')
-plt.axhline(y=0, c='green')
-plt.xlabel('NUV$_{GAIS}$')
-plt.ylabel('NUV$_{SEx}$ - NUV$_{GAIS}$')
-plt.title('gl = 329.0')
-plt.xlim((12, 23))
-plt.ylim((-3, 2))
-plt.xlim((12, 23))
-plt.ylim((-3, 2))
-plt.annotate('N = '+str(len(comb)), xy=(13, -2.5))
-plt.show()
-'''
-
-'''
-    sex = alldata
-    sexgal = SkyCoord(sex['gl']*u.deg, sex['gb']*u.deg, frame='galactic')
-
-    sexind,  galexind,  angsep,  ang3d = search_around_sky(sexgal, galexgal, 3.5*u.arcsec)
-    s2 = Table(sex[sexind])
-    g2 = Table(galex[galexind])
-    comb = hstack([s2, g2])
-    comb['angsep'] = angsep
-    comb.rename_column('nuv', 'nuv_sex')
-    comb.rename_column('nuv_mag', 'nuv_galex')
-    comb.rename_column('gl', 'gl_sex')
-    comb.rename_column('gb', 'gb_sex')
-    comb.rename_column('ra_1', 'ra_sex')
-    comb.rename_column('dec_1', 'dec_sex')
-    comb.rename_column('ra_2', 'ra_galex')
-    comb.rename_column('dec_2', 'dec_galex')
-    comb.rename_column('glon', 'gl_galex')
-    comb.rename_column('glat', 'gb_galex')
-    combcut = np.where(comb['nuv_galex'] == -999.)
-    comb.remove_rows(combcut)
-    ascii.write(comb, '../Dunmaps/sex_galex_matches_'+region+'_'+filt+code+'.txt', format='basic')
-
-    plt.scatter(comb['nuv_galex'], comb['nuv_sex']-comb['nuv_galex'], alpha=0.1, edgecolor='none')
-    plt.axhline(y=0, c='green')
-    plt.xlabel('NUV$_{GAIS}$')
-    plt.ylabel('NUV$_{SEx}$ - NUV$_{GAIS}$')
-    plt.title('gl ='+str(region)+', '+filt+', '+code)
-    plt.xlim((12, 23))
-    plt.ylim((-3, 2))
-    plt.xlim((12, 23))
-    plt.ylim((-3, 2))
-    plt.annotate('N = '+str(len(comb)), xy=(13, -2.5))
-    plt.savefig('../nuvcomp/03-30-nuvconv_'+region+'_'+filt+code+'.png')
-    plt.clf()
-
-
-#########################################################################
-# Now match to other catalogs
-#########################################################################
-galex = fits.open('../GALEXAIS.fits')[1].data
-galexgal = SkyCoord(galex['glon']*u.deg, galex['glat']*u.deg, frame='galactic')
-sex = alldata  # Table.read('../Dunmaps/starcatalog_2057-2102.txt', format='ascii')
-sexgal = SkyCoord(sex['gl']*u.deg, sex['gb']*u.deg, frame='galactic')
-
-sexind,  galexind,  angsep,  ang3d = search_around_sky(sexgal, galexgal, 3.5*u.arcsec)
-s2 = Table(sex[sexind])
-g2 = Table(galex[galexind])
-
-delgl = g2['glon'] - s2['gl']
-delgb = g2['glat'] - s2['gb']
-dgl = np.mean(g2['glon'] - s2['gl'])
-dgb = np.mean(g2['glat'] - s2['gb'])
-plt.scatter(delgl*3600, delgb*3600, alpha=0.1)
-plt.xlabel('$\Delta$ gl')
-plt.ylabel('$\Delta$ gb')
-plt.title('len = '+str(len(delgl))+', dgl = '+str(dgl*3600)[:4]+' dgb = '+str(dgb*3600)[:4])
-plt.savefig('../Dunmaps/coord_'+region+'.png')
-plt.clf()
-
-print 'dgl1 = ', dgl * 3600
-print 'dgb1 = ', dgb * 3600
-
-sex['gl'] = sex['gl'] + dgl
-sex['gb'] = sex['gb'] + dgb
-
-sexgal = SkyCoord(sex['gl']*u.deg, sex['gb']*u.deg, frame='galactic')
-sexind,  galexind,  angsep,  ang3d = search_around_sky(sexgal, galexgal, 3.5*u.arcsec)
-s2 = Table(sex[sexind])
-g2 = Table(galex[galexind])
-
-delgl = g2['glon'] - s2['gl']
-delgb = g2['glat'] - s2['gb']
-dgl = np.mean(g2['glon'] - s2['gl'])
-dgb = np.mean(g2['glat'] - s2['gb'])
-
-plt.scatter(delgl*3600, delgb*3600, alpha=0.1)
-plt.xlabel('$\Delta$ gl')
-plt.ylabel('$\Delta$ gb')
-plt.title('Fix, len = '+str(len(delgl))+', dgl = '+str(dgl*3600)[:4]+' dgb = '+str(dgb*3600)[:4])
-plt.savefig('../Dunmaps/coord_'+region+'_fix.png')
-plt.clf()
-
-
-comb = hstack([s2, g2])
-comb['angsep'] = angsep
-comb.rename_column('nuv', 'nuv_sex')
-comb.rename_column('nuv_mag', 'nuv_galex')
-comb.rename_column('gl', 'gl_sex')
-comb.rename_column('gb', 'gb_sex')
-comb.rename_column('ra_1', 'ra_sex')
-comb.rename_column('dec_1', 'dec_sex')
-comb.rename_column('ra_2', 'ra_galex')
-comb.rename_column('dec_2', 'dec_galex')
-comb.rename_column('glon', 'gl_galex')
-comb.rename_column('glat', 'gb_galex')
-
-combcut = np.where(comb['nuv_galex'] == -999.)
-comb.remove_rows(combcut)
-#ascii.write(comb, '../sex_galex_matches_2111-2138.txt', format='basic')
-'''
