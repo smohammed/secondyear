@@ -1610,9 +1610,9 @@ for i in range(len(sg)):
     ax8.annotate('gl = 315-360', xy=(-3.5, 7))
     fig.text(0.5, 0.04, '(NUV - E$_{B-V}$ * 7.76) - (G - E$_{B-V}$ * 3.303)', ha='center')
     fig.text(0.04, 0.5, 'MG - E$_{B-V}$ * 3.303', va='center', rotation='vertical')
-    plt.suptitle('GAIS+G matches, Ext from S&F11, Hogg parallax, '+distrange[i])
+    plt.suptitle('GAIS+G+sprint matches, Ext from S&F11, Hogg parallax, '+distrange[i])
     fig.subplots_adjust(hspace=0, wspace=0)
-    plt.savefig('10-31-Mgvsnuvg_gais_glcuts_'+distfilename[i]+'pc_ext_interp.png')
+    plt.savefig('11-04-Mgvsnuvg_gais_tgasmatch_glcuts_'+distfilename[i]+'pc_ext_interp.png')
     #plt.show()
     plt.clf()
 
