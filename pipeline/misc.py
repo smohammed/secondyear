@@ -1712,3 +1712,9 @@ ascii.write(comb, 'gais_gaia.txt', format='ipac')
 
 
 
+a = np.loadtxt('filelists/scst_list_fec.txt', dtype='str')
+
+for i in range(len(a)):
+    scan = fits.open('scst/'+a[i])[1].data
+    scangal = SkyCoord(scan['ra_acs']*u.deg, scan['dec_acs']*u.deg, frame='icrs').galactic
+    plt.scatter(scangal.l.degree,scangal.b.degree, edgecolor='none',c=scan['roll_acs'])
