@@ -198,9 +198,9 @@ plt.show()
 ####################################################################
 # g - r vs NUV - g with boxes
 ####################################################################
-scatter_contour(v2['nuv_sex']-v2['g_AB'],v2['g_AB']-v2['r_AB'],threshold=1100,log_counts=True,histogram2d_args=dict(bins=40),plot_args=dict(color='k',markersize=1), contour_args=dict(cmap=cm.gray))
-plt.scatter(vwd['nuv_sex']-vwd['g_AB'],vwd['g_AB']-vwd['r_AB'], edgecolor='none', facecolor='blue', label='WDCs')
-plt.scatter(pickles['nuv']-pickles['g'],pickles['g']-pickles['r'],color='red', label='Pickles spectral library', s=30)
+scatter_contour(sv['nuv_mag']-sv['g_AB'],sv['g_AB']-sv['r_AB'],threshold=1100,log_counts=True,histogram2d_args=dict(bins=40),plot_args=dict(color='k',markersize=1), contour_args=dict(cmap=cm.gray))
+plt.scatter(vwd['nuv_mag']-vwd['g_AB'],vwd['g_AB']-vwd['r_AB'], edgecolor='none', facecolor='blue', label='WDCs')
+plt.scatter(pickles['nuv']-pickles['g'],pickles['g']-pickles['r'],color='red', label='Pickles', s=30)
 plt.gca().add_patch(matplotlib.patches.Rectangle((-0.5,0.6),2.5,0.5,facecolor='yellow',alpha=0.5))
 plt.gca().add_patch(matplotlib.patches.Rectangle((-0.5,1.1),6.5,0.5,facecolor='yellow',alpha=0.5))
 plt.gca().add_patch(matplotlib.patches.Rectangle((2,-0.1),6,0.6,facecolor='lightblue',alpha=0.5,angle=5))
@@ -219,7 +219,7 @@ plt.annotate('K', xy=(6.2, -0.1), size=20)
 plt.xlabel('NUV - g (ABmag)')
 plt.ylabel('g - r (ABmag)')
 plt.legend(scatterpoints=1, loc=1)
-#plt.title('vPHAS + SExtractor')
+plt.title('vPHAS + SExtractor')
 plt.show()
 
 ####################################################################
@@ -665,148 +665,14 @@ for region in t:
 
     ascii.write(comb,'sex_galex_matches_'+region+'.txt',format='basic')
 
-####################################################################
-# Gaia match distances
-####################################################################
-cat = fits.open('sex-gaia-dust.fits')[1].data
-c1 = cat[np.where(cat['gb_gaia'] < 0)]
-c2 = cat[np.where(cat['gb_gaia'] > 0)]
-
-for region in range(0,360,5):
-    cat1 = c1[np.where((c1['gl_gaia'] > region) & (c1['gl_gaia'] < region+5))]
-    dgl1 = (cat1['gl_sex']-cat1['gl_gaia'])
-    dgb1 = (cat1['gb_sex']-cat1['gb_gaia'])
-
-    cat2 = c2[np.where((c2['gl_gaia'] > region) & (c2['gl_gaia'] < region+5))]
-    dgl2 = (cat2['gl_sex']-cat2['gl_gaia'])
-    dgb2 = (cat2['gb_sex']-cat2['gb_gaia'])
-
-    fig, (ax1, ax2) = plt.subplots(1, 2, sharey=True)
-    ax1.scatter(dgl1*3600, dgb1*3600, edgecolor='none', alpha=0.1)
-    ax1.axhline(y=0,c='black')
-    ax1.axvline(x=0,c='black')
-    ax2.scatter(dgl2*3600, dgb2*3600, edgecolor='none', alpha=0.1)
-    ax2.axhline(y=0,c='black')
-    ax2.axvline(x=0,c='black')
-
-    ax1.set_xlabel('gl$_{SEx}$ - gl$_{gaia2}$ [arcsec]')
-    ax2.set_xlabel('gl$_{SEx}$ - gl$_{gaia2}$ [arcsec]')
-    ax1.set_ylabel('gb$_{SEx}$ - gb$_{gaia2}$ [arcsec]')
-    ax1.set_xlim((-4,4))
-    ax1.set_ylim((-4,4))
-    ax2.set_xlim((-4,4))
-    ax2.set_ylim((-4,4))
-    ax1.annotate('N$_{lower}$ = '+str(len(cat1)), xy=(-3.9,-3.9))
-    ax2.annotate('N$_{upper}$ = '+str(len(cat2)), xy=(-3.9,-3.9))
-    ax1.set_title('gl='+str(region)+'-'+str(region+5)+', gb<0, avg=('+str(np.mean(dgl1)*3600)[:4]+', '+str(np.mean(dgb1)*3600)[:4]+')')
-    ax2.set_title('gb>0, avg=('+str(np.mean(dgl2)*3600)[:4]+', '+str(np.mean(dgb2)*3600)[:4]+')')
-    fig.subplots_adjust(wspace=0)
-
-    plt.savefig('10-13-sex-gaia_offset_'+str(region)+'-'+str(region+5)+'.png')
-    plt.clf()
-    print region
-
-
-agal = SkyCoord(a['gl']*u.deg,a['gb']*u.deg, frame='galactic')
-aind,  gaind,  angsepa,  ang3d = search_around_sky(agal, galexgal, 3.5*u.arcsec)
-a2 = Table(a[aind])
-g2 = Table(galex[gaind])
-comb = hstack([a2, g2])
-comb['angsep'] = angsepa
-comb.rename_column('nuv', 'nuv_sex')
-comb.rename_column('nuv_mag', 'nuv_galex')
-comb.rename_column('gl', 'gl_sex')
-comb.rename_column('gb', 'gb_sex')
-comb.rename_column('ra_1', 'ra_sex')
-comb.rename_column('dec_1', 'dec_sex')
-comb.rename_column('ra_2', 'ra_galex')
-comb.rename_column('dec_2', 'dec_galex')
-comb.rename_column('glon', 'gl_galex')
-comb.rename_column('glat', 'gb_galex')
-combcut = np.where(comb['nuv_galex'] == -999.)
-comb.remove_rows(combcut)
-
-plt.scatter(comb['nuv_galex'], comb['nuv_sex']-comb['nuv_galex'], alpha=0.1, edgecolor='none')
-plt.axhline(y=0, c='green')
-plt.xlabel('NUV$_{GAIS}$')
-plt.ylabel('NUV$_{SEx}$ - NUV$_{GAIS}$')
-plt.title('gl = 329.0')
-plt.xlim((12, 23))
-plt.ylim((-3, 2))
-plt.xlim((12, 23))
-plt.ylim((-3, 2))
-plt.annotate('N = '+str(len(comb)), xy=(13, -2.5))
-plt.show()
-
-
-cat = Table.read('sex_vphas_matches_total_mapweight.txt', format='ascii')
-for region in range(0,360,10):
-    cat1 = c1[np.where((c1['gl_tycho'] > region) & (c1['gl_tycho'] < region+5))]
-    dgl1 = (cat1['gl_sex']-cat1['gl_tycho'])
-    dgb1 = (cat1['gb_sex']-cat1['gb_tycho'])
-
-    cat2 = c2[np.where((c2['gl_tycho'] > region) & (c2['gl_tycho'] < region+5))]
-    dgl2 = (cat2['gl_sex']-cat2['gl_tycho'])
-    dgb2 = (cat2['gb_sex']-cat2['gb_tycho'])
-
-    fig, (ax1, ax2) = plt.subplots(1, 2, sharey=True)
-    ax1.scatter(dgl1*3600, dgb1*3600, edgecolor='none', alpha=0.1)
-    ax1.axhline(y=0,c='black')
-    ax1.axvline(x=0,c='black')
-    ax2.scatter(dgl2*3600, dgb2*3600, edgecolor='none', alpha=0.1)
-    ax2.axhline(y=0,c='black')
-    ax2.axvline(x=0,c='black')
-
-    ax1.set_xlabel('gl$_{SEx}$ - gl$_{Tycho2}$ [arcsec]')
-    ax2.set_xlabel('gl$_{SEx}$ - gl$_{Tycho2}$ [arcsec]')
-    ax1.set_ylabel('gb$_{SEx}$ - gb$_{Tycho2}$ [arcsec]')
-    ax1.set_xlim((-4,4))
-    ax1.set_ylim((-4,4))
-    ax2.set_xlim((-4,4))
-    ax2.set_ylim((-4,4))
-    ax1.annotate('N$_{lower}$ = '+str(len(cat1)), xy=(-3.9,-3.9))
-    ax2.annotate('N$_{upper}$ = '+str(len(cat2)), xy=(-3.9,-3.9))
-    ax1.set_title('gb<0, gl='+str(region)+'-'+str(region+5)+', avg=('+str(np.mean(dgl1)*3600)[:4]+', '+str(np.mean(dgb1)*3600)[:4]+')')
-    ax2.set_title('gb>0, avg=('+str(np.mean(dgl2)*3600)[:4]+', '+str(np.mean(dgb2)*3600)[:4]+')')
-    fig.subplots_adjust(wspace=0)
-
-    plt.savefig('04-13-sex-tycho_offset_'+str(region)+'-'+str(region+5)+'.png')
-    plt.clf()
-    print region
-
-for i in range(0, 360, 60):
-    c2 = cat[np.where((cat['nuv'] < 19) & (cat['gl'] > i) & (cat['gl'] < i+60))]
-    plt.hist2d(c2['gl'],c2['gb'], bins=[600,240], vmin=0,vmax=20, cmap=cm.gray)
-    plt.title('SExtractor, NUV < 19, 600x240')
-    plt.xlim((i, i+60))
-    plt.ylim((-10,10))
-    plt.savefig('04-18-sky_'+str(i)+'-'+str(i+60)+'sex.png')
-    plt.clf()
-    
-    cg2 = gcat[np.where((gcat['nuv_sex'] < 19) & (gcat['nuv_galex'] < 19) & (gcat['gl_sex'] > i) & (gcat['gl_sex'] < i+60))]
-    plt.hist2d(cg2['gl_sex'],cg2['gb_sex'], bins=[600,240], vmin=0,vmax=20, cmap=cm.gray)
-    plt.title('SEx+GALEX, NUV < 19, 600x240')
-    plt.xlim((i, i+60))
-    plt.ylim((-10,10))
-    plt.savefig('04-18-sky_'+str(i)+'-'+str(i+60)+'galex_sex.png')
-    plt.clf()
-
-    gal2 = galex[np.where((galex['nuv_mag'] < 19) & (galex['glon'] > i) & (galex['glon'] < i+60))]
-    plt.hist2d(gal2['glon'],gal2['glat'], bins=[600,240], vmin=0,vmax=20, cmap=cm.gray)
-    plt.title('GALEX, NUV < 19, 600x240')
-    plt.xlim((i, i+60))
-    plt.ylim((-10,10))
-    plt.savefig('04-18-sky_'+str(i)+'-'+str(i+60)+'galex.png')
-    plt.clf()
-
 
 ##########################################################
 #g vs g-r
 ##########################################################
-s1 = v2[np.where((v2['gl_sex'] > 0) & (v2['gl_sex'] < 40))]
-s2 = v2[np.where((v2['gl_sex'] > 200) & (v2['gl_sex'] < 250))]
-s3 = v2[np.where((v2['gl_sex'] > 250) & (v2['gl_sex'] < 300))]
-s4 = v2[np.where((v2['gl_sex'] > 300) & (v2['gl_sex'] < 360))]
+s1 = sv[np.where((sv['gl_sex'] > 0) & (sv['gl_sex'] < 40))]
+s2 = sv[np.where((sv['gl_sex'] > 200) & (sv['gl_sex'] < 250))]
+s3 = sv[np.where((sv['gl_sex'] > 250) & (sv['gl_sex'] < 300))]
+s4 = sv[np.where((sv['gl_sex'] > 300) & (sv['gl_sex'] < 360))]
 
 m = 8./1.5
 b = 22 - m*0.5
@@ -861,15 +727,16 @@ axes[1, 1].set_xlim((-1, 3))
 axes[1, 1].set_ylim((23, 12))
 axes[1, 1].annotate('300<gl<360', xy=(1.75,14))
 fig.subplots_adjust(wspace=0, hspace=0)
-fig.suptitle('WDC cut')
-plt.savefig('04-21-gvsgr_sex_vphas_allsky.png')
+fig.suptitle('11-22, SEx+vphas WDC cut')
+#plt.show()
+plt.savefig('11-22-gvsgr_sex_vphas.png')
 
 
 # Now with u-g < 1 cut
-s1 = vcat[np.where((vcat['gl_sex'] > 0) & (vcat['gl_sex'] < 40) & (vcat['u_AB']-vcat['g_AB'] < 1))]
-s2 = vcat[np.where((vcat['gl_sex'] > 200) & (vcat['gl_sex'] < 250) & (vcat['u_AB']-vcat['g_AB'] < 1))]
-s3 = vcat[np.where((vcat['gl_sex'] > 250) & (vcat['gl_sex'] < 300) & (vcat['u_AB']-vcat['g_AB'] < 1))]
-s4 = vcat[np.where((vcat['gl_sex'] > 300) & (vcat['gl_sex'] < 360) & (vcat['u_AB']-vcat['g_AB'] < 1))]
+s1 = sv[np.where((sv['gl_sex'] > 0) & (sv['gl_sex'] < 40) & (sv['u_AB']-sv['g_AB'] < 1))]
+s2 = sv[np.where((sv['gl_sex'] > 200) & (sv['gl_sex'] < 250) & (sv['u_AB']-sv['g_AB'] < 1))]
+s3 = sv[np.where((sv['gl_sex'] > 250) & (sv['gl_sex'] < 300) & (sv['u_AB']-sv['g_AB'] < 1))]
+s4 = sv[np.where((sv['gl_sex'] > 300) & (sv['gl_sex'] < 360) & (sv['u_AB']-sv['g_AB'] < 1))]
 
 m = 8./1.5
 b = 22 - m*0.5
@@ -877,59 +744,62 @@ cut1 = np.where(((s1['g_AB']-s1['r_AB'])*m+b < s1['g_AB']) & (s1['g_AB'] > 19.))
 cut2 = np.where(((s2['g_AB']-s2['r_AB'])*m+b < s2['g_AB']) & (s2['g_AB'] > 19.))
 cut3 = np.where(((s3['g_AB']-s3['r_AB'])*m+b < s3['g_AB']) & (s3['g_AB'] > 19.))
 cut4 = np.where(((s4['g_AB']-s4['r_AB'])*m+b < s4['g_AB']) & (s4['g_AB'] > 19.))
-wd1 = s1[cut1]
-wd2 = s2[cut2]
-wd3 = s3[cut3]
-wd4 = s4[cut4]
+vwd1 = s1[cut1]
+vwd2 = s2[cut2]
+vwd3 = s3[cut3]
+vwd4 = s4[cut4]
 
-scatter_contour(s1['g_AB']-s1['r_AB'],s1['g_AB'],threshold=1000,log_counts=True,histogram2d_args=dict(bins=(40)),plot_args=dict(color='k',markersize=1))
-plt.scatter(wd1['g_AB']-wd1['r_AB'],wd1['g_AB'],edgecolor='none',facecolor='red')
-plt.xlabel(('g - r (ABmag)'))
-plt.ylabel(('g (ABmag)'))
-plt.xlim((-1, 3))
-plt.ylim((23, 12))
-plt.title('VPHAS+SEx, 0 < gl < 40, u-g < 1, N$_{obj}$ = '+str(len(s1)))
-plt.savefig('04-18-gvsgr_sex_vphas_0-40_ugcut.png')
-plt.clf()
 
-scatter_contour(s2['g_AB']-s2['r_AB'],s2['g_AB'],threshold=1000,log_counts=True,histogram2d_args=dict(bins=(40)),plot_args=dict(color='k',markersize=1))
-plt.scatter(wd2['g_AB']-wd2['r_AB'],wd2['g_AB'],edgecolor='none',facecolor='red')
-plt.xlabel(('g - r (ABmag)'))
-plt.ylabel(('g (ABmag)'))
-plt.xlim((-1, 3))
-plt.ylim((23, 12))
-plt.title('VPHAS+SEx, 200 < gl < 250, u-g < 1, N$_{obj}$ = '+str(len(s2)))
-plt.savefig('04-18-gvsgr_sex_vphas_200-250_ugcut.png')
-plt.clf()
+fig, axes = plt.subplots(2, 2, sharey=True, sharex=True)
+scatter_contour(s1['g_AB']-s1['r_AB'], s1['g_AB'], threshold=950, log_counts=True, histogram2d_args=dict(bins=(40)), plot_args=dict(color='k', markersize=1), contour_args=dict(cmap=cm.gray), ax=axes[0, 0])
+axes[0, 0].scatter(vwd1['g_AB']-vwd1['r_AB'], vwd1['g_AB'], edgecolor='none', facecolor='blue')
+axes[0, 0].axvline(x=0.576, c='red')
+axes[0, 0].axhline(y=14.272, c='red')
+axes[0, 0].set_ylabel(('g (ABmag)'))
+axes[0, 0].set_xlim((-1, 3))
+axes[0, 0].set_ylim((23, 12))
+axes[0, 0].annotate('0<gl<40', xy=(1.75,14))
 
-scatter_contour(s3['g_AB']-s3['r_AB'],s3['g_AB'],threshold=1000,log_counts=True,histogram2d_args=dict(bins=(40)),plot_args=dict(color='k',markersize=1))
-plt.scatter(wd3['g_AB']-wd3['r_AB'],wd3['g_AB'],edgecolor='none',facecolor='red')
-plt.xlabel(('g - r (ABmag)'))
-plt.ylabel(('g (ABmag)'))
-plt.xlim((-1, 3))
-plt.ylim((23, 12))
-plt.title('VPHAS+SEx, 250 < gl < 300, u-g < 1, N$_{obj}$ = '+str(len(s3)))
-plt.savefig('04-18-gvsgr_sex_vphas_250-300_ugcut.png')
-plt.clf()
+scatter_contour(s2['g_AB']-s2['r_AB'],s2['g_AB'],threshold=950,log_counts=True,histogram2d_args=dict(bins=(40)),plot_args=dict(color='k',markersize=1), contour_args=dict(cmap=cm.gray), ax=axes[0,1])
+axes[0, 1].scatter(vwd2['g_AB']-vwd2['r_AB'],vwd2['g_AB'],edgecolor='none',facecolor='blue')
+axes[0, 1].axvline(x=0.271, c='red')
+axes[0, 1].axhline(y=14.69, c='red')
+axes[0, 1].set_xlim((-1, 3))
+axes[0, 1].set_ylim((23, 12))
+axes[0,1].annotate('200<gl<250', xy=(1.75,14))
 
-scatter_contour(s4['g_AB']-s4['r_AB'],s4['g_AB'],threshold=1000,log_counts=True,histogram2d_args=dict(bins=(40)),plot_args=dict(color='k',markersize=1))
-plt.scatter(wd4['g_AB']-wd4['r_AB'],wd4['g_AB'],edgecolor='none',facecolor='red')
-plt.xlabel(('g - r (ABmag)'))
-plt.ylabel(('g (ABmag)'))
-plt.xlim((-1, 3))
-plt.ylim((23, 12))
-plt.title('VPHAS+SEx, 300 < gl < 360, u-g < 1, N$_{obj}$ = '+str(len(s4)))
-plt.savefig('04-18-gvsgr_sex_vphas_300-360_ugcut.png')
-plt.clf()
+scatter_contour(s3['g_AB']-s3['r_AB'],s3['g_AB'],threshold=950,log_counts=True,histogram2d_args=dict(bins=(40)),plot_args=dict(color='k',markersize=1), contour_args=dict(cmap=cm.gray), ax=axes[1, 0])
+axes[1, 0].scatter(vwd3['g_AB']-vwd3['r_AB'],vwd3['g_AB'],edgecolor='none',facecolor='blue')
+axes[1, 0].axvline(x=0.369, c='red')
+axes[1, 0].axhline(y=14.25, c='red')
+axes[1, 0].set_xlabel(('g - r (ABmag)'))
+axes[1, 0].set_ylabel(('g (ABmag)'))
+axes[1, 0].set_xlim((-1, 3))
+axes[1, 0].set_ylim((23, 12))
+axes[1, 0].annotate('250<gl<300', xy=(1.75,14))
+
+scatter_contour(s4['g_AB']-s4['r_AB'],s4['g_AB'],threshold=950,log_counts=True,histogram2d_args=dict(bins=(40)),plot_args=dict(color='k',markersize=1), contour_args=dict(cmap=cm.gray), ax=axes[1, 1])
+axes[1, 1].scatter(vwd4['g_AB']-vwd4['r_AB'],vwd4['g_AB'],edgecolor='none',facecolor='blue')
+axes[1, 1].axvline(x=0.504, c='red')
+axes[1, 1].axhline(y=14.1, c='red')
+axes[1, 1].set_xlabel(('g - r (ABmag)'))
+axes[1, 1].set_xlim((-1, 3))
+axes[1, 1].set_ylim((23, 12))
+axes[1, 1].annotate('300<gl<360', xy=(1.75,14))
+fig.subplots_adjust(wspace=0, hspace=0)
+fig.suptitle('11-22, SEx+vphas, WDC cut, u-g < 1')
+#plt.show()
+plt.savefig('11-22-gvsgr_sex_vphas_ugcut.png')
+
 
 
 ###########################################################
 # g-r vs nuv-g
 ###########################################################
-s1 = v2[np.where((v2['gl_sex'] > 0) & (v2['gl_sex'] < 40))]
-s2 = v2[np.where((v2['gl_sex'] > 200) & (v2['gl_sex'] < 250))]
-s3 = v2[np.where((v2['gl_sex'] > 250) & (v2['gl_sex'] < 300))]
-s4 = v2[np.where((v2['gl_sex'] > 300) & (v2['gl_sex'] < 360))]
+s1 = sv[np.where((sv['gl_sex'] > 0) & (sv['gl_sex'] < 40))]
+s2 = sv[np.where((sv['gl_sex'] > 200) & (sv['gl_sex'] < 250))]
+s3 = sv[np.where((sv['gl_sex'] > 250) & (sv['gl_sex'] < 300))]
+s4 = sv[np.where((sv['gl_sex'] > 300) & (sv['gl_sex'] < 360))]
 
 pickles = Table.read('../../picklemags_laphare_final.txt', format='ascii')
 scatter_contour(s1['nuv_sex']-s1['g_AB'],s1['g_AB']-s1['r_AB'],threshold=1050,log_counts=True,histogram2d_args=dict(bins=(40)),plot_args=dict(color='k',markersize=1))
@@ -975,6 +845,7 @@ plt.arrow(6, -0.5, 2.972-1.1838, 1.1838-0.8664, head_length=0.05, head_width=0.0
 plt.title('VPHAS+SEx, NUV < 19, 300 < gl < 360, N$_{obj}$ = '+str(len(s4)))
 plt.savefig('04-18-grvsnuvg_sex_vphas_300-360_nuvcut.png')
 plt.clf()
+
 
 s1 = vcat[np.where((vcat['gl_sex'] > 0) & (vcat['gl_sex'] < 40))]
 s2 = vcat[np.where((vcat['gl_sex'] > 200) & (vcat['gl_sex'] < 250))]
@@ -1123,60 +994,51 @@ plt.scatter(b2['gl'], b2['gb'], color='orange', alpha=0.5)
 #################################################
 # Combine all starcat files
 #################################################
-sky1 = ['1.4', '2.3', '3.2', '4.1', '5.0', '5.9', '6.8', '8.6', '9.5', '10.4', '11.3', '12.2', '14.0', '14.9', '15.8', '16.7', '17.6', '18.5', '19.4', '20.3', '21.2', '22.1', '23.0', '23.9', '24.8', '25.7', '28.4', '29.3', '30.2', '31.1', '32.0', '32.9', '33.8', '34.7', '35.6', '39.2', '42.8', '43.7', '44.6', '44.6', '45.5', '46.4', '47.3', '48.2', '49.1', '50.0', '67.1', '68.9', '71.6', '74.3', '75.2', '76.1', '77.0', '77.9', '78.8', '79.7', '80.6', '81.5', '82.4', '83.3', '87.8', '88.7', '89.6', '90.5', '91.4', '92.3', '93.2', '94.1', '95.0', '95.9', '96.8', '97.7', '98.6', '99.5', '100.4']
+#incscans = ['9.5', '14.9', '79.7', '90.5', '91.4', '103.1', '104.0', '122.9', '127.4', '223.7', '273.2', '283.1', '289.4', '306.5', '309.2', '324.5', '329.9', '338.0', '339.8', '342.5', '343.4', '345.2', '348.8', '349.7', '350.6', '351.5', '352.4', '353.3', '354.2', '355.1', '356.0', '357.8']
+
+sky1 = ['1.4', '2.3', '3.2', '4.1', '5.0', '5.9', '6.8', '8.6', '10.4', '11.3', '12.2', '14.0', '15.8', '16.7', '17.6', '18.5', '19.4', '20.3', '21.2', '22.1', '23.0', '23.9', '24.8', '25.7', '28.4', '29.3', '30.2', '31.1', '32.0', '32.9', '33.8', '34.7', '35.6', '39.2', '42.8', '43.7', '44.6', '44.6', '45.5', '46.4', '47.3', '48.2', '49.1', '50.0', '67.1', '68.9', '71.6', '74.3', '75.2', '76.1', '77.0', '77.9', '78.8', '80.6', '81.5', '82.4', '83.3', '87.8', '88.7', '89.6', '92.3', '93.2', '94.1', '95.0', '95.9', '96.8', '97.7', '98.6', '99.5', '100.4', '101.3', '102.2', '104.9', '105.8', '106.7', '107.6', '110.3', '111.2', '112.1', '113.0', '113.9', '114.8', '119.3']
 
 alldata = Table.read('starcat_5mapweight_fwhm.txt', format='ascii')
-#alldata = alldata[np.where((alldata['FWHM_IMAGE'] < 10) & (alldata['FWHM_IMAGE'] > 3.5) & (alldata['nuv'] < 20))]
+alldata = alldata[np.where((alldata['FWHM_IMAGE'] < 10) & (alldata['FWHM_IMAGE'] > 3.5))]
 
 for region in sky1:
     a = Table.read('starcat_'+region+'mapweight_fwhm.txt', format='ascii')
-    #a = a[np.where((a['FWHM_IMAGE'] < 10) & (a['FWHM_IMAGE'] > 3.5) & (a['nuv'] < 20))]
+    a = a[np.where((a['FWHM_IMAGE'] < 10) & (a['FWHM_IMAGE'] > 3.5) & (a['nuv'] < 20))]
     alldata = vstack([alldata, a])
     print region
 
-ascii.write(alldata, '../../starcat_1-100_mapweight_fwhm_pscans_allnuv.txt', format='basic')
+ascii.write(alldata, '../../../starcat_1-120_mapweight_fwhm_pscans_allnuv.txt', format='ipac')
 
 
-sky2 = ['102.2', '103.1', '104.0', '104.9', '105.8', '106.7', '107.6', '110.3', '111.2', '112.1', '113.0', '113.9', '114.8', '119.3', '121.1', '122.9', '124.7', '125.6', '126.5', '127.4', '128.3', '129.2', '130.1', '131.0', '131.9', '132.8', '133.7', '134.6', '135.5', '136.4', '137.3', '138.2', '139.1', '140.0', '140.9', '141.8', '143.6', '144.5', '148.1', '149.0', '149.9', '150.8', '151.7', '152.6', '153.5', '145.4', '155.3', '156.2', '157.1', '158.0', '160.7', '161.6', '163.4', '167.0', '167.9', '172.4', '173.3', '174.2', '175.1', '176.0', '176.9', '177.8', '178.7', '179.6', '180.5', '183.2', '185.0', '190.4', '191.3', '197.6', '198.5']
+sky2 = ['124.7', '125.6', '126.5', '128.3', '129.2', '130.1', '131.0', '131.9', '132.8', '133.7', '134.6', '135.5', '136.4', '137.3', '138.2', '139.1', '140.0', '140.9', '141.8', '143.6', '144.5', '148.1', '149.0', '149.9', '150.8', '151.7', '152.6', '153.5', '145.4', '155.3', '156.2', '157.1', '158.0', '160.7', '161.6', '163.4', '167.0', '167.9', '172.4', '173.3', '174.2', '175.1', '176.0', '176.9', '177.8', '178.7', '179.6', '180.5', '183.2', '185.0', '190.4', '191.3', '197.6', '198.5', '200.3', '201.2', '203.0', '203.9', '205.7', '206.6', '207.5', '208.4', '209.3', '210.2', '211.1', '212.0', '212.9', '213.8', '214.7', '215.6', '216.5', '217.4', '218.3', '219.2', '220.1', '221.0', '221.9', '222.8', '224.6', '225.5', '226.4', '228.2', '229.1', '230.0', '230.9', '231.8', '234.5', '235.4', '236.3', '237.2', '238.1', '239.0', '239.9', '240.8']
 
-alldata = Table.read('starcat_101.3mapweight_fwhm.txt', format='ascii')
-#alldata = alldata[np.where((alldata['FWHM_IMAGE'] < 10) & (alldata['FWHM_IMAGE'] > 3.5) & (alldata['nuv'] < 20))]
+alldata = Table.read('starcat_121.1mapweight_fwhm.txt', format='ascii')
+alldata = alldata[np.where((alldata['FWHM_IMAGE'] < 10) & (alldata['FWHM_IMAGE'] > 3.5) & (alldata['nuv'] < 20))]
 
 for region in sky2:
     a = Table.read('starcat_'+region+'mapweight_fwhm.txt', format='ascii')
-    #a = a[np.where((a['FWHM_IMAGE'] < 10) & (a['FWHM_IMAGE'] > 3.5) & (a['nuv'] < 20))]
+    a = a[np.where((a['FWHM_IMAGE'] < 10) & (a['FWHM_IMAGE'] > 3.5) & (a['nuv'] < 20))]
     alldata = vstack([alldata, a])
     print region
 
-ascii.write(alldata, '../../starcat100-200_mapweight_fwhm_pscans_allnuv.txt', format='basic')
+ascii.write(alldata, '../../../starcat120-240_mapweight_fwhm_pscans_allnuv.txt', format='ipac')
+
+#incscans = ['273.2', '283.1', '289.4', '306.5', '309.2', '324.5', '329.9', '338.0', '339.8', '342.5', '343.4', '345.2', '348.8', '349.7', '350.6', '351.5', '352.4', '353.3', '354.2', '355.1', '356.0', '357.8']
 
 
-sky3 =  ['201.2', '203.0', '203.9', '205.7', '206.6', '207.5', '208.4', '209.3', '210.2', '211.1', '212.0', '212.9', '213.8', '214.7', '215.6', '216.5', '217.4', '218.3', '219.2', '220.1', '221.0', '221.9', '222.8', '223.7', '224.6', '225.5', '226.4', '228.2', '229.1', '230.0', '230.9', '231.8', '234.5', '235.4', '236.3', '237.2', '238.1', '239.0', '239.9', '240.8', '241.7', '242.6', '243.5', '244.4', '245.3', '246.2', '247.1', '248.0', '248.9', '249.8', '250.7', '251.6', '252.5', '253.4', '254.3', '255.2', '256.1', '257.0', '258.8', '259.7', '260.6', '261.5', '263.3', '264.2', '265.1', '266.0', '266.9', '268.7', '269.6', '270.5', '271.4', '272.3', '273.2', '274.1', '275.0', '275.9', '276.8', '278.6', '279.5', '281.3', '283.1', '284.0', '285.8', '286.7', '288.5', '289.4', '290.3', '291.2', '292.1', '293.0', '293.9', '295.7', '297.5', '298.4']
 
-alldata = Table.read('starcat_200.3mapweight_fwhm.txt', format='ascii')
-#alldata = alldata[np.where((alldata['FWHM_IMAGE'] < 10) & (alldata['FWHM_IMAGE'] > 3.5) & (alldata['nuv'] < 20))]
+sky3 =  ['242.6', '243.5', '244.4', '245.3', '246.2', '247.1', '248.0', '248.9', '249.8', '250.7', '251.6', '252.5', '253.4', '254.3', '255.2', '256.1', '257.0', '258.8', '259.7', '260.6', '261.5', '263.3', '264.2', '265.1', '266.0', '266.9', '268.7', '269.6', '270.5', '271.4', '272.3', '274.1', '275.0', '275.9', '276.8', '278.6', '279.5', '281.3', '284.0', '285.8', '286.7', '288.5', '290.3', '291.2', '292.1', '293.0', '293.9', '295.7', '297.5', '298.4', '302.0', '302.9', '303.8', '304.7', '305.6', '308.3', '310.1', '315.5', '316.4', '317.3', '318.2', '319.1', '320.0', '320.9', '321.8', '322.7', '323.6', '325.4', '326.3', '327.2', '328.1', '329.0', '331.7', '332.6', '333.5', '334.4', '335.3', '338.9', '341.6', '358.7', '359.6']
+
+alldata = Table.read('starcat_241.7mapweight_fwhm.txt', format='ascii')
+alldata = alldata[np.where((alldata['FWHM_IMAGE'] < 10) & (alldata['FWHM_IMAGE'] > 3.5) & (alldata['nuv'] < 20))]
 
 for region in sky3:
     a = Table.read('starcat_'+region+'mapweight_fwhm.txt', format='ascii')
-    #a = a[np.where((a['FWHM_IMAGE'] < 10) & (a['FWHM_IMAGE'] > 3.5) & (a['nuv'] < 20))]
+    a = a[np.where((a['FWHM_IMAGE'] < 10) & (a['FWHM_IMAGE'] > 3.5) & (a['nuv'] < 20))]
     alldata = vstack([alldata, a])
     print region
 
-ascii.write(alldata, '../../starcat200-300_mapweight_fwhm_pscans_allnuv.txt', format='basic')
-
-
-sky4 = ['302.0', '302.9', '303.8', '304.7', '305.6', '306.5', '308.3', '309.2', '310.1', '315.5', '316.4', '317.3', '318.2', '319.1', '320.0', '320.9', '321.8', '322.7', '323.6', '324.5', '325.4', '326.3', '327.2', '328.1', '329.0', '329.9', '331.7', '332.6', '333.5', '334.4', '335.3', '338.0', '338.9', '339.8', '341.6', '342.5', '343.4', '345.2', '348.8', '349.7', '350.6', '351.5', '352.4', '353.3', '354.2', '355.1', '356.0', '357.8', '358.7', '359.6']
-
-alldata = Table.read('starcat_301.1mapweight_fwhm.txt', format='ascii')
-#alldata = alldata[np.where((alldata['FWHM_IMAGE'] < 10) & (alldata['FWHM_IMAGE'] > 3.5) & (alldata['nuv'] < 20))]
-
-for region in sky4:
-    a = Table.read('starcat_'+region+'mapweight_fwhm.txt', format='ascii')
-    #a = a[np.where((a['FWHM_IMAGE'] < 10) & (a['FWHM_IMAGE'] > 3.5) & (a['nuv'] < 20))]
-    alldata = vstack([alldata, a])
-    print region
-
-ascii.write(alldata, '../../starcat300-360_mapweight_fwhm_pscans_allnuv.txt', format='basic')
+ascii.write(alldata, '../../../starcat240-360_mapweight_fwhm_pscans_allnuv.txt', format='ipac')
 
 
 #################################################
@@ -1487,7 +1349,7 @@ plt.title('WD + var dets in sextractor')
 # HR diagram with extinction colored by gl
 #################################################
 #sg = fits.open('../sex-gaia-dust.fits')[1].data
-sg = fits.open('sex_gaia_dust_allnuv.fits')[1].data
+sg = fits.open('sex_gaia_dust_interp.fits')[1].data
 
 sg1 = sg[np.where(sg['dist'] < 100)]
 sg2 = sg[np.where((sg['dist'] > 100) & (sg['dist'] < 300))]
@@ -1549,8 +1411,8 @@ fig.suptitle('S+G matches by gl, D > 3000 pc')
 #######################################################
 # HR diagram with extinction by dist and 45 deg slices
 #######################################################
-#sgcat = fits.open('sex_gaia_dust_interp.fits')[1].data
-sgcat = fits.open('gais_gaia_dust.fits')[1].data
+sgcat = fits.open('sex_gaia_dust_interp.fits')[1].data
+#sgcat = fits.open('gais_gaia_dust.fits')[1].data
 sga = sgcat[np.where((sgcat['dist'] > 0) & (sgcat['dist'] < 100) & (sgcat['ebv'] > 0))]
 sgb = sgcat[np.where((sgcat['dist'] > 100) & (sgcat['dist'] < 300) & (sgcat['ebv'] > 0))]
 sgc = sgcat[np.where((sgcat['dist'] > 300) & (sgcat['dist'] < 600) & (sgcat['ebv'] > 0))]
@@ -1564,14 +1426,14 @@ distfilename = ['0-100', '100-300', '300-600', '600-1000', '1000']
 
 for i in range(len(sg)):
     # By gl
-    sg1 = sg[i][np.where((sg[i]['gl_gais'] > 0) & (sg[i]['gl_gais'] < 45))]
-    sg2 = sg[i][np.where((sg[i]['gl_gais'] > 45) & (sg[i]['gl_gais'] < 90))]
-    sg3 = sg[i][np.where((sg[i]['gl_gais'] > 90) & (sg[i]['gl_gais'] < 135))]
-    sg4 = sg[i][np.where((sg[i]['gl_gais'] > 135) & (sg[i]['gl_gais'] < 180))]
-    sg5 = sg[i][np.where((sg[i]['gl_gais'] > 180) & (sg[i]['gl_gais'] < 225))]
-    sg6 = sg[i][np.where((sg[i]['gl_gais'] > 225) & (sg[i]['gl_gais'] < 270))]
-    sg7 = sg[i][np.where((sg[i]['gl_gais'] > 270) & (sg[i]['gl_gais'] < 315))]
-    sg8 = sg[i][np.where((sg[i]['gl_gais'] > 315) & (sg[i]['gl_gais'] < 360))]
+    sg1 = sg[i][np.where((sg[i]['gl_sex'] > 0) & (sg[i]['gl_sex'] < 45))]
+    sg2 = sg[i][np.where((sg[i]['gl_sex'] > 45) & (sg[i]['gl_sex'] < 90))]
+    sg3 = sg[i][np.where((sg[i]['gl_sex'] > 90) & (sg[i]['gl_sex'] < 135))]
+    sg4 = sg[i][np.where((sg[i]['gl_sex'] > 135) & (sg[i]['gl_sex'] < 180))]
+    sg5 = sg[i][np.where((sg[i]['gl_sex'] > 180) & (sg[i]['gl_sex'] < 225))]
+    sg6 = sg[i][np.where((sg[i]['gl_sex'] > 225) & (sg[i]['gl_sex'] < 270))]
+    sg7 = sg[i][np.where((sg[i]['gl_sex'] > 270) & (sg[i]['gl_sex'] < 315))]
+    sg8 = sg[i][np.where((sg[i]['gl_sex'] > 315) & (sg[i]['gl_sex'] < 360))]
 
 
     fig, ((ax1, ax2), (ax3, ax4), (ax5, ax6), (ax7, ax8)) = plt.subplots(4, 2, sharex=True, sharey=True)
@@ -1610,16 +1472,17 @@ for i in range(len(sg)):
     ax8.annotate('gl = 315-360', xy=(-3.5, 7))
     fig.text(0.5, 0.04, '(NUV - E$_{B-V}$ * 7.76) - (G - E$_{B-V}$ * 3.303)', ha='center')
     fig.text(0.04, 0.5, 'MG - E$_{B-V}$ * 3.303', va='center', rotation='vertical')
-    plt.suptitle('GAIS+G+sprint matches, Ext from S&F11, Hogg parallax, '+distrange[i])
+    plt.suptitle('SEx+G, Ext from S&F11, Hogg parallax, '+distrange[i])
     fig.subplots_adjust(hspace=0, wspace=0)
-    plt.savefig('11-04-Mgvsnuvg_gais_tgasmatch_glcuts_'+distfilename[i]+'pc_ext_interp.png')
+    plt.savefig('11-22-Mgvsnuvg_sex_glcuts_'+distfilename[i]+'pc_ext_interp.png')
     #plt.show()
     plt.clf()
 
 #######################################################
 # HR diagram WITHOUT extinction by dist and 45 deg slices
 #######################################################
-sgcat = fits.open('gais_gaia_dust.fits')[1].data
+#sgcat = fits.open('gais_gaia_dust.fits')[1].data
+sgcat = fits.open('sex_gaia_dust_interp.fits')[1].data
 sga = sgcat[np.where((sgcat['dist'] > 0) & (sgcat['dist'] < 100) & (sgcat['ebv'] > 0))]
 sgb = sgcat[np.where((sgcat['dist'] > 100) & (sgcat['dist'] < 300) & (sgcat['ebv'] > 0))]
 sgc = sgcat[np.where((sgcat['dist'] > 300) & (sgcat['dist'] < 600) & (sgcat['ebv'] > 0))]
@@ -1633,14 +1496,14 @@ distfilename = ['0-100', '100-300', '300-600', '600-1000', '1000']
 
 for i in range(len(sg)):
     # By gl
-    sg1 = sg[i][np.where((sg[i]['gl_gais'] > 0) & (sg[i]['gl_gais'] < 45))]
-    sg2 = sg[i][np.where((sg[i]['gl_gais'] > 45) & (sg[i]['gl_gais'] < 90))]
-    sg3 = sg[i][np.where((sg[i]['gl_gais'] > 90) & (sg[i]['gl_gais'] < 135))]
-    sg4 = sg[i][np.where((sg[i]['gl_gais'] > 135) & (sg[i]['gl_gais'] < 180))]
-    sg5 = sg[i][np.where((sg[i]['gl_gais'] > 180) & (sg[i]['gl_gais'] < 225))]
-    sg6 = sg[i][np.where((sg[i]['gl_gais'] > 225) & (sg[i]['gl_gais'] < 270))]
-    sg7 = sg[i][np.where((sg[i]['gl_gais'] > 270) & (sg[i]['gl_gais'] < 315))]
-    sg8 = sg[i][np.where((sg[i]['gl_gais'] > 315) & (sg[i]['gl_gais'] < 360))]
+    sg1 = sg[i][np.where((sg[i]['gl_sex'] > 0) & (sg[i]['gl_sex'] < 45))]
+    sg2 = sg[i][np.where((sg[i]['gl_sex'] > 45) & (sg[i]['gl_sex'] < 90))]
+    sg3 = sg[i][np.where((sg[i]['gl_sex'] > 90) & (sg[i]['gl_sex'] < 135))]
+    sg4 = sg[i][np.where((sg[i]['gl_sex'] > 135) & (sg[i]['gl_sex'] < 180))]
+    sg5 = sg[i][np.where((sg[i]['gl_sex'] > 180) & (sg[i]['gl_sex'] < 225))]
+    sg6 = sg[i][np.where((sg[i]['gl_sex'] > 225) & (sg[i]['gl_sex'] < 270))]
+    sg7 = sg[i][np.where((sg[i]['gl_sex'] > 270) & (sg[i]['gl_sex'] < 315))]
+    sg8 = sg[i][np.where((sg[i]['gl_sex'] > 315) & (sg[i]['gl_sex'] < 360))]
 
 
     fig, ((ax1, ax2), (ax3, ax4), (ax5, ax6), (ax7, ax8)) = plt.subplots(4, 2, sharex=True, sharey=True)
@@ -1679,9 +1542,9 @@ for i in range(len(sg)):
     ax8.annotate('gl = 315-360', xy=(-3.5, 7))
     fig.text(0.5, 0.04, 'NUV - G', ha='center')
     fig.text(0.04, 0.5, 'MG', va='center', rotation='vertical')
-    plt.suptitle('GAIS+G matches, no ext, Hogg par, '+distrange[i])
+    plt.suptitle('SEx+G matches, no ext, Hogg par, '+distrange[i])
     fig.subplots_adjust(hspace=0, wspace=0)
-    plt.savefig('10-31-Mgvsnuvg_gais_glcuts_'+distfilename[i]+'pc_noext.png')
+    plt.savefig('11-22-Mgvsnuvg_gais_glcuts_'+distfilename[i]+'pc_noext.png')
     #plt.show()
     plt.clf()
 
@@ -1710,11 +1573,76 @@ comb['angsep'] = angsep
 ascii.write(comb, 'gais_gaia.txt', format='ipac')
 
 
+#######################################################
+# HR diagram with extinction by dist and 45 deg slice, colored by ebv
+#######################################################
+sgcat = fits.open('sex_gaia_dust_interp.fits')[1].data
+#sgcat = fits.open('gais_gaia_dust.fits')[1].data
+sga = sgcat[np.where((sgcat['dist'] > 0) & (sgcat['dist'] < 100) & (sgcat['ebv'] > 0))]
+sgb = sgcat[np.where((sgcat['dist'] > 100) & (sgcat['dist'] < 300) & (sgcat['ebv'] > 0))]
+sgc = sgcat[np.where((sgcat['dist'] > 300) & (sgcat['dist'] < 600) & (sgcat['ebv'] > 0))]
+sgd = sgcat[np.where((sgcat['dist'] > 600) & (sgcat['dist'] < 1000) & (sgcat['ebv'] > 0))]
+sge = sgcat[np.where((sgcat['dist'] > 1000) & (sgcat['dist'] < 3000) & (sgcat['ebv'] > 0))]
+sgf = sgcat[np.where((sgcat['dist'] > 3000) & (sgcat['ebv'] > 0))]
+
+sg = [sga, sgb, sgc, sgd, sge]
+distrange = ['0 < D < 100 pc', '100 < D < 300 pc', '300 < D < 600 pc', '600 < D < 1000 pc', 'D > 1000 pc']
+distfilename = ['0-100', '100-300', '300-600', '600-1000', '1000']
+
+for i in range(len(sg)):
+    # By gl
+    sg1 = sg[i][np.where((sg[i]['gl_sex'] > 0) & (sg[i]['gl_sex'] < 45))]
+    sg2 = sg[i][np.where((sg[i]['gl_sex'] > 45) & (sg[i]['gl_sex'] < 90))]
+    sg3 = sg[i][np.where((sg[i]['gl_sex'] > 90) & (sg[i]['gl_sex'] < 135))]
+    sg4 = sg[i][np.where((sg[i]['gl_sex'] > 135) & (sg[i]['gl_sex'] < 180))]
+    sg5 = sg[i][np.where((sg[i]['gl_sex'] > 180) & (sg[i]['gl_sex'] < 225))]
+    sg6 = sg[i][np.where((sg[i]['gl_sex'] > 225) & (sg[i]['gl_sex'] < 270))]
+    sg7 = sg[i][np.where((sg[i]['gl_sex'] > 270) & (sg[i]['gl_sex'] < 315))]
+    sg8 = sg[i][np.where((sg[i]['gl_sex'] > 315) & (sg[i]['gl_sex'] < 360))]
 
 
-a = np.loadtxt('filelists/scst_list_fec.txt', dtype='str')
+    fig, ((ax1, ax2), (ax3, ax4), (ax5, ax6), (ax7, ax8)) = plt.subplots(4, 2, sharex=True, sharey=True)
+    im1 = ax1.scatter((sg1['nuv_mag']-sg1['ebv']*7.76)-(sg1['phot_g_mean_mag']-sg1['ebv']*3.303), sg1['Mg']-sg1['ebv']*3.303, edgecolor='none', c=np.log10(sg1['ebv']), alpha=0.5, vmin=-1, vmax=0)
+    ax2.scatter((sg2['nuv_mag']-sg2['ebv']*7.76)-(sg2['phot_g_mean_mag']-sg2['ebv']*3.303), sg2['Mg']-sg2['ebv']*3.303, edgecolor='none', c=np.log10(sg2['ebv']), alpha=0.5, vmin=-1, vmax=0)
+    ax3.scatter((sg3['nuv_mag']-sg3['ebv']*7.76)-(sg3['phot_g_mean_mag']-sg3['ebv']*3.303), sg3['Mg']-sg3['ebv']*3.303, edgecolor='none', c=np.log10(sg3['ebv']), alpha=0.5, vmin=-1, vmax=0)
+    ax4.scatter((sg4['nuv_mag']-sg4['ebv']*7.76)-(sg4['phot_g_mean_mag']-sg4['ebv']*3.303), sg4['Mg']-sg4['ebv']*3.303, edgecolor='none', c=np.log10(sg4['ebv']), alpha=0.5, vmin=-1, vmax=0)
+    ax5.scatter((sg5['nuv_mag']-sg5['ebv']*7.76)-(sg5['phot_g_mean_mag']-sg5['ebv']*3.303), sg5['Mg']-sg5['ebv']*3.303, edgecolor='none', c=np.log10(sg5['ebv']), alpha=0.5, vmin=-1, vmax=0)
+    ax6.scatter((sg6['nuv_mag']-sg6['ebv']*7.76)-(sg6['phot_g_mean_mag']-sg6['ebv']*3.303), sg6['Mg']-sg6['ebv']*3.303, edgecolor='none', c=np.log10(sg6['ebv']), alpha=0.5, vmin=-1, vmax=0)
+    ax7.scatter((sg7['nuv_mag']-sg7['ebv']*7.76)-(sg7['phot_g_mean_mag']-sg7['ebv']*3.303), sg7['Mg']-sg7['ebv']*3.303, edgecolor='none', c=np.log10(sg7['ebv']), alpha=0.5, vmin=-1, vmax=0)
+    ax8.scatter((sg8['nuv_mag']-sg8['ebv']*7.76)-(sg8['phot_g_mean_mag']-sg8['ebv']*3.303), sg8['Mg']-sg8['ebv']*3.303, edgecolor='none', c=np.log10(sg8['ebv']), alpha=0.5, vmin=-1, vmax=0)
 
-for i in range(len(a)):
-    scan = fits.open('scst/'+a[i])[1].data
-    scangal = SkyCoord(scan['ra_acs']*u.deg, scan['dec_acs']*u.deg, frame='icrs').galactic
-    plt.scatter(scangal.l.degree,scangal.b.degree, edgecolor='none',c=scan['roll_acs'])
+    ax1.set_xlim((-4, 11))
+    ax1.set_ylim((8, -6))
+    ax2.set_xlim((-4, 11))
+    ax2.set_ylim((8, -6))
+    ax3.set_xlim((-4, 11))
+    ax3.set_ylim((8, -6))
+    ax4.set_xlim((-4, 11))
+    ax4.set_ylim((8, -6))
+    ax5.set_xlim((-4, 11))
+    ax5.set_ylim((8, -6))
+    ax6.set_xlim((-4, 11))
+    ax6.set_ylim((8, -6))
+    ax7.set_xlim((-4, 11))
+    ax7.set_ylim((8, -6))
+    ax8.set_xlim((-4, 11))
+    ax8.set_ylim((8, -6))
+    ax1.annotate('gl = 0-45', xy=(-3.5, 7))
+    ax2.annotate('gl = 45-90', xy=(-3.5, 7))
+    ax3.annotate('gl = 90-135', xy=(-3.5, 7))
+    ax4.annotate('gl = 135-180', xy=(-3.5, 7))
+    ax5.annotate('gl = 180-225', xy=(-3.5, 7))
+    ax6.annotate('gl = 225-270', xy=(-3.5, 7))
+    ax7.annotate('gl = 270-315', xy=(-3.5, 7))
+    ax8.annotate('gl = 315-360', xy=(-3.5, 7))
+    fig.text(0.5, 0.04, '(NUV - E$_{B-V}$ * 7.76) - (G - E$_{B-V}$ * 3.303)', ha='center')
+    fig.text(0.04, 0.5, 'MG - E$_{B-V}$ * 3.303', va='center', rotation='vertical')
+    plt.suptitle('SEx+G, Ext from S&F11, Hogg parallax, '+distrange[i])
+    fig.subplots_adjust(hspace=0, wspace=0)
+    fig.subplots_adjust(right=0.9)
+    fig.colorbar(im1, cax=fig.add_axes([0.9, 0.15, 0.01, 0.7]))
+    plt.savefig('11-22-Mgvsnuvg_sex_glcuts_'+distfilename[i]+'_ebvcolor.png')
+    plt.clf()
+
+    #plt.show()
+
