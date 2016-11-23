@@ -55,13 +55,13 @@ code = 'det_thresh4_phot_autopar2.5_3.5'
 #########################################################################
 # Decide to run on full or partial scans
 #########################################################################
-run1 = 0
-run2 = 1
+run1 = 1
+run2 = 0
 
 fec = 0
 
-full = 1
-partial = 0
+full = 0
+partial = 1
 
 if full == 1:
     skyrange = scans
