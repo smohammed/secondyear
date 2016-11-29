@@ -1424,6 +1424,9 @@ sg = [sga, sgb, sgc, sgd, sge]
 distrange = ['0 < D < 100 pc', '100 < D < 300 pc', '300 < D < 600 pc', '600 < D < 1000 pc', 'D > 1000 pc']
 distfilename = ['0-100', '100-300', '300-600', '600-1000', '1000']
 
+horlinelim = [6.5, 6, 4.5, 3.5, 2.5]
+verlinelim = [5, 4, 3.3, 3, 3]
+
 for i in range(len(sg)):
     # By gl
     sg1 = sg[i][np.where((sg[i]['gl_sex'] > 0) & (sg[i]['gl_sex'] < 45))]
@@ -1438,13 +1441,36 @@ for i in range(len(sg)):
 
     fig, ((ax1, ax2), (ax3, ax4), (ax5, ax6), (ax7, ax8)) = plt.subplots(4, 2, sharex=True, sharey=True)
     scatter_contour((sg1['nuv_mag']-sg1['ebv']*7.76)-(sg1['phot_g_mean_mag']-sg1['ebv']*3.303), sg1['Mg']-sg1['ebv']*3.303,threshold=1000,log_counts=True,histogram2d_args=dict(bins=40),plot_args=dict(color='k',markersize=1), contour_args=dict(cmap=cm.gray), ax=ax1)
+    ax1.axhline(y=horlinelim[i], color='blue')
+    ax1.axvline(x=verlinelim[i], color='blue')
+
     scatter_contour((sg2['nuv_mag']-sg2['ebv']*7.76)-(sg2['phot_g_mean_mag']-sg2['ebv']*3.303), sg2['Mg']-sg2['ebv']*3.303,threshold=1000,log_counts=True,histogram2d_args=dict(bins=40),plot_args=dict(color='k',markersize=1), contour_args=dict(cmap=cm.gray), ax=ax2)
+    ax2.axhline(y=horlinelim[i], color='blue')
+    ax2.axvline(x=verlinelim[i], color='blue')
+
     scatter_contour((sg3['nuv_mag']-sg3['ebv']*7.76)-(sg3['phot_g_mean_mag']-sg3['ebv']*3.303), sg3['Mg']-sg3['ebv']*3.303,threshold=1000,log_counts=True,histogram2d_args=dict(bins=40),plot_args=dict(color='k',markersize=1), contour_args=dict(cmap=cm.gray), ax=ax3)
+    ax3.axhline(y=horlinelim[i], color='blue')
+    ax3.axvline(x=verlinelim[i], color='blue')
+
     scatter_contour((sg4['nuv_mag']-sg4['ebv']*7.76)-(sg4['phot_g_mean_mag']-sg4['ebv']*3.303), sg4['Mg']-sg4['ebv']*3.303,threshold=1000,log_counts=True,histogram2d_args=dict(bins=40),plot_args=dict(color='k',markersize=1), contour_args=dict(cmap=cm.gray), ax=ax4)
+    ax4.axhline(y=horlinelim[i], color='blue')
+    ax4.axvline(x=verlinelim[i], color='blue')
+
     scatter_contour((sg5['nuv_mag']-sg5['ebv']*7.76)-(sg5['phot_g_mean_mag']-sg5['ebv']*3.303), sg5['Mg']-sg5['ebv']*3.303,threshold=1000,log_counts=True,histogram2d_args=dict(bins=40),plot_args=dict(color='k',markersize=1), contour_args=dict(cmap=cm.gray), ax=ax5)
+    ax5.axhline(y=horlinelim[i], color='blue')
+    ax5.axvline(x=verlinelim[i], color='blue')
+
     scatter_contour((sg6['nuv_mag']-sg6['ebv']*7.76)-(sg6['phot_g_mean_mag']-sg6['ebv']*3.303), sg6['Mg']-sg6['ebv']*3.303,threshold=1000,log_counts=True,histogram2d_args=dict(bins=40),plot_args=dict(color='k',markersize=1), contour_args=dict(cmap=cm.gray), ax=ax6)
+    ax6.axhline(y=horlinelim[i], color='blue')
+    ax6.axvline(x=verlinelim[i], color='blue')
+
     scatter_contour((sg7['nuv_mag']-sg7['ebv']*7.76)-(sg7['phot_g_mean_mag']-sg7['ebv']*3.303), sg7['Mg']-sg7['ebv']*3.303,threshold=1000,log_counts=True,histogram2d_args=dict(bins=40),plot_args=dict(color='k',markersize=1), contour_args=dict(cmap=cm.gray), ax=ax7)
+    ax7.axhline(y=horlinelim[i], color='blue')
+    ax7.axvline(x=verlinelim[i], color='blue')
+
     scatter_contour((sg8['nuv_mag']-sg8['ebv']*7.76)-(sg8['phot_g_mean_mag']-sg8['ebv']*3.303), sg8['Mg']-sg8['ebv']*3.303,threshold=1000,log_counts=True,histogram2d_args=dict(bins=40),plot_args=dict(color='k',markersize=1), contour_args=dict(cmap=cm.gray), ax=ax8)
+    ax8.axhline(y=horlinelim[i], color='blue')
+    ax8.axvline(x=verlinelim[i], color='blue')
 
     ax1.set_xlim((-4, 11))
     ax1.set_ylim((8, -6))
@@ -1474,7 +1500,7 @@ for i in range(len(sg)):
     fig.text(0.04, 0.5, 'MG - E$_{B-V}$ * 3.303', va='center', rotation='vertical')
     plt.suptitle('SEx+G, Ext from S&F11, Hogg parallax, '+distrange[i])
     fig.subplots_adjust(hspace=0, wspace=0)
-    plt.savefig('11-22-Mgvsnuvg_sex_glcuts_'+distfilename[i]+'pc_ext_interp.png')
+    plt.savefig('11-29-Mgvsnuvg_sex_glcuts_'+distfilename[i]+'pc_ext_interp.png')
     #plt.show()
     plt.clf()
 
@@ -1494,6 +1520,9 @@ sg = [sga, sgb, sgc, sgd, sge]
 distrange = ['0 < D < 100 pc', '100 < D < 300 pc', '300 < D < 600 pc', '600 < D < 1000 pc', 'D > 1000 pc']
 distfilename = ['0-100', '100-300', '300-600', '600-1000', '1000']
 
+horlinelim = [6.5, 6, 4.5, 3.5, 2.5]
+verlinelim = [5, 4, 3.3, 3, 3]
+
 for i in range(len(sg)):
     # By gl
     sg1 = sg[i][np.where((sg[i]['gl_sex'] > 0) & (sg[i]['gl_sex'] < 45))]
@@ -1508,13 +1537,36 @@ for i in range(len(sg)):
 
     fig, ((ax1, ax2), (ax3, ax4), (ax5, ax6), (ax7, ax8)) = plt.subplots(4, 2, sharex=True, sharey=True)
     scatter_contour(sg1['nuv_mag']-sg1['phot_g_mean_mag'], sg1['Mg'],threshold=1000,log_counts=True,histogram2d_args=dict(bins=40),plot_args=dict(color='k',markersize=1), contour_args=dict(cmap=cm.gray), ax=ax1)
+    ax1.axhline(y=horlinelim[i], color='blue')
+    ax1.axvline(x=verlinelim[i], color='blue')
+
     scatter_contour(sg2['nuv_mag']-sg2['phot_g_mean_mag'], sg2['Mg'],threshold=1000,log_counts=True,histogram2d_args=dict(bins=40),plot_args=dict(color='k',markersize=1), contour_args=dict(cmap=cm.gray), ax=ax2)
+    ax2.axhline(y=horlinelim[i], color='blue')
+    ax2.axvline(x=verlinelim[i], color='blue')
+
     scatter_contour(sg3['nuv_mag']-sg3['phot_g_mean_mag'], sg3['Mg'],threshold=1000,log_counts=True,histogram2d_args=dict(bins=40),plot_args=dict(color='k',markersize=1), contour_args=dict(cmap=cm.gray), ax=ax3)
+    ax3.axhline(y=horlinelim[i], color='blue')
+    ax3.axvline(x=verlinelim[i], color='blue')
+
     scatter_contour(sg4['nuv_mag']-sg4['phot_g_mean_mag'], sg4['Mg'],threshold=1000,log_counts=True,histogram2d_args=dict(bins=40),plot_args=dict(color='k',markersize=1), contour_args=dict(cmap=cm.gray), ax=ax4)
+    ax4.axhline(y=horlinelim[i], color='blue')
+    ax4.axvline(x=verlinelim[i], color='blue')
+
     scatter_contour(sg5['nuv_mag']-sg5['phot_g_mean_mag'], sg5['Mg'],threshold=1000,log_counts=True,histogram2d_args=dict(bins=40),plot_args=dict(color='k',markersize=1), contour_args=dict(cmap=cm.gray), ax=ax5)
+    ax5.axhline(y=horlinelim[i], color='blue')
+    ax5.axvline(x=verlinelim[i], color='blue')
+
     scatter_contour(sg6['nuv_mag']-sg6['phot_g_mean_mag'], sg6['Mg'],threshold=1000,log_counts=True,histogram2d_args=dict(bins=40),plot_args=dict(color='k',markersize=1), contour_args=dict(cmap=cm.gray), ax=ax6)
+    ax6.axhline(y=horlinelim[i], color='blue')
+    ax6.axvline(x=verlinelim[i], color='blue')
+
     scatter_contour(sg7['nuv_mag']-sg7['phot_g_mean_mag'], sg7['Mg'],threshold=1000,log_counts=True,histogram2d_args=dict(bins=40),plot_args=dict(color='k',markersize=1), contour_args=dict(cmap=cm.gray), ax=ax7)
+    ax7.axhline(y=horlinelim[i], color='blue')
+    ax7.axvline(x=verlinelim[i], color='blue')
+
     scatter_contour(sg8['nuv_mag']-sg8['phot_g_mean_mag'], sg8['Mg'],threshold=1000,log_counts=True,histogram2d_args=dict(bins=40),plot_args=dict(color='k',markersize=1), contour_args=dict(cmap=cm.gray), ax=ax8)
+    ax8.axhline(y=horlinelim[i], color='blue')
+    ax8.axvline(x=verlinelim[i], color='blue')
 
     ax1.set_xlim((-4, 11))
     ax1.set_ylim((8, -6))
@@ -1544,7 +1596,7 @@ for i in range(len(sg)):
     fig.text(0.04, 0.5, 'MG', va='center', rotation='vertical')
     plt.suptitle('SEx+G matches, no ext, Hogg par, '+distrange[i])
     fig.subplots_adjust(hspace=0, wspace=0)
-    plt.savefig('11-22-Mgvsnuvg_gais_glcuts_'+distfilename[i]+'pc_noext.png')
+    plt.savefig('11-29-Mgvsnuvg_gais_glcuts_'+distfilename[i]+'pc_noext.png')
     #plt.show()
     plt.clf()
 
@@ -1588,6 +1640,9 @@ sgf = sgcat[np.where((sgcat['dist'] > 3000) & (sgcat['ebv'] > 0))]
 sg = [sga, sgb, sgc, sgd, sge]
 distrange = ['0 < D < 100 pc', '100 < D < 300 pc', '300 < D < 600 pc', '600 < D < 1000 pc', 'D > 1000 pc']
 distfilename = ['0-100', '100-300', '300-600', '600-1000', '1000']
+horlinelim = [6.5, 6, 4.5, 3.5, 2.5]
+verlinelim = [5, 4, 3.3, 3, 3]
+
 
 for i in range(len(sg)):
     # By gl
@@ -1603,13 +1658,36 @@ for i in range(len(sg)):
 
     fig, ((ax1, ax2), (ax3, ax4), (ax5, ax6), (ax7, ax8)) = plt.subplots(4, 2, sharex=True, sharey=True)
     im1 = ax1.scatter((sg1['nuv_mag']-sg1['ebv']*7.76)-(sg1['phot_g_mean_mag']-sg1['ebv']*3.303), sg1['Mg']-sg1['ebv']*3.303, edgecolor='none', c=np.log10(sg1['ebv']), alpha=0.5, vmin=-1, vmax=0)
+    ax1.axhline(y=horlinelim[i], color='black', linewidth=2)
+    ax1.axvline(x=verlinelim[i], color='black', linewidth=2)
+
     ax2.scatter((sg2['nuv_mag']-sg2['ebv']*7.76)-(sg2['phot_g_mean_mag']-sg2['ebv']*3.303), sg2['Mg']-sg2['ebv']*3.303, edgecolor='none', c=np.log10(sg2['ebv']), alpha=0.5, vmin=-1, vmax=0)
+    ax2.axhline(y=horlinelim[i], color='black', linewidth=2)
+    ax2.axvline(x=verlinelim[i], color='black', linewidth=2)
+
     ax3.scatter((sg3['nuv_mag']-sg3['ebv']*7.76)-(sg3['phot_g_mean_mag']-sg3['ebv']*3.303), sg3['Mg']-sg3['ebv']*3.303, edgecolor='none', c=np.log10(sg3['ebv']), alpha=0.5, vmin=-1, vmax=0)
+    ax3.axhline(y=horlinelim[i], color='black', linewidth=2)
+    ax3.axvline(x=verlinelim[i], color='black', linewidth=2)
+
     ax4.scatter((sg4['nuv_mag']-sg4['ebv']*7.76)-(sg4['phot_g_mean_mag']-sg4['ebv']*3.303), sg4['Mg']-sg4['ebv']*3.303, edgecolor='none', c=np.log10(sg4['ebv']), alpha=0.5, vmin=-1, vmax=0)
+    ax4.axhline(y=horlinelim[i], color='black', linewidth=2)
+    ax4.axvline(x=verlinelim[i], color='black', linewidth=2)
+
     ax5.scatter((sg5['nuv_mag']-sg5['ebv']*7.76)-(sg5['phot_g_mean_mag']-sg5['ebv']*3.303), sg5['Mg']-sg5['ebv']*3.303, edgecolor='none', c=np.log10(sg5['ebv']), alpha=0.5, vmin=-1, vmax=0)
+    ax5.axhline(y=horlinelim[i], color='black', linewidth=2)
+    ax5.axvline(x=verlinelim[i], color='black', linewidth=2)
+
     ax6.scatter((sg6['nuv_mag']-sg6['ebv']*7.76)-(sg6['phot_g_mean_mag']-sg6['ebv']*3.303), sg6['Mg']-sg6['ebv']*3.303, edgecolor='none', c=np.log10(sg6['ebv']), alpha=0.5, vmin=-1, vmax=0)
+    ax6.axhline(y=horlinelim[i], color='black', linewidth=2)
+    ax6.axvline(x=verlinelim[i], color='black', linewidth=2)
+
     ax7.scatter((sg7['nuv_mag']-sg7['ebv']*7.76)-(sg7['phot_g_mean_mag']-sg7['ebv']*3.303), sg7['Mg']-sg7['ebv']*3.303, edgecolor='none', c=np.log10(sg7['ebv']), alpha=0.5, vmin=-1, vmax=0)
+    ax7.axhline(y=horlinelim[i], color='black', linewidth=2)
+    ax7.axvline(x=verlinelim[i], color='black', linewidth=2)
+
     ax8.scatter((sg8['nuv_mag']-sg8['ebv']*7.76)-(sg8['phot_g_mean_mag']-sg8['ebv']*3.303), sg8['Mg']-sg8['ebv']*3.303, edgecolor='none', c=np.log10(sg8['ebv']), alpha=0.5, vmin=-1, vmax=0)
+    ax8.axhline(y=horlinelim[i], color='black', linewidth=2)
+    ax8.axvline(x=verlinelim[i], color='black', linewidth=2)
 
     ax1.set_xlim((-4, 11))
     ax1.set_ylim((8, -6))
@@ -1640,9 +1718,8 @@ for i in range(len(sg)):
     plt.suptitle('SEx+G, Ext from S&F11, Hogg parallax, '+distrange[i])
     fig.subplots_adjust(hspace=0, wspace=0)
     fig.subplots_adjust(right=0.9)
-    fig.colorbar(im1, cax=fig.add_axes([0.9, 0.15, 0.01, 0.7]))
-    plt.savefig('11-22-Mgvsnuvg_sex_glcuts_'+distfilename[i]+'_ebvcolor.png')
+    fig.colorbar(im1, cax=fig.add_axes([0.9, 0.15, 0.01, 0.7])).set_label('log10(E$_{B-V}$)')
+    plt.savefig('11-29-Mgvsnuvg_sex_glcuts_'+distfilename[i]+'_ebvcolor.png')
     plt.clf()
-
     #plt.show()
 
