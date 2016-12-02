@@ -18,12 +18,22 @@ matplotlib.rcParams['font.size'] = 17
 ext = 1
 sextractor = 0
 gais = 1
+plane = 0
+fuv = 1
 
 if sextractor == 1:
-    sgcat = fits.open('sex_gaia_dust_interp.fits')[1].data
+    sgcat = fits.open('../sex_gaia_dust_interp.fits')[1].data
 if gais == 1:
-    sgcat = fits.open('gais_tgasmatch_dust.fits')[1].data
-    sgcat = sgcat[np.where((sgcat['gb_gais'] > -10) & (sgcat['gb_gais'] < 10))]
+    sgcat = fits.open('../gais_gaia_dust.fits')[1].data
+    # In the plane
+    if plane == 1:
+        sgcat = sgcat[np.where((sgcat['gb_gais'] > -10) & (sgcat['gb_gais'] < 10))]
+
+    # Out of the plane
+    if plane == 0:
+        sgcat = sgcat[np.where((sgcat['gb_gais'] < -10) | (sgcat['gb_gais'] > 10))]
+    if fuv == 1:
+        sgcat = sgcat[np.where((sgcat['fuv_mag'] != -999.) & (sgcat['fuv_mag'] != -99.) & (sgcat['fuv_mag'] != 99.))]
 
 sga = sgcat[np.where((sgcat['dist'] > 0) & (sgcat['dist'] < 100) & (sgcat['ebv'] > 0))]
 sgb = sgcat[np.where((sgcat['dist'] > 100) & (sgcat['dist'] < 300) & (sgcat['ebv'] > 0))]
@@ -31,7 +41,7 @@ sgc = sgcat[np.where((sgcat['dist'] > 300) & (sgcat['dist'] < 600) & (sgcat['ebv
 sgd = sgcat[np.where((sgcat['dist'] > 600) & (sgcat['dist'] < 1000) & (sgcat['ebv'] > 0))]
 sge = sgcat[np.where((sgcat['dist'] > 1000) & (sgcat['dist'] < 3000) & (sgcat['ebv'] > 0))]
 sgf = sgcat[np.where((sgcat['dist'] > 3000) & (sgcat['ebv'] > 0))]
-cmd = Table.read('cmdfiles/cmd_merged_zt.txt', format='ascii')
+cmd = Table.read('../cmdfiles/cmd_merged_zt.txt', format='ascii')
 
 sg = [sga, sgb, sgc, sgd, sge]
 distrange = ['0 < D < 100 pc', '100 < D < 300 pc', '300 < D < 600 pc', '600 < D < 1000 pc', 'D > 1000 pc']
@@ -69,90 +79,134 @@ for metal in zrange:
             sg6 = sg[i][np.where((sg[i]['gl_gais'] > 225) & (sg[i]['gl_gais'] < 270))]
             sg7 = sg[i][np.where((sg[i]['gl_gais'] > 270) & (sg[i]['gl_gais'] < 315))]
             sg8 = sg[i][np.where((sg[i]['gl_gais'] > 315) & (sg[i]['gl_gais'] < 360))]
-    
+
         fig, ((ax1, ax2), (ax3, ax4), (ax5, ax6), (ax7, ax8)) = plt.subplots(4, 2, sharex=True, sharey=True)
 
         if ext == 1:
-            scatter_contour((sg1['nuv_mag']-sg1['ebv']*7.76)-(sg1['phot_g_mean_mag']-sg1['ebv']*3.303), sg1['Mg']-sg1['ebv']*3.303,threshold=1000,log_counts=True,histogram2d_args=dict(bins=40),plot_args=dict(color='k',markersize=1), contour_args=dict(cmap=cm.gray), ax=ax1)
-            scatter_contour((sg2['nuv_mag']-sg2['ebv']*7.76)-(sg2['phot_g_mean_mag']-sg2['ebv']*3.303), sg2['Mg']-sg2['ebv']*3.303,threshold=1000,log_counts=True,histogram2d_args=dict(bins=40),plot_args=dict(color='k',markersize=1), contour_args=dict(cmap=cm.gray), ax=ax2)
-            scatter_contour((sg3['nuv_mag']-sg3['ebv']*7.76)-(sg3['phot_g_mean_mag']-sg3['ebv']*3.303), sg3['Mg']-sg3['ebv']*3.303,threshold=1000,log_counts=True,histogram2d_args=dict(bins=40),plot_args=dict(color='k',markersize=1), contour_args=dict(cmap=cm.gray), ax=ax3)
-            scatter_contour((sg4['nuv_mag']-sg4['ebv']*7.76)-(sg4['phot_g_mean_mag']-sg4['ebv']*3.303), sg4['Mg']-sg4['ebv']*3.303,threshold=1000,log_counts=True,histogram2d_args=dict(bins=40),plot_args=dict(color='k',markersize=1), contour_args=dict(cmap=cm.gray), ax=ax4)
-            scatter_contour((sg5['nuv_mag']-sg5['ebv']*7.76)-(sg5['phot_g_mean_mag']-sg5['ebv']*3.303), sg5['Mg']-sg5['ebv']*3.303,threshold=1000,log_counts=True,histogram2d_args=dict(bins=40),plot_args=dict(color='k',markersize=1), contour_args=dict(cmap=cm.gray), ax=ax5)
-            scatter_contour((sg6['nuv_mag']-sg6['ebv']*7.76)-(sg6['phot_g_mean_mag']-sg6['ebv']*3.303), sg6['Mg']-sg6['ebv']*3.303,threshold=1000,log_counts=True,histogram2d_args=dict(bins=40),plot_args=dict(color='k',markersize=1), contour_args=dict(cmap=cm.gray), ax=ax6)
-            scatter_contour((sg7['nuv_mag']-sg7['ebv']*7.76)-(sg7['phot_g_mean_mag']-sg7['ebv']*3.303), sg7['Mg']-sg7['ebv']*3.303,threshold=1000,log_counts=True,histogram2d_args=dict(bins=40),plot_args=dict(color='k',markersize=1), contour_args=dict(cmap=cm.gray), ax=ax7)
-            scatter_contour((sg8['nuv_mag']-sg8['ebv']*7.76)-(sg8['phot_g_mean_mag']-sg8['ebv']*3.303), sg8['Mg']-sg8['ebv']*3.303,threshold=1000,log_counts=True,histogram2d_args=dict(bins=40),plot_args=dict(color='k',markersize=1), contour_args=dict(cmap=cm.gray), ax=ax8)
+            scatter_contour((sg1['fuv_mag']-sg1['ebv']*7.76)-(sg1['phot_g_mean_mag']-sg1['ebv']*3.303), sg1['Mg']-sg1['ebv']*3.303, threshold=1000, log_counts=True, histogram2d_args=dict(bins=40), plot_args=dict(color='k', markersize=3), contour_args=dict(cmap=cm.gray), ax=ax1)
+            scatter_contour((sg2['fuv_mag']-sg2['ebv']*7.76)-(sg2['phot_g_mean_mag']-sg2['ebv']*3.303), sg2['Mg']-sg2['ebv']*3.303, threshold=1000, log_counts=True, histogram2d_args=dict(bins=40), plot_args=dict(color='k', markersize=3), contour_args=dict(cmap=cm.gray), ax=ax2)
+            scatter_contour((sg3['fuv_mag']-sg3['ebv']*7.76)-(sg3['phot_g_mean_mag']-sg3['ebv']*3.303), sg3['Mg']-sg3['ebv']*3.303, threshold=1000, log_counts=True, histogram2d_args=dict(bins=40), plot_args=dict(color='k', markersize=3), contour_args=dict(cmap=cm.gray), ax=ax3)
+            scatter_contour((sg4['fuv_mag']-sg4['ebv']*7.76)-(sg4['phot_g_mean_mag']-sg4['ebv']*3.303), sg4['Mg']-sg4['ebv']*3.303, threshold=1000, log_counts=True, histogram2d_args=dict(bins=40), plot_args=dict(color='k', markersize=3), contour_args=dict(cmap=cm.gray), ax=ax4)
+            scatter_contour((sg5['fuv_mag']-sg5['ebv']*7.76)-(sg5['phot_g_mean_mag']-sg5['ebv']*3.303), sg5['Mg']-sg5['ebv']*3.303, threshold=1000, log_counts=True, histogram2d_args=dict(bins=40), plot_args=dict(color='k', markersize=3), contour_args=dict(cmap=cm.gray), ax=ax5)
+            scatter_contour((sg6['fuv_mag']-sg6['ebv']*7.76)-(sg6['phot_g_mean_mag']-sg6['ebv']*3.303), sg6['Mg']-sg6['ebv']*3.303, threshold=1000, log_counts=True, histogram2d_args=dict(bins=40), plot_args=dict(color='k', markersize=3), contour_args=dict(cmap=cm.gray), ax=ax6)
+            scatter_contour((sg7['fuv_mag']-sg7['ebv']*7.76)-(sg7['phot_g_mean_mag']-sg7['ebv']*3.303), sg7['Mg']-sg7['ebv']*3.303, threshold=1000, log_counts=True, histogram2d_args=dict(bins=40), plot_args=dict(color='k', markersize=3), contour_args=dict(cmap=cm.gray), ax=ax7)
+            scatter_contour((sg8['fuv_mag']-sg8['ebv']*7.76)-(sg8['phot_g_mean_mag']-sg8['ebv']*3.303), sg8['Mg']-sg8['ebv']*3.303, threshold=1000, log_counts=True, histogram2d_args=dict(bins=40), plot_args=dict(color='k', markersize=3), contour_args=dict(cmap=cm.gray), ax=ax8)
 
         if ext == 0:
-            scatter_contour(sg1['nuv_mag']-sg1['phot_g_mean_mag'], sg1['Mg'],threshold=1000,log_counts=True,histogram2d_args=dict(bins=40),plot_args=dict(color='k',markersize=1), contour_args=dict(cmap=cm.gray), ax=ax1)
-            scatter_contour(sg2['nuv_mag']-sg2['phot_g_mean_mag'], sg2['Mg'],threshold=1000,log_counts=True,histogram2d_args=dict(bins=40),plot_args=dict(color='k',markersize=1), contour_args=dict(cmap=cm.gray), ax=ax2)
-            scatter_contour(sg3['nuv_mag']-sg3['phot_g_mean_mag'], sg3['Mg'],threshold=1000,log_counts=True,histogram2d_args=dict(bins=40),plot_args=dict(color='k',markersize=1), contour_args=dict(cmap=cm.gray), ax=ax3)
-            scatter_contour(sg4['nuv_mag']-sg4['phot_g_mean_mag'], sg4['Mg'],threshold=1000,log_counts=True,histogram2d_args=dict(bins=40),plot_args=dict(color='k',markersize=1), contour_args=dict(cmap=cm.gray), ax=ax4)
-            scatter_contour(sg5['nuv_mag']-sg5['phot_g_mean_mag'], sg5['Mg'],threshold=1000,log_counts=True,histogram2d_args=dict(bins=40),plot_args=dict(color='k',markersize=1), contour_args=dict(cmap=cm.gray), ax=ax5)
-            scatter_contour(sg6['nuv_mag']-sg6['phot_g_mean_mag'], sg6['Mg'],threshold=1000,log_counts=True,histogram2d_args=dict(bins=40),plot_args=dict(color='k',markersize=1), contour_args=dict(cmap=cm.gray), ax=ax6)
-            scatter_contour(sg7['nuv_mag']-sg7['phot_g_mean_mag'], sg7['Mg'],threshold=1000,log_counts=True,histogram2d_args=dict(bins=40),plot_args=dict(color='k',markersize=1), contour_args=dict(cmap=cm.gray), ax=ax7)
-            scatter_contour(sg8['nuv_mag']-sg8['phot_g_mean_mag'], sg8['Mg'],threshold=1000,log_counts=True,histogram2d_args=dict(bins=40),plot_args=dict(color='k',markersize=1), contour_args=dict(cmap=cm.gray), ax=ax8)
-
+            scatter_contour(sg1['fuv_mag']-sg1['phot_g_mean_mag'], sg1['Mg'], threshold=1000, log_counts=True, histogram2d_args=dict(bins=40), plot_args=dict(color='k', markersize=3), contour_args=dict(cmap=cm.gray), ax=ax1)
+            scatter_contour(sg2['fuv_mag']-sg2['phot_g_mean_mag'], sg2['Mg'], threshold=1000, log_counts=True, histogram2d_args=dict(bins=40), plot_args=dict(color='k', markersize=3), contour_args=dict(cmap=cm.gray), ax=ax2)
+            scatter_contour(sg3['fuv_mag']-sg3['phot_g_mean_mag'], sg3['Mg'], threshold=1000, log_counts=True, histogram2d_args=dict(bins=40), plot_args=dict(color='k', markersize=3), contour_args=dict(cmap=cm.gray), ax=ax3)
+            scatter_contour(sg4['fuv_mag']-sg4['phot_g_mean_mag'], sg4['Mg'], threshold=1000, log_counts=True, histogram2d_args=dict(bins=40), plot_args=dict(color='k', markersize=3), contour_args=dict(cmap=cm.gray), ax=ax4)
+            scatter_contour(sg5['fuv_mag']-sg5['phot_g_mean_mag'], sg5['Mg'], threshold=1000, log_counts=True, histogram2d_args=dict(bins=40), plot_args=dict(color='k', markersize=3), contour_args=dict(cmap=cm.gray), ax=ax5)
+            scatter_contour(sg6['fuv_mag']-sg6['phot_g_mean_mag'], sg6['Mg'], threshold=1000, log_counts=True, histogram2d_args=dict(bins=40), plot_args=dict(color='k', markersize=3), contour_args=dict(cmap=cm.gray), ax=ax6)
+            scatter_contour(sg7['fuv_mag']-sg7['phot_g_mean_mag'], sg7['Mg'], threshold=1000, log_counts=True, histogram2d_args=dict(bins=40), plot_args=dict(color='k', markersize=3), contour_args=dict(cmap=cm.gray), ax=ax7)
+            scatter_contour(sg8['fuv_mag']-sg8['phot_g_mean_mag'], sg8['Mg'], threshold=1000, log_counts=True, histogram2d_args=dict(bins=40), plot_args=dict(color='k', markersize=3), contour_args=dict(cmap=cm.gray), ax=ax8)
 
         for age in range(len(agerange)):
             cmd2 = cmd1[np.where(cmd1['logage'] == agerange[age])]
-            ax1.plot(cmd2['NUV']-cmd2['G'], cmd2['G'], c=colors[age])
-            ax2.plot(cmd2['NUV']-cmd2['G'], cmd2['G'], c=colors[age])
-            ax3.plot(cmd2['NUV']-cmd2['G'], cmd2['G'], c=colors[age])
-            ax4.plot(cmd2['NUV']-cmd2['G'], cmd2['G'], c=colors[age])
-            ax5.plot(cmd2['NUV']-cmd2['G'], cmd2['G'], c=colors[age])
-            ax6.plot(cmd2['NUV']-cmd2['G'], cmd2['G'], c=colors[age])
-            ax7.plot(cmd2['NUV']-cmd2['G'], cmd2['G'], c=colors[age])
-            ax8.plot(cmd2['NUV']-cmd2['G'], cmd2['G'], c=colors[age])
-        
-        ax1.set_xlim((-1, 11))
-        ax1.set_ylim((8, -6))
-        ax2.set_xlim((-1, 11))
-        ax2.set_ylim((8, -6))
-        ax3.set_xlim((-1, 11))
-        ax3.set_ylim((8, -6))
-        ax4.set_xlim((-1, 11))
-        ax4.set_ylim((8, -6))
-        ax5.set_xlim((-1, 11))
-        ax5.set_ylim((8, -6))
-        ax6.set_xlim((-1, 11))
-        ax6.set_ylim((8, -6))
-        ax7.set_xlim((-1, 11))
-        ax7.set_ylim((8, -6))
-        ax8.set_xlim((-1, 11))
-        ax8.set_ylim((8, -6))
-        ax1.annotate('gl = 0-45', xy=(-3.5, 7))
-        ax2.annotate('gl = 45-90', xy=(-3.5, 7))
-        ax3.annotate('gl = 90-135', xy=(-3.5, 7))
-        ax4.annotate('gl = 135-180', xy=(-3.5, 7))
-        ax5.annotate('gl = 180-225', xy=(-3.5, 7))
-        ax6.annotate('gl = 225-270', xy=(-3.5, 7))
-        ax7.annotate('gl = 270-315', xy=(-3.5, 7))
-        ax8.annotate('gl = 315-360', xy=(-3.5, 7))
-        fig.text(0.5, 0.04, '(NUV - E$_{B-V}$ * 7.76) - (G - E$_{B-V}$ * 3.303)', ha='center')
-        fig.text(0.04, 0.5, 'MG - E$_{B-V}$ * 3.303', va='center', rotation='vertical')
+            ax1.plot(cmd2['FUV']-cmd2['G'], cmd2['G'], c=colors[age], linestyle='--')
+            ax2.plot(cmd2['FUV']-cmd2['G'], cmd2['G'], c=colors[age], linestyle='--')
+            ax3.plot(cmd2['FUV']-cmd2['G'], cmd2['G'], c=colors[age], linestyle='--')
+            ax4.plot(cmd2['FUV']-cmd2['G'], cmd2['G'], c=colors[age], linestyle='--')
+            ax5.plot(cmd2['FUV']-cmd2['G'], cmd2['G'], c=colors[age], linestyle='--')
+            ax6.plot(cmd2['FUV']-cmd2['G'], cmd2['G'], c=colors[age], linestyle='--')
+            ax7.plot(cmd2['FUV']-cmd2['G'], cmd2['G'], c=colors[age], linestyle='--')
+            ax8.plot(cmd2['FUV']-cmd2['G'], cmd2['G'], c=colors[age], linestyle='--')
+
+        if fuv == 0:
+            ax1.set_xlim((-1, 11))
+            ax1.set_ylim((8, -6))
+            ax2.set_xlim((-1, 11))
+            ax2.set_ylim((8, -6))
+            ax3.set_xlim((-1, 11))
+            ax3.set_ylim((8, -6))
+            ax4.set_xlim((-1, 11))
+            ax4.set_ylim((8, -6))
+            ax5.set_xlim((-1, 11))
+            ax5.set_ylim((8, -6))
+            ax6.set_xlim((-1, 11))
+            ax6.set_ylim((8, -6))
+            ax7.set_xlim((-1, 11))
+            ax7.set_ylim((8, -6))
+            ax8.set_xlim((-1, 11))
+            ax8.set_ylim((8, -6))
+            ax1.annotate('gl = 0-45', xy=(-3.5, 7))
+            ax2.annotate('gl = 45-90', xy=(-3.5, 7))
+            ax3.annotate('gl = 90-135', xy=(-3.5, 7))
+            ax4.annotate('gl = 135-180', xy=(-3.5, 7))
+            ax5.annotate('gl = 180-225', xy=(-3.5, 7))
+            ax6.annotate('gl = 225-270', xy=(-3.5, 7))
+            ax7.annotate('gl = 270-315', xy=(-3.5, 7))
+            ax8.annotate('gl = 315-360', xy=(-3.5, 7))
+            fig.text(0.5, 0.04, '(NUV - E$_{B-V}$ * 7.76) - (G - E$_{B-V}$ * 3.303)', ha='center')
+            fig.text(0.04, 0.5, 'MG - E$_{B-V}$ * 3.303', va='center', rotation='vertical')
+
+        if fuv == 1:
+            ax1.set_xlim((-1, 21))
+            ax1.set_ylim((7, -5))
+            ax2.set_xlim((-1, 21))
+            ax2.set_ylim((7, -5))
+            ax3.set_xlim((-1, 21))
+            ax3.set_ylim((7, -5))
+            ax4.set_xlim((-1, 21))
+            ax4.set_ylim((7, -5))
+            ax5.set_xlim((-1, 21))
+            ax5.set_ylim((7, -5))
+            ax6.set_xlim((-1, 21))
+            ax6.set_ylim((7, -5))
+            ax7.set_xlim((-1, 21))
+            ax7.set_ylim((7, -5))
+            ax8.set_xlim((-1, 21))
+            ax8.set_ylim((7, -5))
+            ax1.annotate('gl = 0-45', xy=(0, 6))
+            ax2.annotate('gl = 45-90', xy=(0, 6))
+            ax3.annotate('gl = 90-135', xy=(0, 6))
+            ax4.annotate('gl = 135-180', xy=(0, 6))
+            ax5.annotate('gl = 180-225', xy=(0, 6))
+            ax6.annotate('gl = 225-270', xy=(0, 6))
+            ax7.annotate('gl = 270-315', xy=(0, 6))
+            ax8.annotate('gl = 315-360', xy=(0, 6))
+            fig.text(0.5, 0.04, '(FUV - E$_{B-V}$ * 7.76) - (G - E$_{B-V}$ * 3.303)', ha='center')
+            fig.text(0.04, 0.5, 'MG - E$_{B-V}$ * 3.303', va='center', rotation='vertical')
+
 
         if ext == 1:
             if sextractor == 1:
                 plt.suptitle('SEx+G, Ext from S&F11, Hogg parallax, '+distrange[i]+', Z = '+str(metal)+', 8 < log(age/yr) < 10')
             if gais == 1:
-                plt.suptitle('GAIS+G, Ext from S&F11, Hogg parallax, '+distrange[i]+', Z = '+str(metal)+', 8 < log(age/yr) < 10')                
+                if plane == 1:
+                    plt.suptitle('GAIS+G, abs(gb) < 10, Ext from S&F11, Hogg parallax, '+distrange[i]+', Z = '+str(metal)+', 8 < log(age/yr) < 10')
+                if plane == 0:
+                    plt.suptitle('GAIS+G, abs(gb) > 10, Ext from S&F11, Hogg parallax, '+distrange[i]+', Z = '+str(metal)+', 8 < log(age/yr) < 10')
+
         if ext == 0:
             if sextractor == 1:
-                plt.suptitle('SEx+G, Ext from S&F11, Hogg parallax, '+distrange[i]+', Z = '+str(metal)+', 8 < log(age/yr) < 10, no extinction')
+                plt.suptitle('SEx+G, Hogg parallax, '+distrange[i]+', Z = '+str(metal)+', 8 < log(age/yr) < 10, no extinction')
             if gais == 1:
-                plt.suptitle('GAIS+G, Ext from S&F11, Hogg parallax, '+distrange[i]+', Z = '+str(metal)+', 8 < log(age/yr) < 10, no extinction')
+                if plane == 1:
+                    plt.suptitle('GAIS+G, abs(gb) < 10, Hogg parallax, '+distrange[i]+', Z = '+str(metal)+', 8 < log(age/yr) < 10, no extinction')
+                if plane == 0:
+                    plt.suptitle('GAIS+G, abs(gb) > 10, Hogg parallax, '+distrange[i]+', Z = '+str(metal)+', 8 < log(age/yr) < 10, no extinction')
 
         fig.subplots_adjust(hspace=0, wspace=0)
+        
         if ext == 1:
             if sextractor == 1:
-                plt.savefig('12-01-Mgvsnuvg_sex_glcuts_'+distfilename[i]+'pc_Z'+str(metal)+'.png')
+                plt.savefig('../12-02-Mgvsnuvg_sex_glcuts_'+distfilename[i]+'pc_Z'+str(metal)+'.png')
             if gais == 1:
-                plt.savefig('12-01-Mgvsnuvg_gais_glcuts_'+distfilename[i]+'pc_Z'+str(metal)+'.png')
+                if plane == 1:
+                    plt.savefig('../12-02-Mgvsfuvg_gais_glcuts_'+distfilename[i]+'pc_Z'+str(metal)+'_inplane.png')
+                if plane == 0:
+                    plt.savefig('../12-02-Mgvsfuvg_gais_glcuts_'+distfilename[i]+'pc_Z'+str(metal)+'_outplane.png')
 
         if ext == 0:
             if sextractor == 1:
-                plt.savefig('12-01-Mgvsnuvg_sex_glcuts_'+distfilename[i]+'pc_Z'+str(metal)+'_noext.png')
+                plt.savefig('../12-02-Mgvsnuvg_sex_glcuts_'+distfilename[i]+'pc_Z'+str(metal)+'_noext.png')
             if gais == 1:
-                plt.savefig('12-01-Mgvsnuvg_gais_glcuts_'+distfilename[i]+'pc_Z'+str(metal)+'_noext.png')
+                if plane == 1:
+                    plt.savefig('../12-02-Mgvsfuvg_gais_glcuts_'+distfilename[i]+'pc_Z'+str(metal)+'_noext_inplane.png')
+                if plane == 0:
+                    plt.savefig('../12-02-Mgvsfuvg_gais_glcuts_'+distfilename[i]+'pc_Z'+str(metal)+'_noext_outplane.png')
         plt.clf()
-        #plt.show()  
+        
+        #plt.show()
