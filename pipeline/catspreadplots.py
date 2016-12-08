@@ -89,7 +89,7 @@ for curregion in skyrange:
     if fec == 0:
         hdulist = fits.open('../Dunmaps/countmaps/count_map_name_'+curregion.replace('.', '')+'_gal_sec_in.fits')
         img = hdulist[0].data
-        expmap = fits.open('../../galexfiles/exp/count_map_name_'+curregion.replace('.', '')+'_gal_sec_exp.fits')[0].data
+        expmap = fits.open('/media/data/smohammed/galexfiles/exp/count_map_name_'+curregion.replace('.', '')+'_gal_sec_exp.fits')[0].data
         bkgd = fits.open('../Dunmaps/background/background_im1_'+curregion.replace('.', '')+'.fits')[0].data
 
     # New fec maps
