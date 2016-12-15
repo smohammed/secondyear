@@ -679,7 +679,7 @@ s1 = sv[np.where((sv['gl_sex'] > 0) & (sv['gl_sex'] < 40))]
 s2 = sv[np.where((sv['gl_sex'] > 200) & (sv['gl_sex'] < 250))]
 s3 = sv[np.where((sv['gl_sex'] > 250) & (sv['gl_sex'] < 300))]
 s4 = sv[np.where((sv['gl_sex'] > 300) & (sv['gl_sex'] < 360))]
-cmd = Table.read('cmdfiles/cmd_merged.txt', format='ascii')
+cmd = Table.read('cmdfiles/cmd_merged_zt.txt', format='ascii')
 
 m = 8./1.5
 b = 22 - m*0.5
@@ -1006,16 +1006,28 @@ plt.scatter(b2['gl'], b2['gb'], color='orange', alpha=0.5)
 #################################################
 # Combine all starcat files
 #################################################
-#incscans = ['9.5', '14.9', '79.7', '90.5', '91.4', '103.1', '104.0', '122.9', '127.4', '223.7', '273.2', '283.1', '289.4', '306.5', '309.2', '324.5', '329.9', '338.0', '339.8', '342.5', '343.4', '345.2', '348.8', '349.7', '350.6', '351.5', '352.4', '353.3', '354.2', '355.1', '356.0', '357.8']
+incscans = ['14.9', '79.7', '90.5', '91.4', '103.1', '104.0', '122.9', '127.4', '223.7', '273.2', '283.1', '289.4', '306.5', '309.2', '324.5', '329.9', '338.0', '339.8', '342.5', '343.4', '345.2', '348.8', '349.7', '350.6', '351.5', '352.4', '353.3', '354.2', '355.1', '356.0', '357.8']
+
+alldata = Table.read('starcat_9.5mapweight_fwhm.txt', format='ascii')
+alldata = alldata[np.where((alldata['FWHM_IMAGE'] < 10) & (alldata['FWHM_IMAGE'] > 3.5))]
+
+for region in incscans:
+    a = Table.read('starcat_'+region+'mapweight_fwhm.txt', format='ascii')
+    a = a[np.where((a['FWHM_IMAGE'] < 10) & (a['FWHM_IMAGE'] > 3.5) & (a['nuv'] < 21))]
+    alldata = vstack([alldata, a])
+    print region
+
+ascii.write(alldata, '../../../starcat_incscans_mapweight_fwhm_pscans_allnuv.txt', format='ipac')
+
 
 sky1 = ['1.4', '2.3', '3.2', '4.1', '5.0', '5.9', '6.8', '8.6', '10.4', '11.3', '12.2', '14.0', '15.8', '16.7', '17.6', '18.5', '19.4', '20.3', '21.2', '22.1', '23.0', '23.9', '24.8', '25.7', '28.4', '29.3', '30.2', '31.1', '32.0', '32.9', '33.8', '34.7', '35.6', '39.2', '42.8', '43.7', '44.6', '44.6', '45.5', '46.4', '47.3', '48.2', '49.1', '50.0', '67.1', '68.9', '71.6', '74.3', '75.2', '76.1', '77.0', '77.9', '78.8', '80.6', '81.5', '82.4', '83.3', '87.8', '88.7', '89.6', '92.3', '93.2', '94.1', '95.0', '95.9', '96.8', '97.7', '98.6', '99.5', '100.4', '101.3', '102.2', '104.9', '105.8', '106.7', '107.6', '110.3', '111.2', '112.1', '113.0', '113.9', '114.8', '119.3']
 
 alldata = Table.read('starcat_5mapweight_fwhm.txt', format='ascii')
-alldata = alldata[np.where((alldata['FWHM_IMAGE'] < 10) & (alldata['FWHM_IMAGE'] > 3.5))]
+alldata = alldata[np.where((alldata['FWHM_IMAGE'] < 10) & (alldata['FWHM_IMAGE'] > 3.5) & (alldata['nuv'] < 21))]
 
 for region in sky1:
     a = Table.read('starcat_'+region+'mapweight_fwhm.txt', format='ascii')
-    a = a[np.where((a['FWHM_IMAGE'] < 10) & (a['FWHM_IMAGE'] > 3.5) & (a['nuv'] < 20))]
+    a = a[np.where((a['FWHM_IMAGE'] < 10) & (a['FWHM_IMAGE'] > 3.5) & (a['nuv'] < 21))]
     alldata = vstack([alldata, a])
     print region
 
@@ -1025,28 +1037,24 @@ ascii.write(alldata, '../../../starcat_1-120_mapweight_fwhm_pscans_allnuv.txt', 
 sky2 = ['124.7', '125.6', '126.5', '128.3', '129.2', '130.1', '131.0', '131.9', '132.8', '133.7', '134.6', '135.5', '136.4', '137.3', '138.2', '139.1', '140.0', '140.9', '141.8', '143.6', '144.5', '148.1', '149.0', '149.9', '150.8', '151.7', '152.6', '153.5', '145.4', '155.3', '156.2', '157.1', '158.0', '160.7', '161.6', '163.4', '167.0', '167.9', '172.4', '173.3', '174.2', '175.1', '176.0', '176.9', '177.8', '178.7', '179.6', '180.5', '183.2', '185.0', '190.4', '191.3', '197.6', '198.5', '200.3', '201.2', '203.0', '203.9', '205.7', '206.6', '207.5', '208.4', '209.3', '210.2', '211.1', '212.0', '212.9', '213.8', '214.7', '215.6', '216.5', '217.4', '218.3', '219.2', '220.1', '221.0', '221.9', '222.8', '224.6', '225.5', '226.4', '228.2', '229.1', '230.0', '230.9', '231.8', '234.5', '235.4', '236.3', '237.2', '238.1', '239.0', '239.9', '240.8']
 
 alldata = Table.read('starcat_121.1mapweight_fwhm.txt', format='ascii')
-alldata = alldata[np.where((alldata['FWHM_IMAGE'] < 10) & (alldata['FWHM_IMAGE'] > 3.5) & (alldata['nuv'] < 20))]
+alldata = alldata[np.where((alldata['FWHM_IMAGE'] < 10) & (alldata['FWHM_IMAGE'] > 3.5) & (alldata['nuv'] < 21))]
 
 for region in sky2:
     a = Table.read('starcat_'+region+'mapweight_fwhm.txt', format='ascii')
-    a = a[np.where((a['FWHM_IMAGE'] < 10) & (a['FWHM_IMAGE'] > 3.5) & (a['nuv'] < 20))]
+    a = a[np.where((a['FWHM_IMAGE'] < 10) & (a['FWHM_IMAGE'] > 3.5) & (a['nuv'] < 21))]
     alldata = vstack([alldata, a])
     print region
 
 ascii.write(alldata, '../../../starcat120-240_mapweight_fwhm_pscans_allnuv.txt', format='ipac')
 
-#incscans = ['273.2', '283.1', '289.4', '306.5', '309.2', '324.5', '329.9', '338.0', '339.8', '342.5', '343.4', '345.2', '348.8', '349.7', '350.6', '351.5', '352.4', '353.3', '354.2', '355.1', '356.0', '357.8']
-
-
-
 sky3 =  ['242.6', '243.5', '244.4', '245.3', '246.2', '247.1', '248.0', '248.9', '249.8', '250.7', '251.6', '252.5', '253.4', '254.3', '255.2', '256.1', '257.0', '258.8', '259.7', '260.6', '261.5', '263.3', '264.2', '265.1', '266.0', '266.9', '268.7', '269.6', '270.5', '271.4', '272.3', '274.1', '275.0', '275.9', '276.8', '278.6', '279.5', '281.3', '284.0', '285.8', '286.7', '288.5', '290.3', '291.2', '292.1', '293.0', '293.9', '295.7', '297.5', '298.4', '302.0', '302.9', '303.8', '304.7', '305.6', '308.3', '310.1', '315.5', '316.4', '317.3', '318.2', '319.1', '320.0', '320.9', '321.8', '322.7', '323.6', '325.4', '326.3', '327.2', '328.1', '329.0', '331.7', '332.6', '333.5', '334.4', '335.3', '338.9', '341.6', '358.7', '359.6']
 
 alldata = Table.read('starcat_241.7mapweight_fwhm.txt', format='ascii')
-alldata = alldata[np.where((alldata['FWHM_IMAGE'] < 10) & (alldata['FWHM_IMAGE'] > 3.5) & (alldata['nuv'] < 20))]
+alldata = alldata[np.where((alldata['FWHM_IMAGE'] < 10) & (alldata['FWHM_IMAGE'] > 3.5) & (alldata['nuv'] < 21))]
 
 for region in sky3:
     a = Table.read('starcat_'+region+'mapweight_fwhm.txt', format='ascii')
-    a = a[np.where((a['FWHM_IMAGE'] < 10) & (a['FWHM_IMAGE'] > 3.5) & (a['nuv'] < 20))]
+    a = a[np.where((a['FWHM_IMAGE'] < 10) & (a['FWHM_IMAGE'] > 3.5) & (a['nuv'] < 21))]
     alldata = vstack([alldata, a])
     print region
 
@@ -1766,11 +1774,11 @@ ascii.write(comb, 'gais_gaia.txt', format='ipac')
 # APOKASK and Bovy with gaia CMD
 ############################################################
 
-#sg = fits.open('sex_gaia_dust_interp.fits')[1].data
-#sggal = SkyCoord(sg['gl_sex']*u.deg, sg['gb_sex']*u.deg, frame='galactic')
+sg = fits.open('sex_gaia_dust_interp.fits')[1].data
+sggal = SkyCoord(sg['gl_sex']*u.deg, sg['gb_sex']*u.deg, frame='galactic')
 
-sg = fits.open('gais_gaia_dust.fits')[1].data
-sggal = SkyCoord(sg['gl_gais']*u.deg, sg['gb_gais']*u.deg, frame='galactic')
+#sg = fits.open('gais_gaia_dust.fits')[1].data
+#sggal = SkyCoord(sg['gl_gais']*u.deg, sg['gb_gais']*u.deg, frame='galactic')
 
 
 apo = fits.open('APOKASKRC_TGAS.fits')[1].data
@@ -1791,7 +1799,7 @@ agerange = np.unique(cmd['logage'])
 colors = ['darkblue', 'blue', 'lightblue', 'green', 'yellow', 'orange', 'red']
 
 
-#scatter_contour((sg['nuv_mag']-sg['ebv']*7.76)-(sg['phot_g_mean_mag']-sg['ebv']*3.303), (sg['Mg']-sg['ebv']*3.303),threshold=1400,log_counts=True,histogram2d_args=dict(bins=40),plot_args=dict(color='k',markersize=1, alpha=0.3), contour_args=dict(cmap=cm.gray))
+#scatter_contour((sg['nuv_mag']-sg['ebv']*7.76)-(sg['phot_g_mean_mag']-sg['ebv']*3.303), (sg['Mg']-sg['ebv']*3.303),threshold=1750,log_counts=True,histogram2d_args=dict(bins=40),plot_args=dict(color='k',markersize=1, alpha=0.3), contour_args=dict(cmap=cm.gray))
 
 scatter_contour(sg['nuv_mag']-sg['phot_g_mean_mag'], sg['Mg'],threshold=1400,log_counts=True,histogram2d_args=dict(bins=40),plot_args=dict(color='k',markersize=1, alpha=0.3), contour_args=dict(cmap=cm.gray))
 
@@ -1807,18 +1815,19 @@ for age in range(len(agerange)):
     plt.plot(cmd2['NUV']-cmd2['G'], cmd2['G'], c=colors[age], linestyle='--')
     plt.plot(cmd2['NUV']-cmd2['G'], cmd2['G'], c=colors[age], linestyle='--')
 '''
-#plt.scatter((c2['nuv_mag']-c2['ebv']*7.76)-(c2['phot_g_mean_mag_1']-c2['ebv']*3.303), c2['Mg']-c2['ebv']*3.303, edgecolor='none', s=80, label='Bovy', c=c2['FE_H'])
-#plt.scatter((c1['nuv_mag']-c1['ebv']*7.76)-(c1['phot_g_mean_mag_1']-c1['ebv']*3.303), c1['Mg']-c1['ebv']*3.303, edgecolor='none', s=80, label='APO', c=c1['FE_H'])
 
-plt.scatter(c2['nuv_mag']-c2['phot_g_mean_mag_1'], c2['Mg'], edgecolor='none', s=80, label='Bovy', c=c2['FE_H'])
-plt.scatter(c1['nuv_mag']-c1['phot_g_mean_mag_1'], c1['Mg'], edgecolor='none', s=80, label='APO', c=c1['FE_H'])
+#plt.scatter((c2['nuv_mag']-c2['ebv']*7.76)-(c2['phot_g_mean_mag_1']-c2['ebv']*3.303), c2['Mg']-c2['ebv']*3.303, edgecolor='none', s=80, label='Bovy', c=c2['LOGG'])
+#plt.scatter((c1['nuv_mag']-c1['ebv']*7.76)-(c1['phot_g_mean_mag_1']-c1['ebv']*3.303), c1['Mg']-c1['ebv']*3.303, edgecolor='none', s=80, label='APO', c=c1['LOGG'])
+
+plt.scatter(c2['nuv_mag']-c2['phot_g_mean_mag_1'], c2['Mg'], edgecolor='none', s=80, label='Bovy', c=c2['LOGG'])
+plt.scatter(c1['nuv_mag']-c1['phot_g_mean_mag_1'], c1['Mg'], edgecolor='none', s=80, label='APO', c=c1['LOGG'])
 
 
 #plt.xlabel('(NUV - E$_{B-V}$ * 7.76) - (G - E$_{B-V}$ * 3.303)')
 #plt.ylabel('MG - E$_{B-V}$ * 3.303')
 plt.xlabel('NUV - G')
 plt.ylabel('MG')
-plt.colorbar().set_label('Fe/H')
+plt.colorbar().set_label('logg')
 
 #plt.legend(scatterpoints=1, loc=3)
 plt.xlim((-1, 11))
