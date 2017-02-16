@@ -9,8 +9,8 @@ import matplotlib, matplotlib.cm as cm
 matplotlib.rcParams['figure.figsize'] = 14, 12
 matplotlib.rcParams['font.size'] = 15
 
-cat = 1
-gais = 0
+cat = 0
+gais = 1
 
 ext = 1
 
@@ -96,7 +96,7 @@ if ext == 1:
     if cat == 1:
         plt.title('S+G, GSF15 ext with RC stars')
     if gais == 1:
-        plt.title('GAIS+G, GSF15 ext with RC stars')
+        plt.title('GAIS + Gaia, GSF extinction with RC stars')
 
 if ext == 0:
     if cat == 1:
