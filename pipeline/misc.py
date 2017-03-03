@@ -205,7 +205,7 @@ cmd = Table.read('cmdfiles/cmd_merged.txt', format='ascii')
 
 scatter_contour(sv['nuv_mag']-sv['g_AB'],sv['g_AB']-sv['r_AB'],threshold=1100,log_counts=True,histogram2d_args=dict(bins=40),plot_args=dict(color='k',markersize=1), contour_args=dict(cmap=cm.gray))
 plt.scatter(vwd['nuv_mag']-vwd['g_AB'],vwd['g_AB']-vwd['r_AB'], edgecolor='none', facecolor='blue', label='WDCs')
-plt.scatter(pickles['nuv']-pickles['g'],pickles['g']-pickles['r'],color='red', label='Pickles', s=30)
+plt.scatter(pickles['nuv']-pickles['g'],pickles['g']-pickles['r'],color='red', label='SED model', s=30)
 plt.plot(cmd['NUV']-cmd['g'],cmd['g']-cmd['r'],color='green', label='CMD')
 plt.gca().add_patch(matplotlib.patches.Rectangle((-0.5,0.6),2.5,0.5,facecolor='yellow',alpha=0.5))
 plt.gca().add_patch(matplotlib.patches.Rectangle((-0.5,1.1),6.5,0.5,facecolor='yellow',alpha=0.5))
@@ -1774,11 +1774,11 @@ ascii.write(comb, 'gais_gaia.txt', format='ipac')
 # APOKASK and Bovy with gaia CMD
 ############################################################
 
-sg = fits.open('sex_gaia_dust_interp.fits')[1].data
-sggal = SkyCoord(sg['gl_sex']*u.deg, sg['gb_sex']*u.deg, frame='galactic')
+#sg = fits.open('sex_gaia_dust_interp.fits')[1].data
+#sggal = SkyCoord(sg['gl_sex']*u.deg, sg['gb_sex']*u.deg, frame='galactic')
 
-#sg = fits.open('gais_gaia_dust.fits')[1].data
-#sggal = SkyCoord(sg['gl_gais']*u.deg, sg['gb_gais']*u.deg, frame='galactic')
+sg = fits.open('gais_gaia_dust.fits')[1].data
+sggal = SkyCoord(sg['gl_gais']*u.deg, sg['gb_gais']*u.deg, frame='galactic')
 
 
 apo = fits.open('APOKASKRC_TGAS.fits')[1].data
@@ -1799,9 +1799,10 @@ agerange = np.unique(cmd['logage'])
 colors = ['darkblue', 'blue', 'lightblue', 'green', 'yellow', 'orange', 'red']
 
 
-#scatter_contour((sg['nuv_mag']-sg['ebv']*7.76)-(sg['phot_g_mean_mag']-sg['ebv']*3.303), (sg['Mg']-sg['ebv']*3.303),threshold=1750,log_counts=True,histogram2d_args=dict(bins=40),plot_args=dict(color='k',markersize=1, alpha=0.3), contour_args=dict(cmap=cm.gray))
+scatter_contour((sg['nuv_mag']-sg['ebv']*7.76)-(sg['phot_g_mean_mag']-sg['ebv']*3.303), (sg['Mg']-sg['ebv']*3.303),threshold=1750,log_counts=True,histogram2d_args=dict(bins=40),plot_args=dict(color='k',markersize=1, alpha=0.3), contour_args=dict(cmap=cm.gray))
 
-scatter_contour(sg['nuv_mag']-sg['phot_g_mean_mag'], sg['Mg'],threshold=1400,log_counts=True,histogram2d_args=dict(bins=40),plot_args=dict(color='k',markersize=1, alpha=0.3), contour_args=dict(cmap=cm.gray))
+
+#scatter_contour(sg['nuv_mag']-sg['phot_g_mean_mag'], sg['Mg'],threshold=1400,log_counts=True,histogram2d_args=dict(bins=40),plot_args=dict(color='k',markersize=1, alpha=0.3), contour_args=dict(cmap=cm.gray))
 
 '''
 for age in range(len(agerange)):
@@ -1816,18 +1817,18 @@ for age in range(len(agerange)):
     plt.plot(cmd2['NUV']-cmd2['G'], cmd2['G'], c=colors[age], linestyle='--')
 '''
 
-#plt.scatter((c2['nuv_mag']-c2['ebv']*7.76)-(c2['phot_g_mean_mag_1']-c2['ebv']*3.303), c2['Mg']-c2['ebv']*3.303, edgecolor='none', s=80, label='Bovy', c=c2['LOGG'])
-#plt.scatter((c1['nuv_mag']-c1['ebv']*7.76)-(c1['phot_g_mean_mag_1']-c1['ebv']*3.303), c1['Mg']-c1['ebv']*3.303, edgecolor='none', s=80, label='APO', c=c1['LOGG'])
+plt.scatter((c2['nuv_mag']-c2['ebv']*7.76)-(c2['phot_g_mean_mag_1']-c2['ebv']*3.303), c2['Mg']-c2['ebv']*3.303, edgecolor='none', s=80, label='Bovy', c=c2['FE_H'])
+plt.scatter((c1['nuv_mag']-c1['ebv']*7.76)-(c1['phot_g_mean_mag_1']-c1['ebv']*3.303), c1['Mg']-c1['ebv']*3.303, edgecolor='none', s=80, label='APO', c=c1['FE_H'])
 
-plt.scatter(c2['nuv_mag']-c2['phot_g_mean_mag_1'], c2['Mg'], edgecolor='none', s=80, label='Bovy', c=c2['LOGG'])
-plt.scatter(c1['nuv_mag']-c1['phot_g_mean_mag_1'], c1['Mg'], edgecolor='none', s=80, label='APO', c=c1['LOGG'])
+#plt.scatter(c2['nuv_mag']-c2['phot_g_mean_mag_1'], c2['Mg'], edgecolor='none', s=80, label='Bovy', c=c2['LOGG'])
+#plt.scatter(c1['nuv_mag']-c1['phot_g_mean_mag_1'], c1['Mg'], edgecolor='none', s=80, label='APO', c=c1['LOGG'])
 
 
-#plt.xlabel('(NUV - E$_{B-V}$ * 7.76) - (G - E$_{B-V}$ * 3.303)')
-#plt.ylabel('MG - E$_{B-V}$ * 3.303')
-plt.xlabel('NUV - G')
-plt.ylabel('MG')
-plt.colorbar().set_label('logg')
+plt.xlabel('(NUV - E$_{B-V}$ * 7.76) - (G - E$_{B-V}$ * 3.303)')
+plt.ylabel('MG - E$_{B-V}$ * 3.303')
+#plt.xlabel('NUV - G')
+#plt.ylabel('MG')
+plt.colorbar().set_label('Fe/H')
 
 #plt.legend(scatterpoints=1, loc=3)
 plt.xlim((-1, 11))
