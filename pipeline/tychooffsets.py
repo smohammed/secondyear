@@ -15,7 +15,7 @@ matplotlib.rcParams['font.size'] = 17
 full = 1
 partial = 0
 
-fec = 0
+fec = 1
 
 #################################################
 # Subplots for each scan
@@ -26,7 +26,8 @@ if (fec == 0) and (full == 1):
 
 # fec scans
 if (fec == 1) and (full == 1):
-    scans = ['0014', '0059', '0203', '0239', '1310', '1607', '3209', '3236']
+    #scans = ['0014', '0059', '0203', '0239', '1310', '1607', '3209', '3236']
+    scans = ['0014', '0032', '0059', '0743']
 
 # Incomplete scans
 if (fec == 0) and (partial == 1):
@@ -49,10 +50,10 @@ for curregion in skyrange:
     print curregion
 
     if fec == 0:
-        t1 = Table.read('../Dunmaps/fwhm/11-18data/starcat_'+curregion+'mapweight_fwhm.txt', format='ascii')
+        t1 = Table.read('../Dunmaps/fwhm/03-02data/starcat_'+curregion+'mapweight_fwhm.txt', format='ascii')
 
     if fec == 1:
-        t1 = Table.read('../Dunmaps/fwhm/fec/11-18data/starcat_'+curregion+'mapweight_fec_fwhm.txt', format='ascii')
+        t1 = Table.read('../Dunmaps/fwhm/fec/03-02data/starcat_'+curregion+'mapweight_fec_fwhm.txt', format='ascii')
 
     t1.remove_columns(('X_IMAGE', 'Y_IMAGE', 'FLUX_AUTO', 'A_IMAGE', 'B_IMAGE', 'THETA_IMAGE', 'x_new', 'y_new', 'FLUXERR_AUTO', 'FLUX_APER', 'ra', 'dec'))
     t1 = t1[np.where((t1['FWHM_IMAGE'] < 10) & (t1['FWHM_IMAGE'] > 3.5))]
@@ -141,7 +142,7 @@ for curregion in skyrange:
             plt.savefig('../11-22-region'+curregion+'tychoplots.png')
             #images/11-22-tychoplots/
     if fec == 1:
-        plt.savefig('../images/11-22-tychoplots/11-22-region'+curregion+'tychoplots_fec.png')
+        plt.savefig('../03-02-region'+curregion+'tychoplots_fec.png')
 
     #plt.show()
     plt.close()
