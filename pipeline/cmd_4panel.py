@@ -15,7 +15,7 @@ gais = 1
 ext = 1
 nuvg = 0
 bv = 1
-distcut = 1
+distcut = 0
 
 ############################################################
 # APOKASK and Bovy with gaia CMD
@@ -67,16 +67,16 @@ if distcut == 0:
 
 fig, axes = plt.subplots(nrows=2, ncols=2, sharey=True)
 # NUV - G with ext
-scatter_contour((sg['nuv_mag']-sg['ebv']*7.76)-(sg['phot_g_mean_mag']-sg['ebv']*3.303), (sg['Mg']-sg['ebv']*3.303), threshold=nuvgth, log_counts=True, histogram2d_args=dict(bins=nuvgbins), plot_args=dict(color='k', markersize=1, alpha=0.1), contour_args=dict(cmap=cm.gray), ax=axes[1, 1])
+scatter_contour((sg['nuv_mag']-sg['ebv']*7.76)-(sg['phot_g_mean_mag']-sg['ebv']*3.303), (sg['MNUV']-sg['ebv']*7.76), threshold=nuvgth, log_counts=True, histogram2d_args=dict(bins=nuvgbins), plot_args=dict(color='k', markersize=1, alpha=0.1), contour_args=dict(cmap=cm.gray), ax=axes[1, 1])
 
-cbar = axes[1, 1].scatter((c1['nuv_mag']-c1['ebv']*7.76)-(c1['phot_g_mean_mag']-c1['ebv']*3.303), c1['Mg']-c1['ebv']*3.303, s=40, edgecolor='none', label='APO', c=c1['FE_H'], vmin=-0.5, vmax=0.35)
-axes[1, 1].scatter((c2['nuv_mag']-c2['ebv']*7.76)-(c2['phot_g_mean_mag']-c2['ebv']*3.303), c2['Mg']-c2['ebv']*3.303, s=40, edgecolor='none', label='Bovy', c=c2['FE_H'], vmin=-0.5, vmax=0.35)
+cbar = axes[1, 1].scatter((c1['nuv_mag']-c1['ebv']*7.76)-(c1['phot_g_mean_mag']-c1['ebv']*3.303), c1['MNUV']-c1['ebv']*3.303, s=40, edgecolor='none', label='APO', c=c1['FE_H'], vmin=-0.5, vmax=0.35)
+axes[1, 1].scatter((c2['nuv_mag']-c2['ebv']*7.76)-(c2['phot_g_mean_mag']-c2['ebv']*3.303), c2['MNUV']-c2['ebv']*3.303, s=40, edgecolor='none', label='Bovy', c=c2['FE_H'], vmin=-0.5, vmax=0.35)
 
 # NUV - G with no ext
-scatter_contour(sg['nuv_mag']-sg['phot_g_mean_mag'], sg['Mg'], threshold=nuvgth, log_counts=True, histogram2d_args=dict(bins=nuvgbins), plot_args=dict(color='k', markersize=1, alpha=0.1), contour_args=dict(cmap=cm.gray), ax=axes[0, 1])
+scatter_contour(sg['nuv_mag']-sg['phot_g_mean_mag'], sg['MNUV'], threshold=nuvgth, log_counts=True, histogram2d_args=dict(bins=nuvgbins), plot_args=dict(color='k', markersize=1, alpha=0.1), contour_args=dict(cmap=cm.gray), ax=axes[0, 1])
 
-axes[0, 1].scatter(c1['nuv_mag']-c1['phot_g_mean_mag'], c1['Mg'], s=40, edgecolor='none', label='APO', c=c1['FE_H'], vmin=-0.5, vmax=0.35)
-axes[0, 1].scatter(c2['nuv_mag']-c2['phot_g_mean_mag'], c2['Mg'], s=40, edgecolor='none', label='Bovy', c=c2['FE_H'], vmin=-0.5, vmax=0.35)
+axes[0, 1].scatter(c1['nuv_mag']-c1['phot_g_mean_mag'], c1['MNUV'], s=40, edgecolor='none', label='APO', c=c1['FE_H'], vmin=-0.5, vmax=0.35)
+axes[0, 1].scatter(c2['nuv_mag']-c2['phot_g_mean_mag'], c2['MNUV'], s=40, edgecolor='none', label='Bovy', c=c2['FE_H'], vmin=-0.5, vmax=0.35)
 
 
 # B - V with ext
@@ -93,16 +93,16 @@ axes[0, 0].scatter(c2['B_AB']-c2['V_AB'], c2['MV'], s=40, edgecolor='none', labe
 
 
 axes[1, 0].set_xlabel('(B - E$_{B-V}$ * 3.626) - (V - E$_{B-V}$ * 2.742)')
-axes[1, 1].set_xlabel('(NUV - E$_{B-V}$ * 7.76) - (G - E$_{B-V}$ * 3.303)')
+axes[1, 1].set_xlabel('(NUV - E$_{B-V}$ * 7.76) - (NUV - E$_{B-V}$ * 7.76)')
 
 axes[1, 0].set_ylabel('M$_{\lambda}$ - E$_{B-V}$ * A$_{\lambda}$')
 axes[0, 0].set_ylabel('M$_{\lambda}$')
 
-axes[0, 0].text(-0.9, 7.8, '$\lambda$ = V')
-axes[0, 1].text(1.1, 7.8, '$\lambda$ = G')
+axes[0, 0].text(-0.9, 7.8, '$\lambda$ = V, E$_{B-V}$ = 0')
+axes[0, 1].text(1.1, 7.8, '$\lambda$ = NUV, E$_{B-V}$ = 0')
 
 axes[1, 0].text(-0.9, 7.8, '$\lambda$ = V, A$_{\lambda}$ = 2.742')
-axes[1, 1].text(1.1, 7.8, '$\lambda$ = G, A$_{\lambda}$ = 3.303')
+axes[1, 1].text(1.1, 7.8, '$\lambda$ = NUV, A$_{\lambda}$ = 3.303')
 
 if distcut == 1:
     plt.suptitle('GAIS + TGAS, GSF extinction with RC stars, 380 < pc < 2000')
