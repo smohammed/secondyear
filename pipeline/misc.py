@@ -1064,8 +1064,8 @@ ascii.write(alldata, '../../../starcat240-360_mapweight_fwhm_pscans_allnuv.txt',
 #################################################
 #normalize histogram:
 #################################################
-area = 2000 #6118 # 360*20 - blank area
-x, bins, p = plt.hist(vwd['gb_sex'], bins=50)
+area = 100
+x, bins, p = plt.hist(np.log10(sg['dist']), range=[0,4], bins=15, label='GAIS dist/100')
 for item in p:
     item.set_height(item.get_height()/area)
 plt.show()
@@ -1770,16 +1770,17 @@ comb.rename_column('l', 'gl_gaia')
 comb['angsep'] = angsep
 ascii.write(comb, 'gais_gaia.txt', format='ipac')
 
-############################################################
-# APOKASK and Bovy with gaia CMD
-############################################################
 
-#sg = fits.open('sex_gaia_dust_interp.fits')[1].data
-#sggal = SkyCoord(sg['gl_sex']*u.deg, sg['gb_sex']*u.deg, frame='galactic')
+######################################################################
+# CMD with lim mag nuv = 20
+######################################################################
+mnuv = 20
+dist = np.arange(1, 5000, 500)
+M = mnuv - 5*np.log10(dist) + 5
+g = np.linspace(20, 0, 10)
 
-sg = fits.open('gais_gaia_dust.fits')[1].data
+sg = fits.open('gais_tgas_match_dust.fits')[1].data
 sggal = SkyCoord(sg['gl_gais']*u.deg, sg['gb_gais']*u.deg, frame='galactic')
-
 
 apo = fits.open('APOKASKRC_TGAS.fits')[1].data
 apogal = SkyCoord(apo['l']*u.deg, apo['b']*u.deg, frame='galactic')
@@ -1791,46 +1792,79 @@ c1 = hstack([Table(sg)[sg1ind], Table(apo)[apoind]])
 c2 = hstack([Table(sg)[sg2ind], Table(bov)[bovind]])
 c1['angsep'] = angsep1
 c2['angsep'] = angsep2
+c1.remove_column('phot_g_mean_mag_2')
+c1.rename_column('phot_g_mean_mag_1', 'phot_g_mean_mag')
+c2.remove_column('phot_g_mean_mag_2')
+c2.rename_column('phot_g_mean_mag_1', 'phot_g_mean_mag')
 
-cmd = Table.read('cmdfiles/cmd_merged_zt.txt', format='ascii')
+scatter_contour(sg['nuv_mag']-sg['phot_g_mean_mag'], sg['Mnuv'], threshold=1000, log_counts=True, histogram2d_args=dict(bins=40), plot_args=dict(color='k', markersize=1, alpha=0.1), contour_args=dict(cmap=cm.gray))
 
+plt.scatter(c2['nuv_mag']-c2['phot_g_mean_mag'], c2['MNUV'], edgecolor='none',c=c2['dist'], s=40, vmin=0, vmax=2000, label='RC stars')
 
-agerange = np.unique(cmd['logage'])
-colors = ['darkblue', 'blue', 'lightblue', 'green', 'yellow', 'orange', 'red']
+plt.scatter(c1['nuv_mag']-c1['phot_g_mean_mag'], c1['MNUV'], edgecolor='none', c=c1['dist'], s=40, vmin=0, vmax=2000)
 
+colors = ['']
 
-scatter_contour((sg['nuv_mag']-sg['ebv']*7.76)-(sg['phot_g_mean_mag']-sg['ebv']*3.303), (sg['Mg']-sg['ebv']*3.303),threshold=1750,log_counts=True,histogram2d_args=dict(bins=40),plot_args=dict(color='k',markersize=1, alpha=0.3), contour_args=dict(cmap=cm.gray))
-
-
-#scatter_contour(sg['nuv_mag']-sg['phot_g_mean_mag'], sg['Mg'],threshold=1400,log_counts=True,histogram2d_args=dict(bins=40),plot_args=dict(color='k',markersize=1, alpha=0.3), contour_args=dict(cmap=cm.gray))
-
-'''
-for age in range(len(agerange)):
-    cmd2 = cmd[np.where(cmd['logage'] == agerange[age])]
-    plt.plot(cmd2['NUV']-cmd2['G'], cmd2['G'], c=colors[age], linestyle='--')
-    plt.plot(cmd2['NUV']-cmd2['G'], cmd2['G'], c=colors[age], linestyle='--')
-    plt.plot(cmd2['NUV']-cmd2['G'], cmd2['G'], c=colors[age], linestyle='--')
-    plt.plot(cmd2['NUV']-cmd2['G'], cmd2['G'], c=colors[age], linestyle='--')
-    plt.plot(cmd2['NUV']-cmd2['G'], cmd2['G'], c=colors[age], linestyle='--')
-    plt.plot(cmd2['NUV']-cmd2['G'], cmd2['G'], c=colors[age], linestyle='--')
-    plt.plot(cmd2['NUV']-cmd2['G'], cmd2['G'], c=colors[age], linestyle='--')
-    plt.plot(cmd2['NUV']-cmd2['G'], cmd2['G'], c=colors[age], linestyle='--')
-'''
-
-plt.scatter((c2['nuv_mag']-c2['ebv']*7.76)-(c2['phot_g_mean_mag_1']-c2['ebv']*3.303), c2['Mg']-c2['ebv']*3.303, edgecolor='none', s=80, label='Bovy', c=c2['FE_H'])
-plt.scatter((c1['nuv_mag']-c1['ebv']*7.76)-(c1['phot_g_mean_mag_1']-c1['ebv']*3.303), c1['Mg']-c1['ebv']*3.303, edgecolor='none', s=80, label='APO', c=c1['FE_H'])
-
-#plt.scatter(c2['nuv_mag']-c2['phot_g_mean_mag_1'], c2['Mg'], edgecolor='none', s=80, label='Bovy', c=c2['LOGG'])
-#plt.scatter(c1['nuv_mag']-c1['phot_g_mean_mag_1'], c1['Mg'], edgecolor='none', s=80, label='APO', c=c1['LOGG'])
+for i in range(len(dist)):
+    plt.axhline(M[i], color='black')
+    plt.annotate('D = '+str(dist[i])+' pc', xy=(12, M[i]), size=10)
 
 
-plt.xlabel('(NUV - E$_{B-V}$ * 7.76) - (G - E$_{B-V}$ * 3.303)')
-plt.ylabel('MG - E$_{B-V}$ * 3.303')
-#plt.xlabel('NUV - G')
-#plt.ylabel('MG')
-plt.colorbar().set_label('Fe/H')
+#plt.scatter(mnuv - g, M,c=dist, vmin=0, vmax=5000, s=80, label='m$_{NUV}$ = 20', marker='s')
+plt.legend(scatterpoints=1, loc=3)
+plt.xlim((2, 14))
+plt.ylim((16, 3))
+plt.xlabel('NUV - G')
+plt.ylabel('M$_{NUV}$')
 
-#plt.legend(scatterpoints=1, loc=3)
-plt.xlim((-1, 11))
-plt.ylim((8, -6))
+plt.colorbar().set_label('dist [pc]')
+plt.show()
+
+######################################################################
+# CMD with lim mag G = 20
+######################################################################
+mg = 20
+dist = np.arange(1, 5000, 500)
+M = mg - 5*np.log10(dist) + 5
+g = np.linspace(20, 0, 10)
+
+sg = fits.open('gais_tgas_match_dust.fits')[1].data
+sggal = SkyCoord(sg['gl_gais']*u.deg, sg['gb_gais']*u.deg, frame='galactic')
+
+apo = fits.open('APOKASKRC_TGAS.fits')[1].data
+apogal = SkyCoord(apo['l']*u.deg, apo['b']*u.deg, frame='galactic')
+bov = fits.open('BovyRC_TGAS.fits')[1].data
+bovgal = SkyCoord(bov['l']*u.deg, bov['b']*u.deg, frame='galactic')
+sg1ind, apoind, angsep1, ang3d = search_around_sky(sggal, apogal, 3*u.arcsec)
+sg2ind, bovind, angsep2, ang3d = search_around_sky(sggal, bovgal, 3*u.arcsec)
+c1 = hstack([Table(sg)[sg1ind], Table(apo)[apoind]])
+c2 = hstack([Table(sg)[sg2ind], Table(bov)[bovind]])
+c1['angsep'] = angsep1
+c2['angsep'] = angsep2
+c1.remove_column('phot_g_mean_mag_2')
+c1.rename_column('phot_g_mean_mag_1', 'phot_g_mean_mag')
+c2.remove_column('phot_g_mean_mag_2')
+c2.rename_column('phot_g_mean_mag_1', 'phot_g_mean_mag')
+
+scatter_contour(sg['nuv_mag']-sg['phot_g_mean_mag'], sg['Mg'], threshold=1000, log_counts=True, histogram2d_args=dict(bins=40), plot_args=dict(color='k', markersize=1, alpha=0.1), contour_args=dict(cmap=cm.gray))
+
+plt.scatter(c2['nuv_mag']-c2['phot_g_mean_mag'], c2['Mg'], edgecolor='none',c=c2['dist'], s=40, vmin=0, vmax=2000, label='RC stars')
+
+plt.scatter(c1['nuv_mag']-c1['phot_g_mean_mag'], c1['Mg'], edgecolor='none', c=c1['dist'], s=40, vmin=0, vmax=2000)
+
+colors = ['']
+
+for i in range(len(dist)):
+    plt.axhline(M[i], color='black')
+    plt.annotate('D = '+str(dist[i])+' pc', xy=(12, M[i]), size=10)
+
+
+#plt.scatter(mnuv - g, M,c=dist, vmin=0, vmax=5000, s=80, label='m$_{NUV}$ = 20', marker='s')
+plt.legend(scatterpoints=1, loc=3)
+plt.xlim((1, 14))
+plt.ylim((8, -3))
+plt.xlabel('NUV - G')
+plt.ylabel('M$_{G}$')
+
+plt.colorbar().set_label('dist [pc]')
 plt.show()
