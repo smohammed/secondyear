@@ -7,7 +7,7 @@ from astropy.coordinates import SkyCoord, search_around_sky
 from astropy import wcs
 from astroML.plotting import scatter_contour
 import matplotlib, matplotlib.cm as cm
-matplotlib.rcParams['figure.figsize'] = 16, 8
+matplotlib.rcParams['figure.figsize'] = 12, 10
 matplotlib.rcParams['font.size'] = 17
 
 
@@ -27,7 +27,8 @@ fec = 1
 
 # fec regions
 #scans = ['0014', '0059', '0203', '0239', '1310', '1607', '3209', '3236']
-scans = ['0014', '0032', '0059', '0743']
+#scans = ['0014', '0032', '0059', '0239','0356', '0392', '0203', '0743' 
+scans = ['1103']
 
 
 # Incomplete scans
@@ -64,7 +65,7 @@ for curregion in skyrange:
         t1 = Table.read('../Dunmaps/fwhm/11-18data/starcat_'+curregion+'mapweight_fwhm.txt', format='ascii')
 
     if fec == 1:
-        t1 = Table.read('../Dunmaps/fwhm/fec/03-02data/starcat_'+curregion+'mapweight_fec_fwhm.txt', format='ascii')
+        t1 = Table.read('../Dunmaps/fwhm/fec/03-20data/starcat_'+curregion+'mapweight_fec_fwhm.txt', format='ascii')
 
     t1.remove_columns(('X_IMAGE', 'Y_IMAGE', 'FLUX_AUTO', 'A_IMAGE', 'B_IMAGE', 'THETA_IMAGE', 'x_new', 'y_new', 'FLUXERR_AUTO', 'FLUX_APER', 'ra', 'dec'))
     t1 = t1[np.where((t1['FWHM_IMAGE'] < 10) & (t1['FWHM_IMAGE'] > 3.5))]
@@ -96,9 +97,9 @@ for curregion in skyrange:
 
     # New fec maps
     if fec == 1:
-        hdulist = fits.open('../fecmaps/03-02/count_map_'+curregion.replace('.', '')+'-cal-sec_in_dis.fits')
+        hdulist = fits.open('../fecmaps/03-20/count_map_'+curregion.replace('.', '')+'-cal-sec_in_dis.fits')
         img = hdulist[0].data
-        expmap = fits.open('../fecmaps/03-02/count_map_'+curregion.replace('.', '')+'-cal-sec_exp.fits')[0].data
+        expmap = fits.open('../fecmaps/03-20/count_map_'+curregion.replace('.', '')+'-cal-sec_exp_dis.fits')[0].data
         bkgd = fits.open('../Dunmaps/background_im1_'+curregion.replace('.', '')+'_fec.fits')[0].data
 
     img = img[im1ymin:im1ymax, im1xmin:im1xmax]
@@ -239,7 +240,7 @@ for curregion in skyrange:
             plt.savefig('../11-21-region'+curregion+'matchplots.png')
 
     if fec == 1:
-        plt.savefig('../03-02-region'+curregion+'matchplots_fec.png')
+        plt.savefig('../images/gaia/03-20-region'+curregion+'matchplots_fec.png')
 
     #plt.show()
     plt.close()

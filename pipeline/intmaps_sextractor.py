@@ -34,8 +34,8 @@ matplotlib.rcParams['font.size'] = 17
 
 # fec scans
 #scans = ['0014', '0059', '0203', '0239', '1310', '1607', '3209', '3236']
-scans = ['0014', '0032', '0059', '0743']
-
+#scans = ['0014', '0032', '0059', '0203', '0239', '0356', '0392', '0743', '1103']
+scans = ['1103']
 # Incomplete scans
 incscans = ['9.5', '14.9', '79.7', '90.5', '91.4', '103.1', '104.0', '122.9', '127.4', '223.7', '273.2', '283.1', '289.4', '306.5', '309.2', '324.5', '329.9', '338.0', '339.8', '342.5', '343.4', '345.2', '348.8', '349.7', '350.6', '351.5', '352.4', '353.3', '354.2', '355.1', '356.0', '357.8']
 
@@ -82,7 +82,7 @@ for currregion in skyrange:
     if fec == 0:
         img = fits.open('../Dunmaps/countmaps/count_map_name_'+region+'_gal_sec_in.fits')[0].data
     elif fec == 1:
-        img = fits.open('../fecmaps/03-02/count_map_'+region+'-cal-sec_in_dis.fits')[0].data
+        img = fits.open('../fecmaps/03-20/count_map_'+region+'-cal-sec_in_dis.fits')[0].data
 
     if full == 1:
         im1xmin, im1xmax, im1ymin, im1ymax = 1214, 3950, 3532, 51230
@@ -185,7 +185,7 @@ for currregion in skyrange:
     if fec == 0:
         hdulist = fits.open('../Dunmaps/countmaps/count_map_name_'+region+'_gal_sec_in.fits')
     if fec == 1:
-        hdulist = fits.open('../fecmaps/03-02/count_map_'+region+'-cal-sec_in_dis.fits')
+        hdulist = fits.open('../fecmaps/03-20/count_map_'+region+'-cal-sec_in_dis.fits')
 
     xpix = data['x_new']
     ypix = data['y_new']
@@ -217,7 +217,7 @@ for currregion in skyrange:
         os.remove('../Dunmaps/im1_'+region+'.fits')
 
     if fec == 1:
-        ascii.write(alldata, '../Dunmaps/fwhm/fec/03-02data/starcat_'+currregion+'mapweight_fec_fwhm.txt', format='ipac')
+        ascii.write(alldata, '../Dunmaps/fwhm/fec/03-20data/starcat_'+currregion+'mapweight_fec_fwhm.txt', format='ipac')
 
 
 
