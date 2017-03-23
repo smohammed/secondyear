@@ -1868,3 +1868,9 @@ plt.ylabel('M$_{G}$')
 
 plt.colorbar().set_label('dist [pc]')
 plt.show()
+
+
+
+plt.scatter(c2['nuv_mag']-c2['phot_g_mean_mag'], c2['FE_H'], edgecolor='none')
+
+plt.scatter(c1['nuv_mag']-c1['phot_g_mean_mag'], c1['FE_H'], edgecolor='none')

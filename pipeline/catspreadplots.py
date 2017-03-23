@@ -7,8 +7,8 @@ from astropy.coordinates import SkyCoord, search_around_sky
 from astropy import wcs
 from astroML.plotting import scatter_contour
 import matplotlib, matplotlib.cm as cm
-matplotlib.rcParams['figure.figsize'] = 12, 10
-matplotlib.rcParams['font.size'] = 17
+matplotlib.rcParams['figure.figsize'] = 10, 10
+matplotlib.rcParams['font.size'] = 14
 
 
 # Input parameters
@@ -26,9 +26,8 @@ fec = 1
 #scans = ['253.4', '254.3', '255.2', '256.1', '257.0', '258.8', '259.7', '260.6', '261.5', '263.3', '264.2', '265.1', '266.0', '266.9', '268.7', '269.6', '270.5', '271.4', '272.3', '274.1', '275.0', '275.9', '276.8', '278.6', '279.5', '281.3', '284.0', '285.8', '286.7', '288.5', '290.3', '291.2', '292.1', '293.0', '293.9', '295.7', '297.5', '298.4', '301.1', '302.0', '302.9', '303.8', '304.7', '305.6', '308.3', '310.1', '315.5', '316.4', '317.3', '318.2', '319.1', '320.0', '320.9', '321.8', '322.7', '323.6', '325.4', '326.3', '327.2', '328.1', '329.0', '331.7', '332.6', '333.5', '334.4', '335.3', '338.9', '341.6', '358.7', '359.6']
 
 # fec regions
-#scans = ['0014', '0059', '0203', '0239', '1310', '1607', '3209', '3236']
-#scans = ['0014', '0032', '0059', '0239','0356', '0392', '0203', '0743' 
-scans = ['1103']
+#scans = ['0014', '0032', '0059', '0239','0356', '0392', '0203', '0743', '1103']
+scans = ['0032']
 
 
 # Incomplete scans
@@ -174,7 +173,7 @@ for curregion in skyrange:
     ax1.axvline(x=0, c='red')
     ax1.set_xlim((-3, 3))
     ax1.set_ylim((-3, 3))
-    ax1.set_title('gl (SEx-T2), N = '+str(len(t1ty)))
+    ax1.set_title('gl (SEx-T2), N='+str(len(t1ty)))
     ax1.set_ylabel('gb (SEx-T2)')
 
     # GAIS vs SExtractor NUV comparison
@@ -240,7 +239,7 @@ for curregion in skyrange:
             plt.savefig('../11-21-region'+curregion+'matchplots.png')
 
     if fec == 1:
-        plt.savefig('../images/gaia/03-20-region'+curregion+'matchplots_fec.png')
+        plt.savefig('../images/gaia/03-22-region'+curregion+'matchplots_fec_halfpixfix.png')
 
     #plt.show()
     plt.close()
