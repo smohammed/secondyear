@@ -53,8 +53,8 @@ code = 'det_thresh4_phot_autopar2.5_3.5'
 #########################################################################
 # Decide to run on full or partial scans
 #########################################################################
-run1 = 0
-run2 = 1
+run1 = 1
+run2 = 0
 
 fec = 1
 
@@ -79,7 +79,7 @@ for currregion in skyrange:
     if fec == 0:
         img = fits.open('../Dunmaps/countmaps/count_map_name_'+region+'_gal_sec_in.fits')[0].data
     elif fec == 1:
-        img = fits.open('../fecmaps/03-20/count_map_'+region+'-cal-sec_in_dis.fits')[0].data
+        img = fits.open('../fecmaps/03-27/count_map_'+region+'-cal-sec_in_dis.fits')[0].data
 
     if full == 1:
         im1xmin, im1xmax, im1ymin, im1ymax = 1214, 3950, 3532, 51230
@@ -188,7 +188,7 @@ for currregion in skyrange:
     ypix = data['y_new']
     w = wcs.WCS(hdulist[0].header)
     pixels = np.array([xpix, ypix]).T
-    world = w.wcs_pix2world(pixels, 1)
+    world = w.wcs_pix2world(pixels, 0)
 
     glval, gbval = [], []
 
