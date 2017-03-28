@@ -34,9 +34,9 @@ matplotlib.rcParams['font.size'] = 17
 
 # fec scans
 #scans = ['0014', '0032', '0059', '0203', '0239', '0356', '0392', '0743', '1103']
-#scans = ['0014', '0032', 
+#scans = ['0014'
 
-scans = ['0059', '0203', '0239', '0356']  # These scans supposively has the half pixel fix
+scans = ['0032','0059', '0203', '0239', '0356']  # These scans supposively has the half pixel fix
 
 
 # Incomplete scans
@@ -55,8 +55,8 @@ code = 'det_thresh4_phot_autopar2.5_3.5'
 #########################################################################
 # Decide to run on full or partial scans
 #########################################################################
-run1 = 1
-run2 = 0
+run1 = 0
+run2 = 1
 
 fec = 1
 
