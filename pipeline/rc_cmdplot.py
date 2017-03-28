@@ -13,8 +13,8 @@ cat = 0
 gais = 1
 
 ext = 1
-nuvg = 0
-bv = 1
+nuvg = 1
+bv = 0
 
 if nuvg == 1:
     sgxval = 'nuv_mag'
@@ -43,6 +43,8 @@ if gais == 1:
     sg = fits.open('../gais_tgas_match_dust.fits')[1].data
     sggal = SkyCoord(sg['gl_gais']*u.deg, sg['gb_gais']*u.deg, frame='galactic')
 
+
+'''
 apo = fits.open('../APOKASKRC_TGAS.fits')[1].data
 apogal = SkyCoord(apo['l']*u.deg, apo['b']*u.deg, frame='galactic')
 bov = fits.open('../BovyRC_TGAS.fits')[1].data
@@ -57,6 +59,8 @@ c1.remove_column('phot_g_mean_mag_2')
 c1.rename_column('phot_g_mean_mag_1', 'phot_g_mean_mag')
 c2.remove_column('phot_g_mean_mag_2')
 c2.rename_column('phot_g_mean_mag_1', 'phot_g_mean_mag')
+'''
+c2 = fits.open('../gais_tgas_dust_ness.fits')[1].data
 
 
 cmd = Table.read('../cmdfiles/cmd_merged_zt.txt', format='ascii')
@@ -74,14 +78,14 @@ if bv == 1:
 if ext == 1:
     scatter_contour((sg[sgxval]-sg[sgebv]*avx)-(sg[sgyval]-sg[sgebv]*avy), (sg[sgyval]-sg['distmod']-sg[sgebv]*avy), threshold=threshold, log_counts=True, histogram2d_args=dict(bins=bins), plot_args=dict(color='k', markersize=1, alpha=1), contour_args=dict(cmap=cm.gray))
 
-    plt.scatter((c1[sgxval]-c1[sgebv]*avx)-(c1[sgyval]-c1[sgebv]*avy), c1[sgyval]-c1['distmod']-c1[sgebv]*avy, s=60, edgecolor='none', label='APO', c=c1['FE_H'], vmin=-0.5, vmax=0.35)
+    #plt.scatter((c1[sgxval]-c1[sgebv]*avx)-(c1[sgyval]-c1[sgebv]*avy), c1[sgyval]-c1['distmod']-c1[sgebv]*avy, s=60, edgecolor='none', label='APO', c=c1['FE_H'], vmin=-0.5, vmax=0.35)
     plt.scatter((c2[sgxval]-c2[sgebv]*avx)-(c2[sgyval]-c2[sgebv]*avy), c2[sgyval]-c2['distmod']-c2[sgebv]*avy, s=60, edgecolor='none', label='Bovy', c=c2['FE_H'], vmin=-0.5, vmax=0.35)
 
 if ext == 0:
     scatter_contour(sg[sgxval]-sg[sgyval], sg[sgyval]-sg['distmod'], threshold=threshold, log_counts=True, histogram2d_args=dict(bins=bins), plot_args=dict(color='k', markersize=1, alpha=1), contour_args=dict(cmap=cm.gray))
 
     plt.scatter(c2[sgxval]-c2[sgyval], c2[sgyval]-c2['distmod'], edgecolor='none', s=60, label='Bovy', c=c2['FE_H'], vmin=-0.5, vmax=0.35)
-    plt.scatter(c1[sgxval]-c1[sgyval], c1[sgyval]-c1['distmod'], edgecolor='none', s=60, label='APO', c=c1['FE_H'], vmin=-0.5, vmax=0.35)
+    #plt.scatter(c1[sgxval]-c1[sgyval], c1[sgyval]-c1['distmod'], edgecolor='none', s=60, label='APO', c=c1['FE_H'], vmin=-0.5, vmax=0.35)
 
 '''
 for age in range(len(agerange)):
