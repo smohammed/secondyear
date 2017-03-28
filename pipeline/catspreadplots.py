@@ -26,8 +26,7 @@ fec = 1
 #scans = ['253.4', '254.3', '255.2', '256.1', '257.0', '258.8', '259.7', '260.6', '261.5', '263.3', '264.2', '265.1', '266.0', '266.9', '268.7', '269.6', '270.5', '271.4', '272.3', '274.1', '275.0', '275.9', '276.8', '278.6', '279.5', '281.3', '284.0', '285.8', '286.7', '288.5', '290.3', '291.2', '292.1', '293.0', '293.9', '295.7', '297.5', '298.4', '301.1', '302.0', '302.9', '303.8', '304.7', '305.6', '308.3', '310.1', '315.5', '316.4', '317.3', '318.2', '319.1', '320.0', '320.9', '321.8', '322.7', '323.6', '325.4', '326.3', '327.2', '328.1', '329.0', '331.7', '332.6', '333.5', '334.4', '335.3', '338.9', '341.6', '358.7', '359.6']
 
 # fec regions
-#scans = ['0014', '0032', '0059', '0239','0356', '0392', '0203', '0743', '1103']
-scans = ['0032']
+scans = ['0014', '0032', '0059', '0203', '0239', '0356']
 
 
 # Incomplete scans
@@ -64,7 +63,7 @@ for curregion in skyrange:
         t1 = Table.read('../Dunmaps/fwhm/11-18data/starcat_'+curregion+'mapweight_fwhm.txt', format='ascii')
 
     if fec == 1:
-        t1 = Table.read('../Dunmaps/fwhm/fec/03-20data/starcat_'+curregion+'mapweight_fec_fwhm.txt', format='ascii')
+        t1 = Table.read('../Dunmaps/fwhm/fec/03-27data/starcat_'+curregion+'mapweight_fec_fwhm.txt', format='ascii')
 
     t1.remove_columns(('X_IMAGE', 'Y_IMAGE', 'FLUX_AUTO', 'A_IMAGE', 'B_IMAGE', 'THETA_IMAGE', 'x_new', 'y_new', 'FLUXERR_AUTO', 'FLUX_APER', 'ra', 'dec'))
     t1 = t1[np.where((t1['FWHM_IMAGE'] < 10) & (t1['FWHM_IMAGE'] > 3.5))]
@@ -96,9 +95,9 @@ for curregion in skyrange:
 
     # New fec maps
     if fec == 1:
-        hdulist = fits.open('../fecmaps/03-20/count_map_'+curregion.replace('.', '')+'-cal-sec_in_dis.fits')
+        hdulist = fits.open('../fecmaps/03-27/count_map_'+curregion.replace('.', '')+'-cal-sec_in_dis.fits')
         img = hdulist[0].data
-        expmap = fits.open('../fecmaps/03-20/count_map_'+curregion.replace('.', '')+'-cal-sec_exp_dis.fits')[0].data
+        expmap = fits.open('../fecmaps/03-27/count_map_'+curregion.replace('.', '')+'-cal-sec_exp.fits')[0].data
         bkgd = fits.open('../Dunmaps/background_im1_'+curregion.replace('.', '')+'_fec.fits')[0].data
 
     img = img[im1ymin:im1ymax, im1xmin:im1xmax]
@@ -229,7 +228,7 @@ for curregion in skyrange:
     if curregion == '5':
         plt.suptitle('region = 0.5')
     else:
-        plt.suptitle('region = '+curregion)
+        plt.suptitle('pixfix, '+curregion)
     plt.tight_layout()
 
     if fec == 0:
@@ -239,7 +238,7 @@ for curregion in skyrange:
             plt.savefig('../11-21-region'+curregion+'matchplots.png')
 
     if fec == 1:
-        plt.savefig('../images/gaia/03-22-region'+curregion+'matchplots_fec_halfpixfix.png')
+        plt.savefig('../images/03-20-region'+curregion+'matchplots_fec_halfpixfix.png')
 
     #plt.show()
     plt.close()

@@ -34,7 +34,7 @@ matplotlib.rcParams['font.size'] = 17
 
 # fec scans
 #scans = ['0014', '0032', '0059', '0203', '0239', '0356', '0392', '0743', '1103']
-scans = ['0032']  # This scan supposively has the half pixel fix
+scans = ['0014', '0032', '0059', '0203', '0239', '0356']  # These scans supposively has the half pixel fix
 
 
 # Incomplete scans
@@ -214,7 +214,7 @@ for currregion in skyrange:
         os.remove('../Dunmaps/im1_'+region+'.fits')
 
     if fec == 1:
-        ascii.write(alldata, '../Dunmaps/fwhm/fec/03-20data/starcat_'+currregion+'mapweight_fec_fwhm.txt', format='ipac')
+        ascii.write(alldata, '../Dunmaps/fwhm/fec/03-27data/starcat_'+currregion+'mapweight_fec_fwhm.txt', format='ipac')
 
 
 
