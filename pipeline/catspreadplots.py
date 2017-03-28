@@ -238,7 +238,7 @@ for curregion in skyrange:
             plt.savefig('../11-21-region'+curregion+'matchplots.png')
 
     if fec == 1:
-        plt.savefig('../images/03-20-region'+curregion+'matchplots_fec_halfpixfix.png')
+        plt.savefig('../images/03-27-region'+curregion+'matchplots_fec_halfpixfix.png')
 
     #plt.show()
     plt.close()
