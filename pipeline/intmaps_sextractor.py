@@ -182,7 +182,7 @@ for currregion in skyrange:
     if fec == 0:
         hdulist = fits.open('../Dunmaps/countmaps/count_map_name_'+region+'_gal_sec_in.fits')
     if fec == 1:
-        hdulist = fits.open('../fecmaps/03-20/count_map_'+region+'-cal-sec_in_dis.fits')
+        hdulist = fits.open('../fecmaps/03-27/count_map_'+region+'-cal-sec_in_dis.fits')
 
     xpix = data['x_new']
     ypix = data['y_new']
