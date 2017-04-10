@@ -1747,9 +1747,9 @@ for i in range(len(sg)):
 
 
 
-cols = fits.ColDefs([fits.Column(name='tilenum', format='D', array=comb['tilenum']), fits.Column(name='nuv_mag', format='D', array=comb['nuv_mag']), fits.Column(name='fuv_mag', format='D', array=comb['fuv_mag']), fits.Column(name='glon', format='D', array=comb['glon']), fits.Column(name='glat', format='D', array=comb['glat']), fits.Column(name='ra', format='D', array=comb['ra']), fits.Column(name='dec', format='D', array=comb['dec'])])
+cols = fits.ColDefs([fits.Column(name='tilenum', format='D', array=g['tilenum']), fits.Column(name='nuv_mag', format='D', array=g['nuv_mag']), fits.Column(name='nuv_magerr', format='D', array=g['nuv_magerr']), fits.Column(name='fuv_mag', format='D', array=g['fuv_mag']), fits.Column(name='fuv_magerr', format='D', array=g['fuv_magerr']), fits.Column(name='glon', format='D', array=g['glon']), fits.Column(name='glat', format='D', array=g['glat']), fits.Column(name='ra', format='D', array=g['ra']), fits.Column(name='dec', format='D', array=g['dec'])])
 endtable = fits.BinTableHDU.from_columns(cols)
-endtable.writeto('gais_total.fits')
+endtable.writeto('GAISobjall2.fits')
 
 
 
@@ -1872,5 +1872,73 @@ plt.show()
 
 
 plt.scatter(c2['nuv_mag']-c2['phot_g_mean_mag'], c2['FE_H'], edgecolor='none')
-
 plt.scatter(c1['nuv_mag']-c1['phot_g_mean_mag'], c1['FE_H'], edgecolor='none')
+
+
+for sky in range(0, 360, 2):
+    q = comb[np.where((comb['Glon'] > sky) & (comb['Glon'] < sky+2) & (comb['Glat'] > -10) & (comb['Glat'] < 10))]
+    plt.scatter((q['glon']-q['Glon'])*3600,(q['glat']-q['Glat'])*3600,edgecolor='none', alpha=0.5)
+    plt.axhline(y=0,c='red')
+    plt.axvline(x=0,c='red')
+    plt.xlim((-3,3))
+    plt.ylim((-3,3))
+    plt.xlabel('gl (GAIS-T2)')
+    plt.ylabel('gb (GAIS-T2)')
+    plt.scatter(np.median((q['glon']-q['Glon'])*3600),np.median((q['glat']-q['Glat'])*3600), c='red', s=50)
+    plt.title(str(sky)+'-'+str(sky+2))
+    plt.savefig(str(sky)+'gais_t2.png')
+    plt.clf()
+
+
+
+c2 = fits.open('gais_tgas_dust_ness.fits')[1].data
+
+
+
+#cbarax = 'Fe_H'
+#cbarax = 'lnM'
+#cbarax = 'lnAge'
+cbarax = 'A_FE'
+
+if cbarax == 'Fe_H':
+    vmin = -0.5
+    vmax = .35
+if cbarax == 'lnM':
+    vmin = -0.5
+    vmax = 1.25
+if cbarax == 'lnAge':
+    vmin = -1
+    vmax = 3
+if cbarax == 'A_FE':
+    vmin = -0.05
+    vmax = 0.3
+
+afeval = []
+yaxval = []
+
+for i in range(6, 12):
+    cut = np.where(((c2['nuv_mag']-c2['phot_g_mean_mag']) > i) & ((c2['nuv_mag']-c2['phot_g_mean_mag']) < i+1))
+    afeval.append(np.mean(c2[cut]['FE_H']))
+    yaxval.append(np.mean(c2[cut][cbarax]))
+
+
+plt.scatter(c2['nuv_mag']-c2['phot_g_mean_mag'], c2['FE_H'], edgecolor='none', s=40, c=c2[cbarax], vmin=vmin, vmax=vmax)
+plt.scatter([6.5,7.5,8.5,9.5,10.5, 11.5], afeval, s=100, marker='s', c=yaxval, vmin=vmin, vmax=vmax)
+
+if cbarax == 'Fe_H':
+    plt.colorbar().set_label('Fe/H')
+
+if cbarax == 'lnM':
+    plt.colorbar().set_label('lnM [Msol]')
+
+if cbarax == 'lnAge':
+    plt.colorbar().set_label('lnAge [Stellar age]')
+
+if cbarax == 'A_FE':
+    plt.colorbar().set_label('Alpha/Fe')
+
+plt.xlabel('NUV - G')
+plt.ylabel('Fe/H')
+plt.title('GAIS + TGAS, RC stars')
+plt.xlim((4,12))
+plt.show()
