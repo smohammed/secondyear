@@ -34,7 +34,7 @@ matplotlib.rcParams['font.size'] = 17
 
 # fec scans
 #scans = ['0014', '0032', '0059', '0203', '0239', '0356', '0392', '0743', '1103']
-scans = ['0014', '0032','0059', '0203', '0239', '0356']  # These scans supposively has the half pixel fix
+scans = ['0014', '0032','0059', '0203', '0239']  # These scans supposively has the half pixel fix, as of 04/17
 
 
 # Incomplete scans
@@ -79,7 +79,7 @@ for currregion in skyrange:
     if fec == 0:
         img = fits.open('../Dunmaps/countmaps/count_map_name_'+region+'_gal_sec_in.fits')[0].data
     elif fec == 1:
-        img = fits.open('../fecmaps/03-27/count_map_'+region+'-cal-sec_in_dis.fits')[0].data
+        img = fits.open('../fecmaps/04-17/count_map_'+region+'-cal-sec_in_dis.fits')[0].data
 
     if full == 1:
         im1xmin, im1xmax, im1ymin, im1ymax = 1214, 3950, 3532, 51230
@@ -182,7 +182,7 @@ for currregion in skyrange:
     if fec == 0:
         hdulist = fits.open('../Dunmaps/countmaps/count_map_name_'+region+'_gal_sec_in.fits')
     if fec == 1:
-        hdulist = fits.open('../fecmaps/03-27/count_map_'+region+'-cal-sec_in_dis.fits')
+        hdulist = fits.open('../fecmaps/04-17/count_map_'+region+'-cal-sec_in_dis.fits')
 
     xpix = data['x_new']
     ypix = data['y_new']
@@ -214,7 +214,7 @@ for currregion in skyrange:
         os.remove('../Dunmaps/im1_'+region+'.fits')
 
     if fec == 1:
-        ascii.write(alldata, '../Dunmaps/fwhm/fec/03-31data/starcat_'+currregion+'mapweight_fec_fwhm.txt', format='ipac')
+        ascii.write(alldata, '../Dunmaps/fwhm/fec/04-17data/starcat_'+currregion+'mapweight_fec_fwhm.txt', format='ipac')
 
 
 

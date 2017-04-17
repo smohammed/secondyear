@@ -1847,17 +1847,13 @@ c2.remove_column('phot_g_mean_mag_2')
 c2.rename_column('phot_g_mean_mag_1', 'phot_g_mean_mag')
 
 scatter_contour(sg['nuv_mag']-sg['phot_g_mean_mag'], sg['Mg'], threshold=1000, log_counts=True, histogram2d_args=dict(bins=40), plot_args=dict(color='k', markersize=1, alpha=0.1), contour_args=dict(cmap=cm.gray))
-
 plt.scatter(c2['nuv_mag']-c2['phot_g_mean_mag'], c2['Mg'], edgecolor='none',c=c2['dist'], s=40, vmin=0, vmax=2000, label='RC stars')
-
 plt.scatter(c1['nuv_mag']-c1['phot_g_mean_mag'], c1['Mg'], edgecolor='none', c=c1['dist'], s=40, vmin=0, vmax=2000)
 
 colors = ['']
-
 for i in range(len(dist)):
     plt.axhline(M[i], color='black')
     plt.annotate('D = '+str(dist[i])+' pc', xy=(12, M[i]), size=10)
-
 
 #plt.scatter(mnuv - g, M,c=dist, vmin=0, vmax=5000, s=80, label='m$_{NUV}$ = 20', marker='s')
 plt.legend(scatterpoints=1, loc=3)
@@ -1865,16 +1861,13 @@ plt.xlim((1, 14))
 plt.ylim((8, -3))
 plt.xlabel('NUV - G')
 plt.ylabel('M$_{G}$')
-
 plt.colorbar().set_label('dist [pc]')
 plt.show()
 
 
-
-plt.scatter(c2['nuv_mag']-c2['phot_g_mean_mag'], c2['FE_H'], edgecolor='none')
-plt.scatter(c1['nuv_mag']-c1['phot_g_mean_mag'], c1['FE_H'], edgecolor='none')
-
-
+######################################################################
+# Offset between 2 catalogs
+######################################################################
 for sky in range(0, 360, 2):
     q = comb[np.where((comb['Glon'] > sky) & (comb['Glon'] < sky+2) & (comb['Glat'] > -10) & (comb['Glat'] < 10))]
     plt.scatter((q['glon']-q['Glon'])*3600,(q['glat']-q['Glat'])*3600,edgecolor='none', alpha=0.5)
@@ -1891,9 +1884,27 @@ for sky in range(0, 360, 2):
 
 
 
-c2 = fits.open('gais_tgas_dust_ness.fits')[1].data
+######################################################################
+# CMD with lim mag G = 20
+######################################################################
+sg = fits.open('gais_tgas_match_dust.fits')[1].data
+#sg = fits.open('gais_tgas_tycho_dust.fits')[1].data
+sggal = SkyCoord(sg['gl_gais']*u.deg, sg['gb_gais']*u.deg, frame='galactic')
 
-
+apo = fits.open('APOKASKRC_TGAS.fits')[1].data
+apogal = SkyCoord(apo['l']*u.deg, apo['b']*u.deg, frame='galactic')
+bov = fits.open('BovyRC_TGAS.fits')[1].data
+bovgal = SkyCoord(bov['l']*u.deg, bov['b']*u.deg, frame='galactic')
+sg1ind, apoind, angsep1, ang3d = search_around_sky(sggal, apogal, 3*u.arcsec)
+sg2ind, bovind, angsep2, ang3d = search_around_sky(sggal, bovgal, 3*u.arcsec)
+c1 = hstack([Table(sg)[sg1ind], Table(apo)[apoind]])
+c2 = hstack([Table(sg)[sg2ind], Table(bov)[bovind]])
+c1['angsep'] = angsep1
+c2['angsep'] = angsep2
+c1.remove_column('phot_g_mean_mag_2')
+c1.rename_column('phot_g_mean_mag_1', 'phot_g_mean_mag')
+c2.remove_column('phot_g_mean_mag_2')
+c2.rename_column('phot_g_mean_mag_1', 'phot_g_mean_mag')
 
 #cbarax = 'Fe_H'
 #cbarax = 'lnM'
@@ -1942,3 +1953,17 @@ plt.ylabel('Fe/H')
 plt.title('GAIS + TGAS, RC stars')
 plt.xlim((4,12))
 plt.show()
+
+
+######################################################################
+# fit some data
+######################################################################
+from scipy import stats
+
+x = c2['nuv_mag'] - c2['phot_g_mean_mag']
+y = c2['FE_H']
+
+m, b, rval, pval, stderr = stats.linregress(x, y)
+
+line = m*x + b
+err = np.sqrt(np.sum((line-y)**2/len(y)))

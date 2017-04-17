@@ -25,9 +25,9 @@ fec = 1
 
 #scans = ['253.4', '254.3', '255.2', '256.1', '257.0', '258.8', '259.7', '260.6', '261.5', '263.3', '264.2', '265.1', '266.0', '266.9', '268.7', '269.6', '270.5', '271.4', '272.3', '274.1', '275.0', '275.9', '276.8', '278.6', '279.5', '281.3', '284.0', '285.8', '286.7', '288.5', '290.3', '291.2', '292.1', '293.0', '293.9', '295.7', '297.5', '298.4', '301.1', '302.0', '302.9', '303.8', '304.7', '305.6', '308.3', '310.1', '315.5', '316.4', '317.3', '318.2', '319.1', '320.0', '320.9', '321.8', '322.7', '323.6', '325.4', '326.3', '327.2', '328.1', '329.0', '331.7', '332.6', '333.5', '334.4', '335.3', '338.9', '341.6', '358.7', '359.6']
 
-# fec regions
-scans = ['0014', '0032', '0059', '0203', '0239', '0356']
-#scans = ['0032']
+# fec regions 04/17
+scans = ['0014', '0032', '0059', '0203', '0239']
+
 
 # Incomplete scans
 incscans = ['9.5', '14.9', '79.7', '90.5', '91.4', '103.1', '104.0', '122.9', '127.4', '223.7', '273.2', '283.1', '289.4', '306.5', '309.2', '324.5', '329.9', '338.0', '339.8', '342.5', '343.4', '345.2', '348.8', '349.7', '350.6', '351.5', '352.4', '353.3', '354.2', '355.1', '356.0', '357.8']
@@ -38,7 +38,7 @@ incscandict = dict({'9.5': [1214, 3950, 12318, 52037], '14.9': [1214, 3950, 3532
 #################################################
 tycho = Table(fits.open('../tycho2.fits')[1].data)
 tycho.remove_columns(('RAJ2000', 'DEJ2000', 'TYC1', 'TYC2', 'TYC3', 'pmRA', 'pmDE', 'BTmag', 'e_BTmag', 'VTmag', 'e_VTmag', 'HIP', 'RA_ICRS_', 'DE_ICRS_'))
-galex = Table(fits.open('../GALEXAIS.fits')[1].data)
+galex = Table(fits.open('../GALEXPlane2_smohammed.fit')[1].data)
 galex.remove_columns(('fuv_mag', 'ra', 'dec'))
 galexcut = np.where(galex['nuv_mag'] == -999.)
 galex.remove_rows(galexcut)
@@ -63,7 +63,7 @@ for curregion in skyrange:
         t1 = Table.read('../Dunmaps/fwhm/11-18data/starcat_'+curregion+'mapweight_fwhm.txt', format='ascii')
 
     if fec == 1:
-        t1 = Table.read('../Dunmaps/fwhm/fec/03-31data/starcat_'+curregion+'mapweight_fec_fwhm.txt', format='ascii')
+        t1 = Table.read('../Dunmaps/fwhm/fec/04-17data/starcat_'+curregion+'mapweight_fec_fwhm.txt', format='ascii')
 
     t1.remove_columns(('X_IMAGE', 'Y_IMAGE', 'FLUX_AUTO', 'A_IMAGE', 'B_IMAGE', 'THETA_IMAGE', 'x_new', 'y_new', 'FLUXERR_AUTO', 'FLUX_APER', 'ra', 'dec'))
     t1 = t1[np.where((t1['FWHM_IMAGE'] < 10) & (t1['FWHM_IMAGE'] > 3.5))]
@@ -95,9 +95,9 @@ for curregion in skyrange:
 
     # New fec maps
     if fec == 1:
-        hdulist = fits.open('../fecmaps/03-27/count_map_'+curregion.replace('.', '')+'-cal-sec_in_dis.fits')
+        hdulist = fits.open('../fecmaps/04-17/count_map_'+curregion.replace('.', '')+'-cal-sec_in_dis.fits')
         img = hdulist[0].data
-        expmap = fits.open('../fecmaps/03-27/count_map_'+curregion.replace('.', '')+'-cal-sec_exp.fits')[0].data
+        expmap = fits.open('../fecmaps/04-17/count_map_'+curregion.replace('.', '')+'-cal-sec_exp.fits')[0].data
         bkgd = fits.open('../Dunmaps/background_im1_'+curregion.replace('.', '')+'_fec.fits')[0].data
 
     img = img[im1ymin:im1ymax, im1xmin:im1xmax]
@@ -238,7 +238,7 @@ for curregion in skyrange:
             plt.savefig('../11-21-region'+curregion+'matchplots.png')
 
     if fec == 1:
-        plt.savefig('../images/03-31-region'+curregion+'matchplots_fec_halfpixfix_wcs1.png')
+        plt.savefig('../images/04-17-region'+curregion+'matchplots_fec_halfpixfix.png')
 
     #plt.show()
     plt.close()

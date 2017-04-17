@@ -79,14 +79,19 @@ elif gais == 1:
     #sg = fits.open('../gais_gaia.fits')[1].data
     sg = fits.open('../gais_tgas.fits')[1].data
     sg = Table(sg)
+
     '''
-    sg.rename_column('Gaia_Parallax', 'parallax')
-    sg.rename_column('Gaia_Parallax_Err', 'parallax_error')
-    sg.rename_column('Gaia_G_Mag', 'phot_g_mean_mag')
-    sg.rename_column('ra', 'ra_gais')
-    sg.rename_column('dec', 'dec_gais')
+    #sg.rename_column('Gaia_Parallax', 'parallax')
+    #sg.rename_column('Gaia_Parallax_Err', 'parallax_error')
+    #sg.rename_column('Gaia_G_Mag', 'phot_g_mean_mag')
+    sg.rename_column('ra_1', 'ra_gais')
+    sg.rename_column('dec_1', 'dec_gais')
     sg.rename_column('glon', 'gl_gais')
     sg.rename_column('glat', 'gb_gais')
+    sg.rename_column('ra_2', 'ra_tgas')
+    sg.rename_column('dec_2', 'dec_tgas')
+    sg.rename_column('l', 'gl_tgas')
+    sg.rename_column('b', 'gb_tgas')
     '''
 
     oldpar = sg['parallax']
