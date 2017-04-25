@@ -1910,7 +1910,7 @@ c2.rename_column('phot_g_mean_mag_1', 'phot_g_mean_mag')
 #cbarax = 'Fe_H'
 #cbarax = 'lnM'
 #cbarax = 'lnAge'
-cbarax = 'A_FE'
+cbarax = 'ALPHAFE'
 
 if cbarax == 'Fe_H':
     vmin = -0.5
@@ -1934,7 +1934,10 @@ for i in range(6, 12):
     yaxval.append(np.mean(c2[cut][cbarax]))
 
 
-plt.scatter(c2['nuv_mag']-c2['phot_g_mean_mag'], c2['FE_H'], edgecolor='none', s=40, c=c2[cbarax], vmin=vmin, vmax=vmax)
+plt.scatter(c2['nuv_mag']-c2['phot_g_mean_mag'], c2['FE_H'], edgecolor='none', c=c2['ALPHAFE'], s=40, vmin=vmin, vmax=vmax, **{"zorder":100})
+plt.errorbar(c2['nuv_mag']-c2['phot_g_mean_mag'], c2['FE_H'], xerr=c2['nuv_magerr'], fmt=None, marker=None, mew=0, **{"zorder":0})
+
+
 plt.scatter([6.5,7.5,8.5,9.5,10.5, 11.5], afeval, s=100, marker='s', c=yaxval, vmin=vmin, vmax=vmax)
 
 if cbarax == 'Fe_H':
@@ -1954,6 +1957,21 @@ plt.ylabel('Fe/H')
 plt.title('GAIS + TGAS, RC stars')
 plt.xlim((4,12))
 plt.show()
+
+
+
+plt.scatter(c2['nuv_mag']-c2['phot_g_mean_mag'], c2['FE_H'], edgecolor='none', c=c2['ALPHAFE'], s=40, vmin=-0.05, vmax=0.3, **{"zorder":100})
+plt.scatter(c2['nuv_mag']-c2['phot_g_mean_mag'], c2['FE_H'], edgecolor='none', c=c2['ALPHAFE'], s=40, vmin=-0.05, vmax=0.3, **{"zorder":100})
+
+
+plt.errorbar(c2['nuv_mag']-c2['phot_g_mean_mag'], c2['FE_H'], xerr=c2['nuv_magerr'], yerr=c2['FE_H_ERR'], fmt=None, marker=None, mew=0, **{"zorder":0})
+plt.xlim((6,12))
+plt.xlabel('NUV - G')
+plt.ylabel('Fe/H')
+plt.title('GAIS + Bovy RC stars, no extinction')
+plt.colorbar().set_label('Alpha/Fe')
+plt.show()
+
 
 
 ######################################################################
