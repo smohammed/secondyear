@@ -4,6 +4,7 @@ from astropy.table import Table, hstack
 from astropy import units as u
 from astropy.coordinates import SkyCoord
 from astropy import wcs
+from astropy.wcs import WCS
 import os
 from astropy.convolution import convolve, Gaussian2DKernel
 from matplotlib import pyplot as plt
@@ -34,7 +35,7 @@ matplotlib.rcParams['font.size'] = 17
 
 # fec scans
 #scans = ['0014', '0032', '0059', '0203', '0239', '0356', '0392', '0743', '1103']
-scans = ['0014', '0032','0059', '0203', '0239']  # These scans supposively has the half pixel fix, as of 04/17
+scans = ['0014']#, '0032','0059', '0203', '0239']  # These scans supposively has the half pixel fix, as of 04/17
 
 
 # Incomplete scans
@@ -53,8 +54,8 @@ code = 'det_thresh4_phot_autopar2.5_3.5'
 #########################################################################
 # Decide to run on full or partial scans
 #########################################################################
-run1 = 0
-run2 = 1
+run1 = 1
+run2 = 0
 
 fec = 1
 
@@ -79,7 +80,9 @@ for currregion in skyrange:
     if fec == 0:
         img = fits.open('../Dunmaps/countmaps/count_map_name_'+region+'_gal_sec_in.fits')[0].data
     elif fec == 1:
-        img = fits.open('../fecmaps/04-17/count_map_'+region+'-cal-sec_in_dis.fits')[0].data
+        hdu = fits.open('../fecmaps/04-17/count_map_'+region+'-cal-sec_in_dis.fits')[0]
+        img = hdu.data
+        wcsmap = WCS(hdu.header)
 
     if full == 1:
         im1xmin, im1xmax, im1ymin, im1ymax = 1214, 3950, 3532, 51230
@@ -103,6 +106,7 @@ for currregion in skyrange:
 
         try:
             fits.HDUList([fits.PrimaryHDU(im1)]).writeto('../Dunmaps/im1_'+region+'.fits')
+
         except IOError:
             os.remove('../Dunmaps/im1_'+region+'.fits')
             fits.HDUList([fits.PrimaryHDU(im1)]).writeto('../Dunmaps/im1_'+region+'.fits')
@@ -111,20 +115,29 @@ for currregion in skyrange:
     if fec == 1:
         if run1 == 1:
             img = img[im1ymin:im1ymax, im1xmin:im1xmax]
+            wcsmap = wcsmap[im1ymin:im1ymax, im1xmin:im1xmax]
+            header = wcsmap.to_header()
+
             gauss = Gaussian2DKernel(stddev=3)
             im1 = convolve(img, gauss)
             print 'Smoothing finished'
 
         if run2 == 1:
             img = img[im1ymin:im1ymax, im1xmin:im1xmax]
+            wcsmap = wcsmap[im1ymin:im1ymax, im1xmin:im1xmax]
             bkgd = fits.open('../Dunmaps/background_im1_'+region+'_fec.fits')[0].data
             im1 = img - bkgd
+            header = wcsmap.to_header()
 
         try:
-            fits.HDUList([fits.PrimaryHDU(im1)]).writeto('../Dunmaps/im1_'+region+'_fec.fits')
+            #fits.HDUList([fits.PrimaryHDU(im1)]).writeto('../Dunmaps/im1_'+region+'_fec.fits')
+            fits.writeto('../Dunmaps/im1_'+region+'_fec.fits', im1, header, clobber=True)
+
         except IOError:
             os.remove('../Dunmaps/im1_'+region+'_fec.fits')
-            fits.HDUList([fits.PrimaryHDU(im1)]).writeto('../Dunmaps/im1_'+region+'_fec.fits')
+            #fits.HDUList([fits.PrimaryHDU(im1)]).writeto('../Dunmaps/im1_'+region+'_fec.fits')
+            fits.writeto('../Dunmaps/im1_'+region+'_fec.fits', im1, header, clobber=True)
+
 
     print 'im1 saved'
 
@@ -154,7 +167,7 @@ for currregion in skyrange:
     print 'SExtractor finished'
 
     #########################################################################
-    # Get output from sextractor, convert to gl, gb, NUV
+    # Get output from sextractor, convert NUV
     #########################################################################
     if fec == 0:
         im1sex = Table.read('../Dunmaps/sex_im1_'+region+'_fwhm.fits', format='fits')
@@ -174,7 +187,6 @@ for currregion in skyrange:
 
     data = data[~np.isnan(data['nuv'])]
 
-    print 'Converted coordinates to gl/gb'
 
     #########################################################################
     # Get WCS info
@@ -184,8 +196,10 @@ for currregion in skyrange:
     if fec == 1:
         hdulist = fits.open('../fecmaps/04-17/count_map_'+region+'-cal-sec_in_dis.fits')
 
+    '''
     xpix = data['x_new']
     ypix = data['y_new']
+
     w = wcs.WCS(hdulist[0].header)
     pixels = np.array([xpix, ypix]).T
     world = w.wcs_pix2world(pixels, 1)
@@ -195,7 +209,16 @@ for currregion in skyrange:
     for i in range(len(world)):
         glval.append(world[i][0])
         gbval.append(world[i][1])
+    '''
 
+    skygal = SkyCoord(data['ALPHA_J2000'], data['DELTA_J2000'], frame='icrs').galactic
+    coord = Table([skygal.l.degree, skygal.b.degree], names=('gl', 'gb'))
+    if region == '5':
+        coord['gl'][np.where(coord['gl'] > 350)] = coord['gl'][np.where(coord['gl'] > 350)] - 360
+
+    alldata = hstack([data, coord])
+
+    '''
     if region == '5':
         for i in range(len(glval)):
             if glval[i] > 350:
@@ -207,6 +230,7 @@ for currregion in skyrange:
 
     coord = Table([glval, gbval, raval, decval], names=('gl', 'gb', 'ra', 'dec'))
     alldata = hstack([data, coord])
+    '''
 
     if fec == 0:
         ascii.write(alldata, '../Dunmaps/fwhm/11-18data/starcat_'+currregion+'mapweight_fwhm.txt', format='ipac')
@@ -216,6 +240,4 @@ for currregion in skyrange:
     if fec == 1:
         ascii.write(alldata, '../Dunmaps/fwhm/fec/04-17data/starcat_'+currregion+'mapweight_fec_fwhm.txt', format='ipac')
 
-
-
-    print 'Added WCS info, finished'
+    print 'Converted to gl, gb, finished'

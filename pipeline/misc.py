@@ -1761,14 +1761,15 @@ gaiagal = SkyCoord(gaia['ra']*u.deg, gaia['dec']*u.deg, frame='icrs')
 gaisind, gaiaind, angsep, ang3d = search_around_sky(gaisgal, gaiagal, 3*u.arcsec)
 comb = hstack([Table(gais[gaisind]), Table(gaia[gaiaind])])
 
-comb.remove_columns(('solution_id', 'source_id', 'random_index', 'ref_epoch', 'astrometric_n_obs_al', 'astrometric_n_obs_ac', 'astrometric_n_good_obs_al', 'astrometric_n_good_obs_ac', 'astrometric_n_bad_obs_al', 'astrometric_n_bad_obs_ac', 'astrometric_delta_q', 'astrometric_excess_noise', 'astrometric_excess_noise_sig', 'astrometric_primary_flag', 'astrometric_relegation_factor', 'astrometric_weight_al', 'astrometric_weight_ac', 'astrometric_priors_used', 'matched_observations', 'duplicated_source', 'scan_direction_strength_k1', 'scan_direction_strength_k2', 'scan_direction_strength_k3', 'scan_direction_strength_k4', 'scan_direction_mean_k1', 'scan_direction_mean_k2', 'scan_direction_mean_k3', 'scan_direction_mean_k4', 'phot_g_n_obs', 'phot_g_mean_flux', 'phot_g_mean_flux_error'))
+comb.remove_columns(('solution_id', 'source_id', 'random_index', 'ref_epoch', 'astrometric_n_obs_al', 'astrometric_n_obs_ac', 'astrometric_n_good_obs_al', 'astrometric_n_good_obs_ac', 'astrometric_n_bad_obs_al', 'astrometric_n_bad_obs_ac', 'astrometric_delta_q', 'astrometric_excess_noise', 'astrometric_excess_noise_sig', 'astrometric_primary_flag', 'astrometric_relegation_factor', 'astrometric_weight_al', 'astrometric_weight_ac', 'astrometric_priors_used', 'matched_observations', 'duplicated_source', 'scan_direction_strength_k1', 'scan_direction_strength_k2', 'scan_direction_strength_k3', 'scan_direction_strength_k4', 'scan_direction_mean_k1', 'scan_direction_mean_k2', 'scan_direction_mean_k3', 'scan_direction_mean_k4', 'phot_g_n_obs'))
 
-comb.rename_column('ra', 'ra_gaia')
-comb.rename_column('dec', 'dec_gaia')
-comb.rename_column('b', 'gb_gaia')
-comb.rename_column('l', 'gl_gaia')
+comb.rename_column('ra', 'ra_tgas')
+comb.rename_column('dec', 'dec_tgas')
+comb.rename_column('b', 'gb_tgas')
+comb.rename_column('l', 'gl_tgas')
 comb['angsep'] = angsep
-ascii.write(comb, 'gais_gaia.txt', format='ipac')
+
+ascii.write(comb, 'gais_tgas.txt', format='ipac')
 
 
 ######################################################################
@@ -1967,3 +1968,55 @@ m, b, rval, pval, stderr = stats.linregress(x, y)
 
 line = m*x + b
 err = np.sqrt(np.sum((line-y)**2/len(y)))
+
+
+
+ cols = fits.ColDefs([fits.Column(name='nuv_mag', format='D', array=comb['nuv_mag']), fits.Column(name='nuv_magerr', format='D', array=comb['nuv_magerr']), fits.Column(name='fuv_mag', format='D', array=comb['fuv_mag']), fits.Column(name='fuv_magerr', format='D', array=comb['fuv_magerr']), fits.Column(name='gl_gais', format='D', array=comb['gl_gais']), fits.Column(name='gb_gais', format='D', array=comb['gb_gais']), fits.Column(name='ra_gais', format='D', array=comb['ra_gais']), fits.Column(name='dec_gais', format='D', array=comb['dec_gais'])])
+endtable = fits.BinTableHDU.from_columns(cols)
+endtable.writeto('GAISobjall2.fits')
+
+
+galex = fits.open('GAIS_total_new.fits')[1].data
+galexgal = SkyCoord(galex['gl_gais']*u.deg, galex['gb_gais']*u.deg, frame='galactic')
+tgas = fits.open('gaia-tycho.fits')[1].datatgas
+tgasgal = SkyCoord(tgas['l']*u.deg, tgas['b']*u.deg, frame='galactic')
+galexind, tgasind, angsep, ang3d = search_around_sky(galexgal, tgasgal, 3*u.arcsec)
+comb.rename_column('ra', 'ra_tgas')
+comb.rename_column('dec', 'dec_tgas')
+comb.rename_column('b', 'gb_tgas')
+comb.rename_column('l', 'gl_tgas')
+comb['angsep'] = angsep
+comb = hstack([Table(galex[galexind]),Table(tgas[tgasind])])
+
+cols = fits.ColDefs([fits.Column(name='nuv_mag', format='D', array=comb['nuv_mag']), fits.Column(name='nuv_magerr', format='D', array=comb['nuv_magerr']), fits.Column(name='fuv_mag', format='D', array=comb['fuv_mag']), fits.Column(name='fuv_magerr', format='D', array=comb['fuv_magerr']), fits.Column(name='gl_gais', format='D', array=comb['gl_gais']), fits.Column(name='gb_gais', format='D', array=comb['gb_gais']), fits.Column(name='ra_gais', format='D', array=comb['ra_gais']), fits.Column(name='dec_gais', format='D', array=comb['dec_gais']),fits.Column(name='hip', format='J', array=comb['hip']),fits.Column(name='tycho2_id', format='12A', array=comb['tycho2_id']),fits.Column(name='ra_tgas', format='D', array=comb['ra_tgas']),fits.Column(name='ra_error', format='D', array=comb['ra_error']),fits.Column(name='dec_tgas', format='D', array=comb['dec_tgas']),fits.Column(name='dec_error', format='D', array=comb['dec_error']),fits.Column(name='parallax', format='D', array=comb['parallax']),fits.Column(name='parallax_error', format='D', array=comb['parallax_error']),fits.Column(name='pmra', format='D', array=comb['pmra']),fits.Column(name='pmra_error', format='D', array=comb['pmra_error']),fits.Column(name='pmdec', format='D', array=comb['pmdec']),fits.Column(name='pmdec_error', format='D', array=comb['pmdec_error']),fits.Column(name='ra_dec_corr', format='E', array=comb['ra_dec_corr']),fits.Column(name='ra_parallax_corr', format='E', array=comb['ra_parallax_corr']),fits.Column(name='ra_pmra_corr', format='E', array=comb['ra_pmra_corr']),fits.Column(name='ra_pmdec_corr', format='E', array=comb['ra_pmdec_corr']),fits.Column(name='dec_parallax_corr', format='E', array=comb['dec_parallax_corr']),fits.Column(name='dec_pmra_corr', format='E', array=comb['dec_pmra_corr']),fits.Column(name='dec_pmdec_corr', format='E', array=comb['dec_pmdec_corr']),fits.Column(name='parallax_pmra_corr', format='E', array=comb['parallax_pmra_corr']),fits.Column(name='parallax_pmdec_corr', format='E', array=comb['parallax_pmdec_corr']),fits.Column(name='pmra_pmdec_corr', format='E', array=comb['pmra_pmdec_corr']),fits.Column(name='phot_g_mean_flux', format='D', array=comb['phot_g_mean_flux']),fits.Column(name='phot_g_mean_flux_error', format='D', array=comb['phot_g_mean_flux_error']),fits.Column(name='phot_g_mean_mag', format='D', array=comb['phot_g_mean_mag']),fits.Column(name='phot_variable_flag', format='13A', array=comb['phot_variable_flag']),fits.Column(name='gl_tgas', format='D', array=comb['gl_tgas']),fits.Column(name='gb_tgas', format='D', array=comb['gb_tgas']),fits.Column(name='ecl_lon', format='D', array=comb['ecl_lon']),fits.Column(name='ecl_lat', format='D', array=comb['ecl_lat']), fits.Column(name='angsep', format='D', array=comb['angsep'])])
+endtable = fits.BinTableHDU.from_columns(cols)
+endtable.writeto('gais_tgas.fits')
+
+
+
+dust = fits.open('gais_tgas_dust.fits')[1].data
+tycho = fits.open('tycho2.fits')[1].data
+dustgal = SkyCoord(dust['ra_tgas']*u.deg, dust['dec_tgas']*u.deg, frame='icrs')
+tychogal = SkyCoord(tycho['RAJ2000']*u.deg, tycho['DEJ2000']*u.deg, frame='icrs')
+dustind, tychoind, angsep, ang3d = search_around_sky(dustgal, tychogal, 3*u.arcsec)
+d2 = dust[dustind]
+t2 = tycho[tychoind]
+comb = hstack([Table(d2), Table(t2)])
+comb.remove_columns(('TYC1', 'TYC2', 'TYC3', 'HIP', 'DE_ICRS_', 'RA_ICRS_'))
+comb['MNUV'] = comb['nuv_mag'] - comb['distmod']
+comb['angsep_tgasty'] = angsep
+V = comb['VTmag'] - 0.09 * (comb['BTmag']-comb['VTmag'])
+B = comb['VTmag'] + 0.085 * (comb['BTmag']-comb['VTmag'])
+Verr = comb['e_VTmag'] - 0.09 * (comb['e_BTmag']-comb['e_VTmag'])
+Berr = comb['e_VTmag'] + 0.085 * (comb['e_BTmag']-comb['e_VTmag'])
+VAB = V - 0.044
+BAB = B - 0.163
+BABerr = Berr - 0.163
+VABerr = Verr - 0.044
+comb['B_AB'] = BAB
+comb['B_ABerr'] = BABerr
+comb['V_AB'] = VAB
+comb['V_ABerr'] = VABerr
+Gerr = np.sqrt((-2.5/(np.log(10)*comb['phot_g_mean_flux']))**2 * comb['phot_g_mean_flux_error']**2)
+comb['Gerr'] = Gerr
+ascii.write(comb, 'gais_tgas_tycho_dust', frame='ipac')
