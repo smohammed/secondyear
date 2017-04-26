@@ -1798,18 +1798,18 @@ c1.rename_column('phot_g_mean_mag_1', 'phot_g_mean_mag')
 c2.remove_column('phot_g_mean_mag_2')
 c2.rename_column('phot_g_mean_mag_1', 'phot_g_mean_mag')
 
-scatter_contour(sg['nuv_mag']-sg['phot_g_mean_mag'], sg['Mnuv'], threshold=1000, log_counts=True, histogram2d_args=dict(bins=40), plot_args=dict(color='k', markersize=1, alpha=0.1), contour_args=dict(cmap=cm.gray))
+scatter_contour(sg['nuv_mag']-sg['phot_g_mean_mag'], sg['MNUV'], threshold=1000, log_counts=True, histogram2d_args=dict(bins=40), plot_args=dict(color='k', markersize=1, alpha=0.1), contour_args=dict(cmap=cm.gray))
 
 plt.scatter(c2['nuv_mag']-c2['phot_g_mean_mag'], c2['MNUV'], edgecolor='none',c=c2['dist'], s=40, vmin=0, vmax=2000, label='RC stars')
 
 plt.scatter(c1['nuv_mag']-c1['phot_g_mean_mag'], c1['MNUV'], edgecolor='none', c=c1['dist'], s=40, vmin=0, vmax=2000)
 
 colors = ['']
-
+'''
 for i in range(len(dist)):
     plt.axhline(M[i], color='black')
     plt.annotate('D = '+str(dist[i])+' pc', xy=(12, M[i]), size=10)
-
+'''
 
 #plt.scatter(mnuv - g, M,c=dist, vmin=0, vmax=5000, s=80, label='m$_{NUV}$ = 20', marker='s')
 plt.legend(scatterpoints=1, loc=3)
@@ -1888,8 +1888,8 @@ for sky in range(0, 360, 2):
 ######################################################################
 # CMD with lim mag G = 20
 ######################################################################
-sg = fits.open('gais_tgas_match_dust.fits')[1].data
-#sg = fits.open('gais_tgas_tycho_dust.fits')[1].data
+#sg = fits.open('gais_tgas_match_dust.fits')[1].data
+sg = fits.open('gais_tgas_tycho_dust.fits')[1].data
 sggal = SkyCoord(sg['gl_gais']*u.deg, sg['gb_gais']*u.deg, frame='galactic')
 
 apo = fits.open('APOKASKRC_TGAS.fits')[1].data
@@ -1921,7 +1921,7 @@ if cbarax == 'lnM':
 if cbarax == 'lnAge':
     vmin = -1
     vmax = 3
-if cbarax == 'A_FE':
+if cbarax == 'ALPHAFE':
     vmin = -0.05
     vmax = 0.3
 
@@ -1949,7 +1949,7 @@ if cbarax == 'lnM':
 if cbarax == 'lnAge':
     plt.colorbar().set_label('lnAge [Stellar age]')
 
-if cbarax == 'A_FE':
+if cbarax == 'ALPHAFE':
     plt.colorbar().set_label('Alpha/Fe')
 
 plt.xlabel('NUV - G')
@@ -1960,15 +1960,32 @@ plt.show()
 
 
 
-plt.scatter(c2['nuv_mag']-c2['phot_g_mean_mag'], c2['FE_H'], edgecolor='none', c=c2['ALPHAFE'], s=40, vmin=-0.05, vmax=0.3, **{"zorder":100})
-plt.scatter(c2['nuv_mag']-c2['phot_g_mean_mag'], c2['FE_H'], edgecolor='none', c=c2['ALPHAFE'], s=40, vmin=-0.05, vmax=0.3, **{"zorder":100})
+#plt.scatter(c2['nuv_mag']-c2['phot_g_mean_mag'], c2['FE_H'], edgecolor='none', c=c2['ALPHAFE'], s=80, vmin=-0.05, vmax=0.3, **{"zorder":100})
+#plt.errorbar(c2['nuv_mag']-c2['phot_g_mean_mag'], c2['FE_H'], xerr=c2['nuv_magerr']-c2['Gerr'], yerr=c2['FE_H_ERR'], fmt=None, marker=None, mew=0, **{"zorder":0})
 
+plt.scatter((c2['nuv_mag']-c2['ebv']*7.24)-(c2['phot_g_mean_mag']-c2['ebv']*3.303), c2['FE_H'], edgecolor='none', c=c2['ALPHAFE'], s=80, vmin=-0.05, vmax=0.3, **{"zorder":100})
+plt.errorbar((c2['nuv_mag']-c2['ebv']*7.24)-(c2['phot_g_mean_mag']-c2['ebv']*3.303), c2['FE_H'], xerr=c2['nuv_magerr']-c2['Gerr'], yerr=c2['FE_H_ERR'], fmt=None, marker=None, mew=0, **{"zorder":0})
 
-plt.errorbar(c2['nuv_mag']-c2['phot_g_mean_mag'], c2['FE_H'], xerr=c2['nuv_magerr'], yerr=c2['FE_H_ERR'], fmt=None, marker=None, mew=0, **{"zorder":0})
 plt.xlim((6,12))
-plt.xlabel('NUV - G')
+#plt.xlabel('NUV - G')
+plt.xlabel('(NUV - E$_{B-V}$ * 7.24) - (G - E$_{B-V}$ * 3.303)')
 plt.ylabel('Fe/H')
-plt.title('GAIS + Bovy RC stars, no extinction')
+#plt.title('GAIS + Bovy RC stars, no extinction')
+plt.colorbar().set_label('Alpha/Fe')
+plt.show()
+
+
+plt.scatter(c2['B_AB']-c2['V_AB'], c2['FE_H'], edgecolor='none', c=c2['ALPHAFE'], s=80, vmin=-0.05, vmax=0.3, **{"zorder":100})
+plt.errorbar(c2['B_AB']-c2['V_AB'], c2['FE_H'], xerr=c2['B_ABerr']-c2['V_ABerr'], yerr=c2['FE_H_ERR'], fmt=None, marker=None, mew=0, **{"zorder":0})
+
+#plt.scatter((c2['B_AB']-c2['ebv']*3.626)-(c2['V_AB']-c2['ebv']*2.742), c2['FE_H'], edgecolor='none', c=c2['ALPHAFE'], s=80, vmin=-0.05, vmax=0.3, **{"zorder":100})
+#plt.errorbar((c2['B_AB']-c2['ebv']*3.626)-(c2['V_AB']-c2['ebv']*2.742), c2['FE_H'], xerr=c2['B_ABerr']-c2['V_ABerr'], yerr=c2['FE_H_ERR'], fmt=None, marker=None, mew=0, **{"zorder":0})
+
+#plt.xlim((-1, 0.4))
+plt.xlabel('B - V')
+#plt.xlabel('(B - E$_{B-V}$ * 3.626) - (V - E$_{B-V}$ * 2.742)')
+plt.ylabel('Fe/H')
+#plt.title('GAIS + Bovy RC stars, no extinction')
 plt.colorbar().set_label('Alpha/Fe')
 plt.show()
 
@@ -2037,4 +2054,9 @@ comb['V_AB'] = VAB
 comb['V_ABerr'] = VABerr
 Gerr = np.sqrt((-2.5/(np.log(10)*comb['phot_g_mean_flux']))**2 * comb['phot_g_mean_flux_error']**2)
 comb['Gerr'] = Gerr
-ascii.write(comb, 'gais_tgas_tycho_dust', frame='ipac')
+#ascii.write(comb, 'gais_tgas_tycho_dust.txt', format='basic')
+
+cols = fits.ColDefs([fits.Column(name='nuv_mag', format='D', array=comb['nuv_mag']), fits.Column(name='nuv_magerr', format='D', array=comb['nuv_magerr']), fits.Column(name='fuv_mag', format='D', array=comb['fuv_mag']), fits.Column(name='fuv_magerr', format='D', array=comb['fuv_magerr']), fits.Column(name='gl_gais', format='D', array=comb['gl_gais']), fits.Column(name='gb_gais', format='D', array=comb['gb_gais']), fits.Column(name='ra_gais', format='D', array=comb['ra_gais']), fits.Column(name='dec_gais', format='D', array=comb['dec_gais']), fits.Column(name='hip', format='K', array=comb['hip']), fits.Column(name='tycho2_id', format='13A', array=comb['tycho2_id']), fits.Column(name='ra_tgas', format='D', array=comb['ra_tgas']), fits.Column(name='ra_error', format='D', array=comb['ra_error']), fits.Column(name='dec_tgas', format='D', array=comb['dec_tgas']), fits.Column(name='dec_error', format='D', array=comb['dec_error']), fits.Column(name='parallax', format='D', array=comb['parallax']), fits.Column(name='parallax_error', format='D', array=comb['parallax_error']), fits.Column(name='pmra', format='D', array=comb['pmra']), fits.Column(name='pmra_error', format='D', array=comb['pmra_error']), fits.Column(name='pmdec', format='D', array=comb['pmdec']), fits.Column(name='pmdec_error', format='D', array=comb['pmdec_error']), fits.Column(name='ra_dec_corr', format='E', array=comb['ra_dec_corr']), fits.Column(name='ra_parallax_corr', format='D', array=comb['ra_parallax_corr']), fits.Column(name='ra_pmra_corr', format='D', array=comb['ra_pmra_corr']), fits.Column(name='ra_pmdec_corr', format='D', array=comb['ra_pmdec_corr']), fits.Column(name='dec_parallax_corr', format='D', array=comb['dec_parallax_corr']), fits.Column(name='dec_pmra_corr', format='D', array=comb['dec_pmra_corr']), fits.Column(name='dec_pmdec_corr', format='D', array=comb['dec_pmdec_corr']), fits.Column(name='parallax_pmra_corr', format='D', array=comb['parallax_pmra_corr']), fits.Column(name='parallax_pmdec_corr', format='D', array=comb['parallax_pmdec_corr']), fits.Column(name='pmra_pmdec_corr', format='D', array=comb['pmra_pmdec_corr']), fits.Column(name='phot_g_mean_mag', format='D', array=comb['phot_g_mean_mag']), fits.Column(name='Gerr', format='D', array=comb['Gerr']), fits.Column(name='phot_g_mean_flux', format='D', array=comb['phot_g_mean_flux']), fits.Column(name='phot_g_mean_flux_error', format='D', array=comb['phot_g_mean_flux_error']), fits.Column(name='phot_variable_flag', format='19A', array=comb['phot_variable_flag']), fits.Column(name='gl_tgas', format='D', array=comb['gl_tgas']), fits.Column(name='gb_tgas', format='D', array=comb['gb_tgas']), fits.Column(name='ecl_lon', format='D', array=comb['ecl_lon']), fits.Column(name='ecl_lat', format='D', array=comb['ecl_lat']), fits.Column(name='angsep', format='D', array=comb['angsep']), fits.Column(name='dist', format='D', array=comb['dist']), fits.Column(name='distmod', format='D', array=comb['distmod']), fits.Column(name='Mg', format='D', array=comb['Mg']), fits.Column(name='ebv', format='D', array=comb['ebv']), fits.Column(name='parallax_hogg', format='D', array=comb['parallax_hogg']), fits.Column(name='B_AB', format='D', array=comb['B_AB']), fits.Column(name='B_ABerr', format='D', array=comb['B_ABerr']), fits.Column(name='V_AB', format='D', array=comb['V_AB']), fits.Column(name='V_ABerr', format='D', array=comb['V_ABerr']), fits.Column(name='MNUV', format='D', array=comb['MNUV']), fits.Column(name='MB', format='D', array=comb['B_AB']-comb['distmod']), fits.Column(name='MV', format='D', array=comb['V_AB']-comb['distmod'])])
+
+
+

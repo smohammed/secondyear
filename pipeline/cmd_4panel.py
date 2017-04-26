@@ -12,14 +12,13 @@ matplotlib.rcParams['font.size'] = 18
 cat = 0
 gais = 1
 
-ext = 1
 distcut = 1
 
-cbarax = 'Fe_H'
+cbarax = 'FE_H'
 #cbarax = 'lnM'
 #cbarax = 'lnAge'
 
-if cbarax == 'Fe_H':
+if cbarax == 'FE_H':
     vmin = -0.5
     vmax = .35
 
@@ -39,10 +38,10 @@ if cat == 1:
     sggal = SkyCoord(sg['gl_sex']*u.deg, sg['gb_sex']*u.deg, frame='galactic')
 
 if gais == 1:
-    sg = fits.open('../gais_tgas_match_dust.fits')[1].data
+    sg = fits.open('../gais_tgas_tycho_dust.fits')[1].data
+    sg = sg[~np.isnan(sg['ebv'])]
     sggal = SkyCoord(sg['gl_gais']*u.deg, sg['gb_gais']*u.deg, frame='galactic')
 
-'''
 apo = fits.open('../APOKASKRC_TGAS.fits')[1].data
 apogal = SkyCoord(apo['l']*u.deg, apo['b']*u.deg, frame='galactic')
 bov = fits.open('../BovyRC_TGAS.fits')[1].data
@@ -57,9 +56,8 @@ c1.remove_column('phot_g_mean_mag_2')
 c1.rename_column('phot_g_mean_mag_1', 'phot_g_mean_mag')
 c2.remove_column('phot_g_mean_mag_2')
 c2.rename_column('phot_g_mean_mag_1', 'phot_g_mean_mag')
-'''
 
-c2 = fits.open('../gais_tgas_dust_ness.fits')[1].data
+#c2 = fits.open('../gais_tgas_dust_ness.fits')[1].data
 
 
 cmd = Table.read('../cmdfiles/cmd_merged_zt.txt', format='ascii')
@@ -113,27 +111,29 @@ axes[0, 0].scatter(c2['B_AB']-c2['V_AB'], c2['MV'], s=40, edgecolor='none', labe
 
 
 axes[1, 0].set_xlabel('(B - E$_{B-V}$ * 3.626) - (V - E$_{B-V}$ * 2.742)')
-axes[1, 1].set_xlabel('(NUV - E$_{B-V}$ * 7.76) - (G - E$_{B-V}$ * 7.76)')
+axes[1, 1].set_xlabel('(NUV - E$_{B-V}$ * 7.24) - (G - E$_{B-V}$ * 3.303)')
 
 axes[1, 0].set_ylabel('M$_{\lambda}$ - E$_{B-V}$ * A$_{\lambda}$')
 axes[0, 0].set_ylabel('M$_{\lambda}$')
 
-axes[0, 0].text(-0.9, 7.8, '$\lambda$ = V, E$_{B-V}$ = 0')
+axes[0, 0].text(-0.4, 7.8, '$\lambda$ = V, E$_{B-V}$ = 0')
 axes[0, 1].text(1.1, 7.8, '$\lambda$ = G, E$_{B-V}$ = 0')
 
-axes[1, 0].text(-0.9, 7.8, '$\lambda$ = V, A$_{\lambda}$ = 2.742')
+axes[1, 0].text(-0.4, 7.8, '$\lambda$ = V, A$_{\lambda}$ = 2.742')
 axes[1, 1].text(1.1, 7.8, '$\lambda$ = G, A$_{\lambda}$ = 3.303')
 
+'''
 if distcut == 1:
     plt.suptitle('GAIS + TGAS, GSF extinction with Ness+16 RC stars, 170 < pc < 2100')
 
 if distcut == 0:
-    plt.suptitle('GAIS + TGAS, GSF extinction with Ness+16 RC stars')
+    plt.suptitle('GAIS + TGAS, GSF extinction with Bovy+14 RC stars')
+'''
 
 fig.subplots_adjust(right=0.84)
 cbar_ax = fig.add_axes([0.85, 0.15, 0.04, 0.7])
 
-if cbarax == 'Fe_H':
+if cbarax == 'FE_H':
     fig.colorbar(cbar, cax=cbar_ax, label='Fe/H')
 if cbarax == 'lnM':
     fig.colorbar(cbar, cax=cbar_ax, label='lnM [Msol]')
@@ -150,20 +150,12 @@ axes[0, 1].get_xaxis().set_ticklabels([])
 
 axes[1, 1].set_xlim((1, 11.5))
 axes[1, 1].set_ylim((7.99, -3))
-axes[1, 1].set_xlim((1, 11.5))
-axes[1, 1].set_ylim((7.99, -3))
-axes[0, 1].set_xlim((1, 11.5))
-axes[0, 1].set_ylim((7.99, -3))
 axes[0, 1].set_xlim((1, 11.5))
 axes[0, 1].set_ylim((7.99, -3))
 
-axes[1, 0].set_xlim((-1, 1.99))
+axes[1, 0].set_xlim((-0.4, 0.3))
 axes[1, 0].set_ylim((7.99, -3))
-axes[1, 0].set_xlim((-1, 1.99))
-axes[1, 0].set_ylim((7.99, -3))
-axes[0, 0].set_xlim((-1, 1.99))
-axes[0, 0].set_ylim((7.99, -3))
-axes[0, 0].set_xlim((-1, 1.99))
+axes[0, 0].set_xlim((-0.4, 0.3))
 axes[0, 0].set_ylim((7.99, -3))
 
 plt.show()

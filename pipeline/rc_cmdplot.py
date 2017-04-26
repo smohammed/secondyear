@@ -41,6 +41,7 @@ if cat == 1:
 
 if gais == 1:
     sg = fits.open('../gais_tgas_match_dust.fits')[1].data
+
     sggal = SkyCoord(sg['gl_gais']*u.deg, sg['gb_gais']*u.deg, frame='galactic')
 
 
