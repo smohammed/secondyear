@@ -1932,12 +1932,8 @@ for i in range(6, 12):
     cut = np.where(((c2['nuv_mag']-c2['phot_g_mean_mag']) > i) & ((c2['nuv_mag']-c2['phot_g_mean_mag']) < i+1))
     afeval.append(np.mean(c2[cut]['FE_H']))
     yaxval.append(np.mean(c2[cut][cbarax]))
-
-
 plt.scatter(c2['nuv_mag']-c2['phot_g_mean_mag'], c2['FE_H'], edgecolor='none', c=c2['ALPHAFE'], s=40, vmin=vmin, vmax=vmax, **{"zorder":100})
 plt.errorbar(c2['nuv_mag']-c2['phot_g_mean_mag'], c2['FE_H'], xerr=c2['nuv_magerr'], fmt=None, marker=None, mew=0, **{"zorder":0})
-
-
 plt.scatter([6.5,7.5,8.5,9.5,10.5, 11.5], afeval, s=100, marker='s', c=yaxval, vmin=vmin, vmax=vmax)
 
 if cbarax == 'Fe_H':
@@ -1959,22 +1955,51 @@ plt.xlim((4,12))
 plt.show()
 
 
+# Separating thin vs thick disk
+m = (0.095-.23)/(0+0.8)
+b = 0.95
+thick, = np.where((c2['ALPHAFE'] > 0.08) & (c2['ALPHAFE'] > (m*c2['FE_H'] + b)))
+thin, = np.where((c2['ALPHAFE'] < 0.08) | (c2['ALPHAFE'] < (m*c2['FE_H'] + b)))
 
-#plt.scatter(c2['nuv_mag']-c2['phot_g_mean_mag'], c2['FE_H'], edgecolor='none', c=c2['ALPHAFE'], s=80, vmin=-0.05, vmax=0.3, **{"zorder":100})
-#plt.errorbar(c2['nuv_mag']-c2['phot_g_mean_mag'], c2['FE_H'], xerr=c2['nuv_magerr']-c2['Gerr'], yerr=c2['FE_H_ERR'], fmt=None, marker=None, mew=0, **{"zorder":0})
 
-plt.scatter((c2['nuv_mag']-c2['ebv']*7.24)-(c2['phot_g_mean_mag']-c2['ebv']*3.303), c2['FE_H'], edgecolor='none', c=c2['ALPHAFE'], s=80, vmin=-0.05, vmax=0.3, **{"zorder":100})
-plt.errorbar((c2['nuv_mag']-c2['ebv']*7.24)-(c2['phot_g_mean_mag']-c2['ebv']*3.303), c2['FE_H'], xerr=c2['nuv_magerr']-c2['Gerr'], yerr=c2['FE_H_ERR'], fmt=None, marker=None, mew=0, **{"zorder":0})
+fig, (ax1, ax2) = plt.subplots(1, 2, sharey=True)
+cmap = ax1.scatter(c2['nuv_mag']-c2['phot_g_mean_mag'], c2['FE_H'], edgecolor='none', c=c2['ALPHAFE'], s=40, vmin=-0.05, vmax=0.3, **{"zorder":100})
+ax1.errorbar(c2['nuv_mag']-c2['phot_g_mean_mag'], c2['FE_H'], xerr=c2['nuv_magerr']-c2['Gerr'], yerr=c2['FE_H_ERR'], fmt=None, marker=None, mew=0, **{"zorder":0})
 
-plt.xlim((6,12))
-#plt.xlabel('NUV - G')
-plt.xlabel('(NUV - E$_{B-V}$ * 7.24) - (G - E$_{B-V}$ * 3.303)')
-plt.ylabel('Fe/H')
-#plt.title('GAIS + Bovy RC stars, no extinction')
-plt.colorbar().set_label('Alpha/Fe')
+ax2.scatter((c2['nuv_mag']-c2['ebv']*7.24)-(c2['phot_g_mean_mag']-c2['ebv']*3.303), c2['FE_H'], edgecolor='none', c=c2['ALPHAFE'], s=40, vmin=-0.05, vmax=0.3, **{"zorder":100})
+ax2.errorbar((c2['nuv_mag']-c2['ebv']*7.24)-(c2['phot_g_mean_mag']-c2['ebv']*3.303), c2['FE_H'], xerr=c2['nuv_magerr']-c2['Gerr'], yerr=c2['FE_H_ERR'], fmt=None, marker=None, mew=0, **{"zorder":0})
+
+ax1.set_xlim((5,12))
+ax2.set_xlim((5,12))
+ax1.set_xlabel('NUV - G')
+ax2.set_xlabel('(NUV - E$_{B-V}$ * 7.24) - (G - E$_{B-V}$ * 3.303)')
+ax1.set_ylabel('Fe/H')
+fig.subplots_adjust(wspace=0)
+fig.subplots_adjust(right=.84)
+cbar_ax = fig.add_axes([0.85, 0.1, 0.03, 0.8])
+ax2.set_xticklabels([' ', '6', '7', '8', '9', '10', '11', '12'])
+fig.colorbar(cmap, cax=cbar_ax).set_label('Alpha/Fe')
 plt.show()
 
 
+
+plt.scatter(((c2['nuv_mag']-c2['ebv']*7.24)-(c2['phot_g_mean_mag']-c2['ebv']*3.303))[thin], c2['FE_H'][thin], s=80, c=c2['ALPHAFE'][thin], label='thin', vmin=-0.05, vmax=0.3)
+
+plt.scatter(((c2['nuv_mag']-c2['ebv']*7.24)-(c2['phot_g_mean_mag']-c2['ebv']*3.303))[thick], c2['FE_H'][thick], c=c2['ALPHAFE'][thick], s=80, marker='s', label='thick', vmin=-.05, vmax=0.3)
+
+plt.xlabel('(NUV - E$_{B-V}$ * 7.24) - (G - E$_{B-V}$ * 3.303)')
+plt.ylabel('Fe/H')
+plt.colorbar().set_label('Alpha/Fe')
+plt.legend(scatterpoints=1, loc=2)
+plt.show()
+
+
+
+
+
+
+
+# B - V version
 plt.scatter(c2['B_AB']-c2['V_AB'], c2['FE_H'], edgecolor='none', c=c2['ALPHAFE'], s=80, vmin=-0.05, vmax=0.3, **{"zorder":100})
 plt.errorbar(c2['B_AB']-c2['V_AB'], c2['FE_H'], xerr=c2['B_ABerr']-c2['V_ABerr'], yerr=c2['FE_H_ERR'], fmt=None, marker=None, mew=0, **{"zorder":0})
 
@@ -2059,4 +2084,22 @@ comb['Gerr'] = Gerr
 cols = fits.ColDefs([fits.Column(name='nuv_mag', format='D', array=comb['nuv_mag']), fits.Column(name='nuv_magerr', format='D', array=comb['nuv_magerr']), fits.Column(name='fuv_mag', format='D', array=comb['fuv_mag']), fits.Column(name='fuv_magerr', format='D', array=comb['fuv_magerr']), fits.Column(name='gl_gais', format='D', array=comb['gl_gais']), fits.Column(name='gb_gais', format='D', array=comb['gb_gais']), fits.Column(name='ra_gais', format='D', array=comb['ra_gais']), fits.Column(name='dec_gais', format='D', array=comb['dec_gais']), fits.Column(name='hip', format='K', array=comb['hip']), fits.Column(name='tycho2_id', format='13A', array=comb['tycho2_id']), fits.Column(name='ra_tgas', format='D', array=comb['ra_tgas']), fits.Column(name='ra_error', format='D', array=comb['ra_error']), fits.Column(name='dec_tgas', format='D', array=comb['dec_tgas']), fits.Column(name='dec_error', format='D', array=comb['dec_error']), fits.Column(name='parallax', format='D', array=comb['parallax']), fits.Column(name='parallax_error', format='D', array=comb['parallax_error']), fits.Column(name='pmra', format='D', array=comb['pmra']), fits.Column(name='pmra_error', format='D', array=comb['pmra_error']), fits.Column(name='pmdec', format='D', array=comb['pmdec']), fits.Column(name='pmdec_error', format='D', array=comb['pmdec_error']), fits.Column(name='ra_dec_corr', format='E', array=comb['ra_dec_corr']), fits.Column(name='ra_parallax_corr', format='D', array=comb['ra_parallax_corr']), fits.Column(name='ra_pmra_corr', format='D', array=comb['ra_pmra_corr']), fits.Column(name='ra_pmdec_corr', format='D', array=comb['ra_pmdec_corr']), fits.Column(name='dec_parallax_corr', format='D', array=comb['dec_parallax_corr']), fits.Column(name='dec_pmra_corr', format='D', array=comb['dec_pmra_corr']), fits.Column(name='dec_pmdec_corr', format='D', array=comb['dec_pmdec_corr']), fits.Column(name='parallax_pmra_corr', format='D', array=comb['parallax_pmra_corr']), fits.Column(name='parallax_pmdec_corr', format='D', array=comb['parallax_pmdec_corr']), fits.Column(name='pmra_pmdec_corr', format='D', array=comb['pmra_pmdec_corr']), fits.Column(name='phot_g_mean_mag', format='D', array=comb['phot_g_mean_mag']), fits.Column(name='Gerr', format='D', array=comb['Gerr']), fits.Column(name='phot_g_mean_flux', format='D', array=comb['phot_g_mean_flux']), fits.Column(name='phot_g_mean_flux_error', format='D', array=comb['phot_g_mean_flux_error']), fits.Column(name='phot_variable_flag', format='19A', array=comb['phot_variable_flag']), fits.Column(name='gl_tgas', format='D', array=comb['gl_tgas']), fits.Column(name='gb_tgas', format='D', array=comb['gb_tgas']), fits.Column(name='ecl_lon', format='D', array=comb['ecl_lon']), fits.Column(name='ecl_lat', format='D', array=comb['ecl_lat']), fits.Column(name='angsep', format='D', array=comb['angsep']), fits.Column(name='dist', format='D', array=comb['dist']), fits.Column(name='distmod', format='D', array=comb['distmod']), fits.Column(name='Mg', format='D', array=comb['Mg']), fits.Column(name='ebv', format='D', array=comb['ebv']), fits.Column(name='parallax_hogg', format='D', array=comb['parallax_hogg']), fits.Column(name='B_AB', format='D', array=comb['B_AB']), fits.Column(name='B_ABerr', format='D', array=comb['B_ABerr']), fits.Column(name='V_AB', format='D', array=comb['V_AB']), fits.Column(name='V_ABerr', format='D', array=comb['V_ABerr']), fits.Column(name='MNUV', format='D', array=comb['MNUV']), fits.Column(name='MB', format='D', array=comb['B_AB']-comb['distmod']), fits.Column(name='MV', format='D', array=comb['V_AB']-comb['distmod'])])
 
 
+
+##########################################
+# Alpha/Fe vs Fe/H slope
+##########################################
+m = (0.095-.23)/(0+0.8)
+b = 0.95
+thick,= np.where((c2['ALPHAFE'] > 0.08) & (c2['ALPHAFE'] > (m*c2['FE_H'] + b)))
+thin,= np.where((c2['ALPHAFE'] < 0.08) | (c2['ALPHAFE'] < (m*c2['FE_H'] + b)))
+
+plt.scatter(((c2['nuv_mag']-c2['ebv']*7.24)-(c2['phot_g_mean_mag']-c2['ebv']*3.303))[thin], c2['FE_H'][thin], s=80, c=c2['ALPHAFE'][thin], label='thin', vmin=-0.05, vmax=0.3)
+
+plt.scatter(((c2['nuv_mag']-c2['ebv']*7.24)-(c2['phot_g_mean_mag']-c2['ebv']*3.303))[thick], c2['FE_H'][thick], c=c2['ALPHAFE'][thick], s=80, marker='s', label='thick', vmin=-.05, vmax=0.3)
+
+plt.xlabel('(NUV - E$_{B-V}$ * 7.24) - (G - E$_{B-V}$ * 3.303)')
+plt.ylabel('Fe/H')
+plt.colorbar().set_label('Alpha/Fe')
+plt.legend(scatterpoints=1, loc=2)
+plt.show()
 
