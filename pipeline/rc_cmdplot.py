@@ -113,7 +113,7 @@ for age in range(len(agerange)):
 if nuvg == 1:
     if ext == 1:
         plt.xlabel('(NUV - E$_{B-V}$ * 7.24) - (G - E$_{B-V}$ * 3.303)')
-        plt.ylabel('M$_{NUV}$ - E$_{B-V}$ * 7.24')
+        plt.ylabel('M$_{G}$ - E$_{B-V}$ * 3.303')
 
         if cat == 1:
             plt.title('S+G, GSF15 ext with RC stars')

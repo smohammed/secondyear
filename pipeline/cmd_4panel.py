@@ -12,7 +12,7 @@ matplotlib.rcParams['font.size'] = 18
 cat = 0
 gais = 1
 
-distcut = 1
+distcut = 0
 
 cbarax = 'FE_H'
 #cbarax = 'lnM'
@@ -109,18 +109,25 @@ scatter_contour(sg['B_AB']-sg['V_AB'], sg['MV'], threshold=bvth, log_counts=True
 #axes[0, 0].scatter(c1['B_AB']-c1['V_AB'], c1['MV'], s=40, edgecolor='none', label='APO', c=c1[cbarax], vmin=vmin, vmax=vmax)
 axes[0, 0].scatter(c2['B_AB']-c2['V_AB'], c2['MV'], s=40, edgecolor='none', label='APO', c=c2[cbarax], vmin=vmin, vmax=vmax)
 
-
+'''
 axes[1, 0].set_xlabel('(B - E$_{B-V}$ * 3.626) - (V - E$_{B-V}$ * 2.742)')
 axes[1, 1].set_xlabel('(NUV - E$_{B-V}$ * 7.24) - (G - E$_{B-V}$ * 3.303)')
-
 axes[1, 0].set_ylabel('M$_{\lambda}$ - E$_{B-V}$ * A$_{\lambda}$')
 axes[0, 0].set_ylabel('M$_{\lambda}$')
-
 axes[0, 0].text(-0.4, 7.8, '$\lambda$ = V, E$_{B-V}$ = 0')
 axes[0, 1].text(1.1, 7.8, '$\lambda$ = G, E$_{B-V}$ = 0')
-
 axes[1, 0].text(-0.4, 7.8, '$\lambda$ = V, A$_{\lambda}$ = 2.742')
 axes[1, 1].text(1.1, 7.8, '$\lambda$ = G, A$_{\lambda}$ = 3.303')
+'''
+
+axes[1, 0].set_xlabel('B$_0$ - V$_0$')
+axes[1, 1].set_xlabel('NUV$_0$ - G$_0$')
+axes[1, 0].set_ylabel('M$_{\lambda_0}$')
+axes[0, 0].set_ylabel('M$_{\lambda}$')
+axes[0, 0].text(-0.4, 7.8, '$\lambda$ = V, E$_{B-V}$ = 0')
+axes[0, 1].text(1.1, 7.8, '$\lambda$ = G, E$_{B-V}$ = 0')
+axes[1, 0].text(-0.4, 7.8, '$\lambda$ = V')
+axes[1, 1].text(1.1, 7.8, '$\lambda$ = G')
 
 '''
 if distcut == 1:

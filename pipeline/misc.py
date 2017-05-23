@@ -1830,6 +1830,7 @@ M = mg - 5*np.log10(dist) + 5
 g = np.linspace(20, 0, 10)
 
 sg = fits.open('gais_tgas_match_dust.fits')[1].data
+sg = sg[~np.isnan(sg['ebv'])]
 sggal = SkyCoord(sg['gl_gais']*u.deg, sg['gb_gais']*u.deg, frame='galactic')
 
 apo = fits.open('APOKASKRC_TGAS.fits')[1].data
@@ -1890,6 +1891,7 @@ for sky in range(0, 360, 2):
 ######################################################################
 #sg = fits.open('gais_tgas_match_dust.fits')[1].data
 sg = fits.open('gais_tgas_tycho_dust.fits')[1].data
+sg = sg[~np.isnan(sg['ebv'])]
 sggal = SkyCoord(sg['gl_gais']*u.deg, sg['gb_gais']*u.deg, frame='galactic')
 
 apo = fits.open('APOKASKRC_TGAS.fits')[1].data
@@ -1957,23 +1959,31 @@ plt.show()
 
 # Separating thin vs thick disk
 m = (0.095-.23)/(0+0.8)
-b = 0.95
+b = 0.095
 thick, = np.where((c2['ALPHAFE'] > 0.08) & (c2['ALPHAFE'] > (m*c2['FE_H'] + b)))
 thin, = np.where((c2['ALPHAFE'] < 0.08) | (c2['ALPHAFE'] < (m*c2['FE_H'] + b)))
 
 
 fig, (ax1, ax2) = plt.subplots(1, 2, sharey=True)
-cmap = ax1.scatter(c2['nuv_mag']-c2['phot_g_mean_mag'], c2['FE_H'], edgecolor='none', c=c2['ALPHAFE'], s=40, vmin=-0.05, vmax=0.3, **{"zorder":100})
-ax1.errorbar(c2['nuv_mag']-c2['phot_g_mean_mag'], c2['FE_H'], xerr=c2['nuv_magerr']-c2['Gerr'], yerr=c2['FE_H_ERR'], fmt=None, marker=None, mew=0, **{"zorder":0})
+cmap = ax1.scatter((c2['nuv_mag']-c2['phot_g_mean_mag'])[thin], c2['FE_H'][thin], c=c2['ALPHAFE'][thin], s=120, vmin=-0.05, vmax=0.3, label='Thin disk', marker='D', **{"zorder":100})
+ax1.errorbar((c2['nuv_mag']-c2['phot_g_mean_mag'])[thin], c2['FE_H'][thin], xerr=(c2['nuv_magerr']-c2['Gerr'])[thin], yerr=c2['FE_H_ERR'][thin], ecolor='black', fmt=None, marker=None, mew=0, elinewidth=1.3, **{"zorder":0})
+ax1.scatter((c2['nuv_mag']-c2['phot_g_mean_mag'])[thick], c2['FE_H'][thick], c=c2['ALPHAFE'][thick], s=120, vmin=-0.05, vmax=0.3, label='Thick disk', marker='s', **{"zorder":100})
+ax1.errorbar((c2['nuv_mag']-c2['phot_g_mean_mag'])[thick], c2['FE_H'][thick], xerr=(c2['nuv_magerr']-c2['Gerr'])[thick], yerr=c2['FE_H_ERR'][thick], ecolor='black', fmt=None, marker=None, mew=0, elinewidth=1.3, **{"zorder":0})
 
-ax2.scatter((c2['nuv_mag']-c2['ebv']*7.24)-(c2['phot_g_mean_mag']-c2['ebv']*3.303), c2['FE_H'], edgecolor='none', c=c2['ALPHAFE'], s=40, vmin=-0.05, vmax=0.3, **{"zorder":100})
-ax2.errorbar((c2['nuv_mag']-c2['ebv']*7.24)-(c2['phot_g_mean_mag']-c2['ebv']*3.303), c2['FE_H'], xerr=c2['nuv_magerr']-c2['Gerr'], yerr=c2['FE_H_ERR'], fmt=None, marker=None, mew=0, **{"zorder":0})
+ax2.scatter(((c2['nuv_mag']-c2['ebv']*7.24)-(c2['phot_g_mean_mag']-c2['ebv']*3.303))[thin], c2['FE_H'][thin], c=c2['ALPHAFE'][thin], s=120, vmin=-0.05, vmax=0.3, marker='D', **{"zorder":100})
+ax2.errorbar(((c2['nuv_mag']-c2['ebv']*7.24)-(c2['phot_g_mean_mag']-c2['ebv']*3.303))[thin], c2['FE_H'][thin], xerr=(c2['nuv_magerr']-c2['Gerr'])[thin], yerr=c2['FE_H_ERR'][thin], ecolor='black', fmt=None, marker=None, mew=0, elinewidth=1.3, **{"zorder":0})
+
+ax2.scatter(((c2['nuv_mag']-c2['ebv']*7.24)-(c2['phot_g_mean_mag']-c2['ebv']*3.303))[thick], c2['FE_H'][thick], c=c2['ALPHAFE'][thick], s=120, vmin=-0.05, vmax=0.3, marker='s', **{"zorder":100})
+ax2.errorbar(((c2['nuv_mag']-c2['ebv']*7.24)-(c2['phot_g_mean_mag']-c2['ebv']*3.303))[thick], c2['FE_H'][thick], xerr=(c2['nuv_magerr']-c2['Gerr'])[thick], yerr=c2['FE_H_ERR'][thick], ecolor='black', fmt=None, marker=None, mew=0, elinewidth=1.3, **{"zorder":0})
+
 
 ax1.set_xlim((5,12))
 ax2.set_xlim((5,12))
 ax1.set_xlabel('NUV - G')
-ax2.set_xlabel('(NUV - E$_{B-V}$ * 7.24) - (G - E$_{B-V}$ * 3.303)')
+#ax2.set_xlabel('(NUV - E$_{B-V}$ * 7.24) - (G - E$_{B-V}$ * 3.303)')
+ax2.set_xlabel('NUV$_0$ - G$_{0}$')
 ax1.set_ylabel('Fe/H')
+ax1.legend(scatterpoints=1, loc=2)
 fig.subplots_adjust(wspace=0)
 fig.subplots_adjust(right=.84)
 cbar_ax = fig.add_axes([0.85, 0.1, 0.03, 0.8])
@@ -2089,7 +2099,7 @@ cols = fits.ColDefs([fits.Column(name='nuv_mag', format='D', array=comb['nuv_mag
 # Alpha/Fe vs Fe/H slope
 ##########################################
 m = (0.095-.23)/(0+0.8)
-b = 0.95
+b = 0.095
 thick,= np.where((c2['ALPHAFE'] > 0.08) & (c2['ALPHAFE'] > (m*c2['FE_H'] + b)))
 thin,= np.where((c2['ALPHAFE'] < 0.08) | (c2['ALPHAFE'] < (m*c2['FE_H'] + b)))
 
@@ -2097,9 +2107,15 @@ plt.scatter(((c2['nuv_mag']-c2['ebv']*7.24)-(c2['phot_g_mean_mag']-c2['ebv']*3.3
 
 plt.scatter(((c2['nuv_mag']-c2['ebv']*7.24)-(c2['phot_g_mean_mag']-c2['ebv']*3.303))[thick], c2['FE_H'][thick], c=c2['ALPHAFE'][thick], s=80, marker='s', label='thick', vmin=-.05, vmax=0.3)
 
-plt.xlabel('(NUV - E$_{B-V}$ * 7.24) - (G - E$_{B-V}$ * 3.303)')
+#plt.xlabel('(NUV - E$_{B-V}$ * 7.24) - (G - E$_{B-V}$ * 3.303)')
+plt.xlabel('NUV$_0$ - G$_{0}')
 plt.ylabel('Fe/H')
 plt.colorbar().set_label('Alpha/Fe')
 plt.legend(scatterpoints=1, loc=2)
 plt.show()
+
+
+
+
+((c2['nuv_mag']-c2['ebv']*7.24)-(c2['phot_g_mean_mag']-c2['ebv']*3.303))[thick]
 
