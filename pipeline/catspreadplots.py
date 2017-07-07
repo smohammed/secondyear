@@ -26,8 +26,10 @@ fec = 1
 #scans = ['253.4', '254.3', '255.2', '256.1', '257.0', '258.8', '259.7', '260.6', '261.5', '263.3', '264.2', '265.1', '266.0', '266.9', '268.7', '269.6', '270.5', '271.4', '272.3', '274.1', '275.0', '275.9', '276.8', '278.6', '279.5', '281.3', '284.0', '285.8', '286.7', '288.5', '290.3', '291.2', '292.1', '293.0', '293.9', '295.7', '297.5', '298.4', '301.1', '302.0', '302.9', '303.8', '304.7', '305.6', '308.3', '310.1', '315.5', '316.4', '317.3', '318.2', '319.1', '320.0', '320.9', '321.8', '322.7', '323.6', '325.4', '326.3', '327.2', '328.1', '329.0', '331.7', '332.6', '333.5', '334.4', '335.3', '338.9', '341.6', '358.7', '359.6']
 
 # fec regions 04/17
-scans = ['0014', '0032', '0059', '0203', '0239']
+#scans = ['0014', '0032', '0059', '0203', '0239']
 
+# region from 06/21
+scans = ['0239']
 
 # Incomplete scans
 incscans = ['9.5', '14.9', '79.7', '90.5', '91.4', '103.1', '104.0', '122.9', '127.4', '223.7', '273.2', '283.1', '289.4', '306.5', '309.2', '324.5', '329.9', '338.0', '339.8', '342.5', '343.4', '345.2', '348.8', '349.7', '350.6', '351.5', '352.4', '353.3', '354.2', '355.1', '356.0', '357.8']
@@ -63,10 +65,12 @@ for curregion in skyrange:
         t1 = Table.read('../Dunmaps/fwhm/11-18data/starcat_'+curregion+'mapweight_fwhm.txt', format='ascii')
 
     if fec == 1:
-        t1 = Table.read('../Dunmaps/fwhm/fec/04-17data/starcat_'+curregion+'mapweight_fec_fwhm.txt', format='ascii')
+        t1 = Table.read('../Dunmaps/fwhm/fec/06-30data/starcat_'+curregion+'mapweight_fec_fwhm.txt', format='ascii')
 
-    t1.remove_columns(('X_IMAGE', 'Y_IMAGE', 'FLUX_AUTO', 'A_IMAGE', 'B_IMAGE', 'THETA_IMAGE', 'x_new', 'y_new', 'FLUXERR_AUTO', 'FLUX_APER', 'ra', 'dec'))
-    t1 = t1[np.where((t1['FWHM_IMAGE'] < 10) & (t1['FWHM_IMAGE'] > 3.5))]
+    #t1.remove_columns(('X_IMAGE', 'Y_IMAGE', 'FLUX_AUTO', 'A_IMAGE', 'B_IMAGE', 'THETA_IMAGE', 'x_new', 'y_new', 'FLUXERR_AUTO', 'FLUX_APER'))
+    #t1 = t1[np.where((t1['FWHM_IMAGE'] < 10) & (t1['FWHM_IMAGE'] > 3.5) & (t1['FLUX_AUTO'] > 0))]
+    t1 = t1[np.where((t1['FLUX_AUTO'] > 0))]
+
     t1gal = SkyCoord(t1['gl']*u.deg, t1['gb']*u.deg, frame='galactic')
     t1tyind, tychoind, angsepty, ang3d = search_around_sky(t1gal, tychogal, 3*u.arcsec)
     t1ty = hstack([t1[t1tyind], Table(tycho[tychoind])])
@@ -84,6 +88,7 @@ for curregion in skyrange:
 
     print 'SExtractor catalog loaded, matched with Tycho2 and GAIS'
 
+    '''
     #################################################
     # Load maps
     #################################################
@@ -95,9 +100,9 @@ for curregion in skyrange:
 
     # New fec maps
     if fec == 1:
-        hdulist = fits.open('../fecmaps/04-17/count_map_'+curregion.replace('.', '')+'-cal-sec_in_dis.fits')
+        hdulist = fits.open('../fecmaps/06-30/count_map_'+curregion.replace('.', '')+'-cal-sec_in_dis_new_bp.fits')
         img = hdulist[0].data
-        expmap = fits.open('../fecmaps/04-17/count_map_'+curregion.replace('.', '')+'-cal-sec_exp.fits')[0].data
+        expmap = fits.open('../fecmaps/06-30/count_map_'+curregion.replace('.', '')+'-cal-sec_exp_bp.fits')[0].data
         bkgd = fits.open('../Dunmaps/background_im1_'+curregion.replace('.', '')+'_fec.fits')[0].data
 
     img = img[im1ymin:im1ymax, im1xmin:im1xmax]
@@ -149,6 +154,7 @@ for curregion in skyrange:
                 t1ty['gl_tycho'][i] = t1ty['gl_tycho'][i] - 360
 
     print 'maps loaded'
+    '''
 
     #################################################
     # Make histogram for sources
@@ -160,11 +166,11 @@ for curregion in skyrange:
     # Plot everything
     #################################################
     fig = plt.figure()
-    ax1 = plt.subplot2grid((3, 2), (0, 0))
-    ax2 = plt.subplot2grid((3, 2), (0, 1))
-    ax3 = plt.subplot2grid((3, 2), (1, 0))
-    ax4 = plt.subplot2grid((3, 2), (1, 1))
-    ax5 = plt.subplot2grid((3, 2), (2, 0), colspan=2)
+    ax1 = plt.subplot2grid((2, 2), (0, 0))
+    ax2 = plt.subplot2grid((2, 2), (0, 1))
+    ax3 = plt.subplot2grid((2, 2), (1, 0))
+    ax4 = plt.subplot2grid((2, 2), (1, 1))
+    #ax5 = plt.subplot2grid((2, 2), (2, 0), colspan=2)
 
     # Tycho match distance
     ax1.scatter((t1ty['gl_sex']-t1ty['gl_tycho'])*3600, (t1ty['gb_sex']-t1ty['gb_tycho'])*3600, edgecolor='none', alpha=0.2)
@@ -200,13 +206,15 @@ for curregion in skyrange:
     ax3.set_ylabel('counts/area')
 
     # FWHM vs NUV
-    scatter_contour(t1['nuv'], t1['FWHM_IMAGE'], threshold=700, log_counts=True, histogram2d_args=dict(bins=40), plot_args=dict(color='k', markersize=1), contour_args=dict(cmap=cm.gray), ax=ax4)
+    #scatter_contour(t1['nuv'], t1['FWHM_IMAGE'], threshold=700, log_counts=True, histogram2d_args=dict(bins=40), plot_args=dict(color='k', markersize=1), contour_args=dict(cmap=cm.gray), ax=ax4)
+    ax4.scatter(t1['nuv'], t1['FWHM_IMAGE'], edgecolor='none', c='k', s=1)
     ax4.axhline(y=0,  c='red')
     ax4.set_xlim((13, 25))
     ax4.set_ylim((3,  10))
     ax4.set_title('NUV (Only SExtractor),  N = '+str(len(t1)))
     ax4.set_ylabel('FWHM')
 
+    '''
     print len(imggbrange)
     print len(imgvals)
 
@@ -224,6 +232,7 @@ for curregion in skyrange:
     ax5.set_xlabel('gb')
     ax5.set_ylabel('counts')
     ax5.legend(bbox_to_anchor=(0., 1.02, 1., .102), loc=3, ncol=5, mode="expand", borderaxespad=0., fontsize=15)
+    '''
 
     if curregion == '5':
         plt.suptitle('region = 0.5')
@@ -238,7 +247,7 @@ for curregion in skyrange:
             plt.savefig('../11-21-region'+curregion+'matchplots.png')
 
     if fec == 1:
-        plt.savefig('../images/04-17-region'+curregion+'matchplots_fec_halfpixfix.png')
+        plt.savefig('../images/06-30-region'+curregion+'matchplots_fec.png')
 
     #plt.show()
     plt.close()

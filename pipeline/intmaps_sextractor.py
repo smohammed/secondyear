@@ -35,8 +35,8 @@ matplotlib.rcParams['font.size'] = 17
 
 # fec scans
 #scans = ['0014', '0032', '0059', '0203', '0239', '0356', '0392', '0743', '1103']
-scans = ['0014']#, '0032','0059', '0203', '0239']  # These scans supposively has the half pixel fix, as of 04/17
-
+#scans = ['0014']#, '0032','0059', '0203', '0239']  # These scans supposively has the half pixel fix, as of 04/17
+scans = ['0239']  # new fix
 
 # Incomplete scans
 incscans = ['9.5', '14.9', '79.7', '90.5', '91.4', '103.1', '104.0', '122.9', '127.4', '223.7', '273.2', '283.1', '289.4', '306.5', '309.2', '324.5', '329.9', '338.0', '339.8', '342.5', '343.4', '345.2', '348.8', '349.7', '350.6', '351.5', '352.4', '353.3', '354.2', '355.1', '356.0', '357.8']
@@ -54,8 +54,8 @@ code = 'det_thresh4_phot_autopar2.5_3.5'
 #########################################################################
 # Decide to run on full or partial scans
 #########################################################################
-run1 = 1
-run2 = 0
+run1 = 0
+run2 = 1
 
 fec = 1
 
@@ -80,7 +80,7 @@ for currregion in skyrange:
     if fec == 0:
         img = fits.open('../Dunmaps/countmaps/count_map_name_'+region+'_gal_sec_in.fits')[0].data
     elif fec == 1:
-        hdu = fits.open('../fecmaps/04-17/count_map_'+region+'-cal-sec_in_dis.fits')[0]
+        hdu = fits.open('../fecmaps/06-30/count_map_'+region+'-cal-sec_in_dis_sp.fits')[0]
         img = hdu.data
         wcsmap = WCS(hdu.header)
 
@@ -194,7 +194,7 @@ for currregion in skyrange:
     if fec == 0:
         hdulist = fits.open('../Dunmaps/countmaps/count_map_name_'+region+'_gal_sec_in.fits')
     if fec == 1:
-        hdulist = fits.open('../fecmaps/04-17/count_map_'+region+'-cal-sec_in_dis.fits')
+        hdulist = fits.open('../fecmaps/06-30/count_map_'+region+'-cal-sec_in_dis_sp.fits')
 
     '''
     xpix = data['x_new']
@@ -238,6 +238,6 @@ for currregion in skyrange:
         os.remove('../Dunmaps/im1_'+region+'.fits')
 
     if fec == 1:
-        ascii.write(alldata, '../Dunmaps/fwhm/fec/04-17data/starcat_'+currregion+'mapweight_fec_fwhm.txt', format='ipac')
+        ascii.write(alldata, '../Dunmaps/fwhm/fec/06-30data/starcat_'+currregion+'mapweight_fec_fwhm.txt', format='ipac')
 
     print 'Converted to gl, gb, finished'
