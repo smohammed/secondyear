@@ -80,7 +80,7 @@ for currregion in skyrange:
     if fec == 0:
         img = fits.open('../Dunmaps/countmaps/count_map_name_'+region+'_gal_sec_in.fits')[0].data
     elif fec == 1:
-        hdu = fits.open('../fecmaps/06-30/count_map_'+region+'-cal-sec_in_dis_sp.fits')[0]
+        hdu = fits.open('../fecmaps/07-10/count_map_'+region+'-cal-sec-dis-sp_in.fits')[0]
         img = hdu.data
         wcsmap = WCS(hdu.header)
 
@@ -194,7 +194,7 @@ for currregion in skyrange:
     if fec == 0:
         hdulist = fits.open('../Dunmaps/countmaps/count_map_name_'+region+'_gal_sec_in.fits')
     if fec == 1:
-        hdulist = fits.open('../fecmaps/06-30/count_map_'+region+'-cal-sec_in_dis_sp.fits')
+        hdulist = fits.open('../fecmaps/07-10/count_map_'+region+'-cal-sec-dis-sp_in.fits')
 
     '''
     xpix = data['x_new']
@@ -238,6 +238,6 @@ for currregion in skyrange:
         os.remove('../Dunmaps/im1_'+region+'.fits')
 
     if fec == 1:
-        ascii.write(alldata, '../Dunmaps/fwhm/fec/06-30data/starcat_'+currregion+'mapweight_fec_fwhm.txt', format='ipac')
+        ascii.write(alldata, '../Dunmaps/fwhm/fec/07-10data/starcat_'+currregion+'mapweight_fec_fwhm.txt', format='ipac')
 
     print 'Converted to gl, gb, finished'

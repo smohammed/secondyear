@@ -1626,7 +1626,7 @@ plt.show()
 # CMD with lim mag G = 20
 ######################################################################
 #sg = fits.open('gais_tgas_match_dust.fits')[1].data
-sg = fits.open('gais_tgas_tycho_dust.fits')[1].data
+sg = fits.open('gais_tgas_apass_dust.fits')[1].data
 sg = sg[~np.isnan(sg['ebv'])]
 sggal = SkyCoord(sg['gl_gais']*u.deg, sg['gb_gais']*u.deg, frame='galactic')
 
@@ -1788,7 +1788,7 @@ thin,= np.where((comb['ALPHAFE'] < 0.08) | (comb['ALPHAFE'] < (m*comb['FE_H'] + 
 
 color = ((comb['nuv_mag']-comb['ebv']*7.24)-(comb['phot_g_mean_mag']-comb['ebv']*3.303))
 
-plt.scatter(comb['FE_H'][thin], comb['ALPHAFE'][thin], s=80, c=color[thin], label='thin', vmin=7, vmax=11, cmap=viridis)
+plt.scatter(comb['FE_H'][thin], comb['ALPHAFE'][thin], s=80, c=color[thin], label='thin', vmin=7, vmax=11, cmap=viridis, marker='D')
 
 plt.scatter(comb['FE_H'][thick], comb['ALPHAFE'][thick], c=color[thick], s=80, marker='s', label='thick', vmin=7, vmax=11, cmap=viridis)
 
@@ -1807,9 +1807,9 @@ plt.show()
 ######################################################################
 from scipy import stats
 
-x1 = all['nuv_mag'] - all['phot_g_mean_mag']
-x2 = (all['nuv_mag']-all['ebv']*7.24)-(all['phot_g_mean_mag']-all['ebv']*3.303)
-y = all['FE_H']
+x1 = comb['nuv_mag'] - comb['phot_g_mean_mag']
+x2 = (comb['nuv_mag']-comb['ebv']*7.24)-(comb['phot_g_mean_mag']-comb['ebv']*3.303)
+y = comb['FE_H']
 
 m1, b1, rval1, pval1, stderr1 = stats.linregress(x1, y)
 line1 = m1*x1 + b1
@@ -1822,21 +1822,21 @@ err2 = np.sqrt(np.sum((line2-y)**2/len(y)))
 # Separating thin vs thick disk
 m = (0.095-.23)/(0+0.8)
 b = 0.095
-thick, = np.where((all['ALPHAFE'] > 0.08) & (all['ALPHAFE'] > (m*all['FE_H'] + b)))
-thin, = np.where((all['ALPHAFE'] < 0.08) | (all['ALPHAFE'] < (m*all['FE_H'] + b)))
+thick, = np.where((comb['ALPHAFE'] > 0.08) & (comb['ALPHAFE'] > (m*comb['FE_H'] + b)))
+thin, = np.where((comb['ALPHAFE'] < 0.08) | (comb['ALPHAFE'] < (m*comb['FE_H'] + b)))
 
 
 fig, (ax1, ax2) = plt.subplots(1, 2, sharey=True)
-cmap = ax1.scatter((all['nuv_mag']-all['phot_g_mean_mag'])[thin], all['FE_H'][thin], c=all['ALPHAFE'][thin], s=120, vmin=-0.05, vmax=0.3, label='Thin disk', marker='D', cmap='viridis', **{"zorder":5})
-ax1.errorbar((all['nuv_mag']-all['phot_g_mean_mag'])[thin], all['FE_H'][thin], xerr=(all['nuv_magerr']-all['Gerr'])[thin], yerr=all['FE_H_ERR'][thin], ecolor='black', fmt=None, marker=None, mew=0, elinewidth=1.3, **{"zorder":0})
-ax1.scatter((all['nuv_mag']-all['phot_g_mean_mag'])[thick], all['FE_H'][thick], c=all['ALPHAFE'][thick], s=120, vmin=-0.05, vmax=0.3, label='Thick disk', marker='s', cmap='viridis',**{"zorder":5})
-ax1.errorbar((all['nuv_mag']-all['phot_g_mean_mag'])[thick], all['FE_H'][thick], xerr=(all['nuv_magerr']-all['Gerr'])[thick], yerr=all['FE_H_ERR'][thick], ecolor='black', fmt=None, marker=None, mew=0, elinewidth=1.3, **{"zorder":0})
+cmap = ax1.scatter((comb['nuv_mag']-comb['phot_g_mean_mag'])[thin], comb['FE_H'][thin], c=comb['ALPHAFE'][thin], s=120, vmin=-0.05, vmax=0.3, label='Thin disk', marker='D', cmap='viridis', **{"zorder":5})
+ax1.errorbar((comb['nuv_mag']-comb['phot_g_mean_mag'])[thin], comb['FE_H'][thin], xerr=(comb['nuv_magerr']-comb['Gerr'])[thin], yerr=comb['FE_H_ERR'][thin], ecolor='black', fmt=None, marker=None, mew=0, elinewidth=1.3, **{"zorder":0})
+ax1.scatter((comb['nuv_mag']-comb['phot_g_mean_mag'])[thick], comb['FE_H'][thick], c=comb['ALPHAFE'][thick], s=120, vmin=-0.05, vmax=0.3, label='Thick disk', marker='s', cmap='viridis',**{"zorder":5})
+ax1.errorbar((comb['nuv_mag']-comb['phot_g_mean_mag'])[thick], comb['FE_H'][thick], xerr=(comb['nuv_magerr']-comb['Gerr'])[thick], yerr=comb['FE_H_ERR'][thick], ecolor='black', fmt=None, marker=None, mew=0, elinewidth=1.3, **{"zorder":0})
 ax1.plot(x1, line1, linewidth=2, c='black', zorder=10)
 
-ax2.scatter(((all['nuv_mag']-all['ebv']*7.24)-(all['phot_g_mean_mag']-all['ebv']*3.303))[thin], all['FE_H'][thin], c=all['ALPHAFE'][thin], s=120, vmin=-0.05, vmax=0.3, marker='D', cmap='viridis', **{"zorder":5})
-ax2.errorbar(((all['nuv_mag']-all['ebv']*7.24)-(all['phot_g_mean_mag']-all['ebv']*3.303))[thin], all['FE_H'][thin], xerr=(all['nuv_magerr']-all['Gerr'])[thin], yerr=all['FE_H_ERR'][thin], ecolor='black', fmt=None, marker=None, mew=0, elinewidth=1.3, **{"zorder":0})
-ax2.scatter(((all['nuv_mag']-all['ebv']*7.24)-(all['phot_g_mean_mag']-all['ebv']*3.303))[thick], all['FE_H'][thick], c=all['ALPHAFE'][thick], s=120, vmin=-0.05, vmax=0.3, marker='s', cmap='viridis', **{"zorder":5})
-ax2.errorbar(((all['nuv_mag']-all['ebv']*7.24)-(all['phot_g_mean_mag']-all['ebv']*3.303))[thick], all['FE_H'][thick], xerr=(all['nuv_magerr']-all['Gerr'])[thick], yerr=all['FE_H_ERR'][thick], ecolor='black', fmt=None, marker=None, mew=0, elinewidth=1.3, **{"zorder":0})
+ax2.scatter(((comb['nuv_mag']-comb['ebv']*7.24)-(comb['phot_g_mean_mag']-comb['ebv']*3.303))[thin], comb['FE_H'][thin], c=comb['ALPHAFE'][thin], s=120, vmin=-0.05, vmax=0.3, marker='D', cmap='viridis', **{"zorder":5})
+ax2.errorbar(((comb['nuv_mag']-comb['ebv']*7.24)-(comb['phot_g_mean_mag']-comb['ebv']*3.303))[thin], comb['FE_H'][thin], xerr=(comb['nuv_magerr']-comb['Gerr'])[thin], yerr=comb['FE_H_ERR'][thin], ecolor='black', fmt=None, marker=None, mew=0, elinewidth=1.3, **{"zorder":0})
+ax2.scatter(((comb['nuv_mag']-comb['ebv']*7.24)-(comb['phot_g_mean_mag']-comb['ebv']*3.303))[thick], comb['FE_H'][thick], c=comb['ALPHAFE'][thick], s=120, vmin=-0.05, vmax=0.3, marker='s', cmap='viridis', **{"zorder":5})
+ax2.errorbar(((comb['nuv_mag']-comb['ebv']*7.24)-(comb['phot_g_mean_mag']-comb['ebv']*3.303))[thick], comb['FE_H'][thick], xerr=(comb['nuv_magerr']-comb['Gerr'])[thick], yerr=comb['FE_H_ERR'][thick], ecolor='black', fmt=None, marker=None, mew=0, elinewidth=1.3, **{"zorder":0})
 ax2.plot(x2, line2, linewidth=2, c='black', zorder=10)
 
 
@@ -1861,9 +1861,15 @@ plt.show()
 ######################################################################
 fig, (ax1, ax2) = plt.subplots(2, 1)
 
-cmap = ax1.scatter(comb['TEFF'], ((comb['B_apass']-comb['ebv']*3.626)-(comb['V_apass']-comb['ebv']*2.742)), s=80, c=comb['FE_H'], cmap=viridis, vmin=-.5, vmax=.35)
+thick, = np.where((comb['ALPHAFE'] > 0.08) & (comb['ALPHAFE'] > (m*comb['FE_H'] + b)))
+thin, = np.where((comb['ALPHAFE'] < 0.08) | (comb['ALPHAFE'] < (m*comb['FE_H'] + b)))
 
-ax2.scatter(comb['TEFF'], ((comb['nuv_mag']-comb['ebv']*7.24)-(comb['phot_g_mean_mag']-comb['ebv']*3.303)), s=80, c=comb['FE_H'], cmap=viridis, vmin=-.5, vmax=.35)
+
+cmap = ax1.scatter(comb['TEFF'][thin], ((comb['B_apass']-comb['ebv']*3.626)-(comb['V_apass']-comb['ebv']*2.742))[thin], s=80, c=comb['FE_H'][thin], cmap=viridis, vmin=-.5, vmax=.35, marker='D', label='Thin')
+ax1.scatter(comb['TEFF'][thick], ((comb['B_apass']-comb['ebv']*3.626)-(comb['V_apass']-comb['ebv']*2.742))[thick], s=80, c=comb['FE_H'][thick], cmap=viridis, vmin=-.5, vmax=.35, marker='s', label='Thick')
+
+ax2.scatter(comb['TEFF'][thin], ((comb['nuv_mag']-comb['ebv']*7.24)-(comb['phot_g_mean_mag']-comb['ebv']*3.303))[thin], s=80, c=comb['FE_H'][thin], cmap=viridis, vmin=-.5, vmax=.35, marker='D')
+ax2.scatter(comb['TEFF'][thick], ((comb['nuv_mag']-comb['ebv']*7.24)-(comb['phot_g_mean_mag']-comb['ebv']*3.303))[thick], s=80, c=comb['FE_H'][thick], cmap=viridis, vmin=-.5, vmax=.35, marker='s')
 
 #ax1.set_xlabel('T$_{eff}$')
 ax1.set_ylabel('(B - V)$_0$')
@@ -1874,15 +1880,7 @@ ax2.set_ylim((5, 12))
 fig.subplots_adjust(right=.84)
 fig.subplots_adjust(hspace=0)
 ax1.set_xticklabels([])
+ax1.legend(scatterpoints=1)
 cbar_ax = fig.add_axes([0.85, 0.1, 0.03, 0.8])
 plt.colorbar(cmap, cax=cbar_ax).set_label('[Fe/H]')
 plt.show()
-
-
-fig.subplots_adjust(right=.84)
-fig.subplots_adjust(hspace=0)
-ax1.set_xticklabels([])
-cbar_ax = fig.add_axes([0.85, 0.1, 0.03, 0.8])
-plt.colorbar(cmap, cax=cbar_ax).set_label('[Fe/H]')
-plt.show()
-

@@ -65,7 +65,7 @@ for curregion in skyrange:
         t1 = Table.read('../Dunmaps/fwhm/11-18data/starcat_'+curregion+'mapweight_fwhm.txt', format='ascii')
 
     if fec == 1:
-        t1 = Table.read('../Dunmaps/fwhm/fec/06-30data/starcat_'+curregion+'mapweight_fec_fwhm.txt', format='ascii')
+        t1 = Table.read('../Dunmaps/fwhm/fec/07-10data/starcat_'+curregion+'mapweight_fec_fwhm.txt', format='ascii')
 
     #t1.remove_columns(('X_IMAGE', 'Y_IMAGE', 'FLUX_AUTO', 'A_IMAGE', 'B_IMAGE', 'THETA_IMAGE', 'x_new', 'y_new', 'FLUXERR_AUTO', 'FLUX_APER'))
     #t1 = t1[np.where((t1['FWHM_IMAGE'] < 10) & (t1['FWHM_IMAGE'] > 3.5) & (t1['FLUX_AUTO'] > 0))]
@@ -100,9 +100,9 @@ for curregion in skyrange:
 
     # New fec maps
     if fec == 1:
-        hdulist = fits.open('../fecmaps/06-30/count_map_'+curregion.replace('.', '')+'-cal-sec_in_dis_new_bp.fits')
+        hdulist = fits.open('../fecmaps/07-10/count_map_'+curregion.replace('.', '')+'-cal-sec_in_dis_new_bp.fits')
         img = hdulist[0].data
-        expmap = fits.open('../fecmaps/06-30/count_map_'+curregion.replace('.', '')+'-cal-sec_exp_bp.fits')[0].data
+        expmap = fits.open('../fecmaps/07-10/count_map_'+curregion.replace('.', '')+'-cal-sec_exp_bp.fits')[0].data
         bkgd = fits.open('../Dunmaps/background_im1_'+curregion.replace('.', '')+'_fec.fits')[0].data
 
     img = img[im1ymin:im1ymax, im1xmin:im1xmax]
@@ -247,7 +247,7 @@ for curregion in skyrange:
             plt.savefig('../11-21-region'+curregion+'matchplots.png')
 
     if fec == 1:
-        plt.savefig('../images/06-30-region'+curregion+'matchplots_fec.png')
+        plt.savefig('../images/07-10-region'+curregion+'matchplots_fec_doublepix.png')
 
     #plt.show()
     plt.close()
