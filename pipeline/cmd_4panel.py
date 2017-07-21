@@ -160,6 +160,7 @@ if cbarax == 'lnAge':
 fig.subplots_adjust(hspace=0)
 fig.subplots_adjust(wspace=0)
 axes[0, 0].get_xaxis().set_ticklabels([])
+axes[0, 0].get_yaxis().set_ticklabels(['', '6', '4', '2', '0', '-2'])
 axes[0, 1].get_xaxis().set_ticklabels([])
 
 axes[1, 1].set_xlim((1, 11.5))

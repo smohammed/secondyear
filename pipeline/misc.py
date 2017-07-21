@@ -1781,24 +1781,28 @@ cols = fits.ColDefs([fits.Column(name='nuv_mag', format='D', array=comb['nuv_mag
 ##########################################
 # Alpha/Fe vs Fe/H vs NUV - G
 ##########################################
-m = (0.095-.23)/(0+0.8)
+m = (0.095-.21)/(0+0.8)
 b = 0.095
-thick,= np.where((comb['ALPHAFE'] > 0.08) & (comb['ALPHAFE'] > (m*comb['FE_H'] + b)))
-thin,= np.where((comb['ALPHAFE'] < 0.08) | (comb['ALPHAFE'] < (m*comb['FE_H'] + b)))
+thick,= np.where((rc['ALPHAFE'] > 0.08) & (rc['ALPHAFE'] > (m*rc['FE_H'] + b)))
+thin,= np.where((rc['ALPHAFE'] < 0.08) | (rc['ALPHAFE'] < (m*rc['FE_H'] + b)))
 
-color = ((comb['nuv_mag']-comb['ebv']*7.24)-(comb['phot_g_mean_mag']-comb['ebv']*3.303))
+color = ((rc['nuv_mag']-rc['ebv']*7.24)-(rc['phot_g_mean_mag']-rc['ebv']*3.303))
 
-plt.scatter(comb['FE_H'][thin], comb['ALPHAFE'][thin], s=80, c=color[thin], label='thin', vmin=7, vmax=11, cmap=viridis, marker='D')
+plt.scatter(rc['FE_H'][thin], rc['ALPHAFE'][thin], s=80, c=color[thin], label='Thin disk', vmin=7, vmax=11, marker='D')
 
-plt.scatter(comb['FE_H'][thick], comb['ALPHAFE'][thick], c=color[thick], s=80, marker='s', label='thick', vmin=7, vmax=11, cmap=viridis)
+plt.scatter(rc['FE_H'][thick], rc['ALPHAFE'][thick], c=color[thick], s=120, marker='s', label='Thick disk', vmin=7, vmax=11, edgecolor='black', linewidth='2')
 
 #plt.xlabel('(NUV - E$_{B-V}$ * 7.24) - (G - E$_{B-V}$ * 3.303)')
 plt.xlabel('[Fe/H]')
 plt.ylabel(r'[$\alpha$/Fe]')
-plt.xlim((-0.8, 0.5))
+plt.xlim((-0.7, 0.5))
 plt.ylim((-0.05, 0.3))
 plt.colorbar().set_label('(NUV - G)$_0$')
-plt.legend(scatterpoints=1, loc=1)
+leg = plt.legend(scatterpoints=1)
+leg.legendHandles[0].set_color('black')
+leg.legendHandles[1].set_color('black')
+leg.legendHandles[0]._sizes = [150]
+leg.legendHandles[1]._sizes = [150]
 plt.show()
 
 
@@ -1807,9 +1811,12 @@ plt.show()
 ######################################################################
 from scipy import stats
 
-x1 = comb['nuv_mag'] - comb['phot_g_mean_mag']
-x2 = (comb['nuv_mag']-comb['ebv']*7.24)-(comb['phot_g_mean_mag']-comb['ebv']*3.303)
-y = comb['FE_H']
+rc = Table.read('rcall_match.txt', format='ascii')
+
+x1 = rc['nuv_mag'] - rc['phot_g_mean_mag']
+#x1 = (rc['B_apass']-rc['ebv']*3.626)-(rc['V_apass']-rc['ebv']*2.742)
+x2 = (rc['nuv_mag']-rc['ebv']*7.24)-(rc['phot_g_mean_mag']-rc['ebv']*3.303)
+y = rc['FE_H']
 
 m1, b1, rval1, pval1, stderr1 = stats.linregress(x1, y)
 line1 = m1*x1 + b1
@@ -1820,35 +1827,41 @@ line2 = m2*x2 + b2
 err2 = np.sqrt(np.sum((line2-y)**2/len(y)))
 
 # Separating thin vs thick disk
-m = (0.095-.23)/(0+0.8)
+m = (0.095-.21)/(0+0.8)
 b = 0.095
-thick, = np.where((comb['ALPHAFE'] > 0.08) & (comb['ALPHAFE'] > (m*comb['FE_H'] + b)))
-thin, = np.where((comb['ALPHAFE'] < 0.08) | (comb['ALPHAFE'] < (m*comb['FE_H'] + b)))
+thick, = np.where((rc['ALPHAFE'] > 0.08) & (rc['ALPHAFE'] > (m*rc['FE_H'] + b)))
+thin, = np.where((rc['ALPHAFE'] < 0.08) | (rc['ALPHAFE'] < (m*rc['FE_H'] + b)))
 
 
 fig, (ax1, ax2) = plt.subplots(1, 2, sharey=True)
-cmap = ax1.scatter((comb['nuv_mag']-comb['phot_g_mean_mag'])[thin], comb['FE_H'][thin], c=comb['ALPHAFE'][thin], s=120, vmin=-0.05, vmax=0.3, label='Thin disk', marker='D', cmap='viridis', **{"zorder":5})
-ax1.errorbar((comb['nuv_mag']-comb['phot_g_mean_mag'])[thin], comb['FE_H'][thin], xerr=(comb['nuv_magerr']-comb['Gerr'])[thin], yerr=comb['FE_H_ERR'][thin], ecolor='black', fmt=None, marker=None, mew=0, elinewidth=1.3, **{"zorder":0})
-ax1.scatter((comb['nuv_mag']-comb['phot_g_mean_mag'])[thick], comb['FE_H'][thick], c=comb['ALPHAFE'][thick], s=120, vmin=-0.05, vmax=0.3, label='Thick disk', marker='s', cmap='viridis',**{"zorder":5})
-ax1.errorbar((comb['nuv_mag']-comb['phot_g_mean_mag'])[thick], comb['FE_H'][thick], xerr=(comb['nuv_magerr']-comb['Gerr'])[thick], yerr=comb['FE_H_ERR'][thick], ecolor='black', fmt=None, marker=None, mew=0, elinewidth=1.3, **{"zorder":0})
+cmap = ax1.scatter((rc['nuv_mag']-rc['phot_g_mean_mag'])[thin], rc['FE_H'][thin], c=rc['ALPHAFE'][thin], s=120, vmin=-0.05, vmax=0.3, marker='D', cmap=plasma, **{"zorder":5})
+ax1.errorbar((rc['nuv_mag']-rc['phot_g_mean_mag'])[thin], rc['FE_H'][thin], xerr=(rc['nuv_magerr']-rc['Gerr'])[thin], yerr=rc['FE_H_ERR'][thin], ecolor='black', fmt=None, marker=None, mew=0, elinewidth=1.3, **{"zorder":0})
+ax1.scatter((rc['nuv_mag']-rc['phot_g_mean_mag'])[thick], rc['FE_H'][thick], c=rc['ALPHAFE'][thick], s=160, vmin=-0.05, vmax=0.3, marker='s', linewidth='2', cmap=plasma,**{"zorder":5})
+ax1.errorbar((rc['nuv_mag']-rc['phot_g_mean_mag'])[thick], rc['FE_H'][thick], xerr=(rc['nuv_magerr']-rc['Gerr'])[thick], yerr=rc['FE_H_ERR'][thick], ecolor='black', fmt=None, marker=None, mew=0, elinewidth=1.3, **{"zorder":0})
 ax1.plot(x1, line1, linewidth=2, c='black', zorder=10)
 
-ax2.scatter(((comb['nuv_mag']-comb['ebv']*7.24)-(comb['phot_g_mean_mag']-comb['ebv']*3.303))[thin], comb['FE_H'][thin], c=comb['ALPHAFE'][thin], s=120, vmin=-0.05, vmax=0.3, marker='D', cmap='viridis', **{"zorder":5})
-ax2.errorbar(((comb['nuv_mag']-comb['ebv']*7.24)-(comb['phot_g_mean_mag']-comb['ebv']*3.303))[thin], comb['FE_H'][thin], xerr=(comb['nuv_magerr']-comb['Gerr'])[thin], yerr=comb['FE_H_ERR'][thin], ecolor='black', fmt=None, marker=None, mew=0, elinewidth=1.3, **{"zorder":0})
-ax2.scatter(((comb['nuv_mag']-comb['ebv']*7.24)-(comb['phot_g_mean_mag']-comb['ebv']*3.303))[thick], comb['FE_H'][thick], c=comb['ALPHAFE'][thick], s=120, vmin=-0.05, vmax=0.3, marker='s', cmap='viridis', **{"zorder":5})
-ax2.errorbar(((comb['nuv_mag']-comb['ebv']*7.24)-(comb['phot_g_mean_mag']-comb['ebv']*3.303))[thick], comb['FE_H'][thick], xerr=(comb['nuv_magerr']-comb['Gerr'])[thick], yerr=comb['FE_H_ERR'][thick], ecolor='black', fmt=None, marker=None, mew=0, elinewidth=1.3, **{"zorder":0})
+ax2.scatter(((rc['nuv_mag']-rc['ebv']*7.24)-(rc['phot_g_mean_mag']-rc['ebv']*3.303))[thin], rc['FE_H'][thin], c=rc['ALPHAFE'][thin], s=120, label='Thin disk', vmin=-0.05, vmax=0.3, marker='D', cmap=plasma, **{"zorder":5})
+ax2.errorbar(((rc['nuv_mag']-rc['ebv']*7.24)-(rc['phot_g_mean_mag']-rc['ebv']*3.303))[thin], rc['FE_H'][thin], xerr=(rc['nuv_magerr']-rc['Gerr'])[thin], yerr=rc['FE_H_ERR'][thin], ecolor='black', fmt=None, marker=None, mew=0, elinewidth=1.3, **{"zorder":0})
+ax2.scatter(((rc['nuv_mag']-rc['ebv']*7.24)-(rc['phot_g_mean_mag']-rc['ebv']*3.303))[thick], rc['FE_H'][thick], c=rc['ALPHAFE'][thick], s=160, label='Thick disk', vmin=-0.05, vmax=0.3, marker='s', linewidth='2', cmap=plasma, **{"zorder":5})
+ax2.errorbar(((rc['nuv_mag']-rc['ebv']*7.24)-(rc['phot_g_mean_mag']-rc['ebv']*3.303))[thick], rc['FE_H'][thick], xerr=(rc['nuv_magerr']-rc['Gerr'])[thick], yerr=rc['FE_H_ERR'][thick], ecolor='black', fmt=None, marker=None, mew=0, elinewidth=1.3, **{"zorder":0})
 ax2.plot(x2, line2, linewidth=2, c='black', zorder=10)
+
+ax2.plot(x2, 0.22222906*x2 - 1.92779686, linewidth=2, c='blue', zorder=10)
 
 
 ax1.set_xlim((5,12))
 ax2.set_xlim((5,12))
-ax2.set_ylim((-0.8, 0.5))
-ax2.set_ylim((-0.8, 0.5))
+ax1.set_ylim((-0.7, 0.5))
+ax2.set_ylim((-0.7, 0.5))
 ax1.set_xlabel('NUV - G')
 #ax2.set_xlabel('(NUV - E$_{B-V}$ * 7.24) - (G - E$_{B-V}$ * 3.303)')
 ax2.set_xlabel('(NUV - G)$_{0}$')
 ax1.set_ylabel('[Fe/H]')
-ax1.legend(scatterpoints=1, loc=4)
+leg = ax2.legend(scatterpoints=1, loc=4)
+leg.legendHandles[0].set_color('black')
+leg.legendHandles[1].set_color('black')
+leg.legendHandles[0]._sizes = [150]
+leg.legendHandles[1]._sizes = [150]
 fig.subplots_adjust(wspace=0)
 fig.subplots_adjust(right=.84)
 cbar_ax = fig.add_axes([0.85, 0.1, 0.03, 0.8])
@@ -1859,17 +1872,31 @@ plt.show()
 ######################################################################
 # Color vs TEFF vs Fe/H
 ######################################################################
+thick, = np.where((rc['ALPHAFE'] > 0.08) & (rc['ALPHAFE'] > (m*rc['FE_H'] + b)))
+thin, = np.where((rc['ALPHAFE'] < 0.08) | (rc['ALPHAFE'] < (m*rc['FE_H'] + b)))
+y1 = (rc['B_apass']-rc['ebv']*3.626)-(rc['V_apass']-rc['ebv']*2.742)
+y2 = (rc['nuv_mag']-rc['ebv']*7.24)-(rc['phot_g_mean_mag']-rc['ebv']*3.303)
+x = rc['TEFF']
+m1, b1, rval1, pval1, stderr1 = stats.linregress(x, y1)
+line1 = m1*x + b1
+err1 = np.sqrt(np.sum((line1-y1)**2/len(y1)))
+m2, b2, rval2, pval2, stderr2 = stats.linregress(x, y2)
+line2 = m2*x + b2
+err2 = np.sqrt(np.sum((line2-y2)**2/len(y2)))
+
 fig, (ax1, ax2) = plt.subplots(2, 1)
+cmap = ax1.scatter(rc['TEFF'][thin], ((rc['B_apass']-rc['ebv']*3.626)-(rc['V_apass']-rc['ebv']*2.742))[thin], s=80, c=rc['FE_H'][thin], cmap=viridis, vmin=-.5, vmax=.35, marker='D', label='Thin disk')
+ax1.scatter(rc['TEFF'][thick], ((rc['B_apass']-rc['ebv']*3.626)-(rc['V_apass']-rc['ebv']*2.742))[thick], s=120, c=rc['FE_H'][thick], cmap=viridis, vmin=-.5, vmax=.35, marker='s', label='Thick disk', linewidth='2')
 
-thick, = np.where((comb['ALPHAFE'] > 0.08) & (comb['ALPHAFE'] > (m*comb['FE_H'] + b)))
-thin, = np.where((comb['ALPHAFE'] < 0.08) | (comb['ALPHAFE'] < (m*comb['FE_H'] + b)))
+ax1.errorbar(rc['TEFF'][thin], ((rc['B_apass']-rc['ebv']*3.626)-(rc['V_apass']-rc['ebv']*2.742))[thin], xerr=rc['TEFF_ERR'][thin], yerr=(rc['Berr_apass']-rc['Verr_apass'])[thin], ecolor='black', fmt=None, marker=None, mew=0, elinewidth=1.3, **{"zorder":0})
 
+ax1.plot(x, line1, linewidth=2, c='black', zorder=10)
 
-cmap = ax1.scatter(comb['TEFF'][thin], ((comb['B_apass']-comb['ebv']*3.626)-(comb['V_apass']-comb['ebv']*2.742))[thin], s=80, c=comb['FE_H'][thin], cmap=viridis, vmin=-.5, vmax=.35, marker='D', label='Thin')
-ax1.scatter(comb['TEFF'][thick], ((comb['B_apass']-comb['ebv']*3.626)-(comb['V_apass']-comb['ebv']*2.742))[thick], s=80, c=comb['FE_H'][thick], cmap=viridis, vmin=-.5, vmax=.35, marker='s', label='Thick')
+ax2.scatter(rc['TEFF'][thin], ((rc['nuv_mag']-rc['ebv']*7.24)-(rc['phot_g_mean_mag']-rc['ebv']*3.303))[thin], s=80, c=rc['FE_H'][thin], cmap=viridis, vmin=-.5, vmax=.35, marker='D')
+ax2.scatter(rc['TEFF'][thick], ((rc['nuv_mag']-rc['ebv']*7.24)-(rc['phot_g_mean_mag']-rc['ebv']*3.303))[thick], s=120, c=rc['FE_H'][thick], cmap=viridis, vmin=-.5, vmax=.35, marker='s', linewidth='2')
+ax1.errorbar(rc['TEFF'][thin], ((rc['nuv_mag']-rc['ebv']*7.24)-(rc['phot_g_mean_mag']-rc['ebv']*3.303))[thin], xerr=rc['TEFF_ERR'][thin], yerr=(rc['nuv_magerr']-rc['Gerr'])[thin], ecolor='black', fmt=None, marker=None, mew=0, elinewidth=1.3, **{"zorder":0})
 
-ax2.scatter(comb['TEFF'][thin], ((comb['nuv_mag']-comb['ebv']*7.24)-(comb['phot_g_mean_mag']-comb['ebv']*3.303))[thin], s=80, c=comb['FE_H'][thin], cmap=viridis, vmin=-.5, vmax=.35, marker='D')
-ax2.scatter(comb['TEFF'][thick], ((comb['nuv_mag']-comb['ebv']*7.24)-(comb['phot_g_mean_mag']-comb['ebv']*3.303))[thick], s=80, c=comb['FE_H'][thick], cmap=viridis, vmin=-.5, vmax=.35, marker='s')
+ax2.plot(x, line2, linewidth=2, c='black', zorder=10)
 
 #ax1.set_xlabel('T$_{eff}$')
 ax1.set_ylabel('(B - V)$_0$')
@@ -1880,7 +1907,37 @@ ax2.set_ylim((5, 12))
 fig.subplots_adjust(right=.84)
 fig.subplots_adjust(hspace=0)
 ax1.set_xticklabels([])
-ax1.legend(scatterpoints=1)
+leg = ax1.legend(scatterpoints=1)
+leg.legendHandles[0].set_color('black')
+leg.legendHandles[1].set_color('black')
+leg.legendHandles[0]._sizes = [150]
+leg.legendHandles[1]._sizes = [150]
 cbar_ax = fig.add_axes([0.85, 0.1, 0.03, 0.8])
 plt.colorbar(cmap, cax=cbar_ax).set_label('[Fe/H]')
 plt.show()
+
+
+######################################################################
+# CMD with MG and MNUV
+######################################################################
+fig, (ax1, ax2) = plt.subplots(2, 1)
+scatter_contour((sg['nuv_mag']-sg['ebv']*7.24)-(sg['phot_g_mean_mag']-sg['ebv']*3.303), (sg['MNUV']-sg['ebv']*7.24), threshold=1000, log_counts=True, histogram2d_args=dict(bins=40), plot_args=dict(color='k', markersize=1, alpha=0.1), contour_args=dict(cmap=cm.gray), ax=ax2)
+scatter_contour((sg['nuv_mag']-sg['ebv']*7.24)-(sg['phot_g_mean_mag']-sg['ebv']*3.303), (sg['MG']-sg['ebv']*3.303), threshold=1000, log_counts=True, histogram2d_args=dict(bins=40), plot_args=dict(color='k', markersize=1, alpha=0.1), contour_args=dict(cmap=cm.gray), ax=ax1)
+ax1.set_xlim((0, 12))
+ax1.set_ylim((8, -2))
+ax2.set_xlim((0, 12))
+ax2.set_ylim((17, 0))
+#ax1.set_xlabel('(NUV - G)$_0$')
+ax2.set_xlabel('(NUV - G)$_0$')
+ax2.set_ylabel('M$_{NUV_0}$')
+ax1.set_ylabel('M$_{G_0}$')
+fig.subplots_adjust(hspace=0)
+ax1.set_xticklabels([])
+ax2.set_yticklabels(['', '2', '4', '6', '8', '10', '12', '14', '16'])
+
+#ax1.add_patch(matplotlib.patches.Rectangle((7.1, -1.1),2.9,2.4,facecolor='red',alpha=0.5))
+#ax2.add_patch(matplotlib.patches.Rectangle((7.2, 5.9),2.9,1.8,facecolor='red',alpha=0.5, angle=45))
+ax1.scatter(x[rccut], (sg['MG']-sg['ebv']*3.303)[rccut], edgecolor='none', alpha=0.01)
+ax2.scatter(x[rccut], (sg['MNUV']-sg['ebv']*7.24)[rccut], edgecolor='none', alpha=0.01)
+plt.show()
+

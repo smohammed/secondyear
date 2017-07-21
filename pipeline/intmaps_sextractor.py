@@ -1,28 +1,15 @@
 from astropy.io import fits, ascii
 import numpy as np
 from astropy.table import Table, hstack
-from astropy import units as u
 from astropy.coordinates import SkyCoord
-from astropy import wcs
 from astropy.wcs import WCS
 import os
 from astropy.convolution import convolve, Gaussian2DKernel
-from matplotlib import pyplot as plt
-import matplotlib, matplotlib.cm as cm
-matplotlib.rcParams['figure.figsize'] = 16, 8
-matplotlib.rcParams['font.size'] = 17
-
-
-# To add scans:
-# 1. Add fieldN value and coordinates to skyrange
-# 2. Manually check where you want to cut out the images and add to xminmax, yminmax
 
 # Files written:
 # 1. Cutouts of main image to remove edges
 # 2. SExtractor output, background used
 # 3. starcatalog*.fits which adds WCS data to stars
-# 4. If yes, sex_galex_matches* includes GALEX matches with 3" search radius
-
 
 #########################################################################
 # Select desired field from list
@@ -36,7 +23,9 @@ matplotlib.rcParams['font.size'] = 17
 # fec scans
 #scans = ['0014', '0032', '0059', '0203', '0239', '0356', '0392', '0743', '1103']
 #scans = ['0014']#, '0032','0059', '0203', '0239']  # These scans supposively has the half pixel fix, as of 04/17
-scans = ['0239']  # new fix
+
+scans = ['0023', '0239', '0032', '0203', '0446', '0464', '0473', '0806', '0815', '1301', '1310', '1319', '1616', '1634', '1679', '2174', '2183', '2192', '2714', '2750', '3236', '3245', '3281']
+
 
 # Incomplete scans
 incscans = ['9.5', '14.9', '79.7', '90.5', '91.4', '103.1', '104.0', '122.9', '127.4', '223.7', '273.2', '283.1', '289.4', '306.5', '309.2', '324.5', '329.9', '338.0', '339.8', '342.5', '343.4', '345.2', '348.8', '349.7', '350.6', '351.5', '352.4', '353.3', '354.2', '355.1', '356.0', '357.8']
@@ -57,8 +46,6 @@ code = 'det_thresh4_phot_autopar2.5_3.5'
 run1 = 0
 run2 = 1
 
-fec = 1
-
 full = 1
 partial = 0
 
@@ -77,89 +64,55 @@ for currregion in skyrange:
     print 'current region = ' + currregion
     region = currregion.replace('.', '')
 
-    if fec == 0:
-        img = fits.open('../Dunmaps/countmaps/count_map_name_'+region+'_gal_sec_in.fits')[0].data
-    elif fec == 1:
-        hdu = fits.open('../fecmaps/07-10/count_map_'+region+'-cal-sec-dis-sp_in.fits')[0]
-        img = hdu.data
-        wcsmap = WCS(hdu.header)
+    hdu = fits.open('../fecmaps/07-19/count_map_'+region+'_in.fits')[0]
+    img = hdu.data
+    wcsmap = WCS(hdu.header)
 
     if full == 1:
-        im1xmin, im1xmax, im1ymin, im1ymax = 1214, 3950, 3532, 51230
+        #im1xmin, im1xmax, im1ymin, im1ymax = 1214, 3950, 3532, 51230 # Old range
+        im1xmin, im1xmax, im1ymin, im1ymax = 379, 2515, 2000, 38000
     if partial == 1:
         im1xmin, im1xmax, im1ymin, im1ymax = incscandict[currregion][0], incscandict[currregion][1], incscandict[currregion][2], incscandict[currregion][3]
 
     #########################################################################
     # Make cutouts of initial image to help with background correction
     #########################################################################
-    if fec == 0:
-        if run1 == 1:
-            img = img[im1ymin:im1ymax, im1xmin:im1xmax]
-            gauss = Gaussian2DKernel(stddev=3)
-            im1 = convolve(img, gauss)
-            print 'Smoothing finished'
+    if run1 == 1:
+        img = img[im1ymin:im1ymax, im1xmin:im1xmax]
+        wcsmap = wcsmap[im1ymin:im1ymax, im1xmin:im1xmax]
+        header = wcsmap.to_header()
 
-        if run2 == 1:
-            img = img[im1ymin:im1ymax, im1xmin:im1xmax]
-            bkgd = fits.open('../Dunmaps/background/background_im1_'+region+'.fits')[0].data
-            im1 = img - bkgd
+        gauss = Gaussian2DKernel(stddev=3)
+        im1 = convolve(img, gauss)
+        print 'Smoothing finished'
 
-        try:
-            fits.HDUList([fits.PrimaryHDU(im1)]).writeto('../Dunmaps/im1_'+region+'.fits')
+    if run2 == 1:
+        img = img[im1ymin:im1ymax, im1xmin:im1xmax]
+        wcsmap = wcsmap[im1ymin:im1ymax, im1xmin:im1xmax]
+        bkgd = fits.open('../Dunmaps/background_im1_'+region+'_fec.fits')[0].data
+        im1 = img - bkgd
+        header = wcsmap.to_header()
 
-        except IOError:
-            os.remove('../Dunmaps/im1_'+region+'.fits')
-            fits.HDUList([fits.PrimaryHDU(im1)]).writeto('../Dunmaps/im1_'+region+'.fits')
+    try:
+        fits.writeto('../Dunmaps/im1_'+region+'_fec.fits', im1, header, clobber=True)
 
-    # FEC background
-    if fec == 1:
-        if run1 == 1:
-            img = img[im1ymin:im1ymax, im1xmin:im1xmax]
-            wcsmap = wcsmap[im1ymin:im1ymax, im1xmin:im1xmax]
-            header = wcsmap.to_header()
-
-            gauss = Gaussian2DKernel(stddev=3)
-            im1 = convolve(img, gauss)
-            print 'Smoothing finished'
-
-        if run2 == 1:
-            img = img[im1ymin:im1ymax, im1xmin:im1xmax]
-            wcsmap = wcsmap[im1ymin:im1ymax, im1xmin:im1xmax]
-            bkgd = fits.open('../Dunmaps/background_im1_'+region+'_fec.fits')[0].data
-            im1 = img - bkgd
-            header = wcsmap.to_header()
-
-        try:
-            #fits.HDUList([fits.PrimaryHDU(im1)]).writeto('../Dunmaps/im1_'+region+'_fec.fits')
-            fits.writeto('../Dunmaps/im1_'+region+'_fec.fits', im1, header, clobber=True)
-
-        except IOError:
-            os.remove('../Dunmaps/im1_'+region+'_fec.fits')
-            #fits.HDUList([fits.PrimaryHDU(im1)]).writeto('../Dunmaps/im1_'+region+'_fec.fits')
-            fits.writeto('../Dunmaps/im1_'+region+'_fec.fits', im1, header, clobber=True)
-
+    except IOError:
+        os.remove('../Dunmaps/im1_'+region+'_fec.fits')
+        fits.writeto('../Dunmaps/im1_'+region+'_fec.fits', im1, header, clobber=True)
 
     print 'im1 saved'
 
     #########################################################################
     # Run sextractor
     #########################################################################
-    if fec == 0:
-        if run1 == 1:
-            os.system('sex ../Dunmaps/im1_'+region+'.fits -c ~/sextractor/daofind.sex -CATALOG_NAME ../Dunmaps/sex_im1_'+region+'_fwhm.fits -BACK_TYPE AUTO -CHECKIMAGE_NAME ../Dunmaps/background_im1_'+region+'.fits')
+    if run1 == 1:
+        os.system('sex ../Dunmaps/im1_'+region+'_fec.fits -c ~/sextractor/daofind.sex -CATALOG_NAME ../Dunmaps/sex_im1_'+region+'_fec_fwhm.fits -BACK_TYPE AUTO -CHECKIMAGE_NAME ../Dunmaps/background_im1_'+region+'_fec.fits')
+        #os.system('sex ../fecmaps/07-19/count_map_'+region+'_in.fits -c ~/sextractor/daofind.sex -CATALOG_NAME ../Dunmaps/sex_im1_'+region+'_fec_fwhm.fits -BACK_TYPE AUTO -CHECKIMAGE_NAME ../Dunmaps/background_im1_'+region+'_fec.fits')
 
-        # With no background
-        if run2 == 1:
-            os.system('sex ../Dunmaps/im1_'+region+'.fits -c ~/sextractor/daofind.sex -CATALOG_NAME ../Dunmaps/sex_im1_'+region+'_fwhm.fits -BACK_TYPE MANUAL -BACK_VALUE 0.0')
-
-    # For new fec corrected fields
-    if fec == 1:
-        if run1 == 1:
-            os.system('sex ../Dunmaps/im1_'+region+'_fec.fits -c ~/sextractor/daofind.sex -CATALOG_NAME ../Dunmaps/sex_im1_'+region+'_fec_fwhm.fits -BACK_TYPE AUTO -CHECKIMAGE_NAME ../Dunmaps/background_im1_'+region+'_fec.fits')
-
-        # With no background
-        if run2 == 1:
-            os.system('sex ../Dunmaps/im1_'+region+'_fec.fits -c ~/sextractor/daofind.sex -CATALOG_NAME ../Dunmaps/sex_im1_'+region+'_fec_fwhm.fits -BACK_TYPE MANUAL -BACK_VALUE 0.0')
+    # With no background
+    if run2 == 1:
+        os.system('sex ../Dunmaps/im1_'+region+'_fec.fits -c ~/sextractor/daofind.sex -CATALOG_NAME ../Dunmaps/sex_im1_'+region+'_fec_fwhm.fits -BACK_TYPE MANUAL -BACK_VALUE 0.0')
+        #os.system('sex ../fecmaps/07-19/count_map_'+region+'_in.fits -c ~/sextractor/daofind.sex -CATALOG_NAME ../Dunmaps/sex_im1_'+region+'_fec_fwhm.fits -BACK_TYPE MANUAL -BACK_VALUE 0.0')
 
     # With weights
     #os.system('sex ../Dunmaps/im1_'+region+'.fits -c ~/sextractor/daofind.sex -CATALOG_NAME ../Dunmaps/sex_im1_'+region+'fwhm.fits -WEIGHT_IMAGE ../Dunmaps/background/background_im1_'+region+'.fits')
@@ -169,10 +122,7 @@ for currregion in skyrange:
     #########################################################################
     # Get output from sextractor, convert NUV
     #########################################################################
-    if fec == 0:
-        im1sex = Table.read('../Dunmaps/sex_im1_'+region+'_fwhm.fits', format='fits')
-    elif fec == 1:
-        im1sex = Table.read('../Dunmaps/sex_im1_'+region+'_fec_fwhm.fits', format='fits')
+    im1sex = Table.read('../Dunmaps/sex_im1_'+region+'_fec_fwhm.fits', format='fits')
 
     data = im1sex
     xfac = im1xmin
@@ -187,30 +137,9 @@ for currregion in skyrange:
 
     data = data[~np.isnan(data['nuv'])]
 
-
     #########################################################################
-    # Get WCS info
+    # Fix if first scan, save table
     #########################################################################
-    if fec == 0:
-        hdulist = fits.open('../Dunmaps/countmaps/count_map_name_'+region+'_gal_sec_in.fits')
-    if fec == 1:
-        hdulist = fits.open('../fecmaps/07-10/count_map_'+region+'-cal-sec-dis-sp_in.fits')
-
-    '''
-    xpix = data['x_new']
-    ypix = data['y_new']
-
-    w = wcs.WCS(hdulist[0].header)
-    pixels = np.array([xpix, ypix]).T
-    world = w.wcs_pix2world(pixels, 1)
-
-    glval, gbval = [], []
-
-    for i in range(len(world)):
-        glval.append(world[i][0])
-        gbval.append(world[i][1])
-    '''
-
     skygal = SkyCoord(data['ALPHA_J2000'], data['DELTA_J2000'], frame='icrs').galactic
     coord = Table([skygal.l.degree, skygal.b.degree], names=('gl', 'gb'))
     if region == '5':
@@ -218,26 +147,6 @@ for currregion in skyrange:
 
     alldata = hstack([data, coord])
 
-    '''
-    if region == '5':
-        for i in range(len(glval)):
-            if glval[i] > 350:
-                glval[i] = glval[i] - 360
-
-    skygal = SkyCoord(glval*u.deg, gbval*u.deg, frame='galactic')
-    raval = skygal.icrs.ra.degree
-    decval = skygal.icrs.dec.degree
-
-    coord = Table([glval, gbval, raval, decval], names=('gl', 'gb', 'ra', 'dec'))
-    alldata = hstack([data, coord])
-    '''
-
-    if fec == 0:
-        ascii.write(alldata, '../Dunmaps/fwhm/11-18data/starcat_'+currregion+'mapweight_fwhm.txt', format='ipac')
-
-        os.remove('../Dunmaps/im1_'+region+'.fits')
-
-    if fec == 1:
-        ascii.write(alldata, '../Dunmaps/fwhm/fec/07-10data/starcat_'+currregion+'mapweight_fec_fwhm.txt', format='ipac')
+    ascii.write(alldata, '../Dunmaps/fwhm/fec/07-19data/starcat_'+currregion+'mapweight_fec_fwhm.txt', format='ipac')
 
     print 'Converted to gl, gb, finished'

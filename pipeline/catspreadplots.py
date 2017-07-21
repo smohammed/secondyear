@@ -4,12 +4,6 @@ from astropy.table import Table, hstack
 from matplotlib import pyplot as plt
 from astropy import units as u
 from astropy.coordinates import SkyCoord, search_around_sky
-from astropy import wcs
-from astroML.plotting import scatter_contour
-import matplotlib, matplotlib.cm as cm
-matplotlib.rcParams['figure.figsize'] = 10, 10
-matplotlib.rcParams['font.size'] = 14
-
 
 # Input parameters
 full = 1
@@ -28,8 +22,8 @@ fec = 1
 # fec regions 04/17
 #scans = ['0014', '0032', '0059', '0203', '0239']
 
-# region from 06/21
-scans = ['0239']
+# regions from 07/19
+scans = ['0023', '0239', '0032', '0203', '0446', '0464', '0473', '0806', '0815', '1301', '1310', '1319', '1616', '1634', '1679', '2174', '2183', '2192', '2714', '2750', '3236', '3245', '3281']
 
 # Incomplete scans
 incscans = ['9.5', '14.9', '79.7', '90.5', '91.4', '103.1', '104.0', '122.9', '127.4', '223.7', '273.2', '283.1', '289.4', '306.5', '309.2', '324.5', '329.9', '338.0', '339.8', '342.5', '343.4', '345.2', '348.8', '349.7', '350.6', '351.5', '352.4', '353.3', '354.2', '355.1', '356.0', '357.8']
@@ -61,13 +55,8 @@ for curregion in skyrange:
 
     print curregion
 
-    if fec == 0:
-        t1 = Table.read('../Dunmaps/fwhm/11-18data/starcat_'+curregion+'mapweight_fwhm.txt', format='ascii')
+    t1 = Table.read('../Dunmaps/fwhm/fec/07-19data/starcat_'+curregion+'mapweight_fec_fwhm.txt', format='ascii')
 
-    if fec == 1:
-        t1 = Table.read('../Dunmaps/fwhm/fec/07-10data/starcat_'+curregion+'mapweight_fec_fwhm.txt', format='ascii')
-
-    #t1.remove_columns(('X_IMAGE', 'Y_IMAGE', 'FLUX_AUTO', 'A_IMAGE', 'B_IMAGE', 'THETA_IMAGE', 'x_new', 'y_new', 'FLUXERR_AUTO', 'FLUX_APER'))
     #t1 = t1[np.where((t1['FWHM_IMAGE'] < 10) & (t1['FWHM_IMAGE'] > 3.5) & (t1['FLUX_AUTO'] > 0))]
     t1 = t1[np.where((t1['FLUX_AUTO'] > 0))]
 
@@ -92,18 +81,10 @@ for curregion in skyrange:
     #################################################
     # Load maps
     #################################################
-    if fec == 0:
-        hdulist = fits.open('../Dunmaps/countmaps/count_map_name_'+curregion.replace('.', '')+'_gal_sec_in.fits')
-        img = hdulist[0].data
-        expmap = fits.open('/media/data/smohammed/galexfiles/exp/count_map_name_'+curregion.replace('.', '')+'_gal_sec_exp.fits')[0].data
-        bkgd = fits.open('../Dunmaps/background/background_im1_'+curregion.replace('.', '')+'.fits')[0].data
-
-    # New fec maps
-    if fec == 1:
-        hdulist = fits.open('../fecmaps/07-10/count_map_'+curregion.replace('.', '')+'-cal-sec_in_dis_new_bp.fits')
-        img = hdulist[0].data
-        expmap = fits.open('../fecmaps/07-10/count_map_'+curregion.replace('.', '')+'-cal-sec_exp_bp.fits')[0].data
-        bkgd = fits.open('../Dunmaps/background_im1_'+curregion.replace('.', '')+'_fec.fits')[0].data
+    hdulist = fits.open('../fecmaps/07-19/count_map_'+curregion.replace('.', '')+'-cal-sec_in_dis_new_bp.fits')
+    img = hdulist[0].data
+    expmap = fits.open('../fecmaps/07-19/count_map_'+curregion.replace('.', '')+'-cal-sec_exp_bp.fits')[0].data
+    bkgd = fits.open('../Dunmaps/background_im1_'+curregion.replace('.', '')+'_fec.fits')[0].data
 
     img = img[im1ymin:im1ymax, im1xmin:im1xmax]
     expmap = expmap[im1ymin:im1ymax, im1xmin:im1xmax]
@@ -210,7 +191,7 @@ for curregion in skyrange:
     ax4.scatter(t1['nuv'], t1['FWHM_IMAGE'], edgecolor='none', c='k', s=1)
     ax4.axhline(y=0,  c='red')
     ax4.set_xlim((13, 25))
-    ax4.set_ylim((3,  10))
+    ax4.set_ylim((4,  14))
     ax4.set_title('NUV (Only SExtractor),  N = '+str(len(t1)))
     ax4.set_ylabel('FWHM')
 
@@ -240,14 +221,7 @@ for curregion in skyrange:
         plt.suptitle('pixfix, '+curregion)
     plt.tight_layout()
 
-    if fec == 0:
-        if curregion == '5':
-            plt.savefig('../11-21-region0.5matchplots.png')
-        else:
-            plt.savefig('../11-21-region'+curregion+'matchplots.png')
-
-    if fec == 1:
-        plt.savefig('../images/07-10-region'+curregion+'matchplots_fec_doublepix.png')
+    plt.savefig('../images/07-19-region'+curregion+'matchplots_fec_doublepix.png')
 
     #plt.show()
     plt.close()
