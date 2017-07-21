@@ -191,7 +191,7 @@ for curregion in skyrange:
     ax4.scatter(t1['nuv'], t1['FWHM_IMAGE'], edgecolor='none', c='k', s=1)
     ax4.axhline(y=0,  c='red')
     ax4.set_xlim((13, 25))
-    ax4.set_ylim((4,  14))
+    ax4.set_ylim((-1,  8))
     ax4.set_title('NUV (Only SExtractor),  N = '+str(len(t1)))
     ax4.set_ylabel('FWHM')
 
