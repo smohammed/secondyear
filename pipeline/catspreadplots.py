@@ -154,7 +154,7 @@ for curregion in skyrange:
     #ax5 = plt.subplot2grid((2, 2), (2, 0), colspan=2)
 
     # Tycho match distance
-    im1 = ax1.scatter((t1ty['gl_sex']-t1ty['gl_tycho'])*3600, (t1ty['gb_sex']-t1ty['gb_tycho'])*3600, edgecolor='none', alpha=0.2, c=t1ty['nuv'])
+    im1 = ax1.scatter((t1ty['gl_sex']-t1ty['gl_tycho'])*3600, (t1ty['gb_sex']-t1ty['gb_tycho'])*3600, edgecolor='none', alpha=0.2, c=t1ty['nuv'], vmin=10, vmax=20)
     ax1.axhline(y=0, c='red')
     ax1.axvline(x=0, c='red')
     ax1.set_xlim((-3, 3))
