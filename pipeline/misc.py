@@ -1941,3 +1941,12 @@ ax1.scatter(x[rccut], (sg['MG']-sg['ebv']*3.303)[rccut], edgecolor='none', alpha
 ax2.scatter(x[rccut], (sg['MNUV']-sg['ebv']*7.24)[rccut], edgecolor='none', alpha=0.01)
 plt.show()
 
+
+
+
+
+cols = fits.ColDefs([fits.Column(name='nuv_mag',format='D', array=comb['nuv_mag']),fits.Column(name='gl_gps',format='D', array=comb['gl_gps']),fits.Column(name='gb_gps',format='D', array=comb['gb_gps']),fits.Column(name='ra_gps',format='D', array=comb['ra_gps']),fits.Column(name='dec_gps',format='D', array=comb['dec_gps']),fits.Column(name='ra_tgas',format='D', array=comb['ra_tgas']),fits.Column(name='dec_tgas',format='D', array=comb['dec_tgas']),fits.Column(name='parallax',format='D', array=comb['parallax']),fits.Column(name='parallax_error',format='D', array=comb['parallax_error']),fits.Column(name='phot_g_mean_mag',format='D', array=comb['phot_g_mean_mag']),fits.Column(name='dist',format='D', array=comb['dist']),fits.Column(name='distmod',format='D', array=comb['distmod']),fits.Column(name='MG',format='D', array=comb['MG']),fits.Column(name='ebv',format='D', array=comb['ebv']),fits.Column(name='parallax_hogg',format='D', array=comb['parallax_hogg']),fits.Column(name='Bmag',format='D', array=comb['Bmag']),fits.Column(name='Vmag',format='D', array=comb['Vmag']),fits.Column(name='gmag',format='D', array=comb['gmag']),fits.Column(name='rmag',format='D', array=comb['rmag']),fits.Column(name='imag',format='D', array=comb['imag'])])
+
+
+endtable = fits.BinTableHDU.from_columns(cols)
+endtable.writeto('galexplane_tgas_dust_apass.fits')
