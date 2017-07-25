@@ -24,8 +24,7 @@ from astropy.convolution import convolve, Gaussian2DKernel
 #scans = ['0014', '0032', '0059', '0203', '0239', '0356', '0392', '0743', '1103']
 #scans = ['0014']#, '0032','0059', '0203', '0239']  # These scans supposively has the half pixel fix, as of 04/17
 
-#scans = ['0023', '0239', '0032', '0203', '0446', '0464', '0473', '0806', '0815', '1301', '1310', '1319', 
-scans =['1616', '1634', '1679', '2174', '2183', '2192', '2714', '2750', '3236', '3245', '3281']
+scans = ['0023', '0239', '0032', '0203', '0446', '0464', '0473', '0806', '0815', '1301', '1310', '1319', '1616', '1634', '1679', '2174', '2183', '2192', '2714', '2750', '3236', '3245', '3281']
 
 
 # Incomplete scans
@@ -65,7 +64,7 @@ for currregion in skyrange:
     print 'current region = ' + currregion
     region = currregion.replace('.', '')
 
-    hdu = fits.open('../fecmaps/07-19/count_map_'+region+'_in.fits')[0]
+    hdu = fits.open('../fecmaps/07-22/count_map_'+region+'_in.fits')[0]
     img = hdu.data
     wcsmap = WCS(hdu.header)
 
@@ -148,6 +147,6 @@ for currregion in skyrange:
 
     alldata = hstack([data, coord])
 
-    ascii.write(alldata, '../Dunmaps/fwhm/fec/07-19data/starcat_'+currregion+'mapweight_fec_fwhm.txt', format='ipac')
+    ascii.write(alldata, '../Dunmaps/fwhm/fec/07-22data/starcat_'+currregion+'mapweight_fec_fwhm.txt', format='ipac')
 
     print 'Converted to gl, gb, finished'

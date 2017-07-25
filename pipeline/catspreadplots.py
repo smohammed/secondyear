@@ -22,7 +22,7 @@ fec = 1
 # fec regions 04/17
 #scans = ['0014', '0032', '0059', '0203', '0239']
 
-# regions from 07/19
+# regions from 07/21
 scans = ['0023', '0239', '0032', '0203', '0446', '0464', '0473', '0806', '0815', '1301', '1310', '1319', '1616', '1634', '1679', '2174', '2183', '2192', '2714', '2750', '3236', '3245', '3281']
 
 # Incomplete scans
@@ -55,7 +55,7 @@ for curregion in skyrange:
 
     print curregion
 
-    t1 = Table.read('../Dunmaps/fwhm/fec/07-19data/starcat_'+curregion+'mapweight_fec_fwhm.txt', format='ascii')
+    t1 = Table.read('../Dunmaps/fwhm/fec/07-22data/starcat_'+curregion+'mapweight_fec_fwhm.txt', format='ascii')
 
     #t1 = t1[np.where((t1['FWHM_IMAGE'] < 10) & (t1['FWHM_IMAGE'] > 3.5) & (t1['FLUX_AUTO'] > 0))]
     t1 = t1[np.where((t1['FLUX_AUTO'] > 0))]
@@ -221,7 +221,7 @@ for curregion in skyrange:
         plt.suptitle('pixfix, '+curregion)
     plt.tight_layout()
 
-    plt.savefig('../images/07-19-region'+curregion+'matchplots_fec_doublepix.png')
+    plt.savefig('../images/07-22-region'+curregion+'matchplots.png')
 
     #plt.show()
     plt.close()
