@@ -1971,3 +1971,11 @@ cols = fits.ColDefs([fits.Column(name='nuv_mag',format='D', array=comb['nuv_mag'
 
 endtable = fits.BinTableHDU.from_columns(cols)
 endtable.writeto('galexplane_tgas_dust_apass.fits')
+
+
+avg = []
+
+for i in range(12,21, 1):
+    q = np.where((comb['nuv_mag'] > i) & (comb['nuv_mag'] < i+1))
+    c2 = comb[q]
+    avg.append(np.median(c2['nuv']-c2['nuv_mag']))
