@@ -9,8 +9,8 @@ import matplotlib, matplotlib.cm as cm
 matplotlib.rcParams['figure.figsize'] = 14, 12
 matplotlib.rcParams['font.size'] = 23
 
-cat = 0
-gais = 1
+cat = 1
+gais = 0
 
 ext = 0
 nuvg = 1

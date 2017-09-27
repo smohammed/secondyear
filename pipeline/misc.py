@@ -165,15 +165,18 @@ plt.show()
 ####################################################################
 # g - r vs NUV - g with boxes
 ####################################################################
-sv = fits.open('sex_vphas.fits')[1].data
-vwd = Table.read('wds_sex_vphas.txt', format='ipac')
+#sv = fits.open('sex_vphas.fits')[1].data
+#vwd = Table.read('wds_sex_vphas.txt', format='ipac')
+sv = fits.open('starcat_ps1_g10-20_09-05-17.fits')[1].data
 pickles = Table.read('picklemags_laphare_final.txt', format='ascii')
-cmd = Table.read('cmdfiles/cmd_merged.txt', format='ascii')
+#cmd = Table.read('cmdfiles/cmd_merged.txt', format='ascii')
 
-scatter_contour(sv['nuv_mag']-sv['g_AB'],sv['g_AB']-sv['r_AB'],threshold=1100,log_counts=True,histogram2d_args=dict(bins=40),plot_args=dict(color='k',markersize=1), contour_args=dict(cmap=cm.gray))
-plt.scatter(vwd['nuv_mag']-vwd['g_AB'],vwd['g_AB']-vwd['r_AB'], edgecolor='none', facecolor='blue', label='WDCs')
+#scatter_contour(sv['nuv']-sv['g_ps'],sv['g_ps']-sv['r_ps'],threshold=1100,log_counts=True,histogram2d_args=dict(bins=40),plot_args=dict(color='k',markersize=1), contour_args=dict(cmap=cm.gray))
+plt.scatter(ps['nuv']-ps['g_ps'], ps['g_ps']-ps['r_ps'], color='k', s=1, alpha=0.06)
+
+#plt.scatter(vwd['nuv_mag']-vwd['g_AB'],vwd['g_AB']-vwd['r_AB'], edgecolor='none', facecolor='blue', label='WDCs')
 plt.scatter(pickles['nuv']-pickles['g'],pickles['g']-pickles['r'],color='red', label='SED model', s=30)
-plt.plot(cmd['NUV']-cmd['g'],cmd['g']-cmd['r'],color='green', label='CMD')
+#plt.plot(cmd['NUV']-cmd['g'],cmd['g']-cmd['r'],color='green', label='CMD')
 plt.gca().add_patch(matplotlib.patches.Rectangle((-0.5,0.6),2.5,0.5,facecolor='yellow',alpha=0.5))
 plt.gca().add_patch(matplotlib.patches.Rectangle((-0.5,1.1),6.5,0.5,facecolor='yellow',alpha=0.5))
 plt.gca().add_patch(matplotlib.patches.Rectangle((2,-0.1),6,0.6,facecolor='lightblue',alpha=0.5,angle=5))
@@ -1979,3 +1982,51 @@ for i in range(12,21, 1):
     q = np.where((comb['nuv_mag'] > i) & (comb['nuv_mag'] < i+1))
     c2 = comb[q]
     avg.append(np.median(c2['nuv']-c2['nuv_mag']))
+
+
+
+#################################################
+# Combine all starcat files
+#################################################
+scans = ['0005', '0014', '0023', '0032', '0041', '0050', '0059', '0068', '0086', '0095', '0104', '0113', '0122', '0140', '0149', '0158', '0167', '0176', '0185', '0194', '0203', '0212', '0221', '0230', '0239', '0248', '0257', '0284', '0293', '0302', '0311', '0320', '0329', '0338', '0347', '0356', '0392', '0428', '0437', '0446', '0455', '0464', '0473', '0482', '0491', '0500', '0671', '0689', '0716', '0743', '0752', '0761', '0770', '0779', '0788', '0797', '0806', '0815', '0824', '0833', '0878', '0887', '0896', '0905', '0914', '0923', '0932', '0941', '0950', '0959', '0968', '0977', '0986', '0995', '1004', '1013', '1022', '1031', '1040', '1049', '1058', '1067', '1076', '1103', '1112', '1121', '1130', '1139', '1148', '1157', '1166', '1193', '1211', '1229', '1238', '1247', '1256', '1265', '1274', '1283', '1292', '1301', '1310', '1319', '1328', '1337', '1346', '1355', '1364', '1373', '1382', '1391', '1400', '1409', '1418', '1427', '1436', '1445', '1454', '1463', '1472', '1481', '1490', '1499', '1508', '1517', '1526', '1535', '1544', '1553', '1562', '1571', '1580', '1589', '1598', '1607', '1616', '1634', '1652', '1661', '1670', '1679', '1724', '1733', '1742', '1751', '1760', '1769', '1778', '1787', '1796', '1805', '1832', '1850', '1904', '1913', '1976', '1985', '2003', '2012', '2030', '2039', '2057', '2066', '2075', '2084', '2093', '2102', '2111', '2120', '2129', '2138', '2147', '2156', '2165', '2174', '2183', '2192', '2201', '2210', '2219', '2228', '2237', '2246', '2255', '2264', '2282', '2291', '2300', '2309', '2318', '2345', '2354', '2363', '2372', '2381', '2390', '2399', '2408', '2417', '2426', '2435', '2444', '2453', '2462', '2471', '2480', '2489', '2498', '2507', '2516', '2525', '2534', '2543', '2552', '2561', '2570', '2588', '2597', '2606', '2615', '2624', '2633', '2642', '2651', '2660', '2669', '2687', '2696', '2705', '2714', '2723', '2732', '2741', '2750', '2759', '2768', '2786', '2795', '2813', '2831', '2840', '2849', '2858', '2867', '2885', '2894', '2903', '2912', '2921', '2930', '2939', '2957', '2975', '2984', '3011', '3020', '3029', '3038', '3047', '3056', '3065', '3083', '3092', '3101', '3155', '3164', '3173', '3182', '3191', '3200', '3209', '3218', '3227', '3236', '3245', '3254', '3263', '3272', '3281', '3290', '3299', '3317', '3326', '3335', '3344', '3353', '3371', '3380', '3389', '3398', '3416', '3425', '3434', '3452', '3488', '3497', '3506', '3515', '3524', '3533', '3542', '3551', '3560', '3578', '3587', '3596']
+
+alldata = Table.read('starcat_0005mapweight_fec_fwhm.txt', format='ascii')
+#alldata = alldata[np.where((alldata['FWHM_IMAGE'] < 10) & (alldata['FWHM_IMAGE'] > 3.5))]
+
+alldata['gl'][np.where(alldata['gl'] > 350)] = alldata['gl'][np.where(alldata['gl'] > 350)] - 360
+alldata = alldata[np.where(alldata['gl'] < 0.5 + 0.33)]
+
+
+alldata = Table.read('starcat_1103mapweight_fec_fwhm.txt', format='ascii')
+
+for region in scans[84:152]:
+    a = Table.read('starcat_'+region+'mapweight_fec_fwhm.txt', format='ascii')
+    number = float(region)/10.
+    a = a[np.where(a['gl'] < number + 0.31)]
+    alldata = vstack([alldata, a])
+    print region
+
+ascii.write(alldata, 'starcat_allscans_09-05-17.txt', format='basic')
+
+
+
+galex = fits.open('GALEXPlane2_smohammed.fit')[1].data
+galex['Glon'][np.where(galex['Glon'] > 360)] = galex['Glon'][np.where(galex['Glon'] > 360)] - 360
+galexgal = SkyCoord(galex['Glon']*u.deg, galex['Glat']*u.deg, frame='galactic')
+catgal = SkyCoord(alldata['gl']*u.deg,alldata['gb']*u.deg, frame='galactic')
+catind, galexind, angsep, ang3d = search_around_sky(catgal, galexgal, 3*u.arcsec)
+comb = hstack([Table(alldata[catind]), Table(galex[galexind])])
+comb['angsep'] = angsep
+
+
+
+pscats = ['0-100', '100-200', '200-300', '300-360']
+
+for scan in pscats:
+    ps = fits.open('ps1/ps1_planecut_'+scan+'_g10-20.fits')[1].data
+    psgal = SkyCoord(ps['glmean']*u.deg, ps['gbmean']*u.deg, frame='galactic')
+    catgal = SkyCoord(alldata['gl']*u.deg,alldata['gb']*u.deg, frame='galactic')
+    catind, psind, angsep, ang3d = search_around_sky(catgal, psgal, 3*u.arcsec)
+    comb = hstack([Table(alldata[catind]), Table(ps[psind])])
+    comb['angsep'] = angsep
+    ascii.write('starcat_ps1'+str(scan)+'_g10-20.txt', format='basic')
