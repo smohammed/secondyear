@@ -68,7 +68,7 @@ for currregion in skyrange:
 
     if full == 1:
         #im1xmin, im1xmax, im1ymin, im1ymax = 1214, 3950, 3532, 51230 # Old range
-        im1xmin, im1xmax, im1ymin, im1ymax = 379, 2515, 2000, 38000
+        im1xmin, im1xmax, im1ymin, im1ymax = 379, 2515, 2000, 38000 # Out of 
     if partial == 1:
         im1xmin, im1xmax, im1ymin, im1ymax = incscandict[currregion][0], incscandict[currregion][1], incscandict[currregion][2], incscandict[currregion][3]
 
