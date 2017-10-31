@@ -1667,6 +1667,7 @@ c2['TI_FE'] = c2['TI_H'] / c2['FE_H']
 c2['V_FE'] = c2['V_H'] / c2['FE_H']
 
 
+
 ######################################################################
 # CMD with lim mag G = 20
 ######################################################################
@@ -1769,7 +1770,7 @@ comb['angsep'] = angsep
 cols = fits.ColDefs([fits.Column(name='nuv_mag', format='D', array=comb['nuv_mag']), fits.Column(name='nuv_magerr', format='D', array=comb['nuv_magerr']), fits.Column(name='fuv_mag', format='D', array=comb['fuv_mag']), fits.Column(name='fuv_magerr', format='D', array=comb['fuv_magerr']), fits.Column(name='gl_gais', format='D', array=comb['gl_gais']), fits.Column(name='gb_gais', format='D', array=comb['gb_gais']), fits.Column(name='ra_gais', format='D', array=comb['ra_gais']), fits.Column(name='dec_gais', format='D', array=comb['dec_gais']),fits.Column(name='hip', format='J', array=comb['hip']),fits.Column(name='tycho2_id', format='12A', array=comb['tycho2_id']),fits.Column(name='ra_tgas', format='D', array=comb['ra_tgas']),fits.Column(name='ra_error', format='D', array=comb['ra_error']),fits.Column(name='dec_tgas', format='D', array=comb['dec_tgas']),fits.Column(name='dec_error', format='D', array=comb['dec_error']),fits.Column(name='parallax', format='D', array=comb['parallax']),fits.Column(name='parallax_error', format='D', array=comb['parallax_error']),fits.Column(name='pmra', format='D', array=comb['pmra']),fits.Column(name='pmra_error', format='D', array=comb['pmra_error']),fits.Column(name='pmdec', format='D', array=comb['pmdec']),fits.Column(name='pmdec_error', format='D', array=comb['pmdec_error']),fits.Column(name='ra_dec_corr', format='E', array=comb['ra_dec_corr']),fits.Column(name='ra_parallax_corr', format='E', array=comb['ra_parallax_corr']),fits.Column(name='ra_pmra_corr', format='E', array=comb['ra_pmra_corr']),fits.Column(name='ra_pmdec_corr', format='E', array=comb['ra_pmdec_corr']),fits.Column(name='dec_parallax_corr', format='E', array=comb['dec_parallax_corr']),fits.Column(name='dec_pmra_corr', format='E', array=comb['dec_pmra_corr']),fits.Column(name='dec_pmdec_corr', format='E', array=comb['dec_pmdec_corr']),fits.Column(name='parallax_pmra_corr', format='E', array=comb['parallax_pmra_corr']),fits.Column(name='parallax_pmdec_corr', format='E', array=comb['parallax_pmdec_corr']),fits.Column(name='pmra_pmdec_corr', format='E', array=comb['pmra_pmdec_corr']),fits.Column(name='phot_g_mean_flux', format='D', array=comb['phot_g_mean_flux']),fits.Column(name='phot_g_mean_flux_error', format='D', array=comb['phot_g_mean_flux_error']),fits.Column(name='phot_g_mean_mag', format='D', array=comb['phot_g_mean_mag']),fits.Column(name='phot_variable_flag', format='13A', array=comb['phot_variable_flag']),fits.Column(name='gl_tgas', format='D', array=comb['gl_tgas']),fits.Column(name='gb_tgas', format='D', array=comb['gb_tgas']),fits.Column(name='ecl_lon', format='D', array=comb['ecl_lon']),fits.Column(name='ecl_lat', format='D', array=comb['ecl_lat']), fits.Column(name='angsep', format='D', array=comb['angsep'])])
 endtable = fits.BinTableHDU.from_columns(cols)
 endtable.writeto('gais_tgas.fits')
-
+vstack
 
 
 dust = fits.open('gais_tgas_dust.fits')[1].data
@@ -2005,8 +2006,6 @@ for i in range(12,21, 1):
     c2 = comb[q]
     avg.append(np.median(c2['nuv']-c2['nuv_mag']))
 
-
-
 #################################################
 # Combine all starcat files
 #################################################
@@ -2052,3 +2051,20 @@ for scan in pscats:
     comb = hstack([Table(alldata[catind]), Table(ps[psind])])
     comb['angsep'] = angsep
     ascii.write('starcat_ps1'+str(scan)+'_g10-20.txt', format='basic')
+
+
+
+#################################################
+# rc temp analysis
+#################################################
+rc = fits.open('rc_all_10-31.fits')[1].data
+
+x1 = (rc['nuv_mag']-rc['ebv']*7.24)-(rc['phot_g_mean_mag']-rc['ebv']*3.303)
+q = np.where(x1 < 6.6)
+nuvv = (rc['nuv_mag']-rc['ebv']*7.24)-(rc['V_apass']-rc['ebv']*2.742)
+nuvb = (rc['nuv_mag']-rc['ebv']*7.24)-(rc['B_apass']-rc['ebv']*3.626)
+gv = (rc['phot_g_mean_mag']-rc['ebv']*3.303)-(rc['V_apass']-rc['ebv']*2.742)
+gb = (rc['phot_g_mean_mag']-rc['ebv']*3.303)-(rc['B_apass']-rc['ebv']*3.626)
+plt.scatter(rc['TEFF'], gb)
+plt.scatter(rc['TEFF'][q], gb[q])
+plt.show()
