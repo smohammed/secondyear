@@ -1626,9 +1626,8 @@ plt.show()
 
 
 ######################################################################
-# CMD with lim mag G = 20
+# Combine and format RC table
 ######################################################################
-#sg = fits.open('gais_tgas_match_dust.fits')[1].data
 sg = fits.open('gais_tgas_apass_dust.fits')[1].data
 sg = sg[~np.isnan(sg['ebv'])]
 sggal = SkyCoord(sg['gl_gais']*u.deg, sg['gb_gais']*u.deg, frame='galactic')
@@ -1647,7 +1646,30 @@ c1.remove_column('phot_g_mean_mag_2')
 c1.rename_column('phot_g_mean_mag_1', 'phot_g_mean_mag')
 c2.remove_column('phot_g_mean_mag_2')
 c2.rename_column('phot_g_mean_mag_1', 'phot_g_mean_mag')
+c1['catalog'] = 'apokask'
+c2['catalog'] = 'bovy14'
 
+c1['ALPHAFE'] = c1['ALPHA_M'] * c1['M_H'] / c1['FE_H']
+
+c2['AL_FE'] = c2['AL_H'] / c2['FE_H']
+c2['CA_FE'] = c2['CA_H'] / c2['FE_H']
+c2['C_FE'] = c2['C_H'] / c2['FE_H']
+c2['K_FE'] = c2['K_H'] / c2['FE_H']
+c2['MG_FE'] = c2['MG_H'] / c2['FE_H']
+c2['MN_FE'] = c2['MN_H'] / c2['FE_H']
+c2['NA_FE'] = c2['NA_H'] / c2['FE_H']
+c2['NI_FE'] = c2['NI_H'] / c2['FE_H']
+c2['N_FE'] = c2['N_H'] / c2['FE_H']
+c2['O_FE'] = c2['O_H'] / c2['FE_H']
+c2['SI_FE'] = c2['SI_H'] / c2['FE_H']
+c2['S_FE'] = c2['S_H'] / c2['FE_H']
+c2['TI_FE'] = c2['TI_H'] / c2['FE_H']
+c2['V_FE'] = c2['V_H'] / c2['FE_H']
+
+
+######################################################################
+# CMD with lim mag G = 20
+######################################################################
 #cbarax = 'Fe_H'
 #cbarax = 'lnM'
 #cbarax = 'lnAge'
