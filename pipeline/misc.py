@@ -2059,7 +2059,7 @@ for scan in pscats:
 #################################################
 rc = fits.open('rc_all_10-31.fits')[1].data
 
-x1 = (rc['nuv_mag']-rc['ebv']*7.24)-(rc['phot_g_mean_mag']-rc['ebv']*3.303)
+nuvg = (rc['nuv_mag']-rc['ebv']*7.24)-(rc['phot_g_mean_mag']-rc['ebv']*3.303)
 q = np.where(x1 < 6.6)
 nuvv = (rc['nuv_mag']-rc['ebv']*7.24)-(rc['V_apass']-rc['ebv']*2.742)
 nuvb = (rc['nuv_mag']-rc['ebv']*7.24)-(rc['B_apass']-rc['ebv']*3.626)
@@ -2068,3 +2068,17 @@ gb = (rc['phot_g_mean_mag']-rc['ebv']*3.303)-(rc['B_apass']-rc['ebv']*3.626)
 plt.scatter(rc['TEFF'], gb)
 plt.scatter(rc['TEFF'][q], gb[q])
 plt.show()
+
+bv = (rc['B_apass']-rc['ebv']*3.626)-(rc['v_apass']-rc['ebv']*2.742)
+
+
+x1 = rc['nuv_mag']-rc['phot_g_mean_mag']
+x2 = (rc['nuv_mag']-rc['ebv']*7.24)-(rc['phot_g_mean_mag']-rc['ebv']*3.303)
+y = rc['FE_H']
+
+z1 = np.polyfit(x1, y, 1)
+z2 = np.polyfit(x2, y, 1)
+p1 = np.poly1d(z1)
+p2 = np.poly1d(z2)
+xp = np.linspace(6, 11, 50)
+
