@@ -2072,6 +2072,9 @@ plt.show()
 bv = (rc['B_apass']-rc['ebv']*3.626)-(rc['v_apass']-rc['ebv']*2.742)
 
 
+#################################################
+# rc fit lines
+#################################################
 x1 = rc['nuv_mag']-rc['phot_g_mean_mag']
 x2 = (rc['nuv_mag']-rc['ebv']*7.24)-(rc['phot_g_mean_mag']-rc['ebv']*3.303)
 y = rc['FE_H']
@@ -2082,3 +2085,31 @@ p1 = np.poly1d(z1)
 p2 = np.poly1d(z2)
 xp = np.linspace(6, 11, 50)
 
+
+#################################################
+# photutils parameters
+#################################################
+import photutils
+from astropy.stats import sigma_clipped_stats
+from photutils import DAOStarFinder
+
+img = fits.open('im1_0014.fits')[0].data
+mean, median, std = sigma_clipped_stats(img, sigma=3.0, iters=5)  
+daofind = DAOStarFinder(fwhm=3.0, threshold=3.*std)
+sources = daofind(img - median)
+
+from astropy.visualization import SqrtStretch
+from astropy.visualization.mpl_normalize import ImageNormalize
+positions = (sources['xcentroid'], sources['ycentroid'])
+apertures = photutils.CircularAperture(positions, r=4.)
+norm = ImageNormalize(stretch=SqrtStretch())
+plt.imshow(img, cmap=cm.gray, origin='lower', norm=norm)
+apertures.plot(color='blue', lw=1.5, alpha=0.5)
+
+from astropy.stats import SigmaClip
+from photutils import Background2D, MedianBackground
+
+sigma_clip = SigmaClip(sigma=3., iters=10)
+bkg_est = MedianBackground()
+
+bkg = Background2D(img, (30, 30), filter_size=(7,7), sigma_clip=sigma_clip, bkg_estimator=bkg_est)
