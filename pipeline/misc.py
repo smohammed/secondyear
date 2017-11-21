@@ -2098,6 +2098,8 @@ mean, median, std = sigma_clipped_stats(img, sigma=3.0, iters=5)
 daofind = DAOStarFinder(fwhm=3.0, threshold=3.*std)
 sources = daofind(img - median)
 
+
+
 from astropy.visualization import SqrtStretch
 from astropy.visualization.mpl_normalize import ImageNormalize
 positions = (sources['xcentroid'], sources['ycentroid'])

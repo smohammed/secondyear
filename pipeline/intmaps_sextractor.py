@@ -21,8 +21,9 @@ from astropy.convolution import convolve, Gaussian2DKernel
 #scans = ['0014', '0032', '0059', '0203', '0239', '0356', '0392', '0743', '1103']
 #scans = ['0014']#, '0032','0059', '0203', '0239']  # These scans supposively has the half pixel fix, as of 04/17
 
-scans = ['0023', '0239', '0032', '0203', '0446', '0464', '0473', '0806', '0815', '1301', '1310', '1319', '1616', '1634', '1679', '2174', '2183', '2192', '2714', '2750', '3236', '3245', '3281']
+#scans = ['0005', '0014', '0023','0032','0041','0050','0059','0068','0086','0095','0104']
 
+scans = ['0113', '0113', '0113', '0122', '0122', '0122', '0140', '0140', '0140', '0149', '0149', '0149', '0158', '0158', '0158', '0167', '0167', '0167', '0176', '0176', '0176', '0185', '0185', '0185', '0194', '0194', '0194', '0203', '0203', '0203', '0212', '0212', '0212', '0221', '0221', '0221', '0230', '0230', '0230', '0239', '0239', '0239', '0248', '0248', '0248', '0257', '0257', '0257', '0284', '0284', '0284', '0293', '0293', '0293', '0302', '0302', '0302', '0311', '0311', '0311', '0320', '0320', '0320', '0329', '0329', '0329', '0338', '0338', '0338', '0347', '0347', '0347', '0356', '0356', '0356', '0392', '0392', '0392', '0428', '0428', '0428', '0437', '0437', '0437', '0446', '0446', '0446', '0455', '0455', '0455', '0464', '0464', '0464', '0473', '0473', '0473', '0482', '0482', '0482', '0491', '0491', '0491', '0500', '0500', '0500']
 
 # Incomplete scans
 incscans = ['9.5', '14.9', '79.7', '90.5', '91.4', '103.1', '104.0', '122.9', '127.4', '223.7', '273.2', '283.1', '289.4', '306.5', '309.2', '324.5', '329.9', '338.0', '339.8', '342.5', '343.4', '345.2', '348.8', '349.7', '350.6', '351.5', '352.4', '353.3', '354.2', '355.1', '356.0', '357.8']
@@ -41,8 +42,8 @@ code = 'det_thresh4_phot_autopar2.5_3.5'
 #########################################################################
 # Decide to run on full or partial scans
 #########################################################################
-run1 = 0
-run2 = 1
+run1 = 1
+run2 = 0
 
 full = 1
 partial = 0
@@ -62,16 +63,37 @@ for currregion in skyrange:
     print 'current region = ' + currregion
     region = currregion.replace('.', '')
 
-    hdu = fits.open('../fecmaps/07-22/count_map_'+region+'_in.fits')[0]
+    hdu = fits.open('../../galexscans/count_map_'+region+'_in.fits')[0]
     img = hdu.data
     wcsmap = WCS(hdu.header)
 
+    #find boundry
+    exp_hdu_list = fits.open('../../galexscans/count_map_'+region+'_exp.fits')
+    exp = exp_hdu_list[0].data
+    exp[np.isnan(exp)] = 0.
+    exp[exp>1000] = 0.
+    exp[exp<0] = 0.
+    ver = np.sum(exp, axis=0)
+    hor = np.sum(exp, axis=1)
+    half = np.argmax(ver)
+    sort =  np.argsort(np.absolute(ver-np.max(ver)*0.2))
+    im1xmin = sort[sort<half][0]
+    im1xmax = sort[sort>half][0]
+    print im1xmin, im1xmax, np.absolute(im1xmin-im1xmax)
+    half = np.argmax(hor)
+    sort =  np.argsort(np.absolute(hor-np.max(hor)*0.2))
+    im1ymin = sort[sort<half][0]
+    im1ymax = sort[sort>half][0]
+    print im1ymin, im1ymax, np.absolute(im1ymin-im1ymax)
+    exp_hdu_list.close()
+
+    '''
     if full == 1:
         #im1xmin, im1xmax, im1ymin, im1ymax = 1214, 3950, 3532, 51230 # Old range
         im1xmin, im1xmax, im1ymin, im1ymax = 379, 2515, 2000, 38000 # Out of 
     if partial == 1:
         im1xmin, im1xmax, im1ymin, im1ymax = incscandict[currregion][0], incscandict[currregion][1], incscandict[currregion][2], incscandict[currregion][3]
-
+    '''
     #########################################################################
     # Make cutouts of initial image to help with background correction
     #########################################################################
@@ -87,16 +109,16 @@ for currregion in skyrange:
     if run2 == 1:
         img = img[im1ymin:im1ymax, im1xmin:im1xmax]
         wcsmap = wcsmap[im1ymin:im1ymax, im1xmin:im1xmax]
-        bkgd = fits.open('../Dunmaps/background_im1_'+region+'_fec.fits')[0].data
+        bkgd = fits.open('../../galexscans/background_im1_'+region+'.fits')[0].data
         im1 = img - bkgd
         header = wcsmap.to_header()
 
     try:
-        fits.writeto('../Dunmaps/im1_'+region+'_fec.fits', im1, header, clobber=True)
+        fits.writeto('../../galexscans/im1_'+region+'.fits', im1, header, clobber=True)
 
     except IOError:
-        os.remove('../Dunmaps/im1_'+region+'_fec.fits')
-        fits.writeto('../Dunmaps/im1_'+region+'_fec.fits', im1, header, clobber=True)
+        os.remove('../../galexscans/im1_'+region+'.fits')
+        fits.writeto('../../galexscans/im1_'+region+'.fits', im1, header, clobber=True)
 
     print 'im1 saved'
 
@@ -104,12 +126,12 @@ for currregion in skyrange:
     # Run sextractor
     #########################################################################
     if run1 == 1:
-        os.system('sex ../Dunmaps/im1_'+region+'_fec.fits -c ~/sextractor/daofind.sex -CATALOG_NAME ../Dunmaps/sex_im1_'+region+'_fec_fwhm.fits -BACK_TYPE AUTO -CHECKIMAGE_NAME ../Dunmaps/background_im1_'+region+'_fec.fits')
+        os.system('sextractor ../../galexscans/im1_'+region+'.fits -c ~/sextractor/daofind.sex -CATALOG_NAME ../../galexscans/sex_im1_'+region+'.fits -BACK_TYPE AUTO -CHECKIMAGE_NAME ../../galexscans/background_im1_'+region+'.fits')
         #os.system('sex ../fecmaps/07-19/count_map_'+region+'_in.fits -c ~/sextractor/daofind.sex -CATALOG_NAME ../Dunmaps/sex_im1_'+region+'_fec_fwhm.fits -BACK_TYPE AUTO -CHECKIMAGE_NAME ../Dunmaps/background_im1_'+region+'_fec.fits')
 
     # With no background
     if run2 == 1:
-        os.system('sex ../Dunmaps/im1_'+region+'_fec.fits -c ~/sextractor/daofind.sex -CATALOG_NAME ../Dunmaps/sex_im1_'+region+'_fec_fwhm.fits -BACK_TYPE MANUAL -BACK_VALUE 0.0')
+        os.system('sextractor ../../galexscans/im1_'+region+'.fits -c ~/sextractor/daofind.sex -CATALOG_NAME ../../galexscans/sex_im1_'+region+'.fits -BACK_TYPE MANUAL -BACK_VALUE 0.0')
         #os.system('sex ../fecmaps/07-19/count_map_'+region+'_in.fits -c ~/sextractor/daofind.sex -CATALOG_NAME ../Dunmaps/sex_im1_'+region+'_fec_fwhm.fits -BACK_TYPE MANUAL -BACK_VALUE 0.0')
 
     # With weights
@@ -120,7 +142,7 @@ for currregion in skyrange:
     #########################################################################
     # Get output from sextractor, convert NUV
     #########################################################################
-    im1sex = Table.read('../Dunmaps/sex_im1_'+region+'_fec_fwhm.fits', format='fits')
+    im1sex = Table.read('../../galexscans/sex_im1_'+region+'.fits', format='fits')
 
     data = im1sex
     xfac = im1xmin
@@ -145,6 +167,6 @@ for currregion in skyrange:
 
     alldata = hstack([data, coord])
 
-    ascii.write(alldata, '../Dunmaps/fwhm/fec/07-22data/starcat_'+currregion+'mapweight_fec_fwhm.txt', format='ipac')
+    ascii.write(alldata, '../../galexscans/starcat_'+currregion+'11-10.txt', format='ipac')
 
     print 'Converted to gl, gb, finished'
