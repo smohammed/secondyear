@@ -23,7 +23,9 @@ from astropy.convolution import convolve, Gaussian2DKernel
 
 #scans = ['0005', '0014', '0023','0032','0041','0050','0059','0068','0086','0095','0104']
 
-scans = ['0113', '0113', '0113', '0122', '0122', '0122', '0140', '0140', '0140', '0149', '0149', '0149', '0158', '0158', '0158', '0167', '0167', '0167', '0176', '0176', '0176', '0185', '0185', '0185', '0194', '0194', '0194', '0203', '0203', '0203', '0212', '0212', '0212', '0221', '0221', '0221', '0230', '0230', '0230', '0239', '0239', '0239', '0248', '0248', '0248', '0257', '0257', '0257', '0284', '0284', '0284', '0293', '0293', '0293', '0302', '0302', '0302', '0311', '0311', '0311', '0320', '0320', '0320', '0329', '0329', '0329', '0338', '0338', '0338', '0347', '0347', '0347', '0356', '0356', '0356', '0392', '0392', '0392', '0428', '0428', '0428', '0437', '0437', '0437', '0446', '0446', '0446', '0455', '0455', '0455', '0464', '0464', '0464', '0473', '0473', '0473', '0482', '0482', '0482', '0491', '0491', '0491', '0500', '0500', '0500']
+scans = ['0014', '0086']
+
+#scans = ['0113', '0113', '0113', '0122', '0122', '0122', '0140', '0140', '0140', '0149', '0149', '0149', '0158', '0158', '0158', '0167', '0167', '0167', '0176', '0176', '0176', '0185', '0185', '0185', '0194', '0194', '0194', '0203', '0203', '0203', '0212', '0212', '0212', '0221', '0221', '0221', '0230', '0230', '0230', '0239', '0239', '0239', '0248', '0248', '0248', '0257', '0257', '0257', '0284', '0284', '0284', '0293', '0293', '0293', '0302', '0302', '0302', '0311', '0311', '0311', '0320', '0320', '0320', '0329', '0329', '0329', '0338', '0338', '0338', '0347', '0347', '0347', '0356', '0356', '0356', '0392', '0392', '0392', '0428', '0428', '0428', '0437', '0437', '0437', '0446', '0446', '0446', '0455', '0455', '0455', '0464', '0464', '0464', '0473', '0473', '0473', '0482', '0482', '0482', '0491', '0491', '0491', '0500', '0500', '0500']
 
 # Incomplete scans
 incscans = ['9.5', '14.9', '79.7', '90.5', '91.4', '103.1', '104.0', '122.9', '127.4', '223.7', '273.2', '283.1', '289.4', '306.5', '309.2', '324.5', '329.9', '338.0', '339.8', '342.5', '343.4', '345.2', '348.8', '349.7', '350.6', '351.5', '352.4', '353.3', '354.2', '355.1', '356.0', '357.8']
@@ -38,12 +40,24 @@ filt = 'gauss_3.0_7x7.conv'
 code = 'det_thresh4_phot_autopar2.5_3.5'
 # Det Thresh = 4, Analysis Thresh = 3.5
 
+def createCircularMask(h, w, center=None, radius=None):
+    if center is None: # use the middle of the image
+        center = [int(w/2), int(h/2)]
+    if radius is None: # use the smallest distance between the center and image walls
+        radius = min(center[0], center[1], w-center[0], h-center[1])
+
+    Y, X = np.ogrid[:h, :w]
+    dist_from_center = np.sqrt((X - center[0])**2 + (Y-center[1])**2)
+    mask = dist_from_center <= radius
+    return mask
+
 
 #########################################################################
 # Decide to run on full or partial scans
 #########################################################################
 run1 = 1
 run2 = 0
+run3 = 0
 
 full = 1
 partial = 0
@@ -107,18 +121,32 @@ for currregion in skyrange:
         print 'Smoothing finished'
 
     if run2 == 1:
+        im2 = img.copy()
+        catalog = Table.read('../../galexscans/starcat_'+currregion+'_11-10.txt', format='ascii')
+        c2 = catalog[np.where(catalog['nuv'] < 13)]
+        h, w = img.shape[:2]
+
+        for i in range(len(c2)):
+            mask = createCircularMask(h, w, center=[c2['X_IMAGE'][i], c2['Y_IMAGE'][i]], radius=50)
+            im2[mask] = 0
+
+        fits.writeto('im2_'+region+'_masked.fits', im2, hdu.header, clobber=True)
+        
+        
+    if run3 == 1:
         img = img[im1ymin:im1ymax, im1xmin:im1xmax]
         wcsmap = wcsmap[im1ymin:im1ymax, im1xmin:im1xmax]
         bkgd = fits.open('../../galexscans/background_im1_'+region+'.fits')[0].data
         im1 = img - bkgd
         header = wcsmap.to_header()
 
-    try:
-        fits.writeto('../../galexscans/im1_'+region+'.fits', im1, header, clobber=True)
+    if (run1 or run2):
+        try:
+            fits.writeto('../../galexscans/im1_'+region+'.fits', im1, header, clobber=True)
 
-    except IOError:
-        os.remove('../../galexscans/im1_'+region+'.fits')
-        fits.writeto('../../galexscans/im1_'+region+'.fits', im1, header, clobber=True)
+        except IOError:
+            os.remove('../../galexscans/im1_'+region+'.fits')
+            fits.writeto('../../galexscans/im1_'+region+'.fits', im1, header, clobber=True)
 
     print 'im1 saved'
 
@@ -127,12 +155,16 @@ for currregion in skyrange:
     #########################################################################
     if run1 == 1:
         os.system('sextractor ../../galexscans/im1_'+region+'.fits -c ~/sextractor/daofind.sex -CATALOG_NAME ../../galexscans/sex_im1_'+region+'.fits -BACK_TYPE AUTO -CHECKIMAGE_NAME ../../galexscans/background_im1_'+region+'.fits')
-        #os.system('sex ../fecmaps/07-19/count_map_'+region+'_in.fits -c ~/sextractor/daofind.sex -CATALOG_NAME ../Dunmaps/sex_im1_'+region+'_fec_fwhm.fits -BACK_TYPE AUTO -CHECKIMAGE_NAME ../Dunmaps/background_im1_'+region+'_fec.fits')
 
-    # With no background
+
+    # Now on masked image, masking NUV < 13
     if run2 == 1:
+        os.system('sextractor ../../galexscans/im2_'+region+'_masked.fits -c ~/sextractor/daofind.sex -CATALOG_NAME\ ../../galexscans/sex_im2_'+region+'_masked.fits -BACK_TYPE AUTO -CHECKIMAGE_NAME ../../galexscans/background_im1_'+region+'.fits')
+        
+        
+    # With no background step, subtract background prior to this
+    if run3 == 1:
         os.system('sextractor ../../galexscans/im1_'+region+'.fits -c ~/sextractor/daofind.sex -CATALOG_NAME ../../galexscans/sex_im1_'+region+'.fits -BACK_TYPE MANUAL -BACK_VALUE 0.0')
-        #os.system('sex ../fecmaps/07-19/count_map_'+region+'_in.fits -c ~/sextractor/daofind.sex -CATALOG_NAME ../Dunmaps/sex_im1_'+region+'_fec_fwhm.fits -BACK_TYPE MANUAL -BACK_VALUE 0.0')
 
     # With weights
     #os.system('sex ../Dunmaps/im1_'+region+'.fits -c ~/sextractor/daofind.sex -CATALOG_NAME ../Dunmaps/sex_im1_'+region+'fwhm.fits -WEIGHT_IMAGE ../Dunmaps/background/background_im1_'+region+'.fits')
@@ -167,6 +199,6 @@ for currregion in skyrange:
 
     alldata = hstack([data, coord])
 
-    ascii.write(alldata, '../../galexscans/starcat_'+currregion+'11-10.txt', format='ipac')
+    ascii.write(alldata, '../../galexscans/starcat_'+currregion+'_11-10.txt', format='ipac')
 
     print 'Converted to gl, gb, finished'
