@@ -23,7 +23,8 @@ from astropy.convolution import convolve, Gaussian2DKernel
 
 #scans = ['0005', '0014', '0023','0032','0041','0050','0059','0068','0086','0095','0104']
 
-scans = ['0014', '0086']
+#scans = ['0014', '0086']
+scans = ['0752']
 
 #scans = ['0113', '0113', '0113', '0122', '0122', '0122', '0140', '0140', '0140', '0149', '0149', '0149', '0158', '0158', '0158', '0167', '0167', '0167', '0176', '0176', '0176', '0185', '0185', '0185', '0194', '0194', '0194', '0203', '0203', '0203', '0212', '0212', '0212', '0221', '0221', '0221', '0230', '0230', '0230', '0239', '0239', '0239', '0248', '0248', '0248', '0257', '0257', '0257', '0284', '0284', '0284', '0293', '0293', '0293', '0302', '0302', '0302', '0311', '0311', '0311', '0320', '0320', '0320', '0329', '0329', '0329', '0338', '0338', '0338', '0347', '0347', '0347', '0356', '0356', '0356', '0392', '0392', '0392', '0428', '0428', '0428', '0437', '0437', '0437', '0446', '0446', '0446', '0455', '0455', '0455', '0464', '0464', '0464', '0473', '0473', '0473', '0482', '0482', '0482', '0491', '0491', '0491', '0500', '0500', '0500']
 
@@ -55,9 +56,9 @@ def createCircularMask(h, w, center=None, radius=None):
 #########################################################################
 # Decide to run on full or partial scans
 #########################################################################
-run1 = 0
+run1 = 1
 run2 = 0
-run3 = 1
+run3 = 0
 
 full = 1
 partial = 0
@@ -130,13 +131,13 @@ for currregion in skyrange:
             mask = createCircularMask(h, w, center=[c2['X_IMAGE'][i], c2['Y_IMAGE'][i]], radius=50)
             im2[mask] = 0
 
-        fits.writeto('im2_'+region+'_masked.fits', im2, hdu.header, clobber=True)
+        fits.writeto('../../galexscans/im2_'+region+'_masked.fits', im2, hdu.header, clobber=True)
         
         
     if run3 == 1:
         img = img[im1ymin:im1ymax, im1xmin:im1xmax]
         wcsmap = wcsmap[im1ymin:im1ymax, im1xmin:im1xmax]
-        bkgd = fits.open('../../galexscans/background_im1_'+region+'.fits')[0].data
+        bkgd = fits.open('../../galexscans/background_im2_'+region+'.fits')[0].data
         im1 = img - bkgd
         header = wcsmap.to_header()
 
@@ -159,9 +160,11 @@ for currregion in skyrange:
 
     # Now on masked image, masking NUV < 13
     if run2 == 1:
-        os.system('sextractor ../../galexscans/im2_'+region+'_masked.fits -c ~/sextractor/daofind.sex -CATALOG_NAME\ ../../galexscans/sex_im2_'+region+'_masked.fits -BACK_TYPE AUTO -CHECKIMAGE_NAME ../../galexscans/background_im1_'+region+'.fits')
-        
-        
+        os.system('sextractor ../../galexscans/im2_'+region+'_masked.fits -c ~/sextractor/daofind.sex -CATALOG_NAME ../../galexscans/sex_im1_'+region+'.fits -BACK_TYPE AUTO -CHECKIMAGE_NAME ../../galexscans/background_im2_'+region+'.fits')
+
+        #os.system('sextractor ../../galexscans/im2_'+region+'_masked.fits -c ~/sextractor/daofind.sex -CATALOG_NAME ../../galexscans/sex_im2_'+region'.fits -BACK_TYPE AUTO -CHECKIMAGE_NAME ../../galexscans/background_im2_'+region+'.fits')
+
+
     # With no background step, subtract background prior to this
     if run3 == 1:
         os.system('sextractor ../../galexscans/im1_'+region+'.fits -c ~/sextractor/daofind.sex -CATALOG_NAME ../../galexscans/sex_im1_'+region+'.fits -BACK_TYPE MANUAL -BACK_VALUE 0.0')
