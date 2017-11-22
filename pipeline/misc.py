@@ -1883,13 +1883,13 @@ cmap = ax1.scatter((rc['nuv_mag']-rc['phot_g_mean_mag'])[thin], rc['FE_H'][thin]
 ax1.errorbar((rc['nuv_mag']-rc['phot_g_mean_mag'])[thin], rc['FE_H'][thin], xerr=(rc['nuv_magerr']-rc['Gerr'])[thin], yerr=rc['FE_H_ERR'][thin], ecolor='black', fmt=None, marker=None, mew=0, elinewidth=1.3, **{"zorder":0})
 ax1.scatter((rc['nuv_mag']-rc['phot_g_mean_mag'])[thick], rc['FE_H'][thick], c=rc['ALPHAFE'][thick], s=200, vmin=-0.05, vmax=0.3, marker='s', linewidth=3, cmap=plasma,**{"zorder":5})
 ax1.errorbar((rc['nuv_mag']-rc['phot_g_mean_mag'])[thick], rc['FE_H'][thick], xerr=(rc['nuv_magerr']-rc['Gerr'])[thick], yerr=rc['FE_H_ERR'][thick], ecolor='black', fmt=None, marker=None, mew=0, elinewidth=1.3, **{"zorder":0})
-ax1.plot(x1, line1, linewidth=2, c='black', zorder=10)
+#ax1.plot(x1, line1, linewidth=2, c='black', zorder=10)
 
 ax2.scatter(((rc['nuv_mag']-rc['ebv']*7.24)-(rc['phot_g_mean_mag']-rc['ebv']*3.303))[thin], rc['FE_H'][thin], c=rc['ALPHAFE'][thin], s=120, label='Thin disk', vmin=-0.05, vmax=0.3, marker='D', cmap=plasma, **{"zorder":5})
 ax2.errorbar(((rc['nuv_mag']-rc['ebv']*7.24)-(rc['phot_g_mean_mag']-rc['ebv']*3.303))[thin], rc['FE_H'][thin], xerr=(rc['nuv_magerr']-rc['Gerr'])[thin], yerr=rc['FE_H_ERR'][thin], ecolor='black', fmt=None, marker=None, mew=0, elinewidth=1.3, **{"zorder":0})
 ax2.scatter(((rc['nuv_mag']-rc['ebv']*7.24)-(rc['phot_g_mean_mag']-rc['ebv']*3.303))[thick], rc['FE_H'][thick], c=rc['ALPHAFE'][thick], s=200, label='Thick disk', vmin=-0.05, vmax=0.3, marker='s', linewidth=3, cmap=plasma, **{"zorder":5})
 ax2.errorbar(((rc['nuv_mag']-rc['ebv']*7.24)-(rc['phot_g_mean_mag']-rc['ebv']*3.303))[thick], rc['FE_H'][thick], xerr=(rc['nuv_magerr']-rc['Gerr'])[thick], yerr=rc['FE_H_ERR'][thick], ecolor='black', fmt=None, marker=None, mew=0, elinewidth=1.3, **{"zorder":0})
-ax2.plot(x2, line2, linewidth=2, c='black', zorder=10)
+#ax2.plot(x2, line2, linewidth=2, c='black', zorder=10)
 
 #ax2.plot(x2, 0.22222906*x2 - 1.92779686, linewidth=2, c='blue', zorder=10)
 

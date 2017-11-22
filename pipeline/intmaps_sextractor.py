@@ -55,9 +55,9 @@ def createCircularMask(h, w, center=None, radius=None):
 #########################################################################
 # Decide to run on full or partial scans
 #########################################################################
-run1 = 1
+run1 = 0
 run2 = 0
-run3 = 0
+run3 = 1
 
 full = 1
 partial = 0
@@ -140,7 +140,7 @@ for currregion in skyrange:
         im1 = img - bkgd
         header = wcsmap.to_header()
 
-    if (run1 or run2):
+    if (run1 or run3):
         try:
             fits.writeto('../../galexscans/im1_'+region+'.fits', im1, header, clobber=True)
 
