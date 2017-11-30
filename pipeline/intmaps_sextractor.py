@@ -56,8 +56,8 @@ def createCircularMask(h, w, center=None, radius=None):
 #########################################################################
 # Decide to run on full or partial scans
 #########################################################################
-run1 = 1
-run2 = 0
+run1 = 0
+run2 = 1
 run3 = 0
 
 full = 1

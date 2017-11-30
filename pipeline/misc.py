@@ -1967,6 +1967,9 @@ plt.show()
 ######################################################################
 # CMD with MG and MNUV
 ######################################################################
+sg = fits.open('gais_tgas_apass_dust.fits')[1].data
+sg = sg[~np.isnan(sg['ebv'])]
+
 fig, (ax1, ax2) = plt.subplots(2, 1)
 scatter_contour((sg['nuv_mag']-sg['ebv']*7.24)-(sg['phot_g_mean_mag']-sg['ebv']*3.303), (sg['MNUV']-sg['ebv']*7.24), threshold=1000, log_counts=True, histogram2d_args=dict(bins=40), plot_args=dict(color='k', markersize=1, alpha=0.1), contour_args=dict(cmap=cm.gray), ax=ax2)
 scatter_contour((sg['nuv_mag']-sg['ebv']*7.24)-(sg['phot_g_mean_mag']-sg['ebv']*3.303), (sg['MG']-sg['ebv']*3.303), threshold=1000, log_counts=True, histogram2d_args=dict(bins=40), plot_args=dict(color='k', markersize=1, alpha=0.1), contour_args=dict(cmap=cm.gray), ax=ax1)
@@ -1982,10 +1985,10 @@ fig.subplots_adjust(hspace=0)
 ax1.set_xticklabels([])
 ax2.set_yticklabels(['', '2', '4', '6', '8', '10', '12', '14', '16'])
 
-#ax1.add_patch(matplotlib.patches.Rectangle((7.1, -1.1),2.9,2.4,facecolor='red',alpha=0.5))
-#ax2.add_patch(matplotlib.patches.Rectangle((7.2, 5.9),2.9,1.8,facecolor='red',alpha=0.5, angle=45))
-ax1.scatter(x[rccut], (sg['MG']-sg['ebv']*3.303)[rccut], edgecolor='none', alpha=0.01)
-ax2.scatter(x[rccut], (sg['MNUV']-sg['ebv']*7.24)[rccut], edgecolor='none', alpha=0.01)
+#ax1.add_patch(matplotlib.patches.Rectangle((7.2, -1.1),2.9,2.4,edgecolor='red',alpha=0.5))
+#ax2.add_patch(matplotlib.patches.Rectangle((7.2, 5.9),4.6,1.8,edgecolor='red',alpha=0.5, angle=45))
+#ax1.scatter(x[rccut], (sg['MG']-sg['ebv']*3.303)[rccut], edgecolor='none', alpha=0.01)
+#ax2.scatter(x[rccut], (sg['MNUV']-sg['ebv']*7.24)[rccut], edgecolor='none', alpha=0.01)
 plt.show()
 
 
@@ -2075,15 +2078,72 @@ bv = (rc['B_apass']-rc['ebv']*3.626)-(rc['v_apass']-rc['ebv']*2.742)
 #################################################
 # rc fit lines
 #################################################
-x1 = rc['nuv_mag']-rc['phot_g_mean_mag']
-x2 = (rc['nuv_mag']-rc['ebv']*7.24)-(rc['phot_g_mean_mag']-rc['ebv']*3.303)
-y = rc['FE_H']
+rc = fits.open('rc_all_10-31.fits')[1].data
+xa1 = rc['nuv_mag']-rc['phot_g_mean_mag']
+xb1 = (rc['nuv_mag']-rc['ebv']*7.24)-(rc['phot_g_mean_mag']-rc['ebv']*3.303)
+y1 = rc['FE_H']
 
-z1 = np.polyfit(x1, y, 1)
-z2 = np.polyfit(x2, y, 1)
-p1 = np.poly1d(z1)
-p2 = np.poly1d(z2)
+q = np.where(xb1 > 6.6)
+xa2 = xa1[q]
+xb2 = xb1[q]
+y2 = y1[q]
+
+za1 = np.polyfit(xa1, y1, 1)
+zb1 = np.polyfit(xb1, y1, 1)
+za2 = np.polyfit(xa2, y2, 1)
+zb2 = np.polyfit(xb2, y2, 1)
+
+pa1 = np.poly1d(za1)
+pb1 = np.poly1d(zb1)
+pa2 = np.poly1d(za2)
+pb2 = np.poly1d(zb2)
 xp = np.linspace(6, 11, 50)
+
+
+
+m = (0.095-.21)/(0+0.8)
+b = 0.095
+thick, = np.where((rc[q]['ALPHAFE'] > 0.08) & (rc[q]['ALPHAFE'] > (m*rc[q]['FE_H'] + b)))
+thin, = np.where((rc[q]['ALPHAFE'] < 0.08) | (rc[q]['ALPHAFE'] < (m*rc[q]['FE_H'] + b)))
+
+
+fig, (ax1, ax2) = plt.subplots(1, 2, sharey=True)
+cmap = ax1.scatter(xa2[thin], y2[thin], c=rc['ALPHAFE'][thin], s=120, vmin=-0.05, vmax=0.3, marker='D', cmap=plasma, **{"zorder":5})
+ax1.errorbar(xa2[thin], y2[thin], xerr=(rc['nuv_magerr']-rc['Gerr'])[thin], yerr=rc['FE_H_ERR'][thin], ecolor='black', fmt=None, marker=None, mew=0, elinewidth=1.3, **{"zorder":0})
+ax1.scatter(xa2[thick], y2[thick], c=rc['ALPHAFE'][thick], s=200, vmin=-0.05, vmax=0.3, marker='s', edgecolor='black', linewidth=3, cmap=plasma,**{"zorder":5})
+ax1.errorbar(xa2[thick], y2[thick], xerr=(rc['nuv_magerr']-rc['Gerr'])[thick], yerr=rc['FE_H_ERR'][thick], ecolor='black', fmt=None, marker=None, mew=0, elinewidth=1.3, **{"zorder":0})
+ax1.plot(xp, pa1(xp), linewidth=2, c='black', zorder=10)
+ax1.plot(xp, pa2(xp), linewidth=2, c='red', zorder=10)
+
+
+ax2.scatter(xb2[thin], y2[thin], c=rc['ALPHAFE'][thin], s=120, label='Thin disk', vmin=-0.05, vmax=0.3, marker='D', cmap=plasma, **{"zorder":5})
+ax2.errorbar(xb2[thin], y2[thin], xerr=(rc['nuv_magerr']-rc['Gerr'])[thin], yerr=rc['FE_H_ERR'][thin], ecolor='black', fmt=None, marker=None, mew=0, elinewidth=1.3, **{"zorder":0})
+ax2.scatter(xb2[thick], y2[thick], c=rc['ALPHAFE'][thick], s=200, label='Thick disk', vmin=-0.05, vmax=0.3, marker='s', edgecolor='black', linewidth=3, cmap=plasma, **{"zorder":5})
+ax2.errorbar(xb2[thick], y2[thick], xerr=(rc['nuv_magerr']-rc['Gerr'])[thick], yerr=rc['FE_H_ERR'][thick], ecolor='black', fmt=None, marker=None, mew=0, elinewidth=1.3, **{"zorder":0})
+ax2.plot(xp, pb1(xp), linewidth=2, c='black', zorder=10)
+ax2.plot(xp, pb2(xp), linewidth=2, c='red', zorder=10)
+
+
+ax1.set_xlim((5,11.9))
+ax2.set_xlim((5,11.9))
+ax1.set_ylim((-0.7, 0.5))
+ax2.set_ylim((-0.7, 0.5))
+ax1.set_xlabel('NUV - G')
+#ax2.set_xlabel('(NUV - E$_{B-V}$ * 7.24) - (G - E$_{B-V}$ * 3.303)')
+ax2.set_xlabel('(NUV - G)$_{0}$')
+ax1.set_ylabel('[Fe/H]')
+leg = ax2.legend(scatterpoints=1, loc=4)
+leg.legendHandles[0].set_color('black')
+leg.legendHandles[1].set_color('black')
+leg.legendHandles[0]._sizes = [150]
+leg.legendHandles[1]._sizes = [150]
+fig.subplots_adjust(wspace=0)
+fig.subplots_adjust(right=.84)
+cbar_ax = fig.add_axes([0.85, 0.1, 0.03, 0.8])
+#ax2.set_xticklabels([' ', '6', '7', '8', '9', '10', '11', '12'])
+fig.colorbar(cmap, cax=cbar_ax).set_label(r'[$\alpha$/Fe]')
+plt.show()
+
 
 
 #################################################
