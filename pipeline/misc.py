@@ -1917,6 +1917,8 @@ plt.show()
 ######################################################################
 # Color vs TEFF vs Fe/H
 ######################################################################
+m = (0.095-.21)/(0+0.8)
+b = 0.095
 thick, = np.where((rc['ALPHAFE'] > 0.08) & (rc['ALPHAFE'] > (m*rc['FE_H'] + b)))
 thin, = np.where((rc['ALPHAFE'] < 0.08) | (rc['ALPHAFE'] < (m*rc['FE_H'] + b)))
 y1 = (rc['B_apass']-rc['ebv']*3.626)-(rc['V_apass']-rc['ebv']*2.742)
@@ -1931,14 +1933,13 @@ err2 = np.sqrt(np.sum((line2-y2)**2/len(y2)))
 
 fig, (ax1, ax2) = plt.subplots(2, 1)
 cmap = ax1.scatter(rc['TEFF'][thin], ((rc['B_apass']-rc['ebv']*3.626)-(rc['V_apass']-rc['ebv']*2.742))[thin], s=80, c=rc['FE_H'][thin], cmap=viridis, vmin=-.5, vmax=.35, marker='D', label='Thin disk')
-ax1.scatter(rc['TEFF'][thick], ((rc['B_apass']-rc['ebv']*3.626)-(rc['V_apass']-rc['ebv']*2.742))[thick], s=200, c=rc['FE_H'][thick], cmap=viridis, vmin=-.5, vmax=.35, marker='s', label='Thick disk', linewidth='3')
-
+ax1.scatter(rc['TEFF'][thick], ((rc['B_apass']-rc['ebv']*3.626)-(rc['V_apass']-rc['ebv']*2.742))[thick], s=200, c=rc['FE_H'][thick], cmap=viridis, vmin=-.5, vmax=.35, marker='s', label='Thick disk', edgecolor='black', linewidth=3)
 ax1.errorbar(rc['TEFF'][thin], ((rc['B_apass']-rc['ebv']*3.626)-(rc['V_apass']-rc['ebv']*2.742))[thin], xerr=rc['TEFF_ERR'][thin], yerr=(rc['Berr_apass']-rc['Verr_apass'])[thin], ecolor='black', fmt=None, marker=None, mew=0, elinewidth=1.3, **{"zorder":0})
 
 ax1.plot(x, line1, linewidth=2, c='black', zorder=10)
 
 ax2.scatter(rc['TEFF'][thin], ((rc['nuv_mag']-rc['ebv']*7.24)-(rc['phot_g_mean_mag']-rc['ebv']*3.303))[thin], s=80, c=rc['FE_H'][thin], cmap=viridis, vmin=-.5, vmax=.35, marker='D')
-ax2.scatter(rc['TEFF'][thick], ((rc['nuv_mag']-rc['ebv']*7.24)-(rc['phot_g_mean_mag']-rc['ebv']*3.303))[thick], s=200, c=rc['FE_H'][thick], cmap=viridis, vmin=-.5, vmax=.35, marker='s', linewidth='3')
+ax2.scatter(rc['TEFF'][thick], ((rc['nuv_mag']-rc['ebv']*7.24)-(rc['phot_g_mean_mag']-rc['ebv']*3.303))[thick], s=200, c=rc['FE_H'][thick], cmap=viridis, vmin=-.5, vmax=.35, marker='s', linewidth=3)
 ax2.errorbar(rc['TEFF'][thin], ((rc['nuv_mag']-rc['ebv']*7.24)-(rc['phot_g_mean_mag']-rc['ebv']*3.303))[thin], xerr=rc['TEFF_ERR'][thin], yerr=(rc['nuv_magerr']-rc['Gerr'])[thin], ecolor='black', fmt=None, marker=None, mew=0, elinewidth=1.3, **{"zorder":0})
 
 ax2.plot(x, line2, linewidth=2, c='black', zorder=10)
