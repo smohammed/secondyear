@@ -1977,14 +1977,14 @@ scatter_contour((sg['nuv_mag']-sg['ebv']*7.24)-(sg['phot_g_mean_mag']-sg['ebv']*
 ax1.set_xlim((0, 12))
 ax1.set_ylim((8, -2))
 ax2.set_xlim((0, 12))
-ax2.set_ylim((17, 0))
+ax2.set_ylim((17.4, 0.4))
 #ax1.set_xlabel('(NUV - G)$_0$')
 ax2.set_xlabel('(NUV - G)$_0$')
 ax2.set_ylabel('M$_{NUV_0}$')
 ax1.set_ylabel('M$_{G_0}$')
 fig.subplots_adjust(hspace=0)
 ax1.set_xticklabels([])
-ax2.set_yticklabels(['', '2', '4', '6', '8', '10', '12', '14', '16'])
+#ax2.set_yticklabels(['', '2', '4', '6', '8', '10', '12', '14', '16'])
 
 #ax1.add_patch(matplotlib.patches.Rectangle((7.2, -1.1),2.9,2.4,edgecolor='red',alpha=0.5))
 #ax2.add_patch(matplotlib.patches.Rectangle((7.2, 5.9),4.6,1.8,edgecolor='red',alpha=0.5, angle=45))
@@ -1993,7 +1993,7 @@ ax2.set_yticklabels(['', '2', '4', '6', '8', '10', '12', '14', '16'])
 plt.show()
 
 
-
+box,= np.where((nuvg > 7.2) & (nuvg < 7.2+2.9) & (sg['MG'] > -1.1 + 2.4) & (sg['MG'] < -1.1))
 
 
 cols = fits.ColDefs([fits.Column(name='nuv_mag',format='D', array=comb['nuv_mag']),fits.Column(name='gl_gps',format='D', array=comb['gl_gps']),fits.Column(name='gb_gps',format='D', array=comb['gb_gps']),fits.Column(name='ra_gps',format='D', array=comb['ra_gps']),fits.Column(name='dec_gps',format='D', array=comb['dec_gps']),fits.Column(name='ra_tgas',format='D', array=comb['ra_tgas']),fits.Column(name='dec_tgas',format='D', array=comb['dec_tgas']),fits.Column(name='parallax',format='D', array=comb['parallax']),fits.Column(name='parallax_error',format='D', array=comb['parallax_error']),fits.Column(name='phot_g_mean_mag',format='D', array=comb['phot_g_mean_mag']),fits.Column(name='dist',format='D', array=comb['dist']),fits.Column(name='distmod',format='D', array=comb['distmod']),fits.Column(name='MG',format='D', array=comb['MG']),fits.Column(name='ebv',format='D', array=comb['ebv']),fits.Column(name='parallax_hogg',format='D', array=comb['parallax_hogg']),fits.Column(name='Bmag',format='D', array=comb['Bmag']),fits.Column(name='Vmag',format='D', array=comb['Vmag']),fits.Column(name='gmag',format='D', array=comb['gmag']),fits.Column(name='rmag',format='D', array=comb['rmag']),fits.Column(name='imag',format='D', array=comb['imag'])])
@@ -2176,3 +2176,24 @@ sigma_clip = SigmaClip(sigma=3., iters=10)
 bkg_est = MedianBackground()
 
 bkg = Background2D(img, (30, 30), filter_size=(7,7), sigma_clip=sigma_clip, bkg_estimator=bkg_est)
+
+
+
+cmd = Table.read('cmdfiles/cmd_merged_zt.txt', format='ascii')
+zrange = np.unique(cmd['Z'])
+agerange = np.unique(cmd['logage'])
+
+for i in zrange:
+	for j in agerange:
+		scatter_contour((sg['nuv_mag']-sg['ebv']*7.24)-(sg['phot_g_mean_mag']-sg['ebv']*3.303), (sg['MG']-sg['ebv']*3.303), threshold=1000, log_counts=True, histogram2d_args=dict(bins=40),plot_args=dict(color='k', markersize=1, alpha=0.1), contour_args=dict(cmap=cm.gray))
+		cmap = plt.scatter((rc['nuv_mag']-rc['ebv']*7.24)-(rc['phot_g_mean_mag']-rc['ebv']*3.303), (rc['MG']-rc['ebv']*3.303), c=rc['FE_H'], vmin=-0.5, vmax=0.35)
+		plt.colorbar(cmap).set_label('[Fe/H]')
+		plt.xlim(0, 12)
+		plt.ylim(8, -2)
+		cmd1 = cmd[np.where((cmd['Z'] == i) & (cmd['logage'] == j))]
+		plt.scatter(cmd1['NUV']-cmd1['G'], cmd1['G'], c='red', s=1)
+		plt.xlabel('(NUV - G)$_{0}$')
+		plt.ylabel('M$_{G_0}$')
+		plt.title('Z = '+str(i)+', logage = '+str(j))
+		plt.savefig('images/12-08-gaiacmd/Z'+str(i)+'-logage'+str(j)+'.png')
+		plt.clf()
