@@ -2197,3 +2197,44 @@ for i in zrange:
 		plt.title('Z = '+str(i)+', logage = '+str(j))
 		plt.savefig('images/12-08-gaiacmd/Z'+str(i)+'-logage'+str(j)+'.png')
 		plt.clf()
+
+################################################################
+# Calculate errors, get table for paper
+################################################################
+
+rc = fits.open('rc_all_10-31.fits')[1].data
+ra = rc['ra_tgas']
+dec = rc['dec_tgas']
+nuv = rc['nuv_mag'] - rc['ebv']*7.24
+nuvg = (rc['nuv_mag']-rc['ebv']*7.24)-(rc['phot_g_mean_mag']-rc['ebv']*3.303)
+nuverr = rc['nuv_magerr']
+nuvgerr = np.sqrt(rc['nuv_magerr']**2-rc['Gerr']**2)
+B = rc['B_apass'] - rc['ebv']*3.626
+bv = (rc['B_apass']-rc['ebv']*3.626)-(rc['v_apass']-rc['ebv']*2.742)
+Berr = rc['Berr_apass']
+
+bverr = np.sqrt(rc['Berr_apass']**2 - rc['Verr_apass']**2)
+bverr[np.isnan(bverr)] = Berr[np.isnan(bverr)]
+
+ebv = rc['ebv']
+dm = rc['distmod']
+
+feh = rc['FE_H']
+feherr = rc['FE_H_err']
+teff = rc['TEFF']
+tefferr = rc['TEFF_err']
+
+
+afe_apo = np.where(rc['ALPHA_M'] > 0)
+rc['ALPHAFE'][afe_apo] = (rc['ALPHA_M'] + rc['M_H'] - rc['FE_H'])[afe_apo]
+alphafe = rc['ALPHAFE']
+
+# for now use this. err is only for apo
+afeerr = np.zeros(len(rc))
+afeerr[afe_apo] = (alphafe * np.sqrt((rc['ALPHA_M_err']/rc['ALPHA_M'])**2 + (rc['M_H_err']/rc['M_H'])**2 + (rc['FE_H_err']/rc['FE_H'])**2))[afe_apo]
+
+
+table = Table([ra, dec, nuv, nuverr, nuvg, nuvgerr, B, Berr, bv, bverr, ebv, dm, feh, feherr, teff, tefferr, alphafe, afeerr])
+
+t1 = table[:10]
+ascii.write(t1, format='latex')
