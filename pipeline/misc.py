@@ -1816,7 +1816,11 @@ color = ((rc['nuv_mag']-rc['ebv']*7.24)-(rc['phot_g_mean_mag']-rc['ebv']*3.303))
 
 plt.scatter(rc['FE_H'][thin], rc['ALPHAFE'][thin], s=80, edgecolor='none', c=color[thin], label='Thin disk', vmin=7, vmax=11, marker='D')
 
-plt.scatter(rc['FE_H'][thick], rc['ALPHAFE'][thick], c=color[thick], s=200, marker='s', label='Thick disk', vmin=7, vmax=11, edgecolor='black', linewidth='3')
+plt.scatter(rc['FE_H'][thick], rc['ALPHAFE'][thick], c=color[thick], s=200, marker='s', label='Thick disk', vmin=7, vmax=11, edgecolor='black', linewidth=3)
+
+plt.errorbar(rc['FE_H'], rc['ALPHAFE'], xerr=(rc['FE_H_err']), yerr=afeerr, ecolor='black', fmt=None, marker=None, mew=0, elinewidth=1.3, **{"zorder":0})
+
+
 
 #plt.xlabel('(NUV - E$_{B-V}$ * 7.24) - (G - E$_{B-V}$ * 3.303)')
 plt.xlabel('[Fe/H]')
@@ -2077,7 +2081,7 @@ bv = (rc['B_apass']-rc['ebv']*3.626)-(rc['v_apass']-rc['ebv']*2.742)
 
 
 #################################################
-# rc fit lines
+# rc fit lines for Fe/H vs NUV - G
 #################################################
 rc = fits.open('rc_all_10-31.fits')[1].data
 xa1 = rc['nuv_mag']-rc['phot_g_mean_mag']
@@ -2085,6 +2089,7 @@ xb1 = (rc['nuv_mag']-rc['ebv']*7.24)-(rc['phot_g_mean_mag']-rc['ebv']*3.303)
 y1 = rc['FE_H']
 
 q = np.where(xb1 > 6.6)
+w = np.where(xb1 < 6.6)
 xa2 = xa1[q]
 xb2 = xb1[q]
 y2 = y1[q]
@@ -2104,26 +2109,26 @@ xp = np.linspace(6, 11, 50)
 
 m = (0.095-.21)/(0+0.8)
 b = 0.095
-thick, = np.where((rc[q]['ALPHAFE'] > 0.08) & (rc[q]['ALPHAFE'] > (m*rc[q]['FE_H'] + b)))
-thin, = np.where((rc[q]['ALPHAFE'] < 0.08) | (rc[q]['ALPHAFE'] < (m*rc[q]['FE_H'] + b)))
+thick, = np.where((rc['ALPHAFE'] > 0.08) & (rc['ALPHAFE'] > (m*rc['FE_H'] + b)))
+thin, = np.where((rc['ALPHAFE'] < 0.08) | (rc['ALPHAFE'] < (m*rc['FE_H'] + b)))
 
 
 fig, (ax1, ax2) = plt.subplots(1, 2, sharey=True)
-cmap = ax1.scatter(xa2[thin], y2[thin], c=rc['ALPHAFE'][thin], s=120, vmin=-0.05, vmax=0.3, marker='D', cmap=plasma, **{"zorder":5})
-ax1.errorbar(xa2[thin], y2[thin], xerr=(rc['nuv_magerr']-rc['Gerr'])[thin], yerr=rc['FE_H_ERR'][thin], ecolor='black', fmt=None, marker=None, mew=0, elinewidth=1.3, **{"zorder":0})
-ax1.scatter(xa2[thick], y2[thick], c=rc['ALPHAFE'][thick], s=200, vmin=-0.05, vmax=0.3, marker='s', edgecolor='black', linewidth=3, cmap=plasma,**{"zorder":5})
-ax1.errorbar(xa2[thick], y2[thick], xerr=(rc['nuv_magerr']-rc['Gerr'])[thick], yerr=rc['FE_H_ERR'][thick], ecolor='black', fmt=None, marker=None, mew=0, elinewidth=1.3, **{"zorder":0})
-ax1.plot(xp, pa1(xp), linewidth=2, c='black', zorder=10)
-ax1.plot(xp, pa2(xp), linewidth=2, c='red', zorder=10)
+cmap = ax1.scatter(xa1[thin], y1[thin], c=rc['ALPHAFE'][thin], s=120, vmin=-0.05, vmax=0.3, marker='D', cmap=plasma, **{"zorder":5})
+ax1.errorbar(xa1[thin], y1[thin], xerr=(rc['nuv_magerr']-rc['Gerr'])[thin], yerr=rc['FE_H_ERR'][thin], ecolor='black', fmt=None, marker=None, mew=0, elinewidth=1.3, **{"zorder":0})
+ax1.scatter(xa1[thick], y1[thick], c=rc['ALPHAFE'][thick], s=200, vmin=-0.05, vmax=0.3, marker='s', edgecolor='blue', linewidth=2, cmap=plasma,**{"zorder":5})
+ax1.errorbar(xa1[thick], y1[thick], xerr=(rc['nuv_magerr']-rc['Gerr'])[thick], yerr=rc['FE_H_ERR'][thick], ecolor='black', fmt=None, marker=None, mew=0, elinewidth=1.3, **{"zorder":0})
+ax1.plot(xp, pa1(xp), linewidth=2, c='red', zorder=10)
+ax1.plot(xp, pa2(xp), linewidth=2, c='black', zorder=10)
+ax1.scatter(xa1[w], y1[w], c=rc['ALPHAFE'][w], s=120, vmin=-0.05, vmax=0.3, marker='D', cmap=plasma, edgecolor='red', linewidth=2, **{"zorder":5})
 
-
-ax2.scatter(xb2[thin], y2[thin], c=rc['ALPHAFE'][thin], s=120, label='Thin disk', vmin=-0.05, vmax=0.3, marker='D', cmap=plasma, **{"zorder":5})
-ax2.errorbar(xb2[thin], y2[thin], xerr=(rc['nuv_magerr']-rc['Gerr'])[thin], yerr=rc['FE_H_ERR'][thin], ecolor='black', fmt=None, marker=None, mew=0, elinewidth=1.3, **{"zorder":0})
-ax2.scatter(xb2[thick], y2[thick], c=rc['ALPHAFE'][thick], s=200, label='Thick disk', vmin=-0.05, vmax=0.3, marker='s', edgecolor='black', linewidth=3, cmap=plasma, **{"zorder":5})
-ax2.errorbar(xb2[thick], y2[thick], xerr=(rc['nuv_magerr']-rc['Gerr'])[thick], yerr=rc['FE_H_ERR'][thick], ecolor='black', fmt=None, marker=None, mew=0, elinewidth=1.3, **{"zorder":0})
-ax2.plot(xp, pb1(xp), linewidth=2, c='black', zorder=10)
-ax2.plot(xp, pb2(xp), linewidth=2, c='red', zorder=10)
-
+ax2.scatter(xb1[thin], y1[thin], c=rc['ALPHAFE'][thin], s=120, label='Thin disk', vmin=-0.05, vmax=0.3, marker='D', cmap=plasma, **{"zorder":5})
+ax2.errorbar(xb1[thin], y1[thin], xerr=(rc['nuv_magerr']-rc['Gerr'])[thin], yerr=rc['FE_H_ERR'][thin], ecolor='black', fmt=None, marker=None, mew=0, elinewidth=1.3, **{"zorder":0})
+ax2.scatter(xb1[thick], y1[thick], c=rc['ALPHAFE'][thick], s=200, label='Thick disk', vmin=-0.05, vmax=0.3, marker='s', edgecolor='blue', linewidth=2, cmap=plasma, **{"zorder":5})
+ax2.errorbar(xb1[thick], y1[thick], xerr=(rc['nuv_magerr']-rc['Gerr'])[thick], yerr=rc['FE_H_ERR'][thick], ecolor='black', fmt=None, marker=None, mew=0, elinewidth=1.3, **{"zorder":0})
+ax2.plot(xp, pb1(xp), linewidth=2, c='red', zorder=10)
+ax2.plot(xp, pb2(xp), linewidth=2, c='black', zorder=10)
+ax2.scatter(xb1[w], y1[w], c=rc['ALPHAFE'][w], s=120, vmin=-0.05, vmax=0.3, marker='D', cmap=plasma, edgecolor='red', linewidth=2, **{"zorder":5})
 
 ax1.set_xlim((5,11.9))
 ax2.set_xlim((5,11.9))
@@ -2224,10 +2229,9 @@ feherr = rc['FE_H_err']
 teff = rc['TEFF']
 tefferr = rc['TEFF_err']
 
-
-afe_apo = np.where(rc['ALPHA_M'] > 0)
-rc['ALPHAFE'][afe_apo] = (rc['ALPHA_M'] + rc['M_H'] - rc['FE_H'])[afe_apo]
-alphafe = rc['ALPHAFE']
+#afe_apo = np.where(rc['ALPHA_M'] > 0)
+#rc['ALPHAFE'][afe_apo] = (rc['ALPHA_M'] + rc['M_H'] - rc['FE_H'])[afe_apo]
+#alphafe = rc['ALPHAFE']
 
 # for now use this. err is only for apo
 afeerr = np.zeros(len(rc))
