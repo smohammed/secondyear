@@ -14,14 +14,16 @@ from astropy.convolution import convolve, Gaussian2DKernel
 #########################################################################
 # Select desired field from list
 #########################################################################
-scans = ['216-226']
+# Already run
+#scans = ['0-10', '18-28', '27-37', '36-46', '45-55', '63-73', '108-118', '117-127', '126-136', '135-145', '189-199', '198-208', '207-217', '216-226', '270-280', '279-289', '288-298', '297-307', '351-1']
 
-# Incomplete scans
-#incscans = ['9.5', '14.9', '79.7', '90.5', '91.4', '103.1', '104.0', '122.9', '127.4', '223.7', '273.2', '283.1', '289.4', '306.5', '309.2', '324.5', '329.9', '338.0', '339.8', '342.5', '343.4', '345.2', '348.8', '349.7', '350.6', '351.5', '352.4', '353.3', '354.2', '355.1', '356.0', '357.8']
+# Run sextractor on these
+scans = ['144-154', '153-163', '162-172', '171-181', '180-190', '225-235', '234-244']
 
-# Must redo these for new scans, when available
-#incscandict = dict({'9.5': [1214, 3950, 12318, 52037], '14.9': [1214, 3950, 3532, 29730], '79.7': [1214, 3950, 26493, 51563], '90.5': [1214, 3950, 13600, 51230], '91.4': [1214, 3950, 18800, 51600], '103.1': [1214, 3950, 9300, 51600], '104.0': [1214, 3950, 26400, 51600], '122.9': [1214, 3950, 35000, 51600], '127.4': [1214, 3950, 21800, 51300], '223.7': [1214, 3950, 3300, 47000], '273.2': [1214, 3950, 13100, 52300], '283.1': [1214, 3950, 5700, 51600], '289.4': [1214, 3950, 37000, 51500], '306.5': [1214, 3950, 19000, 51500], '309.2': [1214, 3950, 33400, 52400], '324.5': [1214, 3950, 3200, 45000], '329.9': [1214, 3950, 27600, 44500], '338.0': [1214, 3950, 36000, 53000], '339.8': [1605, 3490, 7200, 53000], '342.5': [1214, 3950, 3000, 42900], '343.4': [1214, 3950, 12200, 52600], '345.2': [1214, 3950, 14600, 40800], '348.8': [1214, 3950, 30400, 52600], '349.7': [1214, 3950, 12100, 52600], '350.6': [1214, 3950, 13200, 52600], '351.5': [1214, 3950, 13380, 52600], '352.4': [1214, 3950, 15500, 52700], '353.3': [1214, 3950, 16400, 52700], '354.2': [1214, 3950, 17000, 52700], '355.1': [1214, 3950, 17700, 52700], '356.0': [1214, 3950, 22700, 52700], '357.8': [1214, 3950, 23600, 52700]})
+# Scans that still need smoothing
+#scans = ['243-253', '252-262', '261-271', '306-316', '315-325', '324-334', '333-343', '342-352', '72-82', '81-91', '90-100', '9-19', '99-109']
 
+skyrange = scans
 
 # Custom parameters that I use
 #filt = 'mexhat_4.0_9x9'
@@ -84,26 +86,13 @@ for currregion in skyrange:
     '''
 
     #########################################################################
-    # Make cutouts of initial image to help with background correction
+    # Run sextractor, subtract background from original and run again
     #########################################################################
+    os.system('sextractor ../../galexscans/im1_'+region+'.fits -c ~/sextractor/daofind.sex -CATALOG_NAME ../../galexscans/sex_im1_'+region+'.fits -BACK_TYPE AUTO -CHECKIMAGE_NAME ../../galexscans/background_im1_'+region+'.fits')
 
-    # This is done on the cluster
-    '''
-    if run1 == 1:
-        img = img[im1ymin:im1ymax, im1xmin:im1xmax]
-        wcsmap = wcsmap[im1ymin:im1ymax, im1xmin:im1xmax]
-        header = wcsmap.to_header()
-
-        gauss = Gaussian2DKernel(stddev=3)
-        im1 = convolve(img, gauss)
-        print 'Smoothing finished'
-
-    if run2 == 1:
-        img = img[im1ymin:im1ymax, im1xmin:im1xmax]
-        wcsmap = wcsmap[im1ymin:im1ymax, im1xmin:im1xmax]
-        bkgd = fits.open('../../galexscans/background_im2_'+region+'.fits')[0].data
-        im1 = img - bkgd
-        header = wcsmap.to_header()
+    bkgd = fits.open('../../galexscans/background_im1_'+region+'.fits')[0].data
+    im1 = img - bkgd
+    header = wcsmap.to_header()     
 
     try:
         fits.writeto('../../galexscans/im1_'+region+'.fits', im1, header, clobber=True)
@@ -112,24 +101,8 @@ for currregion in skyrange:
         os.remove('../../galexscans/im1_'+region+'.fits')
         fits.writeto('../../galexscans/im1_'+region+'.fits', im1, header, clobber=True)
 
-    print 'im1 saved'
-    '''
-
-    #########################################################################
-    # Run sextractor
-    #########################################################################
-    if run1 == 1:
-        os.system('sextractor ../../galexscans/im1_'+region+'.fits -c ~/sextractor/daofind.sex -CATALOG_NAME ../../galexscans/sex_im1_'+region+'.fits -BACK_TYPE AUTO -CHECKIMAGE_NAME ../../galexscans/background_im1_'+region+'.fits')
-
-        #os.system('sextractor ../../galexscans/im2_'+region+'_masked.fits -c ~/sextractor/daofind.sex -CATALOG_NAME ../../galexscans/sex_im2_'+region'.fits -BACK_TYPE AUTO -CHECKIMAGE_NAME ../../galexscans/background_im2_'+region+'.fits')
-
-
     # With no background step, subtract background prior to this
-    if run2 == 1:
-        os.system('sextractor ../../galexscans/im1_'+region+'.fits -c ~/sextractor/daofind.sex -CATALOG_NAME ../../galexscans/sex_im1_'+region+'.fits -BACK_TYPE MANUAL -BACK_VALUE 0.0')
-
-    # With weights
-    #os.system('sex ../Dunmaps/im1_'+region+'.fits -c ~/sextractor/daofind.sex -CATALOG_NAME ../Dunmaps/sex_im1_'+region+'fwhm.fits -WEIGHT_IMAGE ../Dunmaps/background/background_im1_'+region+'.fits')
+    os.system('sextractor ../../galexscans/im1_'+region+'.fits -c ~/sextractor/daofind.sex -CATALOG_NAME ../../galexscans/sex_im1_'+region+'.fits -BACK_TYPE MANUAL -BACK_VALUE 0.0')
 
     print 'SExtractor finished'
 
@@ -139,16 +112,8 @@ for currregion in skyrange:
     im1sex = Table.read('../../galexscans/sex_im1_'+region+'.fits', format='fits')
 
     data = im1sex
-    xfac = im1xmin
-    yfac = im1ymin
-    x_new = (data['X_IMAGE']+xfac)
-    y_new = (data['Y_IMAGE']+yfac)
     nuv = -2.5*np.log10(data['FLUX_AUTO']) + 20.08
-
-    data['x_new'] = x_new
-    data['y_new'] = y_new
     data['nuv'] = nuv
-
     data = data[~np.isnan(data['nuv'])]
 
     #########################################################################
