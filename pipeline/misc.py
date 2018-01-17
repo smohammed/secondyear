@@ -2242,3 +2242,27 @@ table = Table([ra, dec, nuv, nuverr, nuvg, nuvgerr, B, Berr, bv, bverr, ebv, dm,
 
 t1 = table[:10]
 ascii.write(t1, format='latex')
+
+
+################################################################
+# Make plots for scan outputs
+################################################################
+#scans = ['0-10', '18-28', '27-37', '36-46', '45-55', '63-73', '108-118', '117-127', '126-136', '135-145', '144-154', '153-163', '189-199', '198-208', '207-217', '216-226', '270-280', '279-289', '288-298', '297-307', '351-1']
+
+scans = ['72-82', '144-154', '225-235', '306-316', '81-91', '153-163', '234-244', '315-325', '90-100', '162-172', '243-253', '324-334', '9-19', '171-181', '252-262', '333-343', '99-109', '180-190', '261-271', '342-352']
+
+for scan in scans:
+	t = Table.read('starcat_'+scan+'_01_10_2018.txt', format='ascii')
+	plt.scatter(t['gl'], t['gb'], c=t['FWHM_IMAGE'], vmin=0, vmax=10, s=3)
+	plt.colorbar().set_label('FWHM')
+	plt.xlabel('gl')
+	plt.ylabel('gb')
+	plt.savefig('01-10-18_glgbvsfwhm_'+scan+'.png')
+	plt.clf()
+
+for scan in scans:
+	t = Table.read('starcat_'+scan+'_01_10_2018.txt', format='ascii')
+	plt.scatter(t['nuv'], t['FWHM_IMAGE'], s=1, c='black')
+	plt.ylim(0, 10)
+	plt.savefig('01-10-18_fwhmvsnuv_'+scan+'.png')
+	plt.clf()
