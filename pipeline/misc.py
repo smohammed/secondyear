@@ -2266,3 +2266,15 @@ for scan in scans:
 	plt.ylim(0, 10)
 	plt.savefig('01-10-18_fwhmvsnuv_'+scan+'.png')
 	plt.clf()
+
+from scan in scans:
+	hdu = fits.open('count_map'+scan+'_in.fits')[0]
+	wcs = WCS(hdu.header)
+	fig = plt.figure()
+	fig.add_subplot(111, projection=wcs)
+	plt.imshow(hdu.data, origin='lower', cmap=cm.gray, vmin=0, vmax=0.1)
+	plt.title(scan)
+	plt.ylim(-11, 11)
+	plt.savefig('01-10-18_glgb_'+scan+'.png')
+	plt.clf()
+
