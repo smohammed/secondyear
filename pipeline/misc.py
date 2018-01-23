@@ -2154,6 +2154,11 @@ leg.legendHandles[1]._sizes = [150]
 fig.subplots_adjust(wspace=0)
 fig.subplots_adjust(right=.84)
 cbar_ax = fig.add_axes([0.85, 0.1, 0.03, 0.8])
+ax1.annotate('[Fe/H] = 0.180 * (NUV-G) - 1.630 ', xy=(5.1, 0.47), color='black', size=15)
+ax1.annotate('[Fe/H] = 0.172 * (NUV-G) - 1.552', xy=(5.1, 0.43), color='red', size=15)
+ax2.annotate('[Fe/H] = 0.230 * (NUV-G)$_0$ - 1.987', xy=(5.1, 0.47), color='black', size=15)
+ax2.annotate('[Fe/H] = 0.203 * (NUV-G)$_0$ - 1.751', xy=(5.1, 0.43), color='red', size=15)
+
 #ax2.set_xticklabels([' ', '6', '7', '8', '9', '10', '11', '12'])
 fig.colorbar(cmap, cax=cbar_ax).set_label(r'[$\alpha$/Fe]')
 plt.show()
