@@ -1811,12 +1811,20 @@ m = (0.095-.21)/(0+0.8)
 b = 0.095
 thick,= np.where((rc['ALPHAFE'] > 0.08) & (rc['ALPHAFE'] > (m*rc['FE_H'] + b)))
 thin,= np.where((rc['ALPHAFE'] < 0.08) | (rc['ALPHAFE'] < (m*rc['FE_H'] + b)))
-
 color = ((rc['nuv_mag']-rc['ebv']*7.24)-(rc['phot_g_mean_mag']-rc['ebv']*3.303))
 
-plt.scatter(rc['FE_H'][thin], rc['ALPHAFE'][thin], s=80, edgecolor='none', c=color[thin], label='Thin disk', vmin=7, vmax=11, marker='D')
+afe_apo = np.where(rc['ALPHA_M'] > 0)
+rc['ALPHAFE'][afe_apo] = (rc['ALPHA_M'] + rc['M_H'] - rc['FE_H'])[afe_apo]
+alphafe = rc['ALPHAFE']
 
-plt.scatter(rc['FE_H'][thick], rc['ALPHAFE'][thick], c=color[thick], s=200, marker='s', label='Thick disk', vmin=7, vmax=11, edgecolor='black', linewidth=3)
+# for now use this. err is only for apo
+afeerr = np.zeros(len(rc))
+afeerr[afe_apo] = (alphafe * np.sqrt((rc['ALPHA_M_err']/rc['ALPHA_M'])**2 + (rc['M_H_err']/rc['M_H'])**2 + (rc['FE_H_err']/rc['FE_H'])**2))[afe_apo]
+
+
+plt.scatter(rc['FE_H'][thin], rc['ALPHAFE'][thin], s=80, edgecolor='none', c=color[thin], label='Thin disk', vmin=7, vmax=11, marker='D', cmap=cm.jet)
+
+plt.scatter(rc['FE_H'][thick], rc['ALPHAFE'][thick], c=color[thick], s=200, marker='s', label='Thick disk', vmin=7, vmax=11, edgecolor='black', linewidth=3, cmap=cm.jet)
 
 plt.errorbar(rc['FE_H'], rc['ALPHAFE'], xerr=(rc['FE_H_err']), yerr=afeerr, ecolor='black', fmt=None, marker=None, mew=0, elinewidth=1.3, **{"zorder":0})
 
@@ -2217,28 +2225,46 @@ nuvgerr = np.sqrt(rc['nuv_magerr']**2-rc['Gerr']**2)
 B = rc['B_apass'] - rc['ebv']*3.626
 bv = (rc['B_apass']-rc['ebv']*3.626)-(rc['v_apass']-rc['ebv']*2.742)
 Berr = rc['Berr_apass']
-
 bverr = np.sqrt(rc['Berr_apass']**2 - rc['Verr_apass']**2)
 bverr[np.isnan(bverr)] = Berr[np.isnan(bverr)]
-
 ebv = rc['ebv']
 dm = rc['distmod']
-
 feh = rc['FE_H']
 feherr = rc['FE_H_err']
 teff = rc['TEFF']
 tefferr = rc['TEFF_err']
 
-#afe_apo = np.where(rc['ALPHA_M'] > 0)
-#rc['ALPHAFE'][afe_apo] = (rc['ALPHA_M'] + rc['M_H'] - rc['FE_H'])[afe_apo]
-#alphafe = rc['ALPHAFE']
+afe_apo = np.where(rc['ALPHA_M'] > 0)
+rc['ALPHAFE'][afe_apo] = (rc['ALPHA_M'] + rc['M_H'] - rc['FE_H'])[afe_apo]
+alphafe = rc['ALPHAFE']
 
 # for now use this. err is only for apo
 afeerr = np.zeros(len(rc))
 afeerr[afe_apo] = (alphafe * np.sqrt((rc['ALPHA_M_err']/rc['ALPHA_M'])**2 + (rc['M_H_err']/rc['M_H'])**2 + (rc['FE_H_err']/rc['FE_H'])**2))[afe_apo]
 
 
-table = Table([ra, dec, nuv, nuverr, nuvg, nuvgerr, B, Berr, bv, bverr, ebv, dm, feh, feherr, teff, tefferr, alphafe, afeerr])
+
+ra = ['{:.4f}'.format(x) for x in ra]
+dec = ['{:.4f}'.format(x) for x in dec]
+nuv = ['{:.2f}'.format(x) for x in nuv]
+nuverr = ['{:.2f}'.format(x) for x in nuverr]
+nuvg = ['{:.2f}'.format(x) for x in nuvg]
+nuvgerr = ['{:.2f}'.format(x) for x in nuvgerr]
+B = ['{:.2f}'.format(x) for x in B]
+bv = ['{:.2f}'.format(x) for x in bv]
+Berr = ['{:.2f}'.format(x) for x in Berr]
+bverr = ['{:.2f}'.format(x) for x in bverr]
+ebv = ['{:.2f}'.format(x) for x in ebv]
+dm = ['{:.2f}'.format(x) for x in dm]
+feh = ['{:.2f}'.format(x) for x in feh]
+feherr = ['{:.2f}'.format(x) for x in feherr]
+teff = ['{:.2f}'.format(x) for x in teff]
+alphafe = ['{:.2f}'.format(x) for x in alphafe]
+afeerr = ['{:.2f}'.format(x) for x in afeerr]
+
+
+
+table = Table([ra, dec, nuv, nuverr, nuvg, nuvgerr, B, Berr, bv, bverr, ebv, dm, feh, feherr, teff, alphafe, afeerr])
 
 t1 = table[:10]
 ascii.write(t1, format='latex')
