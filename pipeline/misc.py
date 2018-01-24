@@ -2314,15 +2314,31 @@ from scan in scans:
 
 
 
+scans = ['63-73']
 
-ct = fits.open('im1_63-73_count.fits')[0].data
-ct1 = ct[np.where(ct > 0)]
-img = fits.open('im1_63-73.fits')[0].data
-im1 = img[np.where(img > 10**-5)]
-cmed = np.median(ct1)
-imed = np.median(im1)
-n = imed * (1+(np.random.poisson(cmed*10)/10. - cmed)/cmed)
+for scan in scans:
+	# Get cmed and imed
+	ct = fits.open('im1_'+scan+'_count.fits')[0].data
+	ct1 = ct[np.where(ct > 0)]
+	img = fits.open('im1_'+scan+'.fits')[0].data
+	im1 = img[np.where(img > 10**-5)]
+	cmed = np.median(ct1)
+	imed = np.median(im1)
+	n = imed * (1+(np.random.poisson(cmed*10, img.shape)/10. - cmed)/cmed)
+
+	# make mask and apply to img
+	cutoff = np.where(img < 10**-5)
+	zeromask = np.zeros(img.shape)
+	zeromask[cutoff] = True
+	zeromask = zeromask + n
+
+	# OR
+	img[cutoff]
+
+
 
 # for 63-73
 cmed = 0.29931211
 imed = 0.039932579
+
+
