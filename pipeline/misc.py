@@ -2309,3 +2309,20 @@ from scan in scans:
 	plt.savefig('01-10-18_glgb_'+scan+'.png')
 	plt.clf()
 
+
+
+
+
+
+
+ct = fits.open('im1_63-73_count.fits')[0].data
+ct1 = ct[np.where(ct > 0)]
+img = fits.open('im1_63-73.fits')[0].data
+im1 = img[np.where(img > 10**-5)]
+cmed = np.median(ct1)
+imed = np.median(im1)
+n = imed * (1+(np.random.poisson(cmed*10)/10. - cmed)/cmed)
+
+# for 63-73
+cmed = 0.29931211
+imed = 0.039932579
