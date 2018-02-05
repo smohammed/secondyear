@@ -2089,7 +2089,7 @@ bv = (rc['B_apass']-rc['ebv']*3.626)-(rc['v_apass']-rc['ebv']*2.742)
 
 
 #################################################
-# rc fit lines for Fe/H vs NUV - G
+# rc fit lines for Fe/H vs NUV - G vs Alpha/Fe
 #################################################
 rc = fits.open('rc_all_10-31.fits')[1].data
 xa1 = rc['nuv_mag']-rc['phot_g_mean_mag']
@@ -2102,10 +2102,10 @@ xa2 = xa1[q]
 xb2 = xb1[q]
 y2 = y1[q]
 
-za1 = np.polyfit(xa1, y1, 1)
-zb1 = np.polyfit(xb1, y1, 1)
-za2 = np.polyfit(xa2, y2, 1)
-zb2 = np.polyfit(xb2, y2, 1)
+za1, va1 = np.polyfit(xa1, y1, 1, cov=True)
+zb1, vb1 = np.polyfit(xb1, y1, 1, cov=True)
+za2, va2 = np.polyfit(xa2, y2, 1, cov=True)
+zb2, vb2 = np.polyfit(xb2, y2, 1, cov=True)
 
 pa1 = np.poly1d(za1)
 pb1 = np.poly1d(zb1)
@@ -2113,7 +2113,18 @@ pa2 = np.poly1d(za2)
 pb2 = np.poly1d(zb2)
 xp = np.linspace(6, 11, 50)
 
+a1err = np.sum(np.sqrt(np.diag(va1)))
+a2err = np.sum(np.sqrt(np.diag(va2)))
+b1err = np.sum(np.sqrt(np.diag(vb1)))
+b2err = np.sum(np.sqrt(np.diag(vb2)))
 
+'''
+# Now get std errors
+ma1, ba1, rvala1, pvala1, stderra1 = stats.linregress(xa1, y1)
+ma2, ba2, rvala2, pvala2, stderra2 = stats.linregress(xa2, y2)
+mb1, bb1, rvalb1, pvalb1, stderrb1 = stats.linregress(xb1, y1)
+mb2, bb2, rvalb2, pvalb2, stderrb2 = stats.linregress(xb2, y2)
+'''
 
 m = (0.095-.21)/(0+0.8)
 b = 0.095
@@ -2126,8 +2137,8 @@ cmap = ax1.scatter(xa1[thin], y1[thin], c=rc['ALPHAFE'][thin], s=120, vmin=-0.05
 ax1.errorbar(xa1[thin], y1[thin], xerr=(rc['nuv_magerr']-rc['Gerr'])[thin], yerr=rc['FE_H_ERR'][thin], ecolor='black', fmt=None, marker=None, mew=0, elinewidth=1.3, **{"zorder":0})
 ax1.scatter(xa1[thick], y1[thick], c=rc['ALPHAFE'][thick], s=200, vmin=-0.05, vmax=0.3, marker='s', edgecolor='blue', linewidth=2, cmap=plasma,**{"zorder":5})
 ax1.errorbar(xa1[thick], y1[thick], xerr=(rc['nuv_magerr']-rc['Gerr'])[thick], yerr=rc['FE_H_ERR'][thick], ecolor='black', fmt=None, marker=None, mew=0, elinewidth=1.3, **{"zorder":0})
-ax1.plot(xp, pa1(xp), linewidth=2, c='red', zorder=10)
-ax1.plot(xp, pa2(xp), linewidth=2, c='black', zorder=10)
+ax1.plot(xp, pa1(xp), linewidth=2, c='red', zorder=10) # no dust, all points
+ax1.plot(xp, pa2(xp), linewidth=2, c='black', zorder=10) # no dust, only black points
 ax1.scatter(xa1[w], y1[w], c=rc['ALPHAFE'][w], s=120, vmin=-0.05, vmax=0.3, marker='D', cmap=plasma, edgecolor='red', linewidth=2, **{"zorder":5})
 
 ax2.scatter(xb1[thin], y1[thin], c=rc['ALPHAFE'][thin], s=120, label='Thin disk', vmin=-0.05, vmax=0.3, marker='D', cmap=plasma, **{"zorder":5})
@@ -2154,12 +2165,16 @@ leg.legendHandles[1]._sizes = [150]
 fig.subplots_adjust(wspace=0)
 fig.subplots_adjust(right=.84)
 cbar_ax = fig.add_axes([0.85, 0.1, 0.03, 0.8])
-ax1.annotate('[Fe/H] = 0.180 * (NUV-G) - 1.630 ', xy=(5.1, 0.47), color='black', size=15)
 ax1.annotate('[Fe/H] = 0.172 * (NUV-G) - 1.552', xy=(5.1, 0.43), color='red', size=15)
-ax2.annotate('[Fe/H] = 0.230 * (NUV-G)$_0$ - 1.987', xy=(5.1, 0.47), color='black', size=15)
+ax1.annotate('[Fe/H] = 0.180 * (NUV-G) - 1.630 ', xy=(5.1, 0.47), color='black', size=15)
 ax2.annotate('[Fe/H] = 0.203 * (NUV-G)$_0$ - 1.751', xy=(5.1, 0.43), color='red', size=15)
+ax2.annotate('[Fe/H] = 0.230 * (NUV-G)$_0$ - 1.987', xy=(5.1, 0.47), color='black', size=15)
 
-#ax2.set_xticklabels([' ', '6', '7', '8', '9', '10', '11', '12'])
+ax1.annotate('$\sigma$ = 0.112', xy=(5.1, 0.35), color='red', size=15) # a1
+ax1.annotate('$\sigma$ = 0.117', xy=(5.1, 0.39), color='black', size=15) # a2
+ax2.annotate('$\sigma$ = 0.094', xy=(5.1, 0.35), color='red', size=15) # b1
+ax2.annotate('$\sigma$ = 0.096', xy=(5.1, 0.39), color='black', size=15) # b2
+
 fig.colorbar(cmap, cax=cbar_ax).set_label(r'[$\alpha$/Fe]')
 plt.show()
 
@@ -2311,10 +2326,7 @@ from scan in scans:
 
 
 
-
-
-
-scans = ['63-73']
+scans = ['63-73', '180-190', '225-235']
 
 for scan in scans:
 	# Get cmed and imed
@@ -2332,10 +2344,9 @@ for scan in scans:
 	zeromask[cutoff] = True
 	zeromask = zeromask + n
 
-	# OR
-	img[cutoff]
+	im2 = img + zeromask
 
-
+	
 
 # for 63-73
 cmed = 0.29931211
