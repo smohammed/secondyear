@@ -15,10 +15,10 @@ from astropy.convolution import convolve, Gaussian2DKernel
 # Select desired field from list
 #########################################################################
 # Already run
-#scans = ['0-10', '18-28', '27-37', '36-46', '45-55', '63-73', '108-118', '117-127', '126-136', '135-145', '144-154', '153-163', '162-172', '171-181', '180-190', '189-199', '198-208', '207-217', '216-226', '225-235', '234-244', '243-253', '252-262', '261-271', '270-280', '279-289', '288-298', '297-307', '306-316', '351-1', 315-325']
+#scans = ['0-10', '18-28', '27-37', '36-46', '45-55', '63-73', '108-118', '117-127', '126-136', '135-145', '144-154', '153-163', '162-172', '171-181', '189-199', '198-208', '207-217', '216-226', '234-244', '243-253', '252-262', '261-271', '270-280', '279-289', '288-298', '297-307', '306-316', '351-1', 315-325', '324-334', '333-343', '342-352', '72-82', '81-91', '90-100', '9-19', '99-109']
 
 # Run sextractor on these
-scans = ['324-334', '333-343', '342-352', '72-82', '81-91', '90-100', '9-19', '99-109']
+scans = ['63-73', '180-190', '225-235']
 
 skyrange = scans
 
@@ -28,24 +28,6 @@ filt = 'gauss_3.0_7x7.conv'
 code = 'det_thresh4_phot_autopar2.5_3.5'
 # Det Thresh = 4, Analysis Thresh = 3.5
 
-'''
-def createCircularMask(h, w, center=None, radius=None):
-    if center is None: # use the middle of the image
-        center = [int(w/2), int(h/2)]
-    if radius is None: # use the smallest distance between the center and image walls
-        radius = min(center[0], center[1], w-center[0], h-center[1])
-
-    Y, X = np.ogrid[:h, :w]
-    dist_from_center = np.sqrt((X - center[0])**2 + (Y-center[1])**2)
-    mask = dist_from_center <= radius
-    return mask
-'''
-
-#########################################################################
-# Decide which run to do
-#########################################################################
-run1 = 1
-run2 = 0
 
 #########################################################################
 # Choose a field as defined above
@@ -57,51 +39,32 @@ for currregion in skyrange:
     print 'current region = ' + currregion
     region = currregion.replace('.', '')
 
-    hdu = fits.open('../../galexscans/count_map_'+region+'_in.fits')[0]
+    hdu = fits.open('../../galexscans/count_map_'+region+'_in_poisson.fits')[0]
     img = hdu.data
     wcsmap = WCS(hdu.header)
-    '''
-    #find boundry
-    exp_hdu_list = fits.open('../../galexscans/count_map_'+region+'_exp.fits')
-    exp = exp_hdu_list[0].data
-    exp[np.isnan(exp)] = 0.
-    exp[exp>1000] = 0.
-    exp[exp<0] = 0.
-    ver = np.sum(exp, axis=0)
-    hor = np.sum(exp, axis=1)
-    half = np.argmax(ver)
-    sort =  np.argsort(np.absolute(ver-np.max(ver)*0.2))
-    im1xmin = sort[sort<half][0]
-    im1xmax = sort[sort>half][0]
-    print im1xmin, im1xmax, np.absolute(im1xmin-im1xmax)
-    half = np.argmax(hor)
-    sort =  np.argsort(np.absolute(hor-np.max(hor)*0.2))
-    im1ymin = sort[sort<half][0]
-    im1ymax = sort[sort>half][0]
-    print im1ymin, im1ymax, np.absolute(im1ymin-im1ymax)
-    exp_hdu_list.close()
-    '''
 
     #########################################################################
     # Run sextractor, subtract background from original and run again
     #########################################################################
-    os.system('sextractor ../../galexscans/im1_'+region+'.fits -c ~/sextractor/daofind.sex -CATALOG_NAME ../../galexscans/sex_im1_'+region+'.fits -BACK_TYPE AUTO -CHECKIMAGE_NAME ../../galexscans/background_im1_'+region+'.fits')
+    os.system('sextractor ../../galexscans/im1_'+region+'_poisson.fits -c ~/sextractor/daofind.sex -CATALOG_NAME ../../galexscans/sex_im1_'+region+'.fits -BACK_TYPE AUTO -CHECKIMAGE_NAME ../../galexscans/background_im1_'+region+'.fits')
+
+    print 'sextractor run 1 finished'
 
     bkgd = fits.open('../../galexscans/background_im1_'+region+'.fits')[0].data
     im1 = img - bkgd
-    header = wcsmap.to_header()     
+    header = wcsmap.to_header()
 
     try:
-        fits.writeto('../../galexscans/im1_'+region+'.fits', im1, header, clobber=True)
+        fits.writeto('../../galexscans/im1_'+region+'_bksub.fits', im1, header, clobber=True)
 
     except IOError:
-        os.remove('../../galexscans/im1_'+region+'.fits')
-        fits.writeto('../../galexscans/im1_'+region+'.fits', im1, header, clobber=True)
+        os.remove('../../galexscans/im1_'+region+'_bksub.fits')
+        fits.writeto('../../galexscans/im1_'+region+'_bksub.fits', im1, header, clobber=True)
 
     # With no background step, subtract background prior to this
-    os.system('sextractor ../../galexscans/im1_'+region+'.fits -c ~/sextractor/daofind.sex -CATALOG_NAME ../../galexscans/sex_im1_'+region+'.fits -BACK_TYPE MANUAL -BACK_VALUE 0.0')
+    os.system('sextractor ../../galexscans/im1_'+region+'_bksub.fits -c ~/sextractor/daofind.sex -CATALOG_NAME ../../galexscans/sex_im1_'+region+'.fits -BACK_TYPE MANUAL -BACK_VALUE 0.0')
 
-    print 'SExtractor finished'
+    print 'SExtractor run 2 finished'
 
     #########################################################################
     # Get output from sextractor, convert NUV
