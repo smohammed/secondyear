@@ -2299,10 +2299,10 @@ for scan in scans:
 
 	fig = plt.figure()
 	fig.add_subplot(221, projection=wcs)
-	plt.imshow(hdu.data, origin='lower', cmap=cm.gray, vmin=0, vmax=0.1)
+	plt.imshow(hdu.data, origin='lower', cmap=cm.gray, aspect='auto', vmin=0, vmax=0.1)
 	
 	fig.add_subplot(222, projection=wcs)
-	plt.imshow(bkgd, origin='lower', cmap=cm.gray, vmin=0, vmax=0.1)
+	plt.imshow(bkgd, origin='lower', cmap=cm.gray, aspect='auto', vmin=0, vmax=0.1)
 
 	fig.add_subplot(223)
 	cbar = plt.scatter(t['gl'], t['gb'], c=t['FWHM_IMAGE'], vmin=0, vmax=10, s=3)
@@ -2314,8 +2314,9 @@ for scan in scans:
 	fig.add_subplot(224)
 	plt.scatter(t['nuv'], t['FWHM_IMAGE'], s=1, c='black')
 	plt.ylim(0, 10)
+	plt.title('N = '+str(len(t)))
 
-	plt.savefig('02-21-2018_'+scan+'4panel_scanplots.png')
+	plt.savefig('02-21-2018_'+scan+'_4panel_scanplots.png')
 	plt.clf()
 
 
