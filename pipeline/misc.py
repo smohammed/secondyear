@@ -13,156 +13,6 @@ r = 0.8694
 i = 0.6533
 
 ####################################################################
-# SED plot
-####################################################################
-gv = Table.read('GAIS_VPHAS.txt',format='ascii')
-
-nuvi = wd2m['nuv_mag'] - wd2m['i_AB']
-ui = wd2m['u_AB'] - wd2m['i_AB']
-gi = wd2m['g_AB'] - wd2m['i_AB']
-ri = wd2m['r_AB'] - wd2m['i_AB']
-ji = wd2m['j'] - wd2m['i_AB']
-hi = wd2m['h'] - wd2m['i_AB']
-ki = wd2m['k'] - wd2m['i_AB']
-
-cut = np.where(wd2m['j'] > 0)
-nuvi2 = nuvi[cut]
-ui2 = ui[cut]
-gi2 = gi[cut]
-ri2 = ri[cut]
-ji2 = ji[cut]
-hi2 = hi[cut]
-ki2 = ki[cut]
-
-cols = np.ones(len(wd2m)*7)
-cols[0+len(wd2m)*0:len(wd2m)*1] = nuvi
-cols[0+len(wd2m)*1:len(wd2m)*2] = ui
-cols[0+len(wd2m)*2:len(wd2m)*3] = gi
-cols[0+len(wd2m)*3:len(wd2m)*4] = ri
-cols[0+len(wd2m)*4:len(wd2m)*5] = ji
-cols[0+len(wd2m)*5:len(wd2m)*6] = hi
-cols[0+len(wd2m)*6:len(wd2m)*7] = ki
-cols2 = np.ones(len(wd2m[cut])*7)
-cols2[0+len(wd2m[cut])*0:len(wd2m[cut])*1] = nuvi2
-cols2[0+len(wd2m[cut])*1:len(wd2m[cut])*2] = ui2
-cols2[0+len(wd2m[cut])*2:len(wd2m[cut])*3] = gi2
-cols2[0+len(wd2m[cut])*3:len(wd2m[cut])*4] = ri2
-cols2[0+len(wd2m[cut])*4:len(wd2m[cut])*5] = ji2
-cols2[0+len(wd2m[cut])*5:len(wd2m[cut])*6] = hi2
-cols2[0+len(wd2m[cut])*6:len(wd2m[cut])*7] = ki2
-
-labels = ['NUV-i', 'u-i', 'g-i', 'r-i', 'J-i', 'H-i', 'K-i']
-plt.xticks([1, 2, 3, 4, 5, 6, 7], labels)
-for i in range(len(wd2m)):
-    plt.plot([1, 2, 3, 4, 5, 6, 7], cols[[i, i+len(wd2m), i+len(wd2m)*2, i+len(wd2m)*3, i+len(wd2m)*4, i+len(wd2m)*5, i+len(wd2m)*6]], alpha=0.01, color='black')
-for i in range(len(wd2m[cut])):
-    plt.plot([1, 2, 3, 4, 5, 6, 7], cols2[[i, i+len(wd2m[cut]), i+len(wd2m[cut])*2, i+len(wd2m[cut])*3, i+len(wd2m[cut])*4, i+len(wd2m[cut])*5, i+len(wd2m[cut])*6]], alpha=0.05, color='red')
-
-plt.plot([1, 2, 3, 4, 5, 6, 7], cols[[1, 1+len(wd2m), 1+len(wd2m)*2, 1+len(wd2m)*3, 1+len(wd2m)*4, 1+len(wd2m)*5, 1+len(wd2m)*6]], alpha=0.1, color='black', label='VPHAS')
-plt.plot([1, 2, 3, 4, 5, 6, 7], cols2[[1, 1+len(wd2m[cut]), 1+len(wd2m[cut])*2, 1+len(wd2m[cut])*3, 1+len(wd2m[cut])*4, 1+len(wd2m[cut])*5, 1+len(wd2m[cut])*6]], alpha=0.1, color='red', label='VPHAS + 2MASS')
-plt.legend(loc=2)
-plt.xlabel('$\lambda$')
-plt.ylabel('$\lambda$ - i (ABmag)')
-plt.ylim((5, -12))
-plt.title('VPHAS + 2MASS,  Verbeek WDs')
-plt.show()
-
-####################################################################
-# GALEX and VPHAS sky plot
-####################################################################
-galex = fits.open('GALEXAIS.fits')[1].data
-galexcut = np.where((galex['glon'] > 0) & (galex['glon'] < 40))
-g2 = galex[galexcut]
-galexgal = SkyCoord(g2['glon']*u.deg, g2['glat']*u.deg, frame='galactic')
-vp = fits.open('vphas_allg_gl0-40.fits')[1].data
-vpgal = SkyCoord(vp['RAJ2000']*u.deg,vp['DEJ2000']*u.deg,frame='icrs').galactic
-galexind,vpind,angsep,ang3d = search_around_sky(galexgal,vpgal,3*u.arcsec)
-
-g3 = g2[galexind]
-
-plt.scatter(g2['glon'],g2['glat'],edgecolor='none',label='galex')
-plt.scatter(vpgal.l.degree,vpgal.b.degree,edgecolor='none',facecolor='red',label='vphas')
-plt.scatter(g3['glon'],g3['glat'],edgecolor='none',facecolor='yellow',label='both')
-plt.legend(scatterpoints=1)
-plt.show()
-
-galexcut = np.where((galex['glon'] > 200) & (galex['glon'] < 250))
-g2 = galex[galexcut]
-galexgal = SkyCoord(g2['glon']*u.deg,g2['glat']*u.deg,frame='galactic')
-vp = fits.open('vphas_allg_gl200-250.fits')[1].data
-vpgal = SkyCoord(vp['RAJ2000']*u.deg,vp['DEJ2000']*u.deg,frame='icrs').galactic
-galexind,vpind,angsep,ang3d = search_around_sky(galexgal,vpgal,3*u.arcsec)
-g3 = g2[galexind]
-plt.scatter(g2['glon'],g2['glat'],edgecolor='none',label='galex')
-plt.scatter(vpgal.l.degree,vpgal.b.degree,edgecolor='none',facecolor='red',label='vphas')
-plt.scatter(g3['glon'],g3['glat'],edgecolor='none',facecolor='yellow',label='both')
-plt.legend(scatterpoints=1)
-plt.show()
-
-galexcut = np.where((galex['glon'] > 250) & (galex['glon'] < 300))
-g2 = galex[galexcut]
-galexgal = SkyCoord(g2['glon']*u.deg,g2['glat']*u.deg,frame='galactic')
-vp = fits.open('vphas_allg_gl250-300.fits')[1].data
-vpgal = SkyCoord(vp['RAJ2000']*u.deg,vp['DEJ2000']*u.deg,frame='icrs').galactic
-galexind,vpind,angsep,ang3d = search_around_sky(galexgal,vpgal,3*u.arcsec)
-g3 = g2[galexind]
-plt.scatter(g2['glon'],g2['glat'],edgecolor='none',label='galex')
-plt.scatter(vpgal.l.degree,vpgal.b.degree,edgecolor='none',facecolor='red',label='vphas')
-plt.scatter(g3['glon'],g3['glat'],edgecolor='none',facecolor='yellow',label='both')
-plt.legend(scatterpoints=1)
-plt.show()
-
-galexcut = np.where((galex['glon'] > 300) & (galex['glon'] < 360))
-g2 = galex[galexcut]
-galexgal = SkyCoord(g2['glon']*u.deg,g2['glat']*u.deg,frame='galactic')
-vp = fits.open('vphas_allg_gl300-360.fits')[1].data
-vpgal = SkyCoord(vp['RAJ2000']*u.deg,vp['DEJ2000']*u.deg,frame='icrs').galactic
-galexind,vpind,angsep,ang3d = search_around_sky(galexgal,vpgal,3*u.arcsec)
-g3 = g2[galexind]
-plt.scatter(g2['glon'],g2['glat'],edgecolor='none',label='galex')
-plt.scatter(vpgal.l.degree,vpgal.b.degree,edgecolor='none',facecolor='red',label='vphas')
-plt.scatter(g3['glon'],g3['glat'],edgecolor='none',facecolor='yellow',label='both')
-plt.legend(scatterpoints=1)
-plt.show()
-
-fig,axes = plt.subplots(2,2,sharey=True)
-xco = gv['glon']
-yco = gv['g_AB'] - gv['r_AB']
-axes[0,0].scatter(xco,yco,edgecolor='none')
-axes[0,1].scatter(xco,yco,edgecolor='none')
-axes[1,1].scatter(xco,yco,edgecolor='none')
-axes[1,0].scatter(xco,yco,edgecolor='none')
-
-wdx = wds['gl_galex']
-wdy = wds['g_AB'] - wds['r_AB']
-axes[0,0].scatter(wdx,wdy,c='red',label='All WDs')
-axes[0,1].scatter(wdx,wdy,c='red')
-axes[1,1].scatter(wdx,wdy,c='red')
-axes[1,0].scatter(wdx,wdy,c='red')
-'''
-axes[0,0].scatter(gl[cut],gb[cut],c='green',label='NUV-g > 3')
-axes[0,1].scatter(gl[cut],gb[cut],c='green')
-axes[1,1].scatter(gl[cut],gb[cut],c='green')
-axes[1,0].scatter(gl[cut],gb[cut],c='green')
-'''
-
-axes[0,0].set_xlim(-2,40)
-axes[0,1].set_xlim(205,252)
-axes[1,0].set_xlim(252,300)
-axes[1,1].set_xlim(300,362)
-'''axes[0,0].set_ylim(-6,6)
-axes[0,1].set_ylim(-6,6)
-axes[1,0].set_ylim(-6,6)
-axes[1,1].set_ylim(-6,6)'''
-axes[1,0].set_xlabel('gl')
-axes[1,1].set_xlabel('gl')
-axes[1,0].set_ylabel('g - r')
-axes[0,0].set_ylabel('g - r')
-axes[0,0].legend(scatterpoints=1)
-fig.subplots_adjust(wspace=0)
-plt.show()
-
-####################################################################
 # g - r vs NUV - g with boxes
 ####################################################################
 #sv = fits.open('sex_vphas.fits')[1].data
@@ -527,38 +377,6 @@ plt.ylabel('g')
 #plt.clf()
 
 
-galex = fits.open('GALEXAIS.fits')[1].data
-vpgal = SkyCoord(vp['RAJ2000']*u.deg,vp['DEJ2000']*u.deg,frame='icrs')
-galexgal = SkyCoord(galex['ra']*u.deg,galex['dec']*u.deg,frame='icrs')
-galexind,vpind,angsep,sep3d = search_around_sky(galexgal,vpgal,3.5*u.arcsec)
-
-gv1 = np.where((gv['gl_galex'] > 0.) & (gv['gl_galex'] < 40.))
-gv2 = np.where((gv['gl_galex'] > 200.) & (gv['gl_galex'] < 250.))
-gv3 = np.where((gv['gl_galex'] > 250.) & (gv['gl_galex'] < 300.))
-gv4 = np.where((gv['gl_galex'] > 300.) & (gv['gl_galex'] < 360.))
-gv1 = gv[gv1]
-gv2 = gv[gv2]
-gv3 = gv[gv3]
-gv4 = gv[gv4]
-
-
-gv1ug = np.where(gv1['u_AB']-gv1['g_AB'] < 1.)
-gv2ug = np.where(gv2['u_AB']-gv2['g_AB'] < 1.)
-gv3ug = np.where(gv3['u_AB']-gv3['g_AB'] < 1.)
-gv4ug = np.where(gv4['u_AB']-gv4['g_AB'] < 1.)
-
-gv1ug = gv1[gv1ug]
-gv2ug = gv2[gv2ug]
-gv3ug = gv3[gv3ug]
-gv4ug = gv4[gv4ug]
-
-scatter_contour(gv3ug['g_AB']-gv3ug['r_AB'],gv3ug['g_AB'],threshold=1000,log_counts=True,histogram2d_args=dict(bins=40),contour_args=dict(),plot_args=dict(color='k',markersize=1))
-plt.xlabel('g - r (ABmag)')
-plt.ylabel('g (ABmag)')
-plt.title('GAIS+VPHAS, 300 < gl < 360, u - g < 1')
-plt.xlim((-1,3))
-plt.ylim((23,12))
-plt.show()
 
 for region in range(0,360,5):
     cat1 = comb1[np.where((comb1['gl_t2'] > region) & (comb1['gl_t2'] < region+5))]
@@ -938,20 +756,6 @@ for conv in convlist:
         fig.subplots_adjust(hspace=0)
         plt.savefig('03-13-nuvcomp_gl'+region+conv+'.png')
         plt.clf()
-
-#################################################
-# Combine all low/hi fec files
-#################################################
-files = np.loadtxt('lowfec.txt', dtype='str')
-alldata = Table()
-for region in files:
-    print region
-    a = Table.read(region, format='ascii')
-    a = a[np.where((a['FWHM_IMAGE'] < 10) & (a['FWHM_IMAGE'] > 3.5))]
-    alldata = vstack([alldata, a])
-
-ascii.write(alldata, 'lowfec_all.txt', format='basic')
-
 
 #################################################
 # Match low/hi fec with catalogs
@@ -1628,9 +1432,9 @@ plt.show()
 ######################################################################
 # Combine and format RC table
 ######################################################################
-sg = fits.open('gais_tgas_apass_dust.fits')[1].data
+sg = fits.open('sex_tgas_dust_interp_02-28-2018.fits')[1].data
 sg = sg[~np.isnan(sg['ebv'])]
-sggal = SkyCoord(sg['gl_gais']*u.deg, sg['gb_gais']*u.deg, frame='galactic')
+sggal = SkyCoord(sg['gl_sex']*u.deg, sg['gb_sex']*u.deg, frame='galactic')
 
 apo = fits.open('APOKASKRC_TGAS.fits')[1].data
 apogal = SkyCoord(apo['l']*u.deg, apo['b']*u.deg, frame='galactic')
@@ -2373,11 +2177,4 @@ for scan in scans:
 	zeromask = zeromask + n
 
 	im2 = img + zeromask
-
-	
-
-# for 63-73
-cmed = 1.0
-imed = 0.039932579
-
 
