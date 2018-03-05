@@ -2178,3 +2178,16 @@ for scan in scans:
 
 	im2 = img + zeromask
 
+
+import scipy.ndimage as ndimage
+
+medvals = Table.read('median_scanvals.txt', format='ascii')
+medvals = medvals[np.where(medvals['scans'] == '63-73')]
+imed = medvals['imed'][0]
+cmed = medvals['cmed'][0]
+nval = imed*(1+(np.random.poisson(cmed, 100000) - cmed)/ cmed)
+struc3 = ndimage.generate_binary_structure(2,2).astype(img.dtype)
+mask = ~ndimage.binary_dilation(img, structure=struc3, iterations=2)
+a = img.astype(np.float64)
+q = np.place(a, mask, nval)
+
