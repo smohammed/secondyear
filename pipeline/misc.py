@@ -1748,14 +1748,14 @@ line2 = m2*x + b2
 err2 = np.sqrt(np.sum((line2-y2)**2/len(y2)))
 
 fig, (ax1, ax2) = plt.subplots(2, 1)
-cmap = ax1.scatter(rc['TEFF'][thin], ((rc['B_apass']-rc['ebv']*3.626)-(rc['V_apass']-rc['ebv']*2.742))[thin], s=80, c=rc['FE_H'][thin], cmap=viridis, vmin=-.5, vmax=.35, marker='D', label='Thin disk')
+cmap = ax1.scatter(rc['TEFF'][thin], ((rc['B_apass']-rc['ebv']*3.626)-(rc['V_apass']-rc['ebv']*2.742))[thin], s=80, c=rc['FE_H'][thin], cmap=viridis, vmin=-.5, vmax=.35, marker='D', label='Thin disk', edgecolor='black')
 ax1.scatter(rc['TEFF'][thick], ((rc['B_apass']-rc['ebv']*3.626)-(rc['V_apass']-rc['ebv']*2.742))[thick], s=200, c=rc['FE_H'][thick], cmap=viridis, vmin=-.5, vmax=.35, marker='s', label='Thick disk', edgecolor='black', linewidth=3)
 ax1.errorbar(rc['TEFF'][thin], ((rc['B_apass']-rc['ebv']*3.626)-(rc['V_apass']-rc['ebv']*2.742))[thin], xerr=rc['TEFF_ERR'][thin], yerr=(rc['Berr_apass']-rc['Verr_apass'])[thin], ecolor='black', fmt=None, marker=None, mew=0, elinewidth=1.3, **{"zorder":0})
 
 ax1.plot(x, line1, linewidth=2, c='black', zorder=10)
 
-ax2.scatter(rc['TEFF'][thin], ((rc['nuv_mag']-rc['ebv']*7.24)-(rc['phot_g_mean_mag']-rc['ebv']*3.303))[thin], s=80, c=rc['FE_H'][thin], cmap=viridis, vmin=-.5, vmax=.35, marker='D')
-ax2.scatter(rc['TEFF'][thick], ((rc['nuv_mag']-rc['ebv']*7.24)-(rc['phot_g_mean_mag']-rc['ebv']*3.303))[thick], s=200, c=rc['FE_H'][thick], cmap=viridis, vmin=-.5, vmax=.35, marker='s', linewidth=3)
+ax2.scatter(rc['TEFF'][thin], ((rc['nuv_mag']-rc['ebv']*7.24)-(rc['phot_g_mean_mag']-rc['ebv']*3.303))[thin], s=80, c=rc['FE_H'][thin], cmap=viridis, vmin=-.5, vmax=.35, marker='D', edgecolor='black')
+ax2.scatter(rc['TEFF'][thick], ((rc['nuv_mag']-rc['ebv']*7.24)-(rc['phot_g_mean_mag']-rc['ebv']*3.303))[thick], s=200, c=rc['FE_H'][thick], cmap=viridis, vmin=-.5, vmax=.35, marker='s', edgecolor='black', linewidth=3)
 ax2.errorbar(rc['TEFF'][thin], ((rc['nuv_mag']-rc['ebv']*7.24)-(rc['phot_g_mean_mag']-rc['ebv']*3.303))[thin], xerr=rc['TEFF_ERR'][thin], yerr=(rc['nuv_magerr']-rc['Gerr'])[thin], ecolor='black', fmt=None, marker=None, mew=0, elinewidth=1.3, **{"zorder":0})
 
 ax2.plot(x, line2, linewidth=2, c='black', zorder=10)
@@ -1961,14 +1961,14 @@ leg.legendHandles[1]._sizes = [150]
 fig.subplots_adjust(wspace=0)
 fig.subplots_adjust(right=.84)
 cbar_ax = fig.add_axes([0.85, 0.1, 0.03, 0.8])
-ax1.annotate('[Fe/H] = 0.17 * (NUV-G) - 1.55', xy=(5.1, 0.43), color='red', size=15)
-ax1.annotate('[Fe/H] = 0.18 * (NUV-G) - 1.63 ', xy=(5.1, 0.47), color='black', size=15)
-ax2.annotate('[Fe/H] = 0.20 * (NUV-G)$_0$ - 1.75', xy=(5.1, 0.43), color='red', size=15)
-ax2.annotate('[Fe/H] = 0.23 * (NUV-G)$_0$ - 1.99', xy=(5.1, 0.47), color='black', size=15)
+ax1.annotate('[Fe/H] = 0.18 * (NUV-G) - 1.61', xy=(5.1, 0.43), color='red', size=15)
+ax1.annotate('[Fe/H] = 0.19 * (NUV-G) - 1.70 ', xy=(5.1, 0.47), color='black', size=15)
+ax2.annotate('[Fe/H] = 0.21 * (NUV-G)$_0$ - 1.80', xy=(5.1, 0.43), color='red', size=15)
+ax2.annotate('[Fe/H] = 0.24 * (NUV-G)$_0$ - 2.06', xy=(5.1, 0.47), color='black', size=15)
 
 ax1.annotate('$\sigma$ = 0.11', xy=(5.1, 0.35), color='red', size=15) # a1
 ax1.annotate('$\sigma$ = 0.12', xy=(5.1, 0.39), color='black', size=15) # a2
-ax2.annotate('$\sigma$ = 0.09', xy=(5.1, 0.35), color='red', size=15) # b1
+ax2.annotate('$\sigma$ = 0.10', xy=(5.1, 0.35), color='red', size=15) # b1
 ax2.annotate('$\sigma$ = 0.10', xy=(5.1, 0.39), color='black', size=15) # b2
 
 fig.colorbar(cmap, cax=cbar_ax).set_label(r'[$\alpha$/Fe]')
