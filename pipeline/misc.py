@@ -1626,11 +1626,11 @@ afeerr = np.zeros(len(rc))
 afeerr[afe_apo] = (alphafe * np.sqrt((rc['ALPHA_M_err']/rc['ALPHA_M'])**2 + (rc['M_H_err']/rc['M_H'])**2 + (rc['FE_H_err']/rc['FE_H'])**2))[afe_apo]
 
 
-plt.scatter(rc['FE_H'][thin], rc['ALPHAFE'][thin], s=80, edgecolor='none', c=color[thin], label='Thin disk', vmin=7, vmax=11, marker='D', cmap=cm.jet)
+plt.scatter(rc['FE_H'][thin], rc['ALPHAFE'][thin], s=80, edgecolor='none', c=nuvg[thin], label='Thin disk', vmin=7, vmax=11, marker='D', cmap=cm.jet)
 
-plt.scatter(rc['FE_H'][thick], rc['ALPHAFE'][thick], c=color[thick], s=200, marker='s', label='Thick disk', vmin=7, vmax=11, edgecolor='black', linewidth=3, cmap=cm.jet)
+plt.scatter(rc['FE_H'][thick], rc['ALPHAFE'][thick], c=nuvg[thick], s=200, marker='s', label='Thick disk', vmin=7, vmax=11, edgecolor='black', linewidth=3, cmap=cm.jet)
 
-plt.errorbar(rc['FE_H'], rc['ALPHAFE'], xerr=(rc['FE_H_err']), yerr=afeerr, ecolor='black', fmt=None, marker=None, mew=0, elinewidth=1.3, **{"zorder":0})
+plt.errorbar(rc['FE_H'], rc['ALPHAFE'], xerr=(rc['FE_H_err']), yerr=rc['ALPHAFE_ERR'], ecolor='black', fmt=None, marker=None, mew=0, elinewidth=1.3, **{"zorder":0})
 
 
 

@@ -39,7 +39,7 @@ for currregion in skyrange:
     print 'current region = ' + currregion
     region = currregion.replace('.', '')
 
-    hdu = fits.open('../../galexscans/count_map_'+region+'_in_poisson_03_05_18.fits')[0]
+    hdu = fits.open('../../galexscans/count_map_'+region+'_in_poisson_03_13_18.fits')[0]
     #hdu = fits.open('../../galexscans/testmap_63-73_poisson_step2.fits')[0]
     img = hdu.data
     wcsmap = WCS(hdu.header)
@@ -47,7 +47,7 @@ for currregion in skyrange:
     #########################################################################
     # Run sextractor, subtract background from original and run again
     #########################################################################
-    os.system('sextractor ../../galexscans/im1_'+region+'_poisson_03_05_18.fits -c ~/sextractor/daofind.sex -CATALOG_NAME ../../galexscans/sex_im1_'+region+'.fits -BACK_TYPE AUTO -CHECKIMAGE_NAME ../../galexscans/background_im1_'+region+'.fits')
+    os.system('sextractor ../../galexscans/im1_'+region+'_poisson_03_13_18.fits -c ~/sextractor/daofind.sex -CATALOG_NAME ../../galexscans/sex_im1_'+region+'.fits -BACK_TYPE AUTO -CHECKIMAGE_NAME ../../galexscans/background_im1_'+region+'.fits')
 
     #os.system('sextractor ../../galexscans/testmap_im1_63-73_poisson_step2.fits -c ~/sextractor/daofind.sex -CATALOG_NAME ../../galexscans/sex_im1_'+region+'_poisson2.fits -BACK_TYPE AUTO -CHECKIMAGE_NAME ../../galexscans/background_im1_'+region+'_poisson2.fits')
 
@@ -98,6 +98,6 @@ for currregion in skyrange:
 
     alldata = hstack([data, coord])
 
-    ascii.write(alldata, '../../galexscans/starcat_'+currregion+'_03_05_2018.txt', format='ipac')
+    ascii.write(alldata, '../../galexscans/starcat_'+currregion+'_03_13_2018.txt', format='ipac')
 
     print 'Converted to gl, gb, finished'

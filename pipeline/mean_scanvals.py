@@ -10,19 +10,19 @@ scans = ['0-10', '18-28', '27-37', '36-46', '45-55', '63-73', '108-118', '117-12
 
 imeans = []
 cmeans = []
-smoothed = 0
+smoothed = 1
 
 for scan in scans:
     print('Running '+scan)
     # Get cmed and imed
-    hdu = fits.open('galexscans/count_map_'+scan+'_in.fits')
+    hdu = fits.open('../../galexscans/count_map_'+scan+'_in.fits')
     img = hdu[0].data
 
     if smoothed == 1:
         del img
-        img = fits.open('smoothscans/im1_'+scan+'.fits')[0].data
+        img = fits.open('../../galexscans/im1_'+scan+'.fits')[0].data
 
-    ct = fits.open('countscans/count_map_'+scan+'_count.fits')[0].data
+    ct = fits.open('../../galexscans/count_map_'+scan+'_count.fits')[0].data
 
 
     struc3 = ndimage.generate_binary_structure(2,2).astype(img.dtype)
@@ -40,5 +40,8 @@ for scan in scans:
     imeans.append(imean)
     cmeans.append(cmean)
 
-maskvals = Table([imeans, cmeans], names=['imean', 'cmean'])
-ascii.write(maskedvals, 'mean_scanvals.txt', format='basic')
+maskvals = Table([scans, imeans, cmeans], names=['scan', 'imean', 'cmean'])
+ascii.write(maskvals, '../../galexscans/mean_scanvals_smoothed.txt', format='basic')
+
+print imeans
+print cmeans
