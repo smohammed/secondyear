@@ -4,12 +4,12 @@ from astropy.table import Table, hstack
 from astropy.coordinates import SkyCoord
 from astropy.wcs import WCS
 import os
-from astropy.convolution import convolve, Gaussian2DKernel
 
 # Files written:
-# 1. Cutouts of main image to remove edges
-# 2. SExtractor output, background used
-# 3. starcatalog*.fits which adds WCS data to stars
+# 1. Background 
+# 2. Background subtracted image to run sextractor in step 2
+# 3. SExtractor output
+# 4. starcatalog*.fits which adds WCS data to stars
 
 #########################################################################
 # Select desired field from list
@@ -40,40 +40,29 @@ for currregion in skyrange:
     region = currregion.replace('.', '')
 
     hdu = fits.open('../../galexscans/count_map_'+region+'_in_poisson_03_13_18.fits')[0]
-    #hdu = fits.open('../../galexscans/testmap_63-73_poisson_step2.fits')[0]
     img = hdu.data
     wcsmap = WCS(hdu.header)
 
     #########################################################################
     # Run sextractor, subtract background from original and run again
     #########################################################################
-    os.system('sextractor ../../galexscans/im1_'+region+'_poisson_03_13_18.fits -c ~/sextractor/daofind.sex -CATALOG_NAME ../../galexscans/sex_im1_'+region+'.fits -BACK_TYPE AUTO -CHECKIMAGE_NAME ../../galexscans/background_im1_'+region+'.fits')
-
-    #os.system('sextractor ../../galexscans/testmap_im1_63-73_poisson_step2.fits -c ~/sextractor/daofind.sex -CATALOG_NAME ../../galexscans/sex_im1_'+region+'_poisson2.fits -BACK_TYPE AUTO -CHECKIMAGE_NAME ../../galexscans/background_im1_'+region+'_poisson2.fits')
+    os.system('sextractor ../../galexscans/im1_'+region+'_in_03_19_18.fits -c ~/sextractor/daofind.sex -CATALOG_NAME ../../galexscans/sex_im1_'+region+'.fits -BACK_TYPE AUTO -CHECKIMAGE_NAME ../../galexscans/background_im1_'+region+'.fits')
 
     print 'sextractor run 1 finished'
 
     bkgd = fits.open('../../galexscans/background_im1_'+region+'.fits')[0].data
-    #bkgd = fits.open('../../galexscans/background_im1_'+region+'_poisson2.fits')[0].data
     im1 = img - bkgd
     header = wcsmap.to_header()
 
     try:
-        fits.writeto('../../galexscans/im1_'+region+'_bksub.fits', im1, header, clobber=True)
-        #fits.writeto('../../galexscans/im1_'+region+'_bksub_poisson2.fits', im1, header, clobber=True)
+        fits.writeto('../../galexscans/im1_'+region+'_bksub.fits', im1, header, overwrite=True)
 
     except IOError:
         os.remove('../../galexscans/im1_'+region+'_bksub.fits')
-        fits.writeto('../../galexscans/im1_'+region+'_bksub.fits', im1, header, clobber=True)
-
-        #os.remove('../../galexscans/im1_'+region+'_bksub_poisson2.fits')
-        #fits.writeto('../../galexscans/im1_'+region+'_bksub_poisson2.fits', im1, header, clobber=True)
-
+        fits.writeto('../../galexscans/im1_'+region+'_bksub.fits', im1, header, overwrite=True)
 
     # With no background step, subtract background prior to this
     os.system('sextractor ../../galexscans/im1_'+region+'_bksub.fits -c ~/sextractor/daofind.sex -CATALOG_NAME ../../galexscans/sex_im1_'+region+'.fits -BACK_TYPE MANUAL -BACK_VALUE 0.0')
-
-    #os.system('sextractor ../../galexscans/im1_'+region+'_bksub_poisson2.fits -c ~/sextractor/daofind.sex -CATALOG_NAME ../../galexscans/sex_im1_'+region+'_poisson2.fits -BACK_TYPE MANUAL -BACK_VALUE 0.0')
 
     print 'SExtractor run 2 finished'
 
@@ -98,6 +87,6 @@ for currregion in skyrange:
 
     alldata = hstack([data, coord])
 
-    ascii.write(alldata, '../../galexscans/starcat_'+currregion+'_03_13_2018.txt', format='ipac')
+    ascii.write(alldata, '../../galexscans/starcat_'+currregion+'_03_19_2018.txt', format='ipac')
 
     print 'Converted to gl, gb, finished'
