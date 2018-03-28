@@ -28,7 +28,6 @@ filt = 'gauss_3.0_7x7.conv'
 code = 'det_thresh4_phot_autopar2.5_3.5'
 # Det Thresh = 4, Analysis Thresh = 3.5
 
-
 #########################################################################
 # Choose a field as defined above
 #########################################################################
@@ -39,14 +38,14 @@ for currregion in skyrange:
     print 'current region = ' + currregion
     region = currregion.replace('.', '')
 
-    hdu = fits.open('../../galexscans/count_map_'+region+'_in_poisson_03_13_18.fits')[0]
+    hdu = fits.open('../../galexscans/count_map_'+region+'_in_poisson_03_20_18.fits')[0]
     img = hdu.data
     wcsmap = WCS(hdu.header)
 
     #########################################################################
     # Run sextractor, subtract background from original and run again
     #########################################################################
-    os.system('sextractor ../../galexscans/im1_'+region+'_in_03_19_18.fits -c ~/sextractor/daofind.sex -CATALOG_NAME ../../galexscans/sex_im1_'+region+'.fits -BACK_TYPE AUTO -CHECKIMAGE_NAME ../../galexscans/background_im1_'+region+'.fits')
+    os.system('sextractor ../../galexscans/im1_'+region+'_in_03_20_18.fits -c ~/sextractor/daofind.sex -CATALOG_NAME ../../galexscans/sex_im1_'+region+'.fits -BACK_TYPE AUTO -CHECKIMAGE_NAME ../../galexscans/background_im1_'+region+'.fits')
 
     print 'sextractor run 1 finished'
 
@@ -87,6 +86,6 @@ for currregion in skyrange:
 
     alldata = hstack([data, coord])
 
-    ascii.write(alldata, '../../galexscans/starcat_'+currregion+'_03_19_2018.txt', format='ipac')
+    ascii.write(alldata, '../../galexscans/starcat_'+currregion+'_03_26_2018.txt', format='ipac')
 
     print 'Converted to gl, gb, finished'
