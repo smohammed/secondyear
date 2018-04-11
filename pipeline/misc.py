@@ -1831,15 +1831,15 @@ for i in range(12,21, 1):
 #################################################
 scans = ['18-28', '27-37', '36-46', '45-55', '63-73', '108-118', '117-127', '126-136', '135-145', '144-154', '153-163', '189-199', '198-208', '207-217', '216-226', '270-280', '279-289', '288-298', '297-307', '351-1', '72-82', '144-154', '225-235', '306-316', '81-91', '153-163', '234-244', '315-325', '90-100', '162-172', '243-253', '324-334', '9-19', '171-181', '252-262', '333-343', '99-109', '180-190', '261-271', '342-352']
 
-alldata = Table.read('starcat_0-10_02_09_2018.txt', format='ascii')
+alldata = Table.read('starcat_0-10_03_26_2018.txt', format='ascii')
 
 for region in scans:
-	a = Table.read('starcat_'+region+'_02_09_2018.txt', format='ascii')
+	a = Table.read('starcat_'+region+'_03_26_2018.txt', format='ascii')
 	a = a[np.where((a['FWHM_IMAGE'] > 0) & (a['FWHM_IMAGE'] < 10)  & (a['gb'] > -10.) & (a['gb'] < 10.))]
 	alldata = vstack([alldata, a])
 	print region
 
-ascii.write(alldata, 'starcat_allscans_02-21-18.txt', format='basic', overwrite=True)
+ascii.write(alldata, 'starcat_allscans_03-26-18.txt', format='basic', overwrite=True)
 
 
 
@@ -2039,26 +2039,17 @@ nuvg = (rc['nuv_mag']-rc['ebv']*7.24)-(rc['phot_g_mean_mag']-rc['ebv']*3.303)
 nuverr = rc['nuv_magerr']
 nuvgerr = np.sqrt(rc['nuv_magerr']**2-rc['Gerr']**2)
 B = rc['B_apass'] - rc['ebv']*3.626
-bv = (rc['B_apass']-rc['ebv']*3.626)-(rc['v_apass']-rc['ebv']*2.742)
+bv = (rc['B_apass']-rc['ebv']*3.626)-(rc['V_apass']-rc['ebv']*2.742)
 Berr = rc['Berr_apass']
 bverr = np.sqrt(rc['Berr_apass']**2 - rc['Verr_apass']**2)
 bverr[np.isnan(bverr)] = Berr[np.isnan(bverr)]
 ebv = rc['ebv']
 dm = rc['distmod']
 feh = rc['FE_H']
-feherr = rc['FE_H_err']
+feherr = rc['FE_H_ERR']
 teff = rc['TEFF']
-tefferr = rc['TEFF_err']
-
-afe_apo = np.where(rc['ALPHA_M'] > 0)
-rc['ALPHAFE'][afe_apo] = (rc['ALPHA_M'] + rc['M_H'] - rc['FE_H'])[afe_apo]
 alphafe = rc['ALPHAFE']
-
-# for now use this. err is only for apo
-afeerr = np.zeros(len(rc))
-afeerr[afe_apo] = (alphafe * np.sqrt((rc['ALPHA_M_err']/rc['ALPHA_M'])**2 + (rc['M_H_err']/rc['M_H'])**2 + (rc['FE_H_err']/rc['FE_H'])**2))[afe_apo]
-
-
+afeerr = rc['ALPHAFE_ERR']
 
 ra = ['{:.4f}'.format(x) for x in ra]
 dec = ['{:.4f}'.format(x) for x in dec]
@@ -2077,7 +2068,6 @@ feherr = ['{:.2f}'.format(x) for x in feherr]
 teff = ['{:.2f}'.format(x) for x in teff]
 alphafe = ['{:.2f}'.format(x) for x in alphafe]
 afeerr = ['{:.2f}'.format(x) for x in afeerr]
-
 
 
 table = Table([ra, dec, nuv, nuverr, nuvg, nuvgerr, B, Berr, bv, bverr, ebv, dm, feh, feherr, teff, alphafe, afeerr])
@@ -2190,3 +2180,21 @@ struc3 = ndimage.generate_binary_structure(2,2).astype(img.dtype)
 mask = ~ndimage.binary_dilation(img, structure=struc3, iterations=2)
 q = np.place(a, mask, nval.astype(np.float32))
 
+
+#############################################################
+# Get values from exposure map
+#############################################################
+scans = ['0-10', '18-28', '27-37', '36-46', '45-55', '63-73', '108-118', '117-127', '126-136', '135-145', '144-154', '153-163', '189-199', '198-208', '207-217', '216-226', '270-280', '279-289', '288-298', '297-307', '351-1', '72-82', '144-154', '225-235', '306-316', '81-91', '153-163', '234-244', '315-325', '90-100', '162-172', '243-253', '324-334', '9-19', '171-181', '252-262', '333-343', '99-109', '180-190', '261-271', '342-352']
+
+from photutils import aperture_photometry
+from photutils import CircularAperture
+
+for scan in scans:
+	print(scan)
+	cat = Table.read('starcat_'+scan+'_03_26_2018.txt', format='ascii')
+	exp = fits.open('count_map_'+scan+'_exp.fits')[0].data
+	positions = [cat['X_IMAGE'], cat['Y_IMAGE']]
+	apertures = CircularAperture(positions, r=3.)
+	sums = aperture_photometry(exp, apertures)
+	cat['expsum'] = sums['aperture_sum']
+	ascii.write(cat, 'starcat_'+scan+'_03_26_2018.txt', format='basic')
