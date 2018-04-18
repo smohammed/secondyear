@@ -1835,7 +1835,7 @@ alldata = Table.read('starcat_0-10_03_26_2018.txt', format='ascii')
 
 for region in scans:
 	a = Table.read('starcat_'+region+'_03_26_2018.txt', format='ascii')
-	a = a[np.where((a['FWHM_IMAGE'] > 0) & (a['FWHM_IMAGE'] < 10)  & (a['gb'] > -10.) & (a['gb'] < 10.))]
+	a = a[np.where((a['FWHM_IMAGE'] > 0) & (a['FWHM_IMAGE'] < 10))]
 	alldata = vstack([alldata, a])
 	print region
 
@@ -2086,8 +2086,11 @@ for scan in scans:
 	hdu = fits.open('count_map_'+scan+'_in.fits')[0]
 	wcs = WCS(hdu.header)
 	bkgd = fits.open('background_im1_'+scan+'.fits')[0].data
-	t = Table.read('starcat_'+scan+'_02_09_2018.txt', format='ascii')
-	t = t[np.where((t['FWHM_IMAGE'] > 0) & (t['FWHM_IMAGE'] < 10)  & (t['gb'] > -10.) & (t['gb'] < 10.))]
+	t = Table.read('starcat_'+scan+'_03_26_2018.txt', format='ascii')
+	t = t[np.where((t['FWHM_IMAGE'] > 0) & (t['FWHM_IMAGE'] < 10) & (t['expsum'] > 10.))]
+
+	if scan == '0-10':
+		t['gl'][np.where(t['gl'] > 355)] = t['gl'][np.where(t['gl'] > 355)] - 360.
 
 	print(scan)
 
@@ -2101,6 +2104,7 @@ for scan in scans:
 	fig.add_subplot(223)
 	cbar = plt.scatter(t['gl'], t['gb'], c=t['FWHM_IMAGE'], vmin=0, vmax=10, s=3)
 	plt.colorbar(cbar).set_label('FWHM')
+	plt.gca().invert_xaxis()
 	plt.xlabel('gl')
 	plt.ylabel('gb')
 	plt.title(scan+', 0 > FWHM > 10')
@@ -2110,8 +2114,10 @@ for scan in scans:
 	plt.ylim(0, 10)
 	plt.title('N = '+str(len(t)))
 
-	plt.savefig('02-21-2018_'+scan+'_4panel_scanplots.png')
+	plt.savefig('03-26-2018_'+scan+'_4panel_scanplots.png')
 	plt.clf()
+	del bkgd
+	del hdu
 
 
 
@@ -2182,7 +2188,7 @@ q = np.place(a, mask, nval.astype(np.float32))
 
 
 #############################################################
-# Get values from exposure map
+# Get values from maps
 #############################################################
 scans = ['0-10', '18-28', '27-37', '36-46', '45-55', '63-73', '108-118', '117-127', '126-136', '135-145', '144-154', '153-163', '189-199', '198-208', '207-217', '216-226', '270-280', '279-289', '288-298', '297-307', '351-1', '72-82', '144-154', '225-235', '306-316', '81-91', '153-163', '234-244', '315-325', '90-100', '162-172', '243-253', '324-334', '9-19', '171-181', '252-262', '333-343', '99-109', '180-190', '261-271', '342-352']
 
@@ -2192,9 +2198,9 @@ from photutils import CircularAperture
 for scan in scans:
 	print(scan)
 	cat = Table.read('starcat_'+scan+'_03_26_2018.txt', format='ascii')
-	exp = fits.open('count_map_'+scan+'_exp.fits')[0].data
+	bkgd = fits.open('background_im1_'+scan+'.fits')[0].data
 	positions = [cat['X_IMAGE'], cat['Y_IMAGE']]
 	apertures = CircularAperture(positions, r=3.)
-	sums = aperture_photometry(exp, apertures)
-	cat['expsum'] = sums['aperture_sum']
+	sums = aperture_photometry(bkgd, apertures)
+	cat['bkgdsum'] = sums['aperture_sum']
 	ascii.write(cat, 'starcat_'+scan+'_03_26_2018.txt', format='basic')
