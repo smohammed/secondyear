@@ -18,7 +18,9 @@ import os
 # To do
 #scans = ['0-10', '108-118', '117-127', '126-136', '135-145', '144-154', '153-163', '162-172', '171-181', '180-190', '189-199', '198-208', '207-217', '216-226', '225-235', '234-244', '243-253', '252-262', '261-271', '270-280', '279-289', '288-298', '297-307', '306-316', '351-1', '315-325', '324-334', '333-343', '342-352', '9-19', '18-28', '27-37', '36-46', '45-55', '63-73', '72-82', '81-91', '90-100', '99-109']
 
-scans = ['63-73', '216-226']
+#scans = ['63-73', '216-226']
+scans = ['216-226']
+#scans = ['270-280']
 
 skyrange = scans
 
@@ -51,12 +53,12 @@ for currregion in skyrange:
         os.system('sextractor ../../galexscans/im1_'+region+'_in_03_20_18.fits -c ~/sextractor/daofind.sex -CATALOG_NAME ../../galexscans/sex_im1_'+region+'.fits -BACK_TYPE AUTO -CHECKIMAGE_NAME ../../galexscans/background_im1_'+region+'.fits')
     
     if weight == 1:
-        os.system('sextractor ../../galexscans/im1_'+region+'_in_03_20_18.fits -c ~/sextractor/daofind.sex -CATALOG_NAME ../../galexscans/sex_im1_'+region+'.fits -BACK_TYPE AUTO -CHECKIMAGE_NAME ../../galexscans/background_im1_'+region+'_weighted.fits -WEIGHT_TYPE MAP_WEIGHT -WEIGHT_IMAGE count_map_'+region+'_exp.fits')
+        os.system('sextractor ../../galexscans/im1_'+region+'_in_03_20_18.fits -c ~/sextractor/daofind.sex -CATALOG_NAME ../../galexscans/sex_im1_'+region+'.fits -BACK_TYPE AUTO -CHECKIMAGE_NAME ../../galexscans/background_im1_'+region+'_weighted.fits -WEIGHT_TYPE MAP_WEIGHT -WEIGHT_IMAGE ../../galexscans/count_map_'+region+'_exp_noise_04-18-18.fits')
 
     print 'sextractor run 1 finished'
 
     if weight == 0:
-    bkgd = fits.open('../../galexscans/background_im1_'+region+'.fits')[0].data
+        bkgd = fits.open('../../galexscans/background_im1_'+region+'.fits')[0].data
 
     if weight == 1:
         bkgd = fits.open('../../galexscans/background_im1_'+region+'_weighted.fits')[0].data
@@ -76,7 +78,7 @@ for currregion in skyrange:
         os.system('sextractor ../../galexscans/im1_'+region+'_bksub.fits -c ~/sextractor/daofind.sex -CATALOG_NAME ../../galexscans/sex_im1_'+region+'.fits -BACK_TYPE MANUAL -BACK_VALUE 0.0')
 
     if weight == 1:
-        os.system('sextractor ../../galexscans/im1_'+region+'_bksub.fits -c ~/sextractor/daofind.sex -CATALOG_NAME ../../galexscans/sex_im1_'+region+'.fits -BACK_TYPE MANUAL -BACK_VALUE 0.0 -WEIGHT_TYPE MAP_WEIGHT -WEIGHT_IMAGE count_map_'+region+'_exp.fits')
+        os.system('sextractor ../../galexscans/im1_'+region+'_bksub.fits -c ~/sextractor/daofind.sex -CATALOG_NAME ../../galexscans/sex_im1_'+region+'.fits -BACK_TYPE MANUAL -BACK_VALUE 0.0 -WEIGHT_TYPE MAP_WEIGHT -WEIGHT_IMAGE ../../galexscans/count_map_'+region+'_exp_noise_04-18-18.fits')
 
     print 'SExtractor run 2 finished'
 
