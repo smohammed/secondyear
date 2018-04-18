@@ -2097,6 +2097,7 @@ for scan in scans:
 	fig = plt.figure()
 	fig.add_subplot(221, projection=wcs)
 	plt.imshow(hdu.data, origin='lower', cmap=cm.gray, aspect='auto', vmin=0, vmax=0.1)
+	plt.title(scan)
 	
 	fig.add_subplot(222, projection=wcs)
 	plt.imshow(bkgd, origin='lower', cmap=cm.gray, aspect='auto', vmin=0, vmax=0.1)

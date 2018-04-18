@@ -16,13 +16,13 @@ import os
 #########################################################################
 # Total scans
 # To do
-#scans = ['0-10', '108-118', '117-127', '126-136', '135-145', '144-154', '153-163', '162-172', '171-181', '180-190', '189-199', '198-208', '207-217', '216-226', '225-235', 
+#scans = ['0-10', '108-118', '117-127', '126-136', '135-145', '144-154', '153-163', '162-172', '171-181', '180-190', '189-199', '198-208', '207-217', '216-226', '225-235', '234-244', '243-253', '252-262', '261-271', '270-280', '279-289', '288-298', '297-307', '306-316', '351-1', '315-325', '324-334', '333-343', '342-352', '9-19', '18-28', '27-37', '36-46', '45-55', '63-73', '72-82', '81-91', '90-100', '99-109']
 
-scans = ['234-244', '243-253', '252-262', '261-271', '270-280', '279-289', '288-298', '297-307', '306-316', '351-1', '315-325', '324-334', '333-343', '342-352', '9-19', '18-28', '27-37', '36-46', '45-55', '63-73', '72-82', '81-91', '90-100', '99-109']
-
-#scans = ['63-73']
+scans = ['63-73', '216-226']
 
 skyrange = scans
+
+weight = 1
 
 # Custom parameters that I use
 #filt = 'mexhat_4.0_9x9'
@@ -47,11 +47,20 @@ for currregion in skyrange:
     #########################################################################
     # Run sextractor, subtract background from original and run again
     #########################################################################
-    os.system('sextractor ../../galexscans/im1_'+region+'_in_03_20_18.fits -c ~/sextractor/daofind.sex -CATALOG_NAME ../../galexscans/sex_im1_'+region+'.fits -BACK_TYPE AUTO -CHECKIMAGE_NAME ../../galexscans/background_im1_'+region+'.fits')
+    if weight == 0:
+        os.system('sextractor ../../galexscans/im1_'+region+'_in_03_20_18.fits -c ~/sextractor/daofind.sex -CATALOG_NAME ../../galexscans/sex_im1_'+region+'.fits -BACK_TYPE AUTO -CHECKIMAGE_NAME ../../galexscans/background_im1_'+region+'.fits')
+    
+    if weight == 1:
+        os.system('sextractor ../../galexscans/im1_'+region+'_in_03_20_18.fits -c ~/sextractor/daofind.sex -CATALOG_NAME ../../galexscans/sex_im1_'+region+'.fits -BACK_TYPE AUTO -CHECKIMAGE_NAME ../../galexscans/background_im1_'+region+'_weighted.fits -WEIGHT_TYPE MAP_WEIGHT -WEIGHT_IMAGE count_map_'+region+'_exp.fits')
 
     print 'sextractor run 1 finished'
 
+    if weight == 0:
     bkgd = fits.open('../../galexscans/background_im1_'+region+'.fits')[0].data
+
+    if weight == 1:
+        bkgd = fits.open('../../galexscans/background_im1_'+region+'_weighted.fits')[0].data
+
     im1 = img - bkgd
     header = wcsmap.to_header()
 
@@ -63,7 +72,11 @@ for currregion in skyrange:
         fits.writeto('../../galexscans/im1_'+region+'_bksub.fits', im1, header, overwrite=True)
 
     # With no background step, subtract background prior to this
-    os.system('sextractor ../../galexscans/im1_'+region+'_bksub.fits -c ~/sextractor/daofind.sex -CATALOG_NAME ../../galexscans/sex_im1_'+region+'.fits -BACK_TYPE MANUAL -BACK_VALUE 0.0')
+    if weight == 0:
+        os.system('sextractor ../../galexscans/im1_'+region+'_bksub.fits -c ~/sextractor/daofind.sex -CATALOG_NAME ../../galexscans/sex_im1_'+region+'.fits -BACK_TYPE MANUAL -BACK_VALUE 0.0')
+
+    if weight == 1:
+        os.system('sextractor ../../galexscans/im1_'+region+'_bksub.fits -c ~/sextractor/daofind.sex -CATALOG_NAME ../../galexscans/sex_im1_'+region+'.fits -BACK_TYPE MANUAL -BACK_VALUE 0.0 -WEIGHT_TYPE MAP_WEIGHT -WEIGHT_IMAGE count_map_'+region+'_exp.fits')
 
     print 'SExtractor run 2 finished'
 
@@ -88,6 +101,11 @@ for currregion in skyrange:
 
     alldata = hstack([data, coord])
 
-    ascii.write(alldata, '../../galexscans/starcat_'+currregion+'_03_26_2018.txt', format='ipac')
+    if weight == 0:
+        ascii.write(alldata, '../../galexscans/starcat_'+currregion+'_03_26_2018.txt', format='ipac')
+
+    if weight == 1:
+        ascii.write(alldata, '../../galexscans/starcat_'+currregion+'_weighted_04_18_2018.txt', format='ipac')
+
 
     print 'Converted to gl, gb, finished'
