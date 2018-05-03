@@ -1930,17 +1930,17 @@ thin, = np.where((rc['ALPHAFE'] < 0.08) | (rc['ALPHAFE'] < (m*rc['FE_H'] + b)))
 
 fig, (ax1, ax2) = plt.subplots(1, 2, sharey=True)
 cmap = ax1.scatter(xa1[thin], y1[thin], c=rc['ALPHAFE'][thin], s=120, vmin=-0.05, vmax=0.3, marker='D', cmap=plasma, **{"zorder":5})
-ax1.errorbar(xa1[thin], y1[thin], xerr=(rc['nuv_magerr']-rc['Gerr'])[thin], yerr=rc['FE_H_ERR'][thin], ecolor='black', fmt=None, marker=None, mew=0, elinewidth=1.3, **{"zorder":0})
+ax1.errorbar(xa1[thin], y1[thin], xerr=(rc['nuv_magerr'])[thin], yerr=rc['FE_H_ERR'][thin], ecolor='black', fmt=None, marker=None, mew=0, elinewidth=1.3, **{"zorder":0})
 ax1.scatter(xa1[thick], y1[thick], c=rc['ALPHAFE'][thick], s=200, vmin=-0.05, vmax=0.3, marker='s', edgecolor='blue', linewidth=2, cmap=plasma,**{"zorder":5})
-ax1.errorbar(xa1[thick], y1[thick], xerr=(rc['nuv_magerr']-rc['Gerr'])[thick], yerr=rc['FE_H_ERR'][thick], ecolor='black', fmt=None, marker=None, mew=0, elinewidth=1.3, **{"zorder":0})
+ax1.errorbar(xa1[thick], y1[thick], xerr=(rc['nuv_magerr'])[thick], yerr=rc['FE_H_ERR'][thick], ecolor='black', fmt=None, marker=None, mew=0, elinewidth=1.3, **{"zorder":0})
 ax1.plot(xp, pa1(xp), linewidth=2, c='red', zorder=10) # no dust, all points
 ax1.plot(xp, pa2(xp), linewidth=2, c='black', zorder=10) # no dust, only black points
 ax1.scatter(xa1[w], y1[w], c=rc['ALPHAFE'][w], s=120, vmin=-0.05, vmax=0.3, marker='D', cmap=plasma, edgecolor='red', linewidth=2, **{"zorder":5})
 
 ax2.scatter(xb1[thin], y1[thin], c=rc['ALPHAFE'][thin], s=120, label='Thin disk', vmin=-0.05, vmax=0.3, marker='D', cmap=plasma, **{"zorder":5})
-ax2.errorbar(xb1[thin], y1[thin], xerr=(rc['nuv_magerr']-rc['Gerr'])[thin], yerr=rc['FE_H_ERR'][thin], ecolor='black', fmt=None, marker=None, mew=0, elinewidth=1.3, **{"zorder":0})
+ax2.errorbar(xb1[thin], y1[thin], xerr=(rc['nuv_magerr'])[thin], yerr=rc['FE_H_ERR'][thin], ecolor='black', fmt=None, marker=None, mew=0, elinewidth=1.3, **{"zorder":0})
 ax2.scatter(xb1[thick], y1[thick], c=rc['ALPHAFE'][thick], s=200, label='Thick disk', vmin=-0.05, vmax=0.3, marker='s', edgecolor='blue', linewidth=2, cmap=plasma, **{"zorder":5})
-ax2.errorbar(xb1[thick], y1[thick], xerr=(rc['nuv_magerr']-rc['Gerr'])[thick], yerr=rc['FE_H_ERR'][thick], ecolor='black', fmt=None, marker=None, mew=0, elinewidth=1.3, **{"zorder":0})
+ax2.errorbar(xb1[thick], y1[thick], xerr=(rc['nuv_magerr'])[thick], yerr=rc['FE_H_ERR'][thick], ecolor='black', fmt=None, marker=None, mew=0, elinewidth=1.3, **{"zorder":0})
 ax2.plot(xp, pb1(xp), linewidth=2, c='red', zorder=10)
 ax2.plot(xp, pb2(xp), linewidth=2, c='black', zorder=10)
 ax2.scatter(xb1[w], y1[w], c=rc['ALPHAFE'][w], s=120, vmin=-0.05, vmax=0.3, marker='D', cmap=plasma, edgecolor='red', linewidth=2, **{"zorder":5})
@@ -1961,15 +1961,15 @@ leg.legendHandles[1]._sizes = [150]
 fig.subplots_adjust(wspace=0)
 fig.subplots_adjust(right=.84)
 cbar_ax = fig.add_axes([0.85, 0.1, 0.03, 0.8])
-ax1.annotate('[Fe/H] = 0.18 * (NUV-G) - 1.61', xy=(5.1, 0.43), color='red', size=15)
-ax1.annotate('[Fe/H] = 0.19 * (NUV-G) - 1.70 ', xy=(5.1, 0.47), color='black', size=15)
-ax2.annotate('[Fe/H] = 0.21 * (NUV-G)$_0$ - 1.80', xy=(5.1, 0.43), color='red', size=15)
-ax2.annotate('[Fe/H] = 0.24 * (NUV-G)$_0$ - 2.06', xy=(5.1, 0.47), color='black', size=15)
+ax1.annotate('[Fe/H] = 0.25 * (NUV-G) - 2.29', xy=(5.1, 0.43), color='red', size=15)
+ax1.annotate('[Fe/H] = 0.25 * (NUV-G) - 2.26 ', xy=(5.1, 0.47), color='black', size=15)
+ax2.annotate('[Fe/H] = 0.26 * (NUV-G)$_0$ - 2.29', xy=(5.1, 0.43), color='red', size=15)
+ax2.annotate('[Fe/H] = 0.27 * (NUV-G)$_0$ - 2.33', xy=(5.1, 0.47), color='black', size=15)
 
-ax1.annotate('$\sigma$ = 0.11', xy=(5.1, 0.35), color='red', size=15) # a1
-ax1.annotate('$\sigma$ = 0.12', xy=(5.1, 0.39), color='black', size=15) # a2
-ax2.annotate('$\sigma$ = 0.10', xy=(5.1, 0.35), color='red', size=15) # b1
-ax2.annotate('$\sigma$ = 0.10', xy=(5.1, 0.39), color='black', size=15) # b2
+ax1.annotate('$\sigma$ = 0.018', xy=(5.1, 0.35), color='red', size=15) # a1
+ax1.annotate('$\sigma$ = 0.018', xy=(5.1, 0.39), color='black', size=15) # a2
+ax2.annotate('$\sigma$ = 0.018', xy=(5.1, 0.35), color='red', size=15) # b1
+ax2.annotate('$\sigma$ = 0.018', xy=(5.1, 0.39), color='black', size=15) # b2
 
 fig.colorbar(cmap, cax=cbar_ax).set_label(r'[$\alpha$/Fe]')
 plt.show()
