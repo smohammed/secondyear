@@ -289,280 +289,6 @@ plt.ylabel('gb')
 plt.title('WD + var dets in sextractor')
 
 
-#################################################
-# HR diagram with extinction colored by gl
-#################################################
-#sg = fits.open('../sex-gaia-dust.fits')[1].data
-sg = fits.open('sex_gaia_dust_interp.fits')[1].data
-
-sg1 = sg[np.where(sg['dist'] < 100)]
-sg2 = sg[np.where((sg['dist'] > 100) & (sg['dist'] < 300))]
-sg3 = sg[np.where((sg['dist'] > 300) & (sg['dist'] < 600))]
-sg4 = sg[np.where((sg['dist'] > 600) & (sg['dist'] < 1000))]
-sg5 = sg[np.where((sg['dist'] > 1000) & (sg['dist'] < 3000))]
-sg6 = sg[np.where(sg['dist'] > 3000)]
-
-
-# Extinction values from Schlafly & Finkbeiner 2011
-scatter_contour(sg['nuv_mag']-sg['ebv']*7.76-sg['phot_g_mean_mag']-3.303, sg['Mg']-sg['ebv']*3.303,threshold=1000,log_counts=True,histogram2d_args=dict(bins=40),plot_args=dict(color='k',markersize=1), contour_args=dict(cmap=cm.gray))
-plt.xlim((-6, 8))
-plt.ylim((8, -6))
-plt.xlabel('(NUV - E$_{B-V}$ * 7.76) - (g - E$_{B-V}$ * 3.303)')
-plt.ylabel('Mg - E$_{B-V}$ * 3.303')
-plt.title('S+G matches, Ext from S&F11')
-
-#sg = sgcat[np.where((sgcat['dist'] > 3000) & (sgcat['dist'] < 3000))]
-sg = sgcat[np.where((sgcat['dist'] > 3000))]
-
-# By gl
-sg1 = sg[np.where((sg['gl_sex'] > 0) & (sg['gl_sex'] < 90))]
-sg2 = sg[np.where((sg['gl_sex'] > 90) & (sg['gl_sex'] < 180))]
-sg3 = sg[np.where((sg['gl_sex'] > 180) & (sg['gl_sex'] < 270))]
-sg4 = sg[np.where((sg['gl_sex'] > 270) & (sg['gl_sex'] < 360))]
-
-fig = plt.figure()
-plt.subplot(2, 2, 1)
-plt.scatter(sg1['nuv_mag']-sg1['ebv']*7.76 - (sg1['phot_g_mean_mag']-3.303), sg1['Mg']-sg1['ebv']*3.303, edgecolor='none', c=sg1['ebv'], vmin=0, vmax=90, alpha=0.3)
-plt.ylabel('Mg - E$_{B-V}$ * 3.303')
-plt.xlim((-5, 17))
-plt.ylim((10, -10))
-plt.colorbar().set_label('gl (0 to 90)')
-
-plt.subplot(2, 2, 2)
-plt.scatter(sg2['nuv_mag']-sg2['ebv']*7.76 - (sg2['phot_g_mean_mag']-3.303), sg2['Mg']-sg2['ebv']*3.303, edgecolor='none', c=sg2['ebv'], vmin=90, vmax=180, alpha=0.3)
-plt.xlim((-5, 17))
-plt.ylim((10, -10))
-plt.colorbar().set_label('gl (90 to 180)')
-
-plt.subplot(2, 2, 3)
-plt.scatter(sg3['nuv_mag']-sg3['ebv']*7.76 - (sg3['phot_g_mean_mag']-3.303), sg3['Mg']-sg3['ebv']*3.303, edgecolor='none', c=sg3['ebv'], vmin=180, vmax=270, alpha=0.3)
-plt.xlabel('(NUV - E$_{B-V}$ * 7.76) - (g - E$_{B-V}$ * 3.303)')
-plt.ylabel('Mg - E$_{B-V}$ * 3.303')
-plt.xlim((-5, 17))
-plt.ylim((10, -10))
-plt.colorbar().set_label('gl (180 to 270)')
-
-plt.subplot(2, 2, 4)
-plt.scatter(sg4['nuv_mag']-sg4['ebv']*7.76 - (sg4['phot_g_mean_mag']-3.303), sg4['Mg']-sg4['ebv']*3.303, edgecolor='none', c=sg4['ebv'], vmin=270, vmax=360, alpha=0.3)
-plt.xlabel('(NUV - E$_{B-V}$ * 7.76) - (g - E$_{B-V}$ * 3.303)')
-plt.xlim((-5, 17))
-plt.ylim((10, -10))
-plt.colorbar().set_label('gl (270 to 360)')
-
-plt.subplots_adjust(wspace=0.1, hspace=0)
-fig.suptitle('S+G matches by gl, D > 3000 pc')
-
-#######################################################
-# HR diagram with extinction by dist and 45 deg slices
-#######################################################
-sgcat = fits.open('sex_gaia_dust_interp.fits')[1].data
-#sgcat = fits.open('gais_gaia_dust.fits')[1].data
-sga = sgcat[np.where((sgcat['dist'] > 0) & (sgcat['dist'] < 100) & (sgcat['ebv'] > 0))]
-sgb = sgcat[np.where((sgcat['dist'] > 100) & (sgcat['dist'] < 300) & (sgcat['ebv'] > 0))]
-sgc = sgcat[np.where((sgcat['dist'] > 300) & (sgcat['dist'] < 600) & (sgcat['ebv'] > 0))]
-sgd = sgcat[np.where((sgcat['dist'] > 600) & (sgcat['dist'] < 1000) & (sgcat['ebv'] > 0))]
-sge = sgcat[np.where((sgcat['dist'] > 1000) & (sgcat['dist'] < 3000) & (sgcat['ebv'] > 0))]
-sgf = sgcat[np.where((sgcat['dist'] > 3000) & (sgcat['ebv'] > 0))]
-cmd = Table.read('cmdfiles/cmd_merged.txt', format='ascii')
-
-sg = [sga, sgb, sgc, sgd, sge]
-distrange = ['0 < D < 100 pc', '100 < D < 300 pc', '300 < D < 600 pc', '600 < D < 1000 pc', 'D > 1000 pc']
-distfilename = ['0-100', '100-300', '300-600', '600-1000', '1000']
-
-horlinelim = [6.5, 6, 4.5, 3.5, 2.5]
-verlinelim = [5, 4, 3.3, 3, 3]
-
-for i in range(len(sg)):
-    # By gl
-    sg1 = sg[i][np.where((sg[i]['gl_sex'] > 0) & (sg[i]['gl_sex'] < 45))]
-    sg2 = sg[i][np.where((sg[i]['gl_sex'] > 45) & (sg[i]['gl_sex'] < 90))]
-    sg3 = sg[i][np.where((sg[i]['gl_sex'] > 90) & (sg[i]['gl_sex'] < 135))]
-    sg4 = sg[i][np.where((sg[i]['gl_sex'] > 135) & (sg[i]['gl_sex'] < 180))]
-    sg5 = sg[i][np.where((sg[i]['gl_sex'] > 180) & (sg[i]['gl_sex'] < 225))]
-    sg6 = sg[i][np.where((sg[i]['gl_sex'] > 225) & (sg[i]['gl_sex'] < 270))]
-    sg7 = sg[i][np.where((sg[i]['gl_sex'] > 270) & (sg[i]['gl_sex'] < 315))]
-    sg8 = sg[i][np.where((sg[i]['gl_sex'] > 315) & (sg[i]['gl_sex'] < 360))]
-
-
-    fig, ((ax1, ax2), (ax3, ax4), (ax5, ax6), (ax7, ax8)) = plt.subplots(4, 2, sharex=True, sharey=True)
-    scatter_contour((sg1['nuv_mag']-sg1['ebv']*7.76)-(sg1['phot_g_mean_mag']-sg1['ebv']*3.303), sg1['Mg']-sg1['ebv']*3.303,threshold=1000,log_counts=True,histogram2d_args=dict(bins=40),plot_args=dict(color='k',markersize=1), contour_args=dict(cmap=cm.gray), ax=ax1)
-    ax1.axhline(y=horlinelim[i], color='blue')
-    ax1.axvline(x=verlinelim[i], color='blue')
-    ax1.plot(cmd['NUV']-cmd['G'], cmd['G'], c='red')
-
-    scatter_contour((sg2['nuv_mag']-sg2['ebv']*7.76)-(sg2['phot_g_mean_mag']-sg2['ebv']*3.303), sg2['Mg']-sg2['ebv']*3.303,threshold=1000,log_counts=True,histogram2d_args=dict(bins=40),plot_args=dict(color='k',markersize=1), contour_args=dict(cmap=cm.gray), ax=ax2)
-    ax2.axhline(y=horlinelim[i], color='blue')
-    ax2.axvline(x=verlinelim[i], color='blue')
-    ax2.plot(cmd['NUV']-cmd['G'], cmd['G'], c='red')
-
-    scatter_contour((sg3['nuv_mag']-sg3['ebv']*7.76)-(sg3['phot_g_mean_mag']-sg3['ebv']*3.303), sg3['Mg']-sg3['ebv']*3.303,threshold=1000,log_counts=True,histogram2d_args=dict(bins=40),plot_args=dict(color='k',markersize=1), contour_args=dict(cmap=cm.gray), ax=ax3)
-    ax3.axhline(y=horlinelim[i], color='blue')
-    ax3.axvline(x=verlinelim[i], color='blue')
-    ax3.plot(cmd['NUV']-cmd['G'], cmd['G'], c='red')
-
-    scatter_contour((sg4['nuv_mag']-sg4['ebv']*7.76)-(sg4['phot_g_mean_mag']-sg4['ebv']*3.303), sg4['Mg']-sg4['ebv']*3.303,threshold=1000,log_counts=True,histogram2d_args=dict(bins=40),plot_args=dict(color='k',markersize=1), contour_args=dict(cmap=cm.gray), ax=ax4)
-    ax4.axhline(y=horlinelim[i], color='blue')
-    ax4.axvline(x=verlinelim[i], color='blue')
-    ax4.plot(cmd['NUV']-cmd['G'], cmd['G'], c='red')
-
-    scatter_contour((sg5['nuv_mag']-sg5['ebv']*7.76)-(sg5['phot_g_mean_mag']-sg5['ebv']*3.303), sg5['Mg']-sg5['ebv']*3.303,threshold=1000,log_counts=True,histogram2d_args=dict(bins=40),plot_args=dict(color='k',markersize=1), contour_args=dict(cmap=cm.gray), ax=ax5)
-    ax5.axhline(y=horlinelim[i], color='blue')
-    ax5.axvline(x=verlinelim[i], color='blue')
-    ax5.plot(cmd['NUV']-cmd['G'], cmd['G'], c='red')
-
-    scatter_contour((sg6['nuv_mag']-sg6['ebv']*7.76)-(sg6['phot_g_mean_mag']-sg6['ebv']*3.303), sg6['Mg']-sg6['ebv']*3.303,threshold=1000,log_counts=True,histogram2d_args=dict(bins=40),plot_args=dict(color='k',markersize=1), contour_args=dict(cmap=cm.gray), ax=ax6)
-    ax6.axhline(y=horlinelim[i], color='blue')
-    ax6.axvline(x=verlinelim[i], color='blue')
-    ax6.plot(cmd['NUV']-cmd['G'], cmd['G'], c='red')
-
-    scatter_contour((sg7['nuv_mag']-sg7['ebv']*7.76)-(sg7['phot_g_mean_mag']-sg7['ebv']*3.303), sg7['Mg']-sg7['ebv']*3.303,threshold=1000,log_counts=True,histogram2d_args=dict(bins=40),plot_args=dict(color='k',markersize=1), contour_args=dict(cmap=cm.gray), ax=ax7)
-    ax7.axhline(y=horlinelim[i], color='blue')
-    ax7.axvline(x=verlinelim[i], color='blue')
-    ax7.plot(cmd['NUV']-cmd['G'], cmd['G'], c='red')
-
-    scatter_contour((sg8['nuv_mag']-sg8['ebv']*7.76)-(sg8['phot_g_mean_mag']-sg8['ebv']*3.303), sg8['Mg']-sg8['ebv']*3.303,threshold=1000,log_counts=True,histogram2d_args=dict(bins=40),plot_args=dict(color='k',markersize=1), contour_args=dict(cmap=cm.gray), ax=ax8)
-    ax8.axhline(y=horlinelim[i], color='blue')
-    ax8.axvline(x=verlinelim[i], color='blue')
-    ax8.plot(cmd['NUV']-cmd['G'], cmd['G'], c='red')
-
-    ax1.set_xlim((-4, 11))
-    ax1.set_ylim((8, -6))
-    ax2.set_xlim((-4, 11))
-    ax2.set_ylim((8, -6))
-    ax3.set_xlim((-4, 11))
-    ax3.set_ylim((8, -6))
-    ax4.set_xlim((-4, 11))
-    ax4.set_ylim((8, -6))
-    ax5.set_xlim((-4, 11))
-    ax5.set_ylim((8, -6))
-    ax6.set_xlim((-4, 11))
-    ax6.set_ylim((8, -6))
-    ax7.set_xlim((-4, 11))
-    ax7.set_ylim((8, -6))
-    ax8.set_xlim((-4, 11))
-    ax8.set_ylim((8, -6))
-    ax1.annotate('gl = 0-45', xy=(-3.5, 7))
-    ax2.annotate('gl = 45-90', xy=(-3.5, 7))
-    ax3.annotate('gl = 90-135', xy=(-3.5, 7))
-    ax4.annotate('gl = 135-180', xy=(-3.5, 7))
-    ax5.annotate('gl = 180-225', xy=(-3.5, 7))
-    ax6.annotate('gl = 225-270', xy=(-3.5, 7))
-    ax7.annotate('gl = 270-315', xy=(-3.5, 7))
-    ax8.annotate('gl = 315-360', xy=(-3.5, 7))
-    fig.text(0.5, 0.04, '(NUV - E$_{B-V}$ * 7.76) - (G - E$_{B-V}$ * 3.303)', ha='center')
-    fig.text(0.04, 0.5, 'MG - E$_{B-V}$ * 3.303', va='center', rotation='vertical')
-    plt.suptitle('SEx+G, Ext from S&F11, Hogg parallax, '+distrange[i]+', iso t=1e9yr, Z=0.0152')
-    fig.subplots_adjust(hspace=0, wspace=0)
-    plt.savefig('11-29-Mgvsnuvg_sex_glcuts_'+distfilename[i]+'pc_ext_interp.png')
-    plt.clf()
-    #plt.show()
-
-
-#######################################################
-# HR diagram WITHOUT extinction by dist and 45 deg slices
-#######################################################
-sgcat = fits.open('sex_gaia_dust_interp.fits')[1].data
-sga = sgcat[np.where((sgcat['dist'] > 0) & (sgcat['dist'] < 100) & (sgcat['ebv'] > 0))]
-sgb = sgcat[np.where((sgcat['dist'] > 100) & (sgcat['dist'] < 300) & (sgcat['ebv'] > 0))]
-sgc = sgcat[np.where((sgcat['dist'] > 300) & (sgcat['dist'] < 600) & (sgcat['ebv'] > 0))]
-sgd = sgcat[np.where((sgcat['dist'] > 600) & (sgcat['dist'] < 1000) & (sgcat['ebv'] > 0))]
-sge = sgcat[np.where((sgcat['dist'] > 1000) & (sgcat['dist'] < 3000) & (sgcat['ebv'] > 0))]
-sgf = sgcat[np.where((sgcat['dist'] > 3000) & (sgcat['ebv'] > 0))]
-cmd = Table.read('cmdfiles/cmd_merged.txt', format='ascii')
-
-sg = [sga, sgb, sgc, sgd, sge]
-distrange = ['0 < D < 100 pc', '100 < D < 300 pc', '300 < D < 600 pc', '600 < D < 1000 pc', 'D > 1000 pc']
-distfilename = ['0-100', '100-300', '300-600', '600-1000', '1000']
-
-horlinelim = [6.5, 6, 4.5, 3.5, 2.5]
-verlinelim = [5, 4, 3.3, 3, 3]
-
-for i in range(len(sg)):
-    # By gl
-    sg1 = sg[i][np.where((sg[i]['gl_sex'] > 0) & (sg[i]['gl_sex'] < 45))]
-    sg2 = sg[i][np.where((sg[i]['gl_sex'] > 45) & (sg[i]['gl_sex'] < 90))]
-    sg3 = sg[i][np.where((sg[i]['gl_sex'] > 90) & (sg[i]['gl_sex'] < 135))]
-    sg4 = sg[i][np.where((sg[i]['gl_sex'] > 135) & (sg[i]['gl_sex'] < 180))]
-    sg5 = sg[i][np.where((sg[i]['gl_sex'] > 180) & (sg[i]['gl_sex'] < 225))]
-    sg6 = sg[i][np.where((sg[i]['gl_sex'] > 225) & (sg[i]['gl_sex'] < 270))]
-    sg7 = sg[i][np.where((sg[i]['gl_sex'] > 270) & (sg[i]['gl_sex'] < 315))]
-    sg8 = sg[i][np.where((sg[i]['gl_sex'] > 315) & (sg[i]['gl_sex'] < 360))]
-
-
-    fig, ((ax1, ax2), (ax3, ax4), (ax5, ax6), (ax7, ax8)) = plt.subplots(4, 2, sharex=True, sharey=True)
-    scatter_contour(sg1['nuv_mag']-sg1['phot_g_mean_mag'], sg1['Mg'],threshold=1000,log_counts=True,histogram2d_args=dict(bins=40),plot_args=dict(color='k',markersize=1), contour_args=dict(cmap=cm.gray), ax=ax1)
-    ax1.axhline(y=horlinelim[i], color='blue')
-    ax1.axvline(x=verlinelim[i], color='blue')
-    ax1.plot(cmd['NUV']-cmd['G'], cmd['G'], c='red')
-
-    scatter_contour(sg2['nuv_mag']-sg2['phot_g_mean_mag'], sg2['Mg'],threshold=1000,log_counts=True,histogram2d_args=dict(bins=40),plot_args=dict(color='k',markersize=1), contour_args=dict(cmap=cm.gray), ax=ax2)
-    ax2.axhline(y=horlinelim[i], color='blue')
-    ax2.axvline(x=verlinelim[i], color='blue')
-    ax2.plot(cmd['NUV']-cmd['G'], cmd['G'], c='red')
-
-    scatter_contour(sg3['nuv_mag']-sg3['phot_g_mean_mag'], sg3['Mg'],threshold=1000,log_counts=True,histogram2d_args=dict(bins=40),plot_args=dict(color='k',markersize=1), contour_args=dict(cmap=cm.gray), ax=ax3)
-    ax3.axhline(y=horlinelim[i], color='blue')
-    ax3.axvline(x=verlinelim[i], color='blue')
-    ax3.plot(cmd['NUV']-cmd['G'], cmd['G'], c='red')
-
-    scatter_contour(sg4['nuv_mag']-sg4['phot_g_mean_mag'], sg4['Mg'],threshold=1000,log_counts=True,histogram2d_args=dict(bins=40),plot_args=dict(color='k',markersize=1), contour_args=dict(cmap=cm.gray), ax=ax4)
-    ax4.axhline(y=horlinelim[i], color='blue')
-    ax4.axvline(x=verlinelim[i], color='blue')
-    ax4.plot(cmd['NUV']-cmd['G'], cmd['G'], c='red')
-
-    scatter_contour(sg5['nuv_mag']-sg5['phot_g_mean_mag'], sg5['Mg'],threshold=1000,log_counts=True,histogram2d_args=dict(bins=40),plot_args=dict(color='k',markersize=1), contour_args=dict(cmap=cm.gray), ax=ax5)
-    ax5.axhline(y=horlinelim[i], color='blue')
-    ax5.axvline(x=verlinelim[i], color='blue')
-    ax5.plot(cmd['NUV']-cmd['G'], cmd['G'], c='red')
-
-    scatter_contour(sg6['nuv_mag']-sg6['phot_g_mean_mag'], sg6['Mg'],threshold=1000,log_counts=True,histogram2d_args=dict(bins=40),plot_args=dict(color='k',markersize=1), contour_args=dict(cmap=cm.gray), ax=ax6)
-    ax6.axhline(y=horlinelim[i], color='blue')
-    ax6.axvline(x=verlinelim[i], color='blue')
-    ax6.plot(cmd['NUV']-cmd['G'], cmd['G'], c='red')
-
-    scatter_contour(sg7['nuv_mag']-sg7['phot_g_mean_mag'], sg7['Mg'],threshold=1000,log_counts=True,histogram2d_args=dict(bins=40),plot_args=dict(color='k',markersize=1), contour_args=dict(cmap=cm.gray), ax=ax7)
-    ax7.axhline(y=horlinelim[i], color='blue')
-    ax7.axvline(x=verlinelim[i], color='blue')
-    ax7.plot(cmd['NUV']-cmd['G'], cmd['G'], c='red')
-
-    scatter_contour(sg8['nuv_mag']-sg8['phot_g_mean_mag'], sg8['Mg'],threshold=1000,log_counts=True,histogram2d_args=dict(bins=40),plot_args=dict(color='k',markersize=1), contour_args=dict(cmap=cm.gray), ax=ax8)
-    ax8.axhline(y=horlinelim[i], color='blue')
-    ax8.axvline(x=verlinelim[i], color='blue')
-    ax8.plot(cmd['NUV']-cmd['G'], cmd['G'], c='red')
-
-    ax1.set_xlim((-4, 11))
-    ax1.set_ylim((8, -6))
-    ax2.set_xlim((-4, 11))
-    ax2.set_ylim((8, -6))
-    ax3.set_xlim((-4, 11))
-    ax3.set_ylim((8, -6))
-    ax4.set_xlim((-4, 11))
-    ax4.set_ylim((8, -6))
-    ax5.set_xlim((-4, 11))
-    ax5.set_ylim((8, -6))
-    ax6.set_xlim((-4, 11))
-    ax6.set_ylim((8, -6))
-    ax7.set_xlim((-4, 11))
-    ax7.set_ylim((8, -6))
-    ax8.set_xlim((-4, 11))
-    ax8.set_ylim((8, -6))
-    ax1.annotate('gl = 0-45', xy=(-3.5, 7))
-    ax2.annotate('gl = 45-90', xy=(-3.5, 7))
-    ax3.annotate('gl = 90-135', xy=(-3.5, 7))
-    ax4.annotate('gl = 135-180', xy=(-3.5, 7))
-    ax5.annotate('gl = 180-225', xy=(-3.5, 7))
-    ax6.annotate('gl = 225-270', xy=(-3.5, 7))
-    ax7.annotate('gl = 270-315', xy=(-3.5, 7))
-    ax8.annotate('gl = 315-360', xy=(-3.5, 7))
-    fig.text(0.5, 0.04, 'NUV - G', ha='center')
-    fig.text(0.04, 0.5, 'MG', va='center', rotation='vertical')
-    plt.suptitle('SEx+G matches, no ext, Hogg par, '+distrange[i]+', iso t=1e9yr, Z=0.0152')
-    fig.subplots_adjust(hspace=0, wspace=0)
-    plt.savefig('11-29-Mgvsnuvg_gais_glcuts_'+distfilename[i]+'pc_noext.png')
-    plt.clf()
-    #plt.show()
-
-
 #######################################################
 # HR diagram with extinction by dist and 45 deg slice, colored by ebv
 #######################################################
@@ -669,145 +395,6 @@ for i in range(len(sg)):
     plt.clf()
     #plt.show()
 
-
-######################################################################
-# CMD with lim mag nuv = 20
-######################################################################
-mnuv = 20
-dist = np.arange(1, 5000, 500)
-M = mnuv - 5*np.log10(dist) + 5
-g = np.linspace(20, 0, 10)
-
-sg = fits.open('gais_tgas_match_dust.fits')[1].data
-sggal = SkyCoord(sg['gl_gais']*u.deg, sg['gb_gais']*u.deg, frame='galactic')
-
-apo = fits.open('APOKASKRC_TGAS.fits')[1].data
-apogal = SkyCoord(apo['l']*u.deg, apo['b']*u.deg, frame='galactic')
-bov = fits.open('BovyRC_TGAS.fits')[1].data
-bovgal = SkyCoord(bov['l']*u.deg, bov['b']*u.deg, frame='galactic')
-sg1ind, apoind, angsep1, ang3d = search_around_sky(sggal, apogal, 3*u.arcsec)
-sg2ind, bovind, angsep2, ang3d = search_around_sky(sggal, bovgal, 3*u.arcsec)
-c1 = hstack([Table(sg)[sg1ind], Table(apo)[apoind]])
-c2 = hstack([Table(sg)[sg2ind], Table(bov)[bovind]])
-c1['angsep'] = angsep1
-c2['angsep'] = angsep2
-c1.remove_column('phot_g_mean_mag_2')
-c1.rename_column('phot_g_mean_mag_1', 'phot_g_mean_mag')
-c2.remove_column('phot_g_mean_mag_2')
-c2.rename_column('phot_g_mean_mag_1', 'phot_g_mean_mag')
-
-scatter_contour(sg['nuv_mag']-sg['phot_g_mean_mag'], sg['MNUV'], threshold=1000, log_counts=True, histogram2d_args=dict(bins=40), plot_args=dict(color='k', markersize=1, alpha=0.1), contour_args=dict(cmap=cm.gray))
-
-plt.scatter(c2['nuv_mag']-c2['phot_g_mean_mag'], c2['MNUV'], edgecolor='none',c=c2['dist'], s=40, vmin=0, vmax=2000, label='RC stars')
-
-plt.scatter(c1['nuv_mag']-c1['phot_g_mean_mag'], c1['MNUV'], edgecolor='none', c=c1['dist'], s=40, vmin=0, vmax=2000)
-
-colors = ['']
-'''
-for i in range(len(dist)):
-    plt.axhline(M[i], color='black')
-    plt.annotate('D = '+str(dist[i])+' pc', xy=(12, M[i]), size=10)
-'''
-
-#plt.scatter(mnuv - g, M,c=dist, vmin=0, vmax=5000, s=80, label='m$_{NUV}$ = 20', marker='s')
-plt.legend(scatterpoints=1, loc=3)
-plt.xlim((2, 14))
-plt.ylim((16, 3))
-plt.xlabel('NUV - G')
-plt.ylabel('M$_{NUV}$')
-
-plt.colorbar().set_label('dist [pc]')
-plt.show()
-
-######################################################################
-# CMD with lim mag G = 20
-######################################################################
-mg = 20
-dist = np.arange(1, 5000, 500)
-M = mg - 5*np.log10(dist) + 5
-g = np.linspace(20, 0, 10)
-
-sg = fits.open('gais_tgas_match_dust.fits')[1].data
-sg = sg[~np.isnan(sg['ebv'])]
-sggal = SkyCoord(sg['gl_gais']*u.deg, sg['gb_gais']*u.deg, frame='galactic')
-
-apo = fits.open('APOKASKRC_TGAS.fits')[1].data
-apogal = SkyCoord(apo['l']*u.deg, apo['b']*u.deg, frame='galactic')
-bov = fits.open('BovyRC_TGAS.fits')[1].data
-bovgal = SkyCoord(bov['l']*u.deg, bov['b']*u.deg, frame='galactic')
-sg1ind, apoind, angsep1, ang3d = search_around_sky(sggal, apogal, 3*u.arcsec)
-sg2ind, bovind, angsep2, ang3d = search_around_sky(sggal, bovgal, 3*u.arcsec)
-c1 = hstack([Table(sg)[sg1ind], Table(apo)[apoind]])
-c2 = hstack([Table(sg)[sg2ind], Table(bov)[bovind]])
-c1['angsep'] = angsep1
-c2['angsep'] = angsep2
-c1.remove_column('phot_g_mean_mag_2')
-c1.rename_column('phot_g_mean_mag_1', 'phot_g_mean_mag')
-c2.remove_column('phot_g_mean_mag_2')
-c2.rename_column('phot_g_mean_mag_1', 'phot_g_mean_mag')
-
-scatter_contour(sg['nuv_mag']-sg['phot_g_mean_mag'], sg['Mg'], threshold=1000, log_counts=True, histogram2d_args=dict(bins=40), plot_args=dict(color='k', markersize=1, alpha=0.1), contour_args=dict(cmap=cm.gray))
-plt.scatter(c2['nuv_mag']-c2['phot_g_mean_mag'], c2['Mg'], edgecolor='none',c=c2['dist'], s=40, vmin=0, vmax=2000, label='RC stars')
-plt.scatter(c1['nuv_mag']-c1['phot_g_mean_mag'], c1['Mg'], edgecolor='none', c=c1['dist'], s=40, vmin=0, vmax=2000)
-
-colors = ['']
-for i in range(len(dist)):
-    plt.axhline(M[i], color='black')
-    plt.annotate('D = '+str(dist[i])+' pc', xy=(12, M[i]), size=10)
-
-#plt.scatter(mnuv - g, M,c=dist, vmin=0, vmax=5000, s=80, label='m$_{NUV}$ = 20', marker='s')
-plt.legend(scatterpoints=1, loc=3)
-plt.xlim((1, 14))
-plt.ylim((8, -3))
-plt.xlabel('NUV - G')
-plt.ylabel('M$_{G}$')
-plt.colorbar().set_label('dist [pc]')
-plt.show()
-
-
-######################################################################
-# Combine and format RC table
-######################################################################
-sg = fits.open('sex_tgas_dust_interp_02-28-2018.fits')[1].data
-sg = sg[~np.isnan(sg['ebv'])]
-sggal = SkyCoord(sg['gl_sex']*u.deg, sg['gb_sex']*u.deg, frame='galactic')
-
-apo = fits.open('APOKASKRC_TGAS.fits')[1].data
-apogal = SkyCoord(apo['l']*u.deg, apo['b']*u.deg, frame='galactic')
-bov = fits.open('BovyRC_TGAS.fits')[1].data
-bovgal = SkyCoord(bov['l']*u.deg, bov['b']*u.deg, frame='galactic')
-sg1ind, apoind, angsep1, ang3d = search_around_sky(sggal, apogal, 3*u.arcsec)
-sg2ind, bovind, angsep2, ang3d = search_around_sky(sggal, bovgal, 3*u.arcsec)
-c1 = hstack([Table(sg)[sg1ind], Table(apo)[apoind]])
-c2 = hstack([Table(sg)[sg2ind], Table(bov)[bovind]])
-c1['angsep'] = angsep1
-c2['angsep'] = angsep2
-c1.remove_column('phot_g_mean_mag_2')
-c1.rename_column('phot_g_mean_mag_1', 'phot_g_mean_mag')
-c2.remove_column('phot_g_mean_mag_2')
-c2.rename_column('phot_g_mean_mag_1', 'phot_g_mean_mag')
-c1['catalog'] = 'apokask'
-c2['catalog'] = 'bovy14'
-
-c1['ALPHAFE'] = c1['ALPHA_M'] * c1['M_H'] / c1['FE_H']
-
-c2['AL_FE'] = c2['AL_H'] / c2['FE_H']
-c2['CA_FE'] = c2['CA_H'] / c2['FE_H']
-c2['C_FE'] = c2['C_H'] / c2['FE_H']
-c2['K_FE'] = c2['K_H'] / c2['FE_H']
-c2['MG_FE'] = c2['MG_H'] / c2['FE_H']
-c2['MN_FE'] = c2['MN_H'] / c2['FE_H']
-c2['NA_FE'] = c2['NA_H'] / c2['FE_H']
-c2['NI_FE'] = c2['NI_H'] / c2['FE_H']
-c2['N_FE'] = c2['N_H'] / c2['FE_H']
-c2['O_FE'] = c2['O_H'] / c2['FE_H']
-c2['SI_FE'] = c2['SI_H'] / c2['FE_H']
-c2['S_FE'] = c2['S_H'] / c2['FE_H']
-c2['TI_FE'] = c2['TI_H'] / c2['FE_H']
-c2['V_FE'] = c2['V_H'] / c2['FE_H']
-
-
-
 ######################################################################
 # CMD with lim mag G = 20
 ######################################################################
@@ -858,23 +445,9 @@ plt.title('GAIS + TGAS, RC stars')
 plt.xlim((4,12))
 plt.show()
 
-plt.scatter(((c2['nuv_mag']-c2['ebv']*7.24)-(c2['phot_g_mean_mag']-c2['ebv']*3.303))[thin], c2['FE_H'][thin], s=80, c=c2['ALPHAFE'][thin], label='thin', vmin=-0.05, vmax=0.3)
-
-plt.scatter(((c2['nuv_mag']-c2['ebv']*7.24)-(c2['phot_g_mean_mag']-c2['ebv']*3.303))[thick], c2['FE_H'][thick], c=c2['ALPHAFE'][thick], s=80, marker='s', label='thick', vmin=-.05, vmax=0.3)
-
-plt.xlabel('(NUV - E$_{B-V}$ * 7.24) - (G - E$_{B-V}$ * 3.303)')
-plt.ylabel('Fe/H')
-plt.colorbar().set_label('Alpha/Fe')
-plt.legend(scatterpoints=1, loc=2)
-plt.show()
-
-
 # B - V version
 plt.scatter(c2['B_AB']-c2['V_AB'], c2['FE_H'], edgecolor='none', c=c2['ALPHAFE'], s=80, vmin=-0.05, vmax=0.3, **{"zorder":100})
 plt.errorbar(c2['B_AB']-c2['V_AB'], c2['FE_H'], xerr=c2['B_ABerr']-c2['V_ABerr'], yerr=c2['FE_H_ERR'], fmt=None, marker=None, mew=0, **{"zorder":0})
-
-#plt.scatter((c2['B_AB']-c2['ebv']*3.626)-(c2['V_AB']-c2['ebv']*2.742), c2['FE_H'], edgecolor='none', c=c2['ALPHAFE'], s=80, vmin=-0.05, vmax=0.3, **{"zorder":100})
-#plt.errorbar((c2['B_AB']-c2['ebv']*3.626)-(c2['V_AB']-c2['ebv']*2.742), c2['FE_H'], xerr=c2['B_ABerr']-c2['V_ABerr'], yerr=c2['FE_H_ERR'], fmt=None, marker=None, mew=0, **{"zorder":0})
 
 #plt.xlim((-1, 0.4))
 plt.xlabel('B - V')
@@ -912,103 +485,6 @@ comb['Gerr'] = Gerr
 #ascii.write(comb, 'gais_tgas_tycho_dust.txt', format='basic')
 
 cols = fits.ColDefs([fits.Column(name='nuv_mag', format='D', array=comb['nuv_mag']), fits.Column(name='nuv_magerr', format='D', array=comb['nuv_magerr']), fits.Column(name='fuv_mag', format='D', array=comb['fuv_mag']), fits.Column(name='fuv_magerr', format='D', array=comb['fuv_magerr']), fits.Column(name='gl_gais', format='D', array=comb['gl_gais']), fits.Column(name='gb_gais', format='D', array=comb['gb_gais']), fits.Column(name='ra_gais', format='D', array=comb['ra_gais']), fits.Column(name='dec_gais', format='D', array=comb['dec_gais']), fits.Column(name='hip', format='K', array=comb['hip']), fits.Column(name='tycho2_id', format='13A', array=comb['tycho2_id']), fits.Column(name='ra_tgas', format='D', array=comb['ra_tgas']), fits.Column(name='ra_error', format='D', array=comb['ra_error']), fits.Column(name='dec_tgas', format='D', array=comb['dec_tgas']), fits.Column(name='dec_error', format='D', array=comb['dec_error']), fits.Column(name='parallax', format='D', array=comb['parallax']), fits.Column(name='parallax_error', format='D', array=comb['parallax_error']), fits.Column(name='pmra', format='D', array=comb['pmra']), fits.Column(name='pmra_error', format='D', array=comb['pmra_error']), fits.Column(name='pmdec', format='D', array=comb['pmdec']), fits.Column(name='pmdec_error', format='D', array=comb['pmdec_error']), fits.Column(name='ra_dec_corr', format='E', array=comb['ra_dec_corr']), fits.Column(name='ra_parallax_corr', format='D', array=comb['ra_parallax_corr']), fits.Column(name='ra_pmra_corr', format='D', array=comb['ra_pmra_corr']), fits.Column(name='ra_pmdec_corr', format='D', array=comb['ra_pmdec_corr']), fits.Column(name='dec_parallax_corr', format='D', array=comb['dec_parallax_corr']), fits.Column(name='dec_pmra_corr', format='D', array=comb['dec_pmra_corr']), fits.Column(name='dec_pmdec_corr', format='D', array=comb['dec_pmdec_corr']), fits.Column(name='parallax_pmra_corr', format='D', array=comb['parallax_pmra_corr']), fits.Column(name='parallax_pmdec_corr', format='D', array=comb['parallax_pmdec_corr']), fits.Column(name='pmra_pmdec_corr', format='D', array=comb['pmra_pmdec_corr']), fits.Column(name='phot_g_mean_mag', format='D', array=comb['phot_g_mean_mag']), fits.Column(name='Gerr', format='D', array=comb['Gerr']), fits.Column(name='phot_g_mean_flux', format='D', array=comb['phot_g_mean_flux']), fits.Column(name='phot_g_mean_flux_error', format='D', array=comb['phot_g_mean_flux_error']), fits.Column(name='phot_variable_flag', format='19A', array=comb['phot_variable_flag']), fits.Column(name='gl_tgas', format='D', array=comb['gl_tgas']), fits.Column(name='gb_tgas', format='D', array=comb['gb_tgas']), fits.Column(name='ecl_lon', format='D', array=comb['ecl_lon']), fits.Column(name='ecl_lat', format='D', array=comb['ecl_lat']), fits.Column(name='angsep', format='D', array=comb['angsep']), fits.Column(name='dist', format='D', array=comb['dist']), fits.Column(name='distmod', format='D', array=comb['distmod']), fits.Column(name='Mg', format='D', array=comb['Mg']), fits.Column(name='ebv', format='D', array=comb['ebv']), fits.Column(name='parallax_hogg', format='D', array=comb['parallax_hogg']), fits.Column(name='B_AB', format='D', array=comb['B_AB']), fits.Column(name='B_ABerr', format='D', array=comb['B_ABerr']), fits.Column(name='V_AB', format='D', array=comb['V_AB']), fits.Column(name='V_ABerr', format='D', array=comb['V_ABerr']), fits.Column(name='MNUV', format='D', array=comb['MNUV']), fits.Column(name='MB', format='D', array=comb['B_AB']-comb['distmod']), fits.Column(name='MV', format='D', array=comb['V_AB']-comb['distmod'])])
-
-
-
-##########################################
-# Alpha/Fe vs Fe/H vs NUV - G
-##########################################
-rc = fits.open('asc_gaia_aporc_match_dust-05-03-18.fits')[1].data
-q = np.where((rc['ebv'] > 0) & (rc['Fe_H_err'] > 0) & (rc['phot_bp_mean_mag'] > 0) & (rc['phot_rp_mean_mag'] > 0))
-rc = rc[q]
-
-m = (0.095-.21)/(0+0.8)
-b = 0.095
-thick,= np.where((rc['ALPHAFE'] > 0.08) & (rc['ALPHAFE'] > (m*rc['FE_H'] + b)))
-thin,= np.where((rc['ALPHAFE'] < 0.08) | (rc['ALPHAFE'] < (m*rc['FE_H'] + b)))
-nuvg = ((rc['nuv_mag']-rc['ebv']*7.24)-(rc['phot_g_mean_mag']-rc['ebv']*3.303))
-
-afe_apo = np.where(rc['ALPHA_M'] > 0)
-rc['ALPHAFE'][afe_apo] = (rc['ALPHA_M'] + rc['M_H'] - rc['FE_H'])[afe_apo]
-alphafe = rc['ALPHAFE']
-
-# for now use this. err is only for apo
-afeerr = (alphafe * np.sqrt((rc['ALPHA_M_ERR']/rc['ALPHA_M'])**2 + (rc['M_H_ERR']/rc['M_H'])**2 + (rc['FE_H_ERR']/rc['FE_H'])**2))
-
-
-plt.scatter(rc['FE_H'][thin], rc['ALPHAFE'][thin], s=20, edgecolor='none', c=nuvg[thin], label='Thin disk', vmin=7, vmax=11, marker='D', cmap=cm.jet)
-
-plt.scatter(rc['FE_H'][thick], rc['ALPHAFE'][thick], c=nuvg[thick], s=20, marker='s', label='Thick disk', vmin=7, vmax=11, linewidth=1, cmap=cm.jet)
-
-#plt.errorbar(rc['FE_H'], rc['ALPHAFE'], xerr=(rc['FE_H_err']), yerr=rc['ALPHAFE_ERR'], ecolor='black', fmt=None, marker=None, mew=0, elinewidth=1.3, **{"zorder":0})
-plt.errorbar(rc['Fe_H'], rc['ALPHAFE'], xerr=(rc['FE_H_err']), ecolor='black', fmt=None, marker=None, mew=0, elinewidth=1.3, **{"zorder":0})
-
-
-#plt.xlabel('(NUV - E$_{B-V}$ * 7.24) - (G - E$_{B-V}$ * 3.303)')
-plt.xlabel('[Fe/H]')
-plt.ylabel(r'[$\alpha$/Fe]')
-#plt.xlim((-0.7, 0.5))
-#plt.ylim((-0.05, 0.3))
-plt.colorbar().set_label('(NUV - G)$_0$')
-leg = plt.legend(scatterpoints=1)
-leg.legendHandles[0].set_color('black')
-leg.legendHandles[1].set_color('black')
-leg.legendHandles[0]._sizes = [150]
-leg.legendHandles[1]._sizes = [150]
-plt.show()
-
-######################################################################
-# Color vs TEFF vs Fe/H
-######################################################################
-m = (0.095-.21)/(0+0.8)
-b = 0.095
-thick, = np.where((rc['ALPHAFE'] > 0.08) & (rc['ALPHAFE'] > (m*rc['FE_H'] + b)))
-thin, = np.where((rc['ALPHAFE'] < 0.08) | (rc['ALPHAFE'] < (m*rc['FE_H'] + b)))
-#y1 = (rc['B_apass']-rc['ebv']*3.626)-(rc['V_apass']-rc['ebv']*2.742)
-y1 = rc['phot_bp_mean_mag']-rc['phot_rp_mean_mag']
-y2 = (rc['nuv_mag']-rc['ebv']*7.24)-(rc['phot_g_mean_mag']-rc['ebv']*3.303)
-x = rc['TEFF']
-m1, b1, rval1, pval1, stderr1 = stats.linregress(x, y1)
-line1 = m1*x + b1
-err1 = np.sqrt(np.sum((line1-y1)**2/len(y1)))
-m2, b2, rval2, pval2, stderr2 = stats.linregress(x, y2)
-line2 = m2*x + b2
-err2 = np.sqrt(np.sum((line2-y2)**2/len(y2)))
-
-fig, (ax1, ax2) = plt.subplots(2, 1)
-cmap = ax1.scatter(x[thin], y1[thin], s=80, c=rc['FE_H'][thin], cmap=cm.viridis_r, vmin=-.5, vmax=.35, marker='D', label='Thin disk', edgecolor='black')
-ax1.scatter(x[thick], y1[thick], s=80, c=rc['FE_H'][thick], cmap=cm.viridis_r, vmin=-.5, vmax=.35, marker='s', label='Thick disk', edgecolor='black', linewidth=3)
-#ax1.errorbar(x[thin], y1[thin], xerr=rc['TEFF_ERR'][thin], yerr=(rc['Berr_apass']-rc['Verr_apass'])[thin], ecolor='black', fmt=None, marker=None, mew=0, elinewidth=1.3, **{"zorder":0})
-ax1.errorbar(x[thin], y1[thin], xerr=rc['TEFF_ERR'][thin], ecolor='black', fmt=None, marker=None, mew=0, elinewidth=1.3, **{"zorder":0})
-
-ax1.plot(x, line1, linewidth=5, c='red', zorder=10)
-
-ax2.scatter(x[thin], y2[thin], s=80, c=rc['FE_H'][thin], cmap=cm.viridis_r, vmin=-.5, vmax=.35, marker='D', edgecolor='black')
-ax2.scatter(x[thick], y2[thick], s=80, c=rc['FE_H'][thick], cmap=cm.viridis_r, vmin=-.5, vmax=.35, marker='s', edgecolor='black', linewidth=3)
-#ax2.errorbar(x[thin], y2[thin], xerr=rc['TEFF_ERR'][thin], yerr=(rc['nuv_magerr']-rc['Gerr'])[thin], ecolor='black', fmt=None, marker=None, mew=0, elinewidth=1.3, **{"zorder":0})
-ax2.errorbar(x[thin], y2[thin], xerr=rc['TEFF_ERR'][thin], ecolor='black', fmt=None, marker=None, mew=0, elinewidth=1.3, **{"zorder":0})
-
-ax2.plot(x, line2, linewidth=5, c='red', zorder=10)
-
-#ax1.set_xlabel('T$_{eff}$')
-ax1.set_ylabel('BP - RP')
-ax2.set_xlabel('T$_{eff}$')
-ax2.set_ylabel('(NUV - G)$_0$')
-#ax1.set_xlim((4300, 5200))
-#ax2.set_xlim((4300, 5200))
-#ax1.set_ylim((0.5, 1.6))
-#ax2.set_ylim((5, 12))
-fig.subplots_adjust(right=.84)
-fig.subplots_adjust(hspace=0)
-ax1.set_xticklabels([])
-leg = ax1.legend(scatterpoints=1)
-leg.legendHandles[0].set_color('black')
-leg.legendHandles[1].set_color('black')
-leg.legendHandles[0]._sizes = [150]
-leg.legendHandles[1]._sizes = [150]
-cbar_ax = fig.add_axes([0.85, 0.1, 0.03, 0.8])
-plt.colorbar(cmap, cax=cbar_ax).set_label('[Fe/H]')
-plt.show()
 
 
 ######################################################################
@@ -1067,24 +543,104 @@ for scan in pscats:
     ascii.write('starcat_ps1'+str(scan)+'_g10-20.txt', format='basic')
 
 
+######################################################################
+# Color vs TEFF vs Fe/H
+######################################################################
+m = (0.095-.21)/(0+0.8)
+b = 0.095
+thick, = np.where((rc['ALPHAFE'] > 0.08) & (rc['ALPHAFE'] > (m*rc['FE_H'] + b)))
+thin, = np.where((rc['ALPHAFE'] < 0.08) | (rc['ALPHAFE'] < (m*rc['FE_H'] + b)))
+#y1 = (rc['B_apass']-rc['ebv']*3.626)-(rc['V_apass']-rc['ebv']*2.742)
+y1 = rc['phot_bp_mean_mag']-rc['phot_rp_mean_mag']
+y2 = (rc['nuv_mag']-rc['ebv']*7.24)-(rc['phot_g_mean_mag']-rc['ebv']*3.303)
+x = rc['TEFF']
+m1, b1, rval1, pval1, stderr1 = stats.linregress(x, y1)
+line1 = m1*x + b1
+err1 = np.sqrt(np.sum((line1-y1)**2/len(y1)))
+m2, b2, rval2, pval2, stderr2 = stats.linregress(x, y2)
+line2 = m2*x + b2
+err2 = np.sqrt(np.sum((line2-y2)**2/len(y2)))
 
-#################################################
-# rc temp analysis
-#################################################
-rc = fits.open('rc_all_10-31.fits')[1].data
+fig, (ax1, ax2) = plt.subplots(2, 1)
+cmap = ax1.scatter(x[thin], y1[thin], s=80, c=rc['FE_H'][thin], cmap=cm.viridis_r, vmin=-.5, vmax=.35, marker='D', label='Thin disk', edgecolor='black')
+ax1.scatter(x[thick], y1[thick], s=80, c=rc['FE_H'][thick], cmap=cm.viridis_r, vmin=-.5, vmax=.35, marker='s', label='Thick disk', edgecolor='black', linewidth=3)
+#ax1.errorbar(x[thin], y1[thin], xerr=rc['TEFF_ERR'][thin], yerr=(rc['Berr_apass']-rc['Verr_apass'])[thin], ecolor='black', fmt=None, marker=None, mew=0, elinewidth=1.3, **{"zorder":0})
+ax1.errorbar(x[thin], y1[thin], xerr=rc['TEFF_ERR'][thin], ecolor='black', fmt=None, marker=None, mew=0, elinewidth=1.3, **{"zorder":0})
 
-nuvg = (rc['nuv_mag']-rc['ebv']*7.24)-(rc['phot_g_mean_mag']-rc['ebv']*3.303)
-q = np.where(x1 < 6.6)
-nuvv = (rc['nuv_mag']-rc['ebv']*7.24)-(rc['V_apass']-rc['ebv']*2.742)
-nuvb = (rc['nuv_mag']-rc['ebv']*7.24)-(rc['B_apass']-rc['ebv']*3.626)
-gv = (rc['phot_g_mean_mag']-rc['ebv']*3.303)-(rc['V_apass']-rc['ebv']*2.742)
-gb = (rc['phot_g_mean_mag']-rc['ebv']*3.303)-(rc['B_apass']-rc['ebv']*3.626)
-plt.scatter(rc['TEFF'], gb)
-plt.scatter(rc['TEFF'][q], gb[q])
+ax1.plot(x, line1, linewidth=5, c='red', zorder=10)
+
+ax2.scatter(x[thin], y2[thin], s=80, c=rc['FE_H'][thin], cmap=cm.viridis_r, vmin=-.5, vmax=.35, marker='D', edgecolor='black')
+ax2.scatter(x[thick], y2[thick], s=80, c=rc['FE_H'][thick], cmap=cm.viridis_r, vmin=-.5, vmax=.35, marker='s', edgecolor='black', linewidth=3)
+#ax2.errorbar(x[thin], y2[thin], xerr=rc['TEFF_ERR'][thin], yerr=(rc['nuv_magerr']-rc['Gerr'])[thin], ecolor='black', fmt=None, marker=None, mew=0, elinewidth=1.3, **{"zorder":0})
+ax2.errorbar(x[thin], y2[thin], xerr=rc['TEFF_ERR'][thin], ecolor='black', fmt=None, marker=None, mew=0, elinewidth=1.3, **{"zorder":0})
+
+ax2.plot(x, line2, linewidth=5, c='red', zorder=10)
+
+#ax1.set_xlabel('T$_{eff}$')
+ax1.set_ylabel('BP - RP')
+ax2.set_xlabel('T$_{eff}$')
+ax2.set_ylabel('(NUV - G)$_0$')
+#ax1.set_xlim((4300, 5200))
+#ax2.set_xlim((4300, 5200))
+#ax1.set_ylim((0.5, 1.6))
+#ax2.set_ylim((5, 12))
+fig.subplots_adjust(right=.84)
+fig.subplots_adjust(hspace=0)
+ax1.set_xticklabels([])
+leg = ax1.legend(scatterpoints=1)
+leg.legendHandles[0].set_color('black')
+leg.legendHandles[1].set_color('black')
+leg.legendHandles[0]._sizes = [150]
+leg.legendHandles[1]._sizes = [150]
+cbar_ax = fig.add_axes([0.85, 0.1, 0.03, 0.8])
+plt.colorbar(cmap, cax=cbar_ax).set_label('[Fe/H]')
 plt.show()
 
-bv = (rc['B_apass']-rc['ebv']*3.626)-(rc['v_apass']-rc['ebv']*2.742)
 
+##########################################
+# Alpha/Fe vs Fe/H vs NUV - G
+##########################################
+rc = fits.open('asc_gaia_aporc_match_dust-05-03-18.fits')[1].data
+q = np.where((rc['ebv'] > 0) & (rc['Fe_H_err'] > 0) & (rc['phot_bp_mean_mag'] > 0) & (rc['phot_rp_mean_mag'] > 0))
+rc = rc[q]
+
+m = (0.095-.21)/(0+0.8)
+b = 0.095
+thick,= np.where((rc['ALPHAFE'] > 0.08) & (rc['ALPHAFE'] > (m*rc['FE_H'] + b)))
+thin,= np.where((rc['ALPHAFE'] < 0.08) | (rc['ALPHAFE'] < (m*rc['FE_H'] + b)))
+nuvg = ((rc['nuv_mag']-rc['ebv']*7.24)-(rc['phot_g_mean_mag']-rc['ebv']*3.303))
+
+#afe_apo = np.where(rc['ALPHA_M'] > 0)
+#rc['ALPHAFE'][afe_apo] = (rc['ALPHA_M'] + rc['M_H'] - rc['FE_H'])[afe_apo]
+#alphafe = rc['ALPHAFE']
+
+# for now use this. err is only for apo
+#afeerr = (alphafe * np.sqrt((rc['ALPHA_M_ERR']/rc['ALPHA_M'])**2 + (rc['M_H_ERR']/rc['M_H'])**2 + (rc['FE_H_ERR']/rc['FE_H'])**2))
+
+plt.scatter(rc['FE_H'][thin], rc['ALPHAFE'][thin], s=20, edgecolor='none', c=nuvg[thin], label='Thin disk', vmin=7, vmax=11, marker='D', cmap=cm.jet)
+
+plt.scatter(rc['FE_H'][thick], rc['ALPHAFE'][thick], c=nuvg[thick], s=20, marker='s', label='Thick disk', vmin=7, vmax=11, linewidth=1, cmap=cm.jet)
+
+#plt.errorbar(rc['FE_H'], rc['ALPHAFE'], xerr=(rc['FE_H_err']), yerr=rc['ALPHAFE_ERR'], ecolor='black', fmt=None, marker=None, mew=0, elinewidth=1.3, **{"zorder":0})
+plt.errorbar(rc['Fe_H'], rc['ALPHAFE'], xerr=(rc['FE_H_err']), ecolor='black', fmt=None, marker=None, mew=0, elinewidth=1.3, **{"zorder":0})
+
+
+#plt.scatter(rc['FE_H'][thin], rc['ALPHAFE'][thin], s=20, edgecolor='none', label='Thin disk', vmin=7, vmax=11, marker='D')
+
+#plt.scatter(rc['FE_H'][thick], rc['ALPHAFE'][thick], s=20, marker='s', label='Thick disk', vmin=7, vmax=11, linewidth=1)
+
+
+plt.xlabel('[Fe/H]')
+plt.ylabel(r'[$\alpha$/Fe]')
+#plt.xlim((-0.7, 0.5))
+#plt.ylim((-0.05, 0.3))
+plt.colorbar().set_label('(NUV - G)$_0$')
+leg = plt.legend(scatterpoints=1)
+leg.legendHandles[0].set_color('black')
+leg.legendHandles[1].set_color('black')
+leg.legendHandles[0]._sizes = [150]
+leg.legendHandles[1]._sizes = [150]
+plt.show()
 
 #################################################
 # rc fit lines for Fe/H vs NUV - G vs Alpha/Fe
@@ -1092,6 +648,11 @@ bv = (rc['B_apass']-rc['ebv']*3.626)-(rc['v_apass']-rc['ebv']*2.742)
 rc = fits.open('asc_gaia_aporc_match_dust-05-03-18.fits')[1].data
 q = np.where((rc['ebv'] > 0) & (rc['Fe_H_err'] > 0) & (rc['phot_bp_mean_mag'] > 0) & (rc['phot_rp_mean_mag'] > 0))
 rc = rc[q]
+
+m = (0.095-.21)/(0+0.8)
+b = 0.095
+thick,= np.where((rc['ALPHAFE'] > 0.08) & (rc['ALPHAFE'] > (m*rc['FE_H'] + b)))
+thin,= np.where((rc['ALPHAFE'] < 0.08) | (rc['ALPHAFE'] < (m*rc['FE_H'] + b)))
 
 # Key:
 # a is not dust corrected. b is.
@@ -1101,7 +662,7 @@ xa1 = rc['nuv_mag']-rc['phot_g_mean_mag']
 xb1 = (rc['nuv_mag']-rc['ebv']*7.24)-(rc['phot_g_mean_mag']-rc['ebv']*3.303)
 y1 = rc['FE_H']
 
-q = np.where((xb1 > 5) & (rc['Fe_H'] < -0.6))
+q = np.where(xb1 > 5)
 w = np.where((xb1 < 5) & (rc['Fe_H'] > -0.6))
 xa2 = xa1[q]
 xb2 = xb1[q]
@@ -1124,19 +685,13 @@ b1err = np.sum(np.sqrt(np.diag(vb1)))
 b2err = np.sum(np.sqrt(np.diag(vb2)))
 
 
-m = (0.095-.21)/(0+0.8)
-b = 0.095
-thick, = np.where((rc['ALPHAFE'] > 0.08) & (rc['ALPHAFE'] > (m*rc['FE_H'] + b)))
-thin, = np.where((rc['ALPHAFE'] < 0.08) | (rc['ALPHAFE'] < (m*rc['FE_H'] + b)))
-
-
 fig, (ax1, ax2) = plt.subplots(1, 2, sharey=True)
 
-alpha = 0.5
+alpha = 1
 # Plotting with no dust correction first
-ax1.scatter(xa1[thick], y1[thick], c=rc['ALPHAFE'][thick], s=80, vmin=-0.05, vmax=0.3, marker='s', edgecolor='blue', linewidth=1, alpha=alpha, cmap=cm.plasma_r, **{"zorder":5})
-cmap = ax1.scatter(xa1[thin], y1[thin], c=rc['ALPHAFE'][thin], s=80, vmin=-0.05, vmax=0.3, marker='D', alpha=alpha, edgecolor='black', cmap=cm.plasma_r, **{"zorder":5})
-ax1.errorbar(xa1[thin], y1[thin], xerr=(rc['nuv_magerr'])[thin], yerr=rc['FE_H_ERR'][thin], ecolor='black', fmt=None, marker=None, mew=0, elinewidth=1.3, **{"zorder":0})
+cmap = ax1.scatter(xa1[thick], y1[thick], c=rc['ALPHAFE'][thick], s=80, vmin=-0.05, vmax=0.3, marker='s', edgecolor='blue', linewidth=1, alpha=alpha, cmap=cm.plasma_r, **{"zorder":5})
+#ax1.scatter(xa1[thin], y1[thin], c=rc['ALPHAFE'][thin], s=80, vmin=-0.05, vmax=0.3, marker='D', alpha=alpha, edgecolor='black', cmap=cm.plasma_r, **{"zorder":5})
+#ax1.errorbar(xa1[thin], y1[thin], xerr=(rc['nuv_magerr'])[thin], yerr=rc['FE_H_ERR'][thin], ecolor='black', fmt=None, marker=None, mew=0, elinewidth=1.3, **{"zorder":0})
 
 ax1.errorbar(xa1[thick], y1[thick], xerr=(rc['nuv_magerr'])[thick], yerr=rc['FE_H_ERR'][thick], ecolor='black', fmt=None, marker=None, mew=0, elinewidth=1.3, **{"zorder":0})
 ax1.plot(xp, pa1(xp), linewidth=4, c='red', zorder=10) # no dust, all points
@@ -1145,8 +700,8 @@ ax1.scatter(xa1[w], y1[w], c=rc['ALPHAFE'][w], s=80, vmin=-0.05, vmax=0.3, marke
 
 
 ax2.scatter(xb1[thick], y1[thick], c=rc['ALPHAFE'][thick], s=80, label='Thick disk', vmin=-0.05, vmax=0.3, marker='s', edgecolor='blue', linewidth=1, cmap=cm.plasma_r, **{"zorder":5})
-ax2.scatter(xb1[thin], y1[thin], c=rc['ALPHAFE'][thin], s=80, label='Thin disk', vmin=-0.05, vmax=0.3, marker='D', edgecolor='black', cmap=cm.plasma_r, **{"zorder":5})
-ax2.errorbar(xb1[thin], y1[thin], xerr=(rc['nuv_magerr'])[thin], yerr=rc['FE_H_ERR'][thin], ecolor='black', fmt=None, marker=None, mew=0, elinewidth=1.3, **{"zorder":0})
+#ax2.scatter(xb1[thin], y1[thin], c=rc['ALPHAFE'][thin], s=80, label='Thin disk', vmin=-0.05, vmax=0.3, marker='D', edgecolor='black', cmap=cm.plasma_r, **{"zorder":5})
+#ax2.errorbar(xb1[thin], y1[thin], xerr=(rc['nuv_magerr'])[thin], yerr=rc['FE_H_ERR'][thin], ecolor='black', fmt=None, marker=None, mew=0, elinewidth=1.3, **{"zorder":0})
 
 ax2.errorbar(xb1[thick], y1[thick], xerr=(rc['nuv_magerr'])[thick], yerr=rc['FE_H_ERR'][thick], ecolor='black', fmt=None, marker=None, mew=0, elinewidth=1.3, **{"zorder":0})
 ax2.plot(xp, pb1(xp), linewidth=4, c='red', zorder=10)
@@ -1158,30 +713,30 @@ ax2.set_xlabel('(NUV - G)$_{0}$')
 ax1.set_ylabel('[Fe/H]')
 leg = ax2.legend(scatterpoints=1, loc=4)
 leg.legendHandles[0].set_color('black')
-leg.legendHandles[1].set_color('black')
+#leg.legendHandles[1].set_color('black')
 leg.legendHandles[0]._sizes = [150]
-leg.legendHandles[1]._sizes = [150]
+#leg.legendHandles[1]._sizes = [150]
 fig.subplots_adjust(wspace=0)
 fig.subplots_adjust(right=.84)
 cbar_ax = fig.add_axes([0.85, 0.1, 0.03, 0.8])
-ax1.annotate('[Fe/H] = 0.25 * (NUV-G) - 2.29', xy=(2, 0.67), color='red', size=15)
+ax1.annotate('[Fe/H] = 0.25 * (NUV-G) - 2.29', xy=(2, 0.69), color='red', size=15)
 ax1.annotate('[Fe/H] = 0.25 * (NUV-G) - 2.26 ', xy=(2, 0.6), color='black', size=15)
-ax2.annotate('[Fe/H] = 0.26 * (NUV-G)$_0$ - 2.29', xy=(1.3, 0.67), color='red', size=15)
+ax2.annotate('[Fe/H] = 0.26 * (NUV-G)$_0$ - 2.29', xy=(1.3, 0.69), color='red', size=15)
 ax2.annotate('[Fe/H] = 0.27 * (NUV-G)$_0$ - 2.33', xy=(1.3, 0.6), color='black', size=15)
 
 ax1.annotate('$\sigma$ = 0.018', xy=(2, 0.53), color='red', size=15) # a1
-ax1.annotate('$\sigma$ = 0.018', xy=(2, 0.47), color='black', size=15) # a2
+ax1.annotate('$\sigma$ = 0.018', xy=(2, 0.45), color='black', size=15) # a2
 ax2.annotate('$\sigma$ = 0.018', xy=(1.3, 0.53), color='red', size=15) # b1
-ax2.annotate('$\sigma$ = 0.018', xy=(1.3, 0.47), color='black', size=15) # b2
-
+ax2.annotate('$\sigma$ = 0.018', xy=(1.3, 0.45), color='black', size=15) # b2
+plt.suptitle('Only thick disk')
 fig.colorbar(cmap, cax=cbar_ax).set_label(r'[$\alpha$/Fe]')
 plt.show()
 
 
 
-
-
-
+######################################################################
+# Add cmd lines to cmd
+######################################################################
 cmd = Table.read('cmdfiles/cmd_merged_zt.txt', format='ascii')
 zrange = np.unique(cmd['Z'])
 agerange = np.unique(cmd['logage'])
@@ -1200,6 +755,47 @@ for i in zrange:
 		plt.title('Z = '+str(i)+', logage = '+str(j))
 		plt.savefig('images/12-08-gaiacmd/Z'+str(i)+'-logage'+str(j)+'.png')
 		plt.clf()
+
+######################################################################
+# Combine and format RC table
+######################################################################
+sg = fits.open('sex_tgas_dust_interp_02-28-2018.fits')[1].data
+sg = sg[~np.isnan(sg['ebv'])]
+sggal = SkyCoord(sg['gl_sex']*u.deg, sg['gb_sex']*u.deg, frame='galactic')
+
+apo = fits.open('APOKASKRC_TGAS.fits')[1].data
+apogal = SkyCoord(apo['l']*u.deg, apo['b']*u.deg, frame='galactic')
+bov = fits.open('BovyRC_TGAS.fits')[1].data
+bovgal = SkyCoord(bov['l']*u.deg, bov['b']*u.deg, frame='galactic')
+sg1ind, apoind, angsep1, ang3d = search_around_sky(sggal, apogal, 3*u.arcsec)
+sg2ind, bovind, angsep2, ang3d = search_around_sky(sggal, bovgal, 3*u.arcsec)
+c1 = hstack([Table(sg)[sg1ind], Table(apo)[apoind]])
+c2 = hstack([Table(sg)[sg2ind], Table(bov)[bovind]])
+c1['angsep'] = angsep1
+c2['angsep'] = angsep2
+c1.remove_column('phot_g_mean_mag_2')
+c1.rename_column('phot_g_mean_mag_1', 'phot_g_mean_mag')
+c2.remove_column('phot_g_mean_mag_2')
+c2.rename_column('phot_g_mean_mag_1', 'phot_g_mean_mag')
+c1['catalog'] = 'apokask'
+c2['catalog'] = 'bovy14'
+
+c1['ALPHAFE'] = c1['ALPHA_M'] * c1['M_H'] / c1['FE_H']
+
+c2['AL_FE'] = c2['AL_H'] / c2['FE_H']
+c2['CA_FE'] = c2['CA_H'] / c2['FE_H']
+c2['C_FE'] = c2['C_H'] / c2['FE_H']
+c2['K_FE'] = c2['K_H'] / c2['FE_H']
+c2['MG_FE'] = c2['MG_H'] / c2['FE_H']
+c2['MN_FE'] = c2['MN_H'] / c2['FE_H']
+c2['NA_FE'] = c2['NA_H'] / c2['FE_H']
+c2['NI_FE'] = c2['NI_H'] / c2['FE_H']
+c2['N_FE'] = c2['N_H'] / c2['FE_H']
+c2['O_FE'] = c2['O_H'] / c2['FE_H']
+c2['SI_FE'] = c2['SI_H'] / c2['FE_H']
+c2['S_FE'] = c2['S_H'] / c2['FE_H']
+c2['TI_FE'] = c2['TI_H'] / c2['FE_H']
+c2['V_FE'] = c2['V_H'] / c2['FE_H']
 
 ################################################################
 # Calculate errors, get table for paper
@@ -1293,74 +889,6 @@ for scan in scans:
 	plt.clf()
 	del bkgd
 	del hdu
-
-
-
-for scan in scans:
-	t = Table.read('starcat_'+scan+'_02_09_2018.txt', format='ascii')
-	t = t[np.where((t['FWHM_IMAGE'] > 0) & (t['FWHM_IMAGE'] < 10)  & (t['gb'] > -10.) & (t['gb'] < 10.))]
-	plt.scatter(t['gl'], t['gb'], c=t['FWHM_IMAGE'], vmin=0, vmax=10, s=3)
-	plt.colorbar().set_label('FWHM')
-	plt.xlabel('gl')
-	plt.ylabel('gb')
-	plt.title(scan+', 0 > FWHM > 10')
-	plt.savefig('02-09-18_glgbvsfwhm_'+scan+'fwhmcut_0-10.png')
-	plt.clf()
-
-for scan in scans:
-	t = Table.read('starcat_'+scan+'_02_09_2018.txt', format='ascii')
-	t = t[np.where((t['gb'] > -10.) & (t['gb'] < 10.))]
-	plt.scatter(t['nuv'], t['FWHM_IMAGE'], s=1, c='black')
-	plt.ylim(0, 10)
-	plt.title(scan)
-	plt.savefig('02-09-18_fwhmvsnuv_'+scan+'.png')
-	plt.clf()
-
-from scan in scans:
-	hdu = fits.open('count_map'+scan+'_in.fits')[0]
-	wcs = WCS(hdu.header)
-	fig = plt.figure()
-	fig.add_subplot(111, projection=wcs)
-	plt.imshow(hdu.data, origin='lower', cmap=cm.gray, vmin=0, vmax=0.1)
-	plt.title(scan)
-	plt.ylim(-11, 11)
-	plt.savefig('01-10-18_glgb_'+scan+'.png')
-	plt.clf()
-
-
-
-scans = ['63-73', '180-190', '225-235']
-
-for scan in scans:
-	# Get cmed and imed
-	ct = fits.open('im1_'+scan+'_count.fits')[0].data
-	ct1 = ct[np.where(ct > 0)]
-	img = fits.open('im1_'+scan+'.fits')[0].data
-	im1 = img[np.where(img > 10**-5)]
-	cmed = np.median(ct1)
-	imed = np.median(im1)
-	n = imed * (1+(np.random.poisson(cmed*10, img.shape)/10. - cmed)/cmed)
-
-	# make mask and apply to img
-	cutoff = np.where(img < 10**-5)
-	zeromask = np.zeros(img.shape)
-	zeromask[cutoff] = True
-	zeromask = zeromask + n
-
-	im2 = img + zeromask
-
-
-import scipy.ndimage as ndimage
-
-medvals = Table.read('median_scanvals.txt', format='ascii')
-medvals = medvals[np.where(medvals['scans'] == '117-127')]
-imed = medvals['imed'][0]
-cmed = medvals['cmed'][0]
-nval = imed*(1+(np.random.poisson(cmed, 100000) - cmed)/ cmed)
-struc3 = ndimage.generate_binary_structure(2,2).astype(img.dtype)
-mask = ~ndimage.binary_dilation(img, structure=struc3, iterations=2)
-q = np.place(a, mask, nval.astype(np.float32))
-
 
 #############################################################
 # Get values from maps
