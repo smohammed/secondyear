@@ -34,14 +34,22 @@ if cbarax == 'lnAge':
 ############################################################
 if cat == 1:
     sg = fits.open('../sex_gaia_dust_interp.fits')[1].data
-    sggal = SkyCoord(sg['gl_sex']*u.deg, sg['gb_sex']*u.deg, frame='galactic')
 
 if gais == 1:
-    sg = fits.open('../gais_tgas_apass_dust.fits')[1].data
-    sg = sg[~np.isnan(sg['ebv'])]
-    sggal = SkyCoord(sg['gl_gais']*u.deg, sg['gb_gais']*u.deg, frame='galactic')
+    #sg = fits.open('../gais_tgas_apass_dust.fits')[1].data
+    #sg = sg[~np.isnan(sg['ebv'])]
+    asc = fits.open('../galex-asc-gaia-match_smaller.fits',memmap=True)[1].data
+    pc = 1000./asc['parallax']
+    negpar = np.where(pc > 0)
+    pc = pc[negpar]
+    asc = asc[negpar]
+    
 
-rc = fits.open('../rc_all_10-31.fits')[1].data
+
+
+rc = fits.open('../asc_gaia_aporc_match_dust-05-03-18.fits')[1].data
+q = np.where((rc['ebv'] > 0) & (rc['Fe_H_err'] > 0) & (rc['phot_bp_mean_mag'] > 0) & (rc['phot_rp_mean_mag'] > 0))
+rc = rc[q]
 
 #cmd = Table.read('../cmdfiles/cmd_merged_zt.txt', format='ascii')
 #agerange = np.unique(cmd['logage'])
