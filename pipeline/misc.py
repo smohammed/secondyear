@@ -601,8 +601,7 @@ plt.show()
 # Alpha/Fe vs Fe/H vs NUV - G
 ##########################################
 rc = fits.open('asc_gaia_aporc_match_dust-05-03-18.fits')[1].data
-q = np.where((rc['ebv'] > 0) & (rc['Fe_H_err'] > 0) & (rc['phot_bp_mean_mag'] > 0) & (rc['phot_rp_mean_mag'] > 0))
-rc = rc[q]
+q = np.where((rc['ebv'] > 0) & (rc['Fe_H_err'] > 0) & (rc['phot_bp_mean_mag'] > 0) & (rc['phot_rp_mean_mag'] > 0) & (rc['Classification'] == 'RC_Pristine'))rc = rc[q]
 
 m = (0.095-.21)/(0+0.8)
 b = 0.095
@@ -624,6 +623,8 @@ plt.scatter(rc['FE_H'][thick], rc['ALPHAFE'][thick], c=nuvg[thick], s=20, marker
 #plt.errorbar(rc['FE_H'], rc['ALPHAFE'], xerr=(rc['FE_H_err']), yerr=rc['ALPHAFE_ERR'], ecolor='black', fmt=None, marker=None, mew=0, elinewidth=1.3, **{"zorder":0})
 plt.errorbar(rc['Fe_H'], rc['ALPHAFE'], xerr=(rc['FE_H_err']), ecolor='black', fmt=None, marker=None, mew=0, elinewidth=1.3, **{"zorder":0})
 
+xpfeh = np.linspace(-1.0, 0.4, 50)
+plt.plot(xpfeh, xpfeh*m + b)
 
 #plt.scatter(rc['FE_H'][thin], rc['ALPHAFE'][thin], s=20, edgecolor='none', label='Thin disk', vmin=7, vmax=11, marker='D')
 
@@ -646,13 +647,16 @@ plt.show()
 # rc fit lines for Fe/H vs NUV - G vs Alpha/Fe
 #################################################
 rc = fits.open('asc_gaia_aporc_match_dust-05-03-18.fits')[1].data
-q = np.where((rc['ebv'] > 0) & (rc['Fe_H_err'] > 0) & (rc['phot_bp_mean_mag'] > 0) & (rc['phot_rp_mean_mag'] > 0))
+q = np.where((rc['ebv'] > 0) & (rc['Fe_H_err'] > 0) & (rc['phot_bp_mean_mag'] > 0) & (rc['phot_rp_mean_mag'] > 0) & (rc['Classification'] == 'RC_Pristine'))
 rc = rc[q]
 
 m = (0.095-.21)/(0+0.8)
 b = 0.095
 thick,= np.where((rc['ALPHAFE'] > 0.08) & (rc['ALPHAFE'] > (m*rc['FE_H'] + b)))
 thin,= np.where((rc['ALPHAFE'] < 0.08) | (rc['ALPHAFE'] < (m*rc['FE_H'] + b)))
+
+thickfit = rc[thick]
+thinfit = rc[thin]
 
 # Key:
 # a is not dust corrected. b is.
@@ -667,46 +671,71 @@ w = np.where((xb1 < 5) & (rc['Fe_H'] > -0.6))
 xa2 = xa1[q]
 xb2 = xb1[q]
 y2 = y1[q]
-
 za1, va1 = np.polyfit(xa1, y1, 1, cov=True)
 zb1, vb1 = np.polyfit(xb1, y1, 1, cov=True)
 za2, va2 = np.polyfit(xa2, y2, 1, cov=True)
 zb2, vb2 = np.polyfit(xb2, y2, 1, cov=True)
-
 pa1 = np.poly1d(za1)
 pb1 = np.poly1d(zb1)
 pa2 = np.poly1d(za2)
 pb2 = np.poly1d(zb2)
-xp = np.linspace(6, 11, 50)
-
 a1err = np.sum(np.sqrt(np.diag(va1)))
 a2err = np.sum(np.sqrt(np.diag(va2)))
 b1err = np.sum(np.sqrt(np.diag(vb1)))
 b2err = np.sum(np.sqrt(np.diag(vb2)))
 
+zathin, vathin = np.polyfit(xa1[thin], y1[thin], 1, cov=True)
+zbthin, vbthin = np.polyfit(xb1[thin], y1[thin], 1, cov=True)
+pathin = np.poly1d(zathin)
+pbthin = np.poly1d(zbthin)
+athinerr = np.sum(np.sqrt(np.diag(vathin)))
+bthinerr = np.sum(np.sqrt(np.diag(vbthin)))
+
+zathick, vathick = np.polyfit(xa1[thick], y1[thick], 1, cov=True)
+zbthick, vbthick = np.polyfit(xb1[thick], y1[thick], 1, cov=True)
+pathick = np.poly1d(zathick)
+pbthick = np.poly1d(zbthick)
+athickerr = np.sum(np.sqrt(np.diag(vathick)))
+bthickerr = np.sum(np.sqrt(np.diag(vbthick)))
+
+xp = np.linspace(6, 11, 50)
+
+
+
+thickcut = 0
+thincut = 1
 
 fig, (ax1, ax2) = plt.subplots(1, 2, sharey=True)
 
 alpha = 1
 # Plotting with no dust correction first
-cmap = ax1.scatter(xa1[thick], y1[thick], c=rc['ALPHAFE'][thick], s=80, vmin=-0.05, vmax=0.3, marker='s', edgecolor='blue', linewidth=1, alpha=alpha, cmap=cm.plasma_r, **{"zorder":5})
-#ax1.scatter(xa1[thin], y1[thin], c=rc['ALPHAFE'][thin], s=80, vmin=-0.05, vmax=0.3, marker='D', alpha=alpha, edgecolor='black', cmap=cm.plasma_r, **{"zorder":5})
-#ax1.errorbar(xa1[thin], y1[thin], xerr=(rc['nuv_magerr'])[thin], yerr=rc['FE_H_ERR'][thin], ecolor='black', fmt=None, marker=None, mew=0, elinewidth=1.3, **{"zorder":0})
 
-ax1.errorbar(xa1[thick], y1[thick], xerr=(rc['nuv_magerr'])[thick], yerr=rc['FE_H_ERR'][thick], ecolor='black', fmt=None, marker=None, mew=0, elinewidth=1.3, **{"zorder":0})
-ax1.plot(xp, pa1(xp), linewidth=4, c='red', zorder=10) # no dust, all points
-ax1.plot(xp, pa2(xp), linewidth=4, c='black', zorder=10) # no dust, only black points
-ax1.scatter(xa1[w], y1[w], c=rc['ALPHAFE'][w], s=80, vmin=-0.05, vmax=0.3, marker='D', cmap=cm.plasma_r, edgecolor='red', linewidth=2, **{"zorder":5})
+if thincut == 1:
+	cmap = ax1.scatter(xa1[thin], y1[thin], c=rc['ALPHAFE'][thin], s=80, vmin=-0.05, vmax=0.3, marker='D', alpha=alpha, edgecolor='black', cmap=cm.plasma_r, **{"zorder":5})
+	ax1.errorbar(xa1[thin], y1[thin], xerr=(rc['nuv_magerr'])[thin], yerr=rc['FE_H_ERR'][thin], ecolor='black', fmt='None', marker='None', mew=0, elinewidth=1.3, **{"zorder":0})
+	ax2.scatter(xb1[thin], y1[thin], c=rc['ALPHAFE'][thin], s=80, label='Thin disk', vmin=-0.05, vmax=0.3, marker='D', edgecolor='black', cmap=cm.plasma_r, **{"zorder":5})
+	ax2.errorbar(xb1[thin], y1[thin], xerr=(rc['nuv_magerr'])[thin], yerr=rc['FE_H_ERR'][thin], ecolor='black', fmt='None', marker='None', mew=0, elinewidth=1.3, **{"zorder":0})
+	ax1.scatter(xa1[w], y1[w], c=rc['ALPHAFE'][w], s=80, vmin=-0.05, vmax=0.3, marker='D', cmap=cm.plasma_r, edgecolor='red', linewidth=2, **{"zorder":5})
+	ax2.scatter(xb1[w], y1[w], c=rc['ALPHAFE'][w], s=80, vmin=-0.05, vmax=0.3, marker='D', cmap=cm.plasma_r, edgecolor='red', linewidth=2, **{"zorder":5})
 
+if thickcut == 1:
+	cmap = ax1.scatter(xa1[thick], y1[thick], c=rc['ALPHAFE'][thick], s=80, vmin=-0.05, vmax=0.3, marker='s', edgecolor='blue', linewidth=1, alpha=alpha, cmap=cm.plasma_r, **{"zorder":5})
+	ax1.errorbar(xa1[thick], y1[thick], xerr=(rc['nuv_magerr'])[thick], yerr=rc['FE_H_ERR'][thick], ecolor='black', fmt='None', marker='None', mew=0, elinewidth=1.3, **{"zorder":0})
 
-ax2.scatter(xb1[thick], y1[thick], c=rc['ALPHAFE'][thick], s=80, label='Thick disk', vmin=-0.05, vmax=0.3, marker='s', edgecolor='blue', linewidth=1, cmap=cm.plasma_r, **{"zorder":5})
-#ax2.scatter(xb1[thin], y1[thin], c=rc['ALPHAFE'][thin], s=80, label='Thin disk', vmin=-0.05, vmax=0.3, marker='D', edgecolor='black', cmap=cm.plasma_r, **{"zorder":5})
-#ax2.errorbar(xb1[thin], y1[thin], xerr=(rc['nuv_magerr'])[thin], yerr=rc['FE_H_ERR'][thin], ecolor='black', fmt=None, marker=None, mew=0, elinewidth=1.3, **{"zorder":0})
+	ax2.scatter(xb1[thick], y1[thick], c=rc['ALPHAFE'][thick], s=80, label='Thick disk', vmin=-0.05, vmax=0.3, marker='s', edgecolor='blue', linewidth=1, cmap=cm.plasma_r, **{"zorder":5})
 
-ax2.errorbar(xb1[thick], y1[thick], xerr=(rc['nuv_magerr'])[thick], yerr=rc['FE_H_ERR'][thick], ecolor='black', fmt=None, marker=None, mew=0, elinewidth=1.3, **{"zorder":0})
-ax2.plot(xp, pb1(xp), linewidth=4, c='red', zorder=10)
-ax2.plot(xp, pb2(xp), linewidth=4, c='black', zorder=10)
-ax2.scatter(xb1[w], y1[w], c=rc['ALPHAFE'][w], s=80, vmin=-0.05, vmax=0.3, marker='D', cmap=cm.plasma_r, edgecolor='red', linewidth=2, **{"zorder":5})
+	ax2.errorbar(xb1[thick], y1[thick], xerr=(rc['nuv_magerr'])[thick], yerr=rc['FE_H_ERR'][thick], ecolor='black', fmt='None', marker='None', mew=0, elinewidth=1.3, **{"zorder":0})
+
+#ax1.plot(xp, pa1(xp), linewidth=4, c='red', zorder=10) # no dust, all points
+#ax1.plot(xp, pa2(xp), linewidth=4, c='black', zorder=10) # no dust, only black points
+#ax2.plot(xp, pb1(xp), linewidth=4, c='red', zorder=10)
+#ax2.plot(xp, pb2(xp), linewidth=4, c='black', zorder=10)
+
+ax1.plot(xp, pathin(xp), linewidth=4, c='green', label='thin', zorder=10)
+ax1.plot(xp, pathick(xp), linewidth=4, c='gray', label='thick', zorder=10)
+
+ax2.plot(xp, pbthin(xp), linewidth=4, c='green', zorder=10)
+ax2.plot(xp, pbthick(xp), linewidth=4, c='gray', zorder=10)
 
 ax1.set_xlabel('NUV - G')
 ax2.set_xlabel('(NUV - G)$_{0}$')
@@ -719,16 +748,19 @@ leg.legendHandles[0]._sizes = [150]
 fig.subplots_adjust(wspace=0)
 fig.subplots_adjust(right=.84)
 cbar_ax = fig.add_axes([0.85, 0.1, 0.03, 0.8])
-ax1.annotate('[Fe/H] = 0.25 * (NUV-G) - 2.29', xy=(2, 0.69), color='red', size=15)
-ax1.annotate('[Fe/H] = 0.25 * (NUV-G) - 2.26 ', xy=(2, 0.6), color='black', size=15)
+ax1.annotate('[Fe/H] = 0.26 * (NUV-G) - 2.30', xy=(2, 0.69), color='red', size=15)
+ax1.annotate('[Fe/H] = 0.27 * (NUV-G) - 2.37 ', xy=(2, 0.6), color='black', size=15)
 ax2.annotate('[Fe/H] = 0.26 * (NUV-G)$_0$ - 2.29', xy=(1.3, 0.69), color='red', size=15)
-ax2.annotate('[Fe/H] = 0.27 * (NUV-G)$_0$ - 2.33', xy=(1.3, 0.6), color='black', size=15)
+ax2.annotate('[Fe/H] = 0.27 * (NUV-G)$_0$ - 2.38', xy=(1.3, 0.6), color='black', size=15)
 
-ax1.annotate('$\sigma$ = 0.018', xy=(2, 0.53), color='red', size=15) # a1
-ax1.annotate('$\sigma$ = 0.018', xy=(2, 0.45), color='black', size=15) # a2
-ax2.annotate('$\sigma$ = 0.018', xy=(1.3, 0.53), color='red', size=15) # b1
-ax2.annotate('$\sigma$ = 0.018', xy=(1.3, 0.45), color='black', size=15) # b2
-plt.suptitle('Only thick disk')
+ax1.annotate('$\sigma$ = 0.023', xy=(2, 0.53), color='red', size=15) # a1
+ax1.annotate('$\sigma$ = 0.022', xy=(2, 0.45), color='black', size=15) # a2
+ax2.annotate('$\sigma$ = 0.023', xy=(1.3, 0.53), color='red', size=15) # b1
+ax2.annotate('$\sigma$ = 0.023', xy=(1.3, 0.45), color='black', size=15) # b2
+if thincut == 1:
+	plt.suptitle('Only thin disk')
+if thickcut == 1:
+	plt.suptitle('Only thick disk')
 fig.colorbar(cmap, cax=cbar_ax).set_label(r'[$\alpha$/Fe]')
 plt.show()
 
@@ -907,3 +939,6 @@ for scan in scans:
 	sums = aperture_photometry(bkgd, apertures)
 	cat['bkgdsum'] = sums['aperture_sum']
 	ascii.write(cat, 'starcat_'+scan+'_03_26_2018.txt', format='basic')
+
+
+MG > -0.1, MG < 0.9
