@@ -963,5 +963,17 @@ rccut
 6 < nuvg < 11.5, 0.9 < MG > -0.1
 
 
-
+  
+asc = fits.open('galex-asc-gaia-match_smaller.fits',memmap=True)[1].data
+pc = 1000./asc['parallax']
+negpar = np.where((pc > 0) & (asc['visibility_periods_used'] > 8) & (asc['parallax_error']/asc['parallax'] < 0.1) & (pc < 3500) & (asc['phot_bp_mean_mag'] > 0) & (asc['phot_rp_mean_mag'] > 0))
+pc = pc[negpar]
+nuv = asc['mag_nuv']
+nuv = nuv[negpar]
+g = asc['phot_g_mean_mag']
+g = g[negpar]
+bp = asc['phot_bp_mean_mag']
+bp = bp[negpar]
+rp = asc['phot_rp_mean_mag']
+distmod = 5. * np.log10(pc) - 5
 
