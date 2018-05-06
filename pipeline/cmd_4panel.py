@@ -42,13 +42,25 @@ if gais == 1:
     pc = 1000./asc['parallax']
     negpar = np.where(pc > 0)
     pc = pc[negpar]
-    asc = asc[negpar]
-    
+    nuv = asc['mag_nuv']
+    g = asc['phot_g_mean_mag']
+    bp = asc['phot_bp_mean_mag']
+    rp = asc['phot_rp_mean_mag']
+    ag = asc['a_g_val']
+    pc = 1000./asc['parallax']
+    negpar = np.where(pc > 0)
+    pc = pc[negpar]
+    nuv = nuv[negpar]
+    g = g[negpar]
+    bp = bp[negpar]
+    rp = rp[negpar]
+    ag = ag[negpar]
+    distmod = 5. * np.log10(pc) - 5
 
 
 
 rc = fits.open('../asc_gaia_aporc_match_dust-05-03-18.fits')[1].data
-q = np.where((rc['ebv'] > 0) & (rc['Fe_H_err'] > 0) & (rc['phot_bp_mean_mag'] > 0) & (rc['phot_rp_mean_mag'] > 0))
+q = np.where((rc['ebv'] > 0) & (rc['Fe_H_err'] > 0) & (rc['phot_bp_mean_mag'] > 0) & (rc['phot_rp_mean_mag'] > 0) & (rc['Classification'] == 'RC_Pristine') & (rc['dist'] < 3500) & (rc['visibility_periods_used'] > 8) & (rc['parallax_error']/rc['parallax'] < 0.1))
 rc = rc[q]
 
 #cmd = Table.read('../cmdfiles/cmd_merged_zt.txt', format='ascii')
@@ -77,45 +89,45 @@ if distcut == 0:
 fig, axes = plt.subplots(nrows=3, ncols=2)#, sharey=True)
 # Bottom row will be plot with no RC stars
 # panel e
-axes[2, 0].scatter((sg['B_apass']-sg['ebv']*3.626)-(sg['V_apass']-sg['ebv']*2.742), (sg['V_apass']-sg['distmod']-sg['ebv']*2.742), edgecolor='none', color='k', s=1, alpha=0.1)
+axes[2, 0].scatter((bp-ag*3.626)-(rp-ag*2.742), (g-distmod-ag*2.742), edgecolor='none', color='k', s=1, alpha=0.1)
 # panel f
-axes[2, 1].scatter((sg['nuv_mag']-sg['ebv']*7.24)-(sg['phot_g_mean_mag']-sg['ebv']*3.303), (sg['MG']-sg['ebv']*3.303), edgecolor='none', color='k', s=1, alpha=0.1)
+axes[2, 1].scatter((nuv-ag*7.24)-(g-ag*3.303), (g-distmod-ag*3.303), edgecolor='none', color='k', s=1, alpha=0.1)
 
 # B - V with no ext
 # panel a
-axes[0, 0].scatter(sg['B_apass']-sg['V_apass'], sg['V_apass']-sg['distmod'], edgecolor='none', color='k', s=1, alpha=0.1)
-axes[0, 0].scatter(rc['B_apass']-rc['V_apass'], rc['V_apass']-rc['distmod'], s=40, edgecolor='none', c=rc[cbarax], vmin=vmin, vmax=vmax, cmap=viridis)
+axes[0, 0].scatter(bp-rp, rp-distmod, edgecolor='none', color='k', s=1, alpha=0.1)
+axes[0, 0].scatter(rc['phot_bp_mean_mag']-rc['phot_bp_mean_mag'], rc['phot_g_mean_mag']-rc['distmod'], s=40, edgecolor='none', c=rc[cbarax], vmin=vmin, vmax=vmax, cmap=viridis)
 
 # B - V with ext
 # panel c
-axes[1, 0].scatter((sg['B_apass']-sg['ebv']*3.626)-(sg['V_apass']-sg['ebv']*2.742), (sg['V_apass']-sg['distmod']-sg['ebv']*2.742), edgecolor='none', color='k', s=1, alpha=0.1)
-axes[1, 0].scatter((rc['B_apass']-rc['ebv']*3.626)-(rc['V_apass']-rc['ebv']*2.742), rc['V_apass']-rc['distmod']-rc['ebv']*2.742, s=40, edgecolor='none', c=rc[cbarax], vmin=vmin, vmax=vmax, cmap=viridis)
+axes[1, 0].scatter((bp-ag*3.626)-(rp-ag*2.742), (g-distmod-ag*2.742), edgecolor='none', color='k', s=1, alpha=0.1)
+axes[1, 0].scatter((rc['phot_bp_mean_mag']-rc['ebv']*3.626)-(rc['phot_rp_mean_mag']-rc['ebv']*2.742), rc['phot_g_mean_mag']-rc['distmod']-rc['ebv']*2.742, s=40, edgecolor='none', c=rc[cbarax], vmin=vmin, vmax=vmax, cmap=viridis)
 
 # NUV - G with no ext
 # panel b
-axes[0, 1].scatter(sg['nuv_mag']-sg['phot_g_mean_mag'], sg['MG'], edgecolor='none', color='k', s=1, alpha=0.1)
+axes[0, 1].scatter(nuv-g, g-distmod, edgecolor='none', color='k', s=1, alpha=0.1)
 
-axes[0, 1].scatter(rc['nuv_mag']-rc['phot_g_mean_mag'], rc['MG'], s=40, edgecolor='none', c=rc[cbarax], vmin=vmin, vmax=vmax, cmap=viridis)
+axes[0, 1].scatter(rc['nuv_mag']-rc['phot_g_mean_mag'], rc['phot_g_mean_mag']-rc['distmod'], s=40, edgecolor='none', c=rc[cbarax], vmin=vmin, vmax=vmax, cmap=viridis)
 
 # NUV - G with ext
 # panel d
-axes[1, 1].scatter((sg['nuv_mag']-sg['ebv']*7.24)-(sg['phot_g_mean_mag']-sg['ebv']*3.303), (sg['MG']-sg['ebv']*3.303), edgecolor='none', color='k', s=1, alpha=0.1)
+axes[1, 1].scatter((nuv-ag*7.24)-(g-ag*3.303), (g-distmod-ag*3.303), edgecolor='none', color='k', s=1, alpha=0.1)
 
 cbar = axes[1, 1].scatter((rc['nuv_mag']-rc['ebv']*7.24)-(rc['phot_g_mean_mag']-rc['ebv']*3.303), rc['MG']-rc['ebv']*3.303, s=40, edgecolor='none', c=rc[cbarax], vmin=vmin, vmax=vmax, cmap=viridis)
 
 
-axes[0, 0].set_ylabel('M$_{\lambda}$')
-axes[2, 0].set_xlabel('(B - V)$_0$')
-axes[1, 0].set_ylabel('M$_{\lambda_0}$')
-axes[2, 0].set_ylabel('M$_{\lambda_0}$')
+axes[0, 0].set_ylabel('M$_{G}$')
+axes[2, 0].set_xlabel('(G$_{BP}$ - G$_{RP}$)$_0$')
+axes[1, 0].set_ylabel('M$_{G_0}$')
+axes[2, 0].set_ylabel('M$_{G_0}$')
 axes[2, 1].set_xlabel('(NUV - G)$_0$')
 
-axes[0, 0].text(-0.5, 7.8, '$\lambda$ = V, E$_{B-V}$ = 0')
-axes[0, 1].text(1.1, 7.8, '$\lambda$ = G, E$_{B-V}$ = 0')
-axes[1, 0].text(-0.5, 7.8, '$\lambda$ = V')
-axes[1, 1].text(1.1, 7.8, '$\lambda$ = G')
-axes[2, 0].text(-0.5, 7.8, '$\lambda$ = V')
-axes[2, 1].text(1.1, 7.8, '$\lambda$ = G')
+axes[0, 0].text(-0.5, 7.8, '$G$ = G, E$_{BP-RP}$ = 0')
+axes[0, 1].text(1.1, 7.8, '$G$ = G, E$_{BP-RP}$ = 0')
+axes[1, 0].text(-0.5, 7.8, '$G$ = G')
+axes[1, 1].text(1.1, 7.8, '$G$ = G')
+axes[2, 0].text(-0.5, 7.8, '$G$ = V')
+axes[2, 1].text(1.1, 7.8, '$G$ = G')
 
 
 # Label panels
