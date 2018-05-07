@@ -977,3 +977,60 @@ bp = bp[negpar]
 rp = asc['phot_rp_mean_mag']
 distmod = 5. * np.log10(pc) - 5
 
+
+
+fig, axes = plt.subplots(2, 2)
+
+ngb, bingb, _ = plt.hist(rc['gb_asc'], bins=20, normed=1)
+ndist, bindist, _ = plt.hist(np.log10(rc['dist']), bins=20, normed=1)
+nnuv, binnuv, _ = plt.hist(rc['nuv_mag'], bins=20, normed=1)
+nebv, binebv, _ = plt.hist(np.log10(rc['ebv']), bins=20, normed=1)
+
+ngbthin, bingbthin, _ = plt.hist(thin['gb_asc'], bins=20, normed=1)
+ndistthin, bindistthin, _ = plt.hist(np.log10(thin['dist']), bins=20, normed=1)
+nnuvthin, binnuvthin, _ = plt.hist(thin['nuv_mag'], bins=20, normed=1)
+nebvthin, binebvthin, _ = plt.hist(np.log10(thin['ebv']), bins=20, normed=1)
+
+ngbthick, bingbthick, _ = plt.hist(thick['gb_asc'], bins=20, normed=1)
+ndistthick, bindistthick, _ = plt.hist(np.log10(thick['dist']), bins=20, normed=1)
+nnuvthick, binnuvthick, _ = plt.hist(thick['nuv_mag'], bins=20, normed=1)
+nebvthick, binebvthick, _ = plt.hist(np.log10(thick['ebv']), bins=20, normed=1)
+
+gbcent = 0.5*(bingb[1:]+bingb[:-1])
+distcent = 0.5*(bindist[1:]+bindist[:-1])
+nuvcent = 0.5*(binnuv[1:]+binnuv[:-1])
+ebvcent = 0.5*(binebv[1:]+binebv[:-1])
+
+gbcentthin = 0.5*(bingb[1:]+bingb[:-1])
+distcentthin = 0.5*(bindist[1:]+bindist[:-1])
+nuvcentthin = 0.5*(binnuv[1:]+binnuv[:-1])
+ebvcentthin = 0.5*(binebv[1:]+binebv[:-1])
+
+gbcentthick = 0.5*(bingb[1:]+bingb[:-1])
+distcentthick = 0.5*(bindist[1:]+bindist[:-1])
+nuvcentthick = 0.5*(binnuv[1:]+binnuv[:-1])
+ebvcentthick = 0.5*(binebv[1:]+binebv[:-1])
+
+axes[0, 0].hist(rc['gb_asc'])
+axes[0, 0].plot(gbcentthin, ngbthin, zorder=10)
+axes[0, 0].plot(gbcentthick, ngbthick, zorder=10)
+axes[0, 0].set_xlabel('Galactic Longitude')
+
+axes[0, 1].hist(rc['dist'])
+axes[0, 1].plot(distcentthin, ndistthin)
+axes[0, 1].plot(distcentthick, ndistthick)
+axes[0, 1].set_xlabel('log(Distance) [pc]')
+
+axes[1, 0].hist(rc['nuv_mag'])
+axes[1, 0].plot(nuvcentthin, nnuvthin)
+axes[1, 0].plot(nuvcentthick, nnuvthick)
+axes[1, 0].set_xlabel('NUV')
+
+axes[1, 1].hist(np.log10(rc['ebv']))
+axes[1, 1].plot(ebvcentthin, nebvthin)
+axes[1, 1].plot(ebvcentthick, nebvthick)
+axes[1, 1].set_xlabel('log(E(B-V))')
+plt.show()
+
+
+
