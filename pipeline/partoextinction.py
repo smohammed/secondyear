@@ -20,20 +20,20 @@ gais = 0
 # For SExtractor catalog
 #################################################################
 if cat == 1:
-    #sg = Table.read('../sex_tgas_comb_02-28-2018.txt', format='ascii')
-    sg = Table.read('../asc_gaia_aporc_match.txt', format='ascii')
+    #sg = Table.read('../asc_gaia_aporc_match.txt', format='ascii')
     #sg = Table.read('../galexplane_aporc_match.txt', format='ascii')
+    sg = Table.read('../asc_gaia_apogee_testsample.txt', format='ascii')
 
     # Calculate parameters to get distance
-    oldpar = sg['parallax_2']
-    parallax = oldpar * (0.5 + 0.5 * np.sqrt(1. - 16 * (sg['parallax_error_2']**2/oldpar**2)))
+    oldpar = sg['parallax']
+    parallax = oldpar * (0.5 + 0.5 * np.sqrt(1. - 16 * (sg['parallax_error']**2/oldpar**2)))
     pc = 1000. / parallax
     negpar = np.where(pc > 0)
     pc = pc[negpar]
     parallax = parallax[negpar]
     sg = sg[negpar]
     distmod = 5. * np.log10(pc) - 5.
-    Mg = sg['phot_g_mean_mag_2'] - distmod
+    Mg = sg['phot_g_mean_mag'] - distmod
     DM_dust = np.arange(4, 19.1, 0.5)
 
     # Use every 5000 iterations because that's the max you can query
@@ -68,8 +68,10 @@ if cat == 1:
     sg['MG'] = Mg
     sg['distmod'] = distmod
     sg['ebv'] = ebv
-    ascii.write(sg, 'asc_gaia_aporc_match_dust-05-03-18.txt', format='basic', overwrite=True)
+    #ascii.write(sg, 'asc_gaia_aporc_match_dust-05-03-18.txt', format='basic', overwrite=True)
     #ascii.write(sg, '../galexplane_gaia_aporc_match_dust-05-03-18.txt', format='basic')
+    ascii.write(sg, 'asc_gaia_apogee_testsample_dust.txt', format='basic')
+
 
     #cols = fits.ColDefs([fits.Column(name='nuv_mag', format='D', array=sg['nuv']), fits.Column(name='gl_sex', format='D', array=sg['gl']), fits.Column(name='gb_sex', format='D', array=sg['gb']), fits.Column(name='ra_sex', format='D', array=sg['ALPHA_J2000']), fits.Column(name='dec_sex', format='D', array=sg['DELTA_J2000']), fits.Column(name='phot_g_mean_mag', format='D', array=sg['phot_g_mean_mag']), fits.Column(name='gl_gaia', format='D', array=sg['l']), fits.Column(name='gb_gaia', format='D', array=sg['b']), fits.Column(name='parallax', format='D', array=sg['parallax']), fits.Column(name='parallax_error', format='D', array=sg['parallax_error']), fits.Column(name='dist', format='D', array=pc), fits.Column(name='distmod', format='D', array=distmod), fits.Column(name='MG', format='D', array=Mg), fits.Column(name='ebv', format='D', array=ebv), fits.Column(name='parallax_hogg', format='D', array=parallax)])
 

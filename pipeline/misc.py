@@ -451,7 +451,7 @@ plt.errorbar(c2['B_AB']-c2['V_AB'], c2['FE_H'], xerr=c2['B_ABerr']-c2['V_ABerr']
 
 #plt.xlim((-1, 0.4))
 plt.xlabel('B - V')
-#plt.xlabel('(B - E$_{B-V}$ * 3.626) - (V - E$_{B-V}$ * 2.742)')
+#plt.xlabel('(B - E$_{B-V}$ * 3.626) - (V - E$_{B-V}$ * 2.8542)')
 plt.ylabel('Fe/H')
 #plt.title('GAIS + Bovy RC stars, no extinction')
 plt.colorbar().set_label('Alpha/Fe')
@@ -566,19 +566,19 @@ fig, (ax1, ax2) = plt.subplots(2, 1)
 cmap = ax1.scatter(x[thin], y1[thin], s=80, c=rc['FE_H'][thin], cmap=cm.viridis_r, vmin=-.5, vmax=.35, label='Thin disk', edgecolor='black')
 ax1.scatter(x[thick], y1[thick], s=80, c=rc['FE_H'][thick], cmap=cm.viridis_r, vmin=-.5, vmax=.35, label='Thick disk', edgecolor='black', linewidth=1)
 #ax1.errorbar(x[thin], y1[thin], xerr=rc['TEFF_ERR'][thin], yerr=(rc['Berr_apass']-rc['Verr_apass'])[thin], ecolor='black', fmt=None, marker=None, mew=0, elinewidth=1.3, **{"zorder":0})
-ax1.errorbar(x[thin], y1[thin], xerr=rc['TEFF_ERR'][thin], ecolor='black', fmt=None, marker=None, mew=0, elinewidth=1.3, **{"zorder":0})
+ax1.errorbar(x[thin], y1[thin], xerr=rc['TEFF_ERR'][thin], ecolor='gray', fmt='none', marker='none', mew=0, elinewidth=1.3, **{"zorder":0})
 
 ax1.plot(x, line1, linewidth=3, c='red', zorder=10)
 
 ax2.scatter(x[thin], y2[thin], s=80, c=rc['FE_H'][thin], cmap=cm.viridis_r, vmin=-.5, vmax=.35, edgecolor='black')
 ax2.scatter(x[thick], y2[thick], s=80, c=rc['FE_H'][thick], cmap=cm.viridis_r, vmin=-.5, vmax=.35, edgecolor='black', linewidth=1)
-#ax2.errorbar(x[thin], y2[thin], xerr=rc['TEFF_ERR'][thin], yerr=(rc['nuv_magerr']-rc['Gerr'])[thin], ecolor='black', fmt=None, marker=None, mew=0, elinewidth=1.3, **{"zorder":0})
-ax2.errorbar(x[thin], y2[thin], xerr=rc['TEFF_ERR'][thin], ecolor='black', fmt=None, marker=None, mew=0, elinewidth=1.3, **{"zorder":0})
+#ax2.errorbar(x[thin], y2[thin], xerr=rc['TEFF_ERR'][thin], yerr=(rc['nuv_magerr']-rc['Gerr'])[thin], ecolor='black', fmt='none', marker='none', mew=0, elinewidth=1.3, **{"zorder":0})
+ax2.errorbar(x[thin], y2[thin], xerr=rc['TEFF_ERR'][thin], ecolor='gray', fmt='none', marker='none', mew=0, elinewidth=1.3, **{"zorder":0})
 
 ax2.plot(x, line2, linewidth=3, c='red', zorder=10)
 
 #ax1.set_xlabel('T$_{eff}$')
-ax1.set_ylabel('(BP - RP)$_0$')
+ax1.set_ylabel('(G$_{BP}$ - G$_{RP}$)$_0$')
 ax2.set_xlabel('T$_{eff}$')
 ax2.set_ylabel('(NUV - G)$_0$')
 #ax1.set_xlim((4300, 5200))
@@ -597,6 +597,7 @@ leg.legendHandles[1]._sizes = [150]
 '''
 cbar_ax = fig.add_axes([0.85, 0.1, 0.03, 0.8])
 plt.colorbar(cmap, cax=cbar_ax).set_label('[Fe/H]')
+plt.suptitle('GALEX Plane + Ting+18')
 plt.show()
 
 
@@ -627,7 +628,7 @@ plt.scatter(rc['FE_H'][thin], rc['ALPHAFE'][thin], s=20, edgecolor='none', c=nuv
 plt.scatter(rc['FE_H'][thick], rc['ALPHAFE'][thick], c=nuvg[thick], s=20, marker='s', label='Thick disk', vmin=7, vmax=11, linewidth=1, cmap=cm.jet)
 
 #plt.errorbar(rc['FE_H'], rc['ALPHAFE'], xerr=(rc['FE_H_err']), yerr=rc['ALPHAFE_ERR'], ecolor='black', fmt=None, marker=None, mew=0, elinewidth=1.3, **{"zorder":0})
-plt.errorbar(rc['Fe_H'], rc['ALPHAFE'], xerr=(rc['FE_H_err']), ecolor='black', fmt=None, marker=None, mew=0, elinewidth=1.3, **{"zorder":0})
+plt.errorbar(rc['Fe_H'], rc['ALPHAFE'], xerr=(rc['FE_H_err']), ecolor='black', fmt='none', marker='none', mew=0, elinewidth=1.3, **{"zorder":0})
 
 xpfeh = np.linspace(-1, 0.02, 50)
 plt.plot(xpfeh, xpfeh*m + b, c='black', linewidth=3)
@@ -648,6 +649,7 @@ leg.legendHandles[0].set_color('black')
 leg.legendHandles[1].set_color('black')
 leg.legendHandles[0]._sizes = [150]
 leg.legendHandles[1]._sizes = [150]
+plt.title('GALEX Plane + Ting+18')
 plt.show()
 
 #################################################
@@ -670,7 +672,7 @@ thinfit = rc[thin]
 # 1 includes the outliers/possible binaries. 2 removes them
 
 xa1 = rc['nuv_mag']-rc['phot_g_mean_mag']
-xb1 = (rc['nuv_mag']-rc['ebv']*7.24)-(rc['phot_g_mean_mag']-rc['ebv']*3.303)
+xb1 = (rc['nuv_mag']-rc['ebv']*7.24)-(rc['phot_g_mean_mag']-rc['ebv']*2.85)
 y1 = rc['FE_H']
 
 q = np.where(xb1 > 5)
@@ -705,81 +707,98 @@ pbthick = np.poly1d(zbthick)
 athickerr = np.sum(np.sqrt(np.diag(vathick)))
 bthickerr = np.sum(np.sqrt(np.diag(vbthick)))
 
-xp = np.linspace(6, 11, 50)
+xp = np.linspace(6, 10.5, 50)
 
 
 fig, ((ax1, ax2), (ax3, ax4), (ax5, ax6)) = plt.subplots(3, 2, sharex=True, sharey=True)
 
 # Plotting with no dust correction first
 # No dust, all points
-cmap = ax1.scatter(xa1[thin], y1[thin], c=rc['ALPHAFE'][thin], s=80, vmin=-0.05, vmax=0.3, marker='D', edgecolor='black', cmap=cm.plasma_r, **{"zorder":5})
-ax1.errorbar(xa1[thin], y1[thin], xerr=(rc['nuv_magerr'])[thin], yerr=rc['FE_H_ERR'][thin], ecolor='black', fmt='None', marker='None', mew=0, elinewidth=1.3, **{"zorder":0})
+cmap = ax1.scatter(xa1[thin], y1[thin], c=rc['ALPHAFE'][thin], s=20, vmin=-0.05, vmax=0.3, marker='D', edgecolor='black', cmap=cm.plasma_r, **{"zorder":5})
+#ax1.errorbar(xa1[thin], y1[thin], xerr=(rc['nuv_magerr'])[thin], yerr=rc['FE_H_ERR'][thin], ecolor='black', fmt='None', marker='None', mew=0, elinewidth=1.3, **{"zorder":0})
+ax1.errorbar(xa1[thin], y1[thin], yerr=rc['FE_H_ERR'][thin], ecolor='black', fmt='None', marker='None', mew=0, elinewidth=1.3, **{"zorder":0})
 
-ax1.scatter(xa1[thick], y1[thick], c=rc['ALPHAFE'][thick], s=80, vmin=-0.05, vmax=0.3, marker='s', edgecolor='black', cmap=cm.plasma_r, **{"zorder":5})
-ax1.errorbar(xa1[thick], y1[thick], xerr=(rc['nuv_magerr'])[thick], yerr=rc['FE_H_ERR'][thick], ecolor='black', fmt='None', marker='None', mew=0, elinewidth=1.3, **{"zorder":0})
+
+ax1.scatter(xa1[thick], y1[thick], c=rc['ALPHAFE'][thick], s=20, vmin=-0.05, vmax=0.3, marker='s', edgecolor='black', cmap=cm.plasma_r, **{"zorder":5})
+#ax1.errorbar(xa1[thick], y1[thick], xerr=(rc['nuv_magerr'])[thick], yerr=rc['FE_H_ERR'][thick], ecolor='black', fmt='None', marker='None', mew=0, elinewidth=1.3, **{"zorder":0})
+ax1.errorbar(xa1[thick], y1[thick], yerr=rc['FE_H_ERR'][thick], ecolor='black', fmt='None', marker='None', mew=0, elinewidth=1.3, **{"zorder":0})
 ax1.plot(xp, pa1(xp), linewidth=4, c='black', zorder=10) 
 
 # Dust, all points
-ax2.scatter(xb1[thin], y1[thin], c=rc['ALPHAFE'][thin], s=80, vmin=-0.05, vmax=0.3, marker='D', edgecolor='black', cmap=cm.plasma_r, **{"zorder":5})
-ax2.errorbar(xb1[thin], y1[thin], xerr=(rc['nuv_magerr'])[thin], yerr=rc['FE_H_ERR'][thin], ecolor='black', fmt='None', marker='None', mew=0, elinewidth=1.3, **{"zorder":0})
-ax2.scatter(xb1[thick], y1[thick], c=rc['ALPHAFE'][thick], s=80, vmin=-0.05, vmax=0.3, marker='s', edgecolor='black', cmap=cm.plasma_r, **{"zorder":5})
-ax2.errorbar(xb1[thick], y1[thick], xerr=(rc['nuv_magerr'])[thick], yerr=rc['FE_H_ERR'][thick], ecolor='black', fmt='None', marker='None', mew=0, elinewidth=1.3, **{"zorder":0})
+ax2.scatter(xb1[thin], y1[thin], c=rc['ALPHAFE'][thin], s=20, vmin=-0.05, vmax=0.3, marker='D', edgecolor='black', cmap=cm.plasma_r, **{"zorder":5})
+#ax2.errorbar(xb1[thin], y1[thin], xerr=(rc['nuv_magerr'])[thin], yerr=rc['FE_H_ERR'][thin], ecolor='black', fmt='None', marker='None', mew=0, elinewidth=1.3, **{"zorder":0})
+ax2.errorbar(xb1[thin], y1[thin], yerr=rc['FE_H_ERR'][thin], ecolor='black', fmt='None', marker='None', mew=0, elinewidth=1.3, **{"zorder":0})
+
+ax2.scatter(xb1[thick], y1[thick], c=rc['ALPHAFE'][thick], s=20, vmin=-0.05, vmax=0.3, marker='s', edgecolor='black', cmap=cm.plasma_r, **{"zorder":5})
+#ax2.errorbar(xb1[thick], y1[thick], xerr=(rc['nuv_magerr'])[thick], yerr=rc['FE_H_ERR'][thick], ecolor='black', fmt='None', marker='None', mew=0, elinewidth=1.3, **{"zorder":0})
+ax2.errorbar(xb1[thick], y1[thick], yerr=rc['FE_H_ERR'][thick], ecolor='black', fmt='None', marker='None', mew=0, elinewidth=1.3, **{"zorder":0})
 
 ax2.plot(xp, pb1(xp), linewidth=4, c='black', zorder=10)
 
 # No dust, thin disk
-ax3.scatter(xa1[thin], y1[thin], c=rc['ALPHAFE'][thin], s=80, vmin=-0.05, vmax=0.3, marker='D', edgecolor='black', cmap=cm.plasma_r, **{"zorder":5})
-ax3.errorbar(xa1[thin], y1[thin], xerr=(rc['nuv_magerr'])[thin], yerr=rc['FE_H_ERR'][thin], ecolor='black', fmt='None', marker='None', mew=0, elinewidth=1.3, **{"zorder":0})
+ax3.scatter(xa1[thin], y1[thin], c=rc['ALPHAFE'][thin], s=20, vmin=-0.05, vmax=0.3, marker='D', edgecolor='black', cmap=cm.plasma_r, **{"zorder":5})
+#ax3.errorbar(xa1[thin], y1[thin], xerr=(rc['nuv_magerr'])[thin], yerr=rc['FE_H_ERR'][thin], ecolor='black', fmt='None', marker='None', mew=0, elinewidth=1.3, **{"zorder":0})
+ax3.errorbar(xa1[thin], y1[thin], yerr=rc['FE_H_ERR'][thin], ecolor='black', fmt='None', marker='None', mew=0, elinewidth=1.3, **{"zorder":0})
 ax3.plot(xp, pathin(xp), linewidth=4, c='black', zorder=10)
 
 # Dust, thin disk
-ax4.scatter(xb1[thin], y1[thin], c=rc['ALPHAFE'][thin], s=80, vmin=-0.05, vmax=0.3, marker='D', edgecolor='black', cmap=cm.plasma_r, **{"zorder":5})
-ax4.errorbar(xb1[thin], y1[thin], xerr=(rc['nuv_magerr'])[thin], yerr=rc['FE_H_ERR'][thin], ecolor='black', fmt='None', marker='None', mew=0, elinewidth=1.3, **{"zorder":0})
+ax4.scatter(xb1[thin], y1[thin], c=rc['ALPHAFE'][thin], s=20, vmin=-0.05, vmax=0.3, marker='D', edgecolor='black', cmap=cm.plasma_r, **{"zorder":5})
+#ax4.errorbar(xb1[thin], y1[thin], xerr=(rc['nuv_magerr'])[thin], yerr=rc['FE_H_ERR'][thin], ecolor='black', fmt='None', marker='None', mew=0, elinewidth=1.3, **{"zorder":0})
+ax4.errorbar(xb1[thin], y1[thin], yerr=rc['FE_H_ERR'][thin], ecolor='black', fmt='None', marker='None', mew=0, elinewidth=1.3, **{"zorder":0})
 ax4.plot(xp, pbthin(xp), linewidth=4, c='black', zorder=10)
 
 # No dust, thick disk
-ax5.scatter(xa1[thick], y1[thick], c=rc['ALPHAFE'][thick], s=80, vmin=-0.05, vmax=0.3, marker='s', edgecolor='black', cmap=cm.plasma_r, **{"zorder":5})
-ax5.errorbar(xa1[thick], y1[thick], xerr=(rc['nuv_magerr'])[thick], yerr=rc['FE_H_ERR'][thick], ecolor='black', fmt='None', marker='None', mew=0, elinewidth=1.3, **{"zorder":0})
+ax5.scatter(xa1[thick], y1[thick], c=rc['ALPHAFE'][thick], s=20, vmin=-0.05, vmax=0.3, marker='s', edgecolor='black', cmap=cm.plasma_r, **{"zorder":5})
+#ax5.errorbar(xa1[thick], y1[thick], xerr=(rc['nuv_magerr'])[thick], yerr=rc['FE_H_ERR'][thick], ecolor='black', fmt='None', marker='None', mew=0, elinewidth=1.3, **{"zorder":0})
+ax5.errorbar(xa1[thick], y1[thick], yerr=rc['FE_H_ERR'][thick], ecolor='black', fmt='None', marker='None', mew=0, elinewidth=1.3, **{"zorder":0})
 ax5.plot(xp, pathick(xp), linewidth=4, c='black', zorder=10)
 
 # Dust, thick disk
-ax6.scatter(xb1[thick], y1[thick], c=rc['ALPHAFE'][thick], s=80, vmin=-0.05, vmax=0.3, marker='s', edgecolor='black', cmap=cm.plasma_r, **{"zorder":5})
-ax6.errorbar(xb1[thick], y1[thick], xerr=(rc['nuv_magerr'])[thick], yerr=rc['FE_H_ERR'][thick], ecolor='black', fmt='None', marker='None', mew=0, elinewidth=1.3, **{"zorder":0})
+ax6.scatter(xb1[thick], y1[thick], c=rc['ALPHAFE'][thick], s=20, vmin=-0.05, vmax=0.3, marker='s', edgecolor='black', cmap=cm.plasma_r, **{"zorder":5})
+#ax6.errorbar(xb1[thick], y1[thick], xerr=(rc['nuv_magerr'])[thick], yerr=rc['FE_H_ERR'][thick], ecolor='black', fmt='None', marker='None', mew=0, elinewidth=1.3, **{"zorder":0})
+ax6.errorbar(xb1[thick], y1[thick], yerr=rc['FE_H_ERR'][thick], ecolor='black', fmt='None', marker='None', mew=0, elinewidth=1.3, **{"zorder":0})
 ax6.plot(xp, pbthick(xp), linewidth=4, c='black', zorder=10)
 
 
-ax5.set_xlabel('NUV - G')
-ax6.set_xlabel('(NUV - G)$_{0}$')
-ax1.set_ylabel('[Fe/H]')
-ax3.set_ylabel('[Fe/H]')
-ax5.set_ylabel('[Fe/H]')
+ax5.set_xlabel('NUV - G', fontsize=14)
+ax6.set_xlabel('(NUV - G)$_{0}$', fontsize=14)
+ax1.set_ylabel('[Fe/H]', fontsize=14)
+ax3.set_ylabel('[Fe/H]', fontsize=14)
+ax5.set_ylabel('[Fe/H]', fontsize=14)
 ax6.legend(scatterpoints=1, loc="lower right")
 #leg.legendHandles[0].set_color('black')
 #leg.legendHandles[1].set_color('black')
 #leg.legendHandles[0]._sizes = [150]
 #leg.legendHandles[1]._sizes = [150]
-ax1.set_ylim(-1.4,0.6)
+ax1.set_xlim(5.19, 11)
+ax1.set_ylim(-1.1,0.55)
 fig.subplots_adjust(wspace=0)
 fig.subplots_adjust(right=.84)
 cbar_ax = fig.add_axes([0.85, 0.1, 0.03, 0.8])
-ax1.annotate('[Fe/H] = 0.26 * (NUV-G) - 2.30', xy=(2.9, -1.4), color='red', size=13)
-ax2.annotate('[Fe/H] = 0.26 * (NUV-G)$_0$ - 2.29', xy=(2.9, -1.4), color='red', size=13)
+'''
+ax1.annotate('[Fe/H] = 0.25 * (NUV-G) - 2.22', xy=(7.7, -1.05), color='black', size=13)
+ax2.annotate('[Fe/H] = 0.26 * (NUV-G)$_0$ - 2.20', xy=(7.7, -1.05), color='black', size=13)
 
-ax3.annotate('[Fe/H] = 0.21 * (NUV-G) - 1.90', xy=(2.9, -1.4), color='red', size=13)
-ax4.annotate('[Fe/H] = 0.22 * (NUV-G)$_0$ - 1.90', xy=(2.9, -1.4), color='red', size=13)
+ax3.annotate('[Fe/H] = 0.21 * (NUV-G) - 1.81', xy=(7.7, -1.05), color='black', size=13)
+ax4.annotate('[Fe/H] = 0.22 * (NUV-G)$_0$ - 1.81', xy=(7.7, -1.05), color='black', size=13)
 
-ax5.annotate('[Fe/H] = 0.27 * (NUV-G) - 2.55', xy=(2.9, -1.4), color='red', size=13)
-ax6.annotate('[Fe/H] = 0.29 * (NUV-G)$_0$ - 2.63', xy=(2.9, -1.4), color='red', size=13)
+ax5.annotate('[Fe/H] = 0.27 * (NUV-G) - 2.53', xy=(7.7, -1.05), color='black', size=13)
+ax6.annotate('[Fe/H] = 0.29 * (NUV-G)$_0$ - 2.63', xy=(7.7, -1.05), color='black', size=13)
+'''
+ax1.annotate('Full sample', xy=(5.2, 0.4), size=13)
+ax3.annotate('Thin disk', xy=(5.2, 0.4), size=13)
+ax5.annotate('Thick disk', xy=(5.2, 0.4), size=13)
+
 
 #ax1.annotate('[Fe/H] = 0.27 * (NUV-G) - 2.37 ', xy=(2, 0.6), color='black', size=15)
-#ax2.annotate('[Fe/H] = 0.26 * (NUV-G)$_0$ - 2.29', xy=(1.3, 0.69), color='red', size=15)
+#ax2.annotate('[Fe/H] = 0.26 * (NUV-G)$_0$ - 2.29', xy=(1.3, 0.69), color='red', size=15)thi
 #ax2.annotate('[Fe/H] = 0.27 * (NUV-G)$_0$ - 2.38', xy=(1.3, 0.6), color='black', size=15)
 #ax1.annotate('$\sigma$ = 0.023', xy=(2, 0.53), color='red', size=15) # a1
 #ax1.annotate('$\sigma$ = 0.022', xy=(2, 0.45), color='black', size=15) # a2
 #ax2.annotate('$\sigma$ = 0.023', xy=(1.3, 0.53), color='red', size=15) # b1
 #ax2.annotate('$\sigma$ = 0.023', xy=(1.3, 0.45), color='black', size=15) # b2
 fig.subplots_adjust(hspace=0, wspace=0)
-fig.colorbar(cmap, cax=cbar_ax).set_label(r'[$\alpha$/Fe]')
+fig.colorbar(cmap, cax=cbar_ax).set_label(r'[$\alpha$/Fe]', fontsize=14)
 plt.show()
 
 
@@ -851,25 +870,33 @@ c2['V_FE'] = c2['V_H'] / c2['FE_H']
 # Calculate errors, get table for paper
 ################################################################
 
-rc = fits.open('rc_all_10-31.fits')[1].data
-ra = rc['ra_tgas']
-dec = rc['dec_tgas']
+rc = fits.open('asc_gaia_aporc_match_dust-05-03-18.fits')[1].data
+q = np.where((rc['ebv'] > 0) & (rc['Fe_H_err'] > 0) & (rc['phot_bp_mean_mag'] > 0) & (rc['phot_rp_mean_mag'] > 0) & (rc['Classification'] == 'RC_Pristine') & (rc['dist'] < 3500) & (rc['visibility_periods_used'] > 8) & (rc['parallax_error']/rc['parallax'] < 0.1))
+rc = rc[q]
+
+ra = rc['RA']
+dec = rc['Dec']
 nuv = rc['nuv_mag'] - rc['ebv']*7.24
-nuvg = (rc['nuv_mag']-rc['ebv']*7.24)-(rc['phot_g_mean_mag']-rc['ebv']*3.303)
+nuvg = (rc['nuv_mag']-rc['ebv']*7.24)-(rc['phot_g_mean_mag']-rc['ebv']*2.85)
 nuverr = rc['nuv_magerr']
-nuvgerr = np.sqrt(rc['nuv_magerr']**2-rc['Gerr']**2)
-B = rc['B_apass'] - rc['ebv']*3.626
-bv = (rc['B_apass']-rc['ebv']*3.626)-(rc['V_apass']-rc['ebv']*2.742)
-Berr = rc['Berr_apass']
-bverr = np.sqrt(rc['Berr_apass']**2 - rc['Verr_apass']**2)
-bverr[np.isnan(bverr)] = Berr[np.isnan(bverr)]
+Gerr = np.sqrt(rc['phot_g_mean_flux_error']**2 * (-2.5/(np.log(10)*rc['phot_g_mean_flux']))**2)
+nuvgerr = np.sqrt(rc['nuv_magerr']**2-Gerr**2)
+BP = rc['phot_bp_mean_mag'] - rc['ebv']*2.85
+BPRP = (rc['phot_bp_mean_mag']-rc['ebv']*2.85)-(rc['phot_rp_mean_mag']-rc['ebv']*2.85)
+BPerr = np.sqrt(rc['phot_bp_mean_flux_error']**2 * (-2.5/(np.log(10)*rc['phot_bp_mean_flux']))**2)
+RPerr = np.sqrt(rc['phot_rp_mean_flux_error']**2 * (-2.5/(np.log(10)*rc['phot_rp_mean_flux']))**2)
+BPRPerr = np.sqrt(BPerr**2 + RPerr**2)
 ebv = rc['ebv']
 dm = rc['distmod']
 feh = rc['FE_H']
 feherr = rc['FE_H_ERR']
 teff = rc['TEFF']
 alphafe = rc['ALPHAFE']
-afeerr = rc['ALPHAFE_ERR']
+#afeerr = rc['ALPHAFE_ERR']
+afeerr = (alphafe * np.sqrt((rc['ALPHA_M_ERR']/rc['ALPHA_M'])**2 + (rc['M_H_ERR']/rc['M_H'])**2 + (rc['FE_H_ERR']/rc['FE_H'])**2))
+afeerr[np.where(afeerr == np.inf)] = 0
+afeerr[np.where(afeerr == -1*np.inf)] = 0
+
 
 ra = ['{:.4f}'.format(x) for x in ra]
 dec = ['{:.4f}'.format(x) for x in dec]
@@ -877,10 +904,10 @@ nuv = ['{:.2f}'.format(x) for x in nuv]
 nuverr = ['{:.2f}'.format(x) for x in nuverr]
 nuvg = ['{:.2f}'.format(x) for x in nuvg]
 nuvgerr = ['{:.2f}'.format(x) for x in nuvgerr]
-B = ['{:.2f}'.format(x) for x in B]
-bv = ['{:.2f}'.format(x) for x in bv]
-Berr = ['{:.2f}'.format(x) for x in Berr]
-bverr = ['{:.2f}'.format(x) for x in bverr]
+BP = ['{:.2f}'.format(x) for x in BP]
+BPRP = ['{:.2f}'.format(x) for x in BPRP]
+BPerr = ['{:.2f}'.format(x) for x in BPerr]
+BPRPerr = ['{:.2f}'.format(x) for x in BPRPerr]
 ebv = ['{:.2f}'.format(x) for x in ebv]
 dm = ['{:.2f}'.format(x) for x in dm]
 feh = ['{:.2f}'.format(x) for x in feh]
@@ -889,11 +916,20 @@ teff = ['{:.2f}'.format(x) for x in teff]
 alphafe = ['{:.2f}'.format(x) for x in alphafe]
 afeerr = ['{:.2f}'.format(x) for x in afeerr]
 
+for line in range(len(rc)):
+    nuv[line] = nuv[line]+' $\pm$ '+nuverr[line]
+    nuvg[line] = nuvg[line]+' $\pm$ '+nuvgerr[line]
+    BP[line] = BP[line]+' $\pm$ '+BPerr[line]
+    BPRP[line] = BPRP[line]+' $\pm$ '+BPRPerr[line]
+    feh[line] = feh[line]+' $\pm$ '+feherr[line]
+    alphafe[line] = alphafe[line]+' $\pm$ '+afeerr[line]
 
-table = Table([ra, dec, nuv, nuverr, nuvg, nuvgerr, B, Berr, bv, bverr, ebv, dm, feh, feherr, teff, alphafe, afeerr])
+
+
+table = Table([ra, dec, nuv, nuvg, BP, BPRP, ebv, dm, feh, teff, alphafe])
 
 t1 = table[:10]
-ascii.write(t1, format='latex')
+ascii.write(t1, Writer=ascii.Latex)
 
 
 ################################################################
@@ -960,7 +996,7 @@ for scan in scans:
 
 
 rccut
-6 < nuvg < 11.5, 0.9 < MG > -0.1
+6 < nuvg < 11.5, 0.9 > MG > -0.1
 
 
   
@@ -1011,6 +1047,8 @@ distcentthick = 0.5*(bindist[1:]+bindist[:-1])
 nuvcentthick = 0.5*(binnuv[1:]+binnuv[:-1])
 ebvcentthick = 0.5*(binebv[1:]+binebv[:-1])
 
+
+fig, axes = plt.subplots(2, 2)
 axes[0, 0].hist(rc['gb_asc'])
 axes[0, 0].plot(gbcentthin, ngbthin, zorder=10)
 axes[0, 0].plot(gbcentthick, ngbthick, zorder=10)
@@ -1031,6 +1069,33 @@ axes[1, 1].plot(ebvcentthin, nebvthin)
 axes[1, 1].plot(ebvcentthick, nebvthick)
 axes[1, 1].set_xlabel('log(E(B-V))')
 plt.show()
+
+
+
+fig, axes = plt.subplots(2, 2)
+axes[0, 0].hist(rc['gb'], range=[-90,90])
+axes[0, 0].hist(thin['gb'], range=[-90,90], histtype='step',color='red', fill=False, stacked=True)
+axes[0, 0].hist(thick['gb'], range=[-90,90], histtype='step', color='black', fill=False, stacked=True)
+axes[0, 0].set_xlabel('Galactic Longitude')
+
+axes[0, 1].hist(np.log10(rc['dist']), range=[1.8,3.5])
+axes[0, 1].hist(np.log10(thin['dist']), range=[1.8,3.5], histtype='step', color='red', stacked=True, fill=False, label='Thin disk')
+axes[0, 1].hist(np.log10(thick['dist']), range=[1.8,3.5], histtype='step', color='black', stacked=True, fill=False, label='Thick disk')
+axes[0, 1].set_xlabel('log(Distance) [pc]')
+
+axes[1, 0].hist(rc['nuv_mag'], range=[12.5, 22.5])
+axes[1, 0].hist(thin['nuv_mag'],range=[12.5, 22.5], histtype='step', color='red', stacked=True, fill=False)
+axes[1, 0].hist(thick['nuv_mag'],range=[12.5, 22.5], histtype='step', color='black', stacked=True, fill=False)
+axes[1, 0].set_xlabel('NUV')
+
+axes[1, 1].hist(np.log10(rc['ebv']), range=[-3,0])
+axes[1, 1].hist(np.log10(thin['ebv']), range=[-3,0], histtype='step', color='red', stacked=True, fill=False)
+axes[1, 1].hist(np.log10(thick['ebv']), range=[-3,0], histtype='step', color='black', stacked=True, fill=False)
+axes[1, 1].set_xlabel('log(E(B-V))')
+axes[0, 1].legend()
+plt.show()
+
+
 
 
 
