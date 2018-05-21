@@ -531,16 +531,19 @@ for region in scans:
 ascii.write(alldata, 'starcat_allscans_03-26-18.txt', format='basic', overwrite=True)
 
 
-pscats = ['0-100', '100-200', '200-300', '300-360']
 
-for scan in pscats:
+catgal = SkyCoord(alldata['gl']*u.deg,alldata['gb']*u.deg, frame='galactic')
+
+pscans = ['0-100', '100-200', '200-300', '300-360']
+
+for scan in pscans:
+    print scan
     ps = fits.open('ps1/ps1_planecut_'+scan+'_g10-20.fits')[1].data
     psgal = SkyCoord(ps['glmean']*u.deg, ps['gbmean']*u.deg, frame='galactic')
-    catgal = SkyCoord(alldata['gl']*u.deg,alldata['gb']*u.deg, frame='galactic')
     catind, psind, angsep, ang3d = search_around_sky(catgal, psgal, 3*u.arcsec)
-    comb = hstack([Table(alldata[catind]), Table(ps[psind])])
+    comb = hstack([Table(cat[catind]), Table(ps[psind])])
     comb['angsep'] = angsep
-    ascii.write('starcat_ps1'+str(scan)+'_g10-20.txt', format='basic')
+    ascii.write(comb, 'starcat_ps1'+scan+'_g10-20.txt', format='basic')
 
 
 ######################################################################
@@ -1076,26 +1079,46 @@ fig, axes = plt.subplots(2, 2)
 axes[0, 0].hist(rc['gb'], range=[-90,90])
 axes[0, 0].hist(thin['gb'], range=[-90,90], histtype='step',color='red', fill=False, stacked=True)
 axes[0, 0].hist(thick['gb'], range=[-90,90], histtype='step', color='black', fill=False, stacked=True)
-axes[0, 0].set_xlabel('Galactic Longitude')
 
 axes[0, 1].hist(np.log10(rc['dist']), range=[1.8,3.5])
 axes[0, 1].hist(np.log10(thin['dist']), range=[1.8,3.5], histtype='step', color='red', stacked=True, fill=False, label='Thin disk')
 axes[0, 1].hist(np.log10(thick['dist']), range=[1.8,3.5], histtype='step', color='black', stacked=True, fill=False, label='Thick disk')
-axes[0, 1].set_xlabel('log(Distance) [pc]')
 
 axes[1, 0].hist(rc['nuv_mag'], range=[12.5, 22.5])
 axes[1, 0].hist(thin['nuv_mag'],range=[12.5, 22.5], histtype='step', color='red', stacked=True, fill=False)
 axes[1, 0].hist(thick['nuv_mag'],range=[12.5, 22.5], histtype='step', color='black', stacked=True, fill=False)
-axes[1, 0].set_xlabel('NUV')
 
 axes[1, 1].hist(np.log10(rc['ebv']), range=[-3,0])
 axes[1, 1].hist(np.log10(thin['ebv']), range=[-3,0], histtype='step', color='red', stacked=True, fill=False)
 axes[1, 1].hist(np.log10(thick['ebv']), range=[-3,0], histtype='step', color='black', stacked=True, fill=False)
+
+axes[0, 0].set_xlabel('Galactic Longitude')
+axes[0, 1].set_xlabel('log(Distance) [pc]')
+axes[1, 0].set_xlabel('NUV')
 axes[1, 1].set_xlabel('log(E(B-V))')
 axes[0, 1].legend()
 plt.show()
 
 
+m = (-0.4 - 0.2)/(6 - 7)
+b = -4
+fig, axes = plt.subplots(2, 2)
+axes[0, 0].hist(rc['gb'], range=[-90,90])
+axes[0, 0].hist(ex['gb'], range=[-90,90], histtype='step',color='red', fill=False, stacked=True)
 
+axes[0, 1].hist(np.log10(rc['dist']), range=[1.8,3.5])
+axes[0, 1].hist(np.log10(ex['dist']), range=[1.8,3.5], histtype='step', color='red', stacked=True, fill=False, label='NUVG Excess')
 
+axes[1, 0].hist(rc['nuv'], range=[12.5, 22.5])
+axes[1, 0].hist(ex['nuv'],range=[12.5, 22.5], histtype='step', color='red', stacked=True, fill=False)
+
+axes[1, 1].hist(np.log10(rc['ebv']), range=[-3,0])
+axes[1, 1].hist(np.log10(ex['ebv']), range=[-3,0], histtype='step', color='red', stacked=True, fill=False)
+
+axes[0, 0].set_xlabel('Galactic Longitude')
+axes[0, 1].set_xlabel('log(Distance) [pc]')
+axes[1, 0].set_xlabel('NUV')
+axes[1, 1].set_xlabel('log(E(B-V))')
+axes[0, 1].legend()
+plt.show()
 
