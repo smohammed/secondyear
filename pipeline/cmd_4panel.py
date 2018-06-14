@@ -36,7 +36,7 @@ if cat == 1:
 if gais == 1:
     cat = fits.open('../galex-asc-gaia-match_smaller.fits',memmap=True)[1].data
     pc = 1000./cat['parallax']
-    negpar = np.where((pc > 0) & (cat['visibility_periods_used'] > 8) & (cat['parallax_error']/cat['parallax'] < 0.1) & (pc < 3500) & (cat['phot_bp_mean_mag'] > 0) & (cat['phot_rp_mean_mag'] > 0)) 
+    negpar = np.where((pc > 0) & (cat['visibility_periods_used'] > 8) & (cat['parallax_error']/cat['parallax'] < 0.1) & (cat['phot_bp_mean_mag'] > 0) & (cat['phot_rp_mean_mag'] > 0)) 
     nuv = cat['mag_nuv']
     g = cat['phot_g_mean_mag']
     bp = cat['phot_bp_mean_mag']
@@ -111,8 +111,8 @@ fig.subplots_adjust(wspace=0)
 fig.subplots_adjust(right=0.84)
 cbar_ax = fig.add_axes([0.85, 0.15, 0.04, 0.7])
 fig.colorbar(cbar, cax=cbar_ax, label='[Fe/H]')
-plt.show()
-
+#plt.show()
+plt.savefig('../etc.pdf')
 
 
 
