@@ -565,24 +565,28 @@ m2, b2, rval2, pval2, stderr2 = stats.linregress(x, y2)
 line2 = m2*x + b2
 err2 = np.sqrt(np.sum((line2-y2)**2/len(y2)))
 
+bprperr = np.sqrt(rc['BPerr']**2+rc['RPerr']**2)
+nuvgerr = np.sqrt(rc['nuv_magerr']**2+rc['Gerr']**2)
+
+
 fig, (ax1, ax2) = plt.subplots(2, 1)
-cmap = ax1.scatter(x[thin], y1[thin], s=80, c=rc['FE_H'][thin], cmap=cm.viridis_r, vmin=-.5, vmax=.35, label='Thin disk', edgecolor='black')
-ax1.scatter(x[thick], y1[thick], s=80, c=rc['FE_H'][thick], cmap=cm.viridis_r, vmin=-.5, vmax=.35, label='Thick disk', edgecolor='black', linewidth=1)
+cmap = ax1.scatter(x[thin], y1[thin], s=40, c=rc['FE_H'][thin], cmap=cm.viridis_r, vmin=-.5, vmax=.35, label='Thin disk', edgecolor='black')
+ax1.scatter(x[thick], y1[thick], s=40, c=rc['FE_H'][thick], cmap=cm.viridis_r, vmin=-.5, vmax=.35, label='Thick disk', edgecolor='black', linewidth=1)
 #ax1.errorbar(x[thin], y1[thin], xerr=rc['TEFF_ERR'][thin], yerr=(rc['Berr_apass']-rc['Verr_apass'])[thin], ecolor='black', fmt=None, marker=None, mew=0, elinewidth=1.3, **{"zorder":0})
-ax1.errorbar(x[thin], y1[thin], xerr=rc['TEFF_ERR'][thin], ecolor='gray', fmt='none', marker='none', mew=0, elinewidth=1.3, **{"zorder":0})
+ax1.errorbar(x, y1, xerr=rc['TEFF_ERR'], yerr=bprperr, ecolor='gray', fmt='none', marker='none', mew=0, elinewidth=1.3, **{"zorder":0})
 
 ax1.plot(x, line1, linewidth=3, c='red', zorder=10)
 
-ax2.scatter(x[thin], y2[thin], s=80, c=rc['FE_H'][thin], cmap=cm.viridis_r, vmin=-.5, vmax=.35, edgecolor='black')
-ax2.scatter(x[thick], y2[thick], s=80, c=rc['FE_H'][thick], cmap=cm.viridis_r, vmin=-.5, vmax=.35, edgecolor='black', linewidth=1)
+ax2.scatter(x[thin], y2[thin], s=40, c=rc['FE_H'][thin], cmap=cm.viridis_r, vmin=-.5, vmax=.35, edgecolor='black')
+ax2.scatter(x[thick], y2[thick], s=40, c=rc['FE_H'][thick], cmap=cm.viridis_r, vmin=-.5, vmax=.35, edgecolor='black', linewidth=1)
 #ax2.errorbar(x[thin], y2[thin], xerr=rc['TEFF_ERR'][thin], yerr=(rc['nuv_magerr']-rc['Gerr'])[thin], ecolor='black', fmt='none', marker='none', mew=0, elinewidth=1.3, **{"zorder":0})
-ax2.errorbar(x[thin], y2[thin], xerr=rc['TEFF_ERR'][thin], ecolor='gray', fmt='none', marker='none', mew=0, elinewidth=1.3, **{"zorder":0})
+ax2.errorbar(x, y2, xerr=rc['TEFF_ERR'], yerr=nuvgerr, ecolor='gray', fmt='none', marker='none', mew=0, elinewidth=1.3, **{"zorder":0})
 
 ax2.plot(x, line2, linewidth=3, c='red', zorder=10)
 
 #ax1.set_xlabel('T$_{eff}$')
 ax1.set_ylabel('(G$_{BP}$ - G$_{RP}$)$_0$')
-ax2.set_xlabel('T$_{eff}$')
+ax2.set_xlabel('T$_{eff}$ [K]')
 ax2.set_ylabel('(NUV - G)$_0$')
 #ax1.set_xlim((4300, 5200))
 #ax2.set_xlim((4300, 5200))
@@ -591,16 +595,17 @@ ax2.set_ylabel('(NUV - G)$_0$')
 fig.subplots_adjust(right=.84)
 fig.subplots_adjust(hspace=0)
 ax1.set_xticklabels([])
-'''
-leg = ax1.legend(scatterpoints=1)
-leg.legendHandles[0].set_color('black')
-leg.legendHandles[1].set_color('black')
-leg.legendHandles[0]._sizes = [150]
-leg.legendHandles[1]._sizes = [150]
-'''
+
+ax1.annotate('(G$_{BP}$ - G$_{RP}$)$_0$ = -0.0004 * T$_{eff}$ + 3.0', xy=(5078, 0.55), color='black', size=13)
+ax1.annotate('$\sigma$ = '+str(round(err1, 3)), xy=(5253, 0.62), color='black', size=13)
+
+ax2.annotate('(NUV - G)$_0$ = -0.005 * T$_{eff}$ + 30.8', xy=(5078, 3.2), color='black', size=13)
+ax2.annotate('$\sigma$ = '+str(round(err2, 3)), xy=(5253, 3.5), color='black', size=13)
+
+
 cbar_ax = fig.add_axes([0.85, 0.1, 0.03, 0.8])
 plt.colorbar(cmap, cax=cbar_ax).set_label('[Fe/H]')
-plt.suptitle('GALEX Plane + Ting+18')
+#plt.suptitle('GALEX Plane + Ting+18')
 plt.show()
 
 
@@ -613,11 +618,21 @@ rc = rc[q]
 
 m = (0.265-0.065)/(-0.88-0.02)
 b = 0.0694
-thick,= np.where((rc['ALPHAFE'] > 0.08) & (rc['ALPHAFE'] > (m*rc['FE_H'] + b)))
-thin,= np.where((rc['ALPHAFE'] < 0.08) | (rc['ALPHAFE'] < (m*rc['FE_H'] + b)))
-nuvg = ((rc['nuv_mag']-rc['ebv']*7.24)-(rc['phot_g_mean_mag']-rc['ebv']*3.303))
 
-extrathick, = np.where((rc['FE_H'] > 0.02) & (rc['ALPHAFE'] > 0.065))
+rc1 = rc[np.where(rc['FE_H'] < 0.02)]
+rc2 = rc[np.where(rc['FE_H'] > 0.02)]
+
+
+thick1,= np.where((rc1['ALPHAFE'] > 0.08) & (rc1['ALPHAFE'] > (m*rc1['FE_H'] + b)))
+thin1,= np.where((rc1['ALPHAFE'] < 0.08) | (rc1['ALPHAFE'] < (m*rc1['FE_H'] + b)))
+nuvg1 = ((rc1['nuv_mag']-rc1['ebv']*7.24)-(rc1['phot_g_mean_mag']-rc1['ebv']*3.303))
+
+thick2,= np.where(rc2['ALPHAFE'] > 0.065)
+thin2,= np.where(rc2['ALPHAFE'] < 0.065)
+nuvg2 = ((rc2['nuv_mag']-rc2['ebv']*7.24)-(rc2['phot_g_mean_mag']-rc2['ebv']*3.303))
+
+
+#extrathick, = np.where((rc['FE_H'] > 0.02) & (rc['ALPHAFE'] > 0.065))
 
 #afe_apo = np.where(rc['ALPHA_M'] > 0)
 #rc['ALPHAFE'][afe_apo] = (rc['ALPHA_M'] + rc['M_H'] - rc['FE_H'])[afe_apo]
@@ -626,20 +641,21 @@ extrathick, = np.where((rc['FE_H'] > 0.02) & (rc['ALPHAFE'] > 0.065))
 # for now use this. err is only for apo
 #afeerr = (alphafe * np.sqrt((rc['ALPHA_M_ERR']/rc['ALPHA_M'])**2 + (rc['M_H_ERR']/rc['M_H'])**2 + (rc['FE_H_ERR']/rc['FE_H'])**2))
 
-plt.scatter(rc['FE_H'][thin], rc['ALPHAFE'][thin], s=20, edgecolor='none', c=nuvg[thin], label='Thin disk', vmin=7, vmax=11, marker='D', cmap=cm.jet)
+plt.scatter(rc1['FE_H'][thin1], rc1['ALPHAFE'][thin1], s=20, edgecolor='none', c=nuvg1[thin1], label='Thin disk', vmin=7, vmax=11, marker='D', cmap=cm.jet)
 
-plt.scatter(rc['FE_H'][thick], rc['ALPHAFE'][thick], c=nuvg[thick], s=20, marker='s', label='Thick disk', vmin=7, vmax=11, linewidth=1, cmap=cm.jet)
+plt.scatter(rc1['FE_H'][thick1], rc1['ALPHAFE'][thick1], c=nuvg1[thick1], s=20, marker='s', label='Thick disk', vmin=7, vmax=11, linewidth=1, cmap=cm.jet)
+
+plt.scatter(rc2['FE_H'][thin2], rc2['ALPHAFE'][thin2], s=20, edgecolor='none', c=nuvg2[thin2], vmin=7, vmax=11, marker='D', cmap=cm.jet)
+
+plt.scatter(rc2['FE_H'][thick2], rc2['ALPHAFE'][thick2], c=nuvg2[thick2], s=20, marker='s', vmin=7, vmax=11, linewidth=1, cmap=cm.jet)
 
 #plt.errorbar(rc['FE_H'], rc['ALPHAFE'], xerr=(rc['FE_H_err']), yerr=rc['ALPHAFE_ERR'], ecolor='black', fmt=None, marker=None, mew=0, elinewidth=1.3, **{"zorder":0})
-plt.errorbar(rc['Fe_H'], rc['ALPHAFE'], xerr=(rc['FE_H_err']), ecolor='black', fmt='none', marker='none', mew=0, elinewidth=1.3, **{"zorder":0})
+plt.errorbar(rc['Fe_H'], rc['ALPHAFE'], xerr=rc['FE_H_err'], ecolor='black', fmt='none', marker='none', mew=0, elinewidth=1.3, **{"zorder":0})
 
 xpfeh = np.linspace(-1, 0.02, 50)
 plt.plot(xpfeh, xpfeh*m + b, c='black', linewidth=3)
 plt.axhline(y=0.065, xmin=0.68, xmax=0.94, c='black', linewidth=3)
 
-#plt.scatter(rc['FE_H'][thin], rc['ALPHAFE'][thin], s=20, edgecolor='none', label='Thin disk', vmin=7, vmax=11, marker='D')
-
-#plt.scatter(rc['FE_H'][thick], rc['ALPHAFE'][thick], s=20, marker='s', label='Thick disk', vmin=7, vmax=11, linewidth=1)
 
 
 plt.xlabel('[Fe/H]')
@@ -652,7 +668,6 @@ leg.legendHandles[0].set_color('black')
 leg.legendHandles[1].set_color('black')
 leg.legendHandles[0]._sizes = [150]
 leg.legendHandles[1]._sizes = [150]
-plt.title('GALEX Plane + Ting+18')
 plt.show()
 
 #################################################
@@ -773,28 +788,195 @@ fig.subplots_adjust(right=.84)
 cbar_ax = fig.add_axes([0.85, 0.1, 0.03, 0.8])
 
 ax1.annotate('[Fe/H] = 0.25 * (NUV-G) - 2.22', xy=(7.7, -1.05), color='black', size=13)
+ax1.annotate('$\sigma$ = '+str(round(a1err, 3)), xy=(9.67, -0.92), color='black', size=13)
+
 ax2.annotate('[Fe/H] = 0.26 * (NUV-G)$_0$ - 2.20', xy=(7.7, -1.05), color='black', size=13)
+ax2.annotate('$\sigma$ = '+str(round(b1err, 3)), xy=(9.67, -0.92), color='black', size=13)
 
 ax3.annotate('[Fe/H] = 0.21 * (NUV-G) - 1.81', xy=(7.7, -1.05), color='black', size=13)
+ax3.annotate('$\sigma$ = '+str(round(athinerr, 3)), xy=(9.67, -0.92), color='black', size=13)
+#ax3.annotate('$\sigma$ = 0.03', xy=(9.67, -0.92), color='black', size=13)
+
 ax4.annotate('[Fe/H] = 0.22 * (NUV-G)$_0$ - 1.81', xy=(7.7, -1.05), color='black', size=13)
+ax4.annotate('$\sigma$ = '+str(round(bthinerr, 3)), xy=(9.67, -0.92), color='black', size=13)
 
 ax5.annotate('[Fe/H] = 0.27 * (NUV-G) - 2.53', xy=(7.7, -1.05), color='black', size=13)
+ax5.annotate('$\sigma$ = '+str(round(athickerr, 3)), xy=(9.67, -0.92), color='black', size=13)
+
 ax6.annotate('[Fe/H] = 0.29 * (NUV-G)$_0$ - 2.63', xy=(7.7, -1.05), color='black', size=13)
+ax6.annotate('$\sigma$ = '+str(round(bthickerr, 3)), xy=(9.67, -0.92), color='black', size=13)
 
 ax1.annotate('Full sample', xy=(5.2, 0.4), size=13)
 ax3.annotate('Thin disk', xy=(5.2, 0.4), size=13)
 ax5.annotate('Thick disk', xy=(5.2, 0.4), size=13)
 
-
-#ax1.annotate('[Fe/H] = 0.27 * (NUV-G) - 2.37 ', xy=(2, 0.6), color='black', size=15)
-#ax2.annotate('[Fe/H] = 0.26 * (NUV-G)$_0$ - 2.29', xy=(1.3, 0.69), color='red', size=15)thi
-#ax2.annotate('[Fe/H] = 0.27 * (NUV-G)$_0$ - 2.38', xy=(1.3, 0.6), color='black', size=15)
-#ax1.annotate('$\sigma$ = 0.023', xy=(2, 0.53), color='red', size=15) # a1
-#ax1.annotate('$\sigma$ = 0.022', xy=(2, 0.45), color='black', size=15) # a2
-#ax2.annotate('$\sigma$ = 0.023', xy=(1.3, 0.53), color='red', size=15) # b1
-#ax2.annotate('$\sigma$ = 0.023', xy=(1.3, 0.45), color='black', size=15) # b2
 fig.subplots_adjust(hspace=0, wspace=0)
 fig.colorbar(cmap, cax=cbar_ax).set_label(r'[$\alpha$/Fe]', fontsize=14)
+plt.show()
+
+######################################################################
+# FeH vs NUVG vs Alphafe but include alphafe in stats
+######################################################################
+from scipy.optimize import curve_fit
+rc = fits.open('asc_gaia_aporc_match_dust-05-03-18.fits')[1].data
+
+m = (0.265-0.065)/(-0.88-0.02)
+b = 0.0694
+thick,= np.where((rc['ALPHAFE'] > 0.08) & (rc['ALPHAFE'] > (m*rc['FE_H'] + b)))
+thin,= np.where((rc['ALPHAFE'] < 0.08) | (rc['ALPHAFE'] < (m*rc['FE_H'] + b)))
+
+
+nuvg = (rc['nuv_mag']-rc['ebv']*7.24)-(rc['phot_g_mean_mag']-rc['ebv']*2.85)
+alphafe = rc['ALPHAFE']
+
+x = [nuvg, alphafe]
+xthin = [nuvg[thin], alphafe[thin]]
+xthick = [nuvg[thick], alphafe[thick]]
+feh = rc['FE_H']
+
+def f(x, a, b, c):
+    return a*x[0] + b*x[1] + c
+
+
+popt, pcov = curve_fit(f, x, feh)
+poptthin, pcovthin = curve_fit(f, xthin, feh[thin])
+poptthick, pcovthick = curve_fit(f, xthick, feh[thick])
+
+err = np.sum(np.sqrt(np.diag(pcov)))
+errthin = np.sum(np.sqrt(np.diag(pcovthin)))
+errthick = np.sum(np.sqrt(np.diag(pcovthick)))
+
+
+xp = np.linspace(6, 10.5, 50)
+nuvgerr = np.sqrt(rc['nuv_magerr']**2+rc['Gerr']**2)
+
+
+
+fig, axes = plt.subplots(3, 1, sharex=True, sharey=True)
+
+# Thick disk
+axes[0].scatter(nuvg[thick], feh[thick], c=alphafe[thick], s=10, vmin=-0.05, vmax=0.3, marker='s', edgecolor='black', cmap=cm.plasma_r, **{"zorder":5})
+axes[0].errorbar(nuvg[thick], feh[thick], xerr=nuvgerr[thick], yerr=rc['FE_H_ERR'][thick], ecolor='gray', fmt='None', marker='None', mew=0, elinewidth=1.3, **{"zorder":0})
+axes[0].plot(xp, pthick(xp), linewidth=4, c='red', zorder=10)
+
+# Thin disk
+axes[1].scatter(nuvg[thin], feh[thin], c=alphafe[thin], s=10, vmin=-0.05, vmax=0.3, marker='D', edgecolor='black', cmap=cm.plasma_r, **{"zorder":5})
+axes[1].errorbar(nuvg[thin], feh[thin], xerr=nuvgerr[thin], yerr=rc['FE_H_ERR'][thin], ecolor='gray', fmt='None', marker='None', mew=0, elinewidth=1.3, **{"zorder":0})
+axes[1].plot(xp, pthin(xp), linewidth=4, c='red', zorder=10)
+
+# All
+cmap = axes[2].scatter(nuvg, feh, c=alphafe, s=10, vmin=-0.05, vmax=0.3, marker='D', edgecolor='black', cmap=cm.plasma_r, **{"zorder":5})
+axes[2].errorbar(nuvg, feh, xerr=nuvgerr, yerr=rc['FE_H_ERR'], ecolor='gray', fmt='None', marker='None', mew=0, elinewidth=1.3, **{"zorder":0})
+axes[2].plot(xp, p(xp), linewidth=4, c='red', zorder=10)
+
+axes[0].set_ylabel('[Fe/H]', fontsize=14)
+axes[1].set_ylabel('[Fe/H]', fontsize=14)
+axes[2].set_xlabel('(NUV - G)$_{0}$', fontsize=14)
+axes[2].set_ylabel('[Fe/H]', fontsize=14)
+
+#axes[2].set_xlim(5.19, 11)
+#axes[2].set_ylim(-1.1,0.55)
+fig.subplots_adjust(wspace=0)
+fig.subplots_adjust(right=.84)
+cbar_ax = fig.add_axes([0.85, 0.1, 0.03, 0.8])
+
+axes[0].annotate('[Fe/H] = 0.16 * (NUV - G)$_{0}$ - 2.04 * r[$\alpha$/Fe] - 1.14', xy=(4400, -1.05), color='black', size=13)
+axes[0].annotate('$\sigma$ = '+str(round(thickerr, 3)), xy=(4400, -0.92), color='black', size=13)
+
+axes[1].annotate('[Fe/H] = 0.16 * (NUV - G)$_{0}$ - 2.71 * r[$\alpha$/Fe] - 1.27', xy=(4400, -1.05), color='black', size=13)
+axes[1].annotate('$\sigma$ = '+str(round(thinerr, 3)), xy=(4400, -0.92), color='black', size=13)
+
+axes[2].annotate('[Fe/H] = 0.18 * (NUV - G)$_{0}$ - 1.52 * r[$\alpha$/Fe] - 1.47', xy=(4400, -1.05), color='black', size=13)
+axes[2].annotate('$\sigma$ = '+str(round(err, 3)), xy=(4400, -0.92), color='black', size=13)
+
+axes[0].annotate('Thick disk', xy=(5150, 0.4), size=13)
+axes[1].annotate('Thin disk', xy=(5150, 0.4), size=13)
+axes[2].annotate('Full sample', xy=(5150, 0.4), size=13)
+
+fig.subplots_adjust(hspace=0, wspace=0)
+fig.colorbar(cmap, cax=cbar_ax).set_label(r'[$\alpha$/Fe]', fontsize=14)
+plt.show()
+
+
+
+
+######################################################################
+# FeH as a function of Teff with NUVG colorbar
+######################################################################
+rc = fits.open('asc_gaia_aporc_match_dust-05-03-18.fits')[1].data
+q = np.where((rc['ebv'] > 0) & (rc['Fe_H_err'] > 0) & (rc['phot_bp_mean_mag'] > 0) & (rc['phot_rp_mean_mag'] > 0) & (rc['Classification'] == 'RC_Pristine') & (rc['dist'] < 3500) & (rc['visibility_periods_used'] > 8) & (rc['parallax_error']/rc['parallax'] < 0.1))
+rc = rc[q]
+
+m = (0.265-0.065)/(-0.88-0.02)
+b = 0.0694
+thick,= np.where((rc['ALPHAFE'] > 0.08) & (rc['ALPHAFE'] > (m*rc['FE_H'] + b)))
+thin,= np.where((rc['ALPHAFE'] < 0.08) | (rc['ALPHAFE'] < (m*rc['FE_H'] + b)))
+
+thickfit = rc[thick]
+thinfit = rc[thin]
+
+x = rc['TEFF']
+y = rc['FE_H']
+
+z, v = np.polyfit(x, y, 1, cov=True)
+p = np.poly1d(z)
+err = np.sum(np.sqrt(np.diag(v)))
+
+zthin, vthin = np.polyfit(x[thin], y[thin], 1, cov=True)
+pthin = np.poly1d(zthin)
+thinerr = np.sum(np.sqrt(np.diag(vthin)))
+
+zthick, vthick = np.polyfit(x[thick], y[thick], 1, cov=True)
+pthick = np.poly1d(zthick)
+thickerr = np.sum(np.sqrt(np.diag(vthick)))
+
+xp = np.linspace(4500, 5200, 50)
+nuvg = (rc['nuv_mag']-rc['ebv']*7.24)-(rc['phot_g_mean_mag']-rc['ebv']*2.85)
+
+
+fig, axes = plt.subplots(3, 1, sharex=True, sharey=True)
+
+# Thick disk
+axes[0].scatter(x[thick], y[thick], c=nuvg[thick], s=10, vmin=7, vmax=11, marker='s', edgecolor='black', cmap=cm.plasma_r, **{"zorder":5})
+axes[0].errorbar(x[thick], y[thick], xerr=rc['TEFF_ERR'][thick], yerr=rc['FE_H_ERR'][thick], ecolor='gray', fmt='None', marker='None', mew=0, elinewidth=1.3, **{"zorder":0})
+axes[0].plot(xp, pthick(xp), linewidth=4, c='red', zorder=10)
+
+# Thin disk
+axes[1].scatter(x[thin], y[thin], c=nuvg[thin], s=10, vmin=7, vmax=11, marker='D', edgecolor='black', cmap=cm.plasma_r, **{"zorder":5})
+axes[1].errorbar(x[thin], y[thin], xerr=rc['TEFF_ERR'][thin], yerr=rc['FE_H_ERR'][thin], ecolor='gray', fmt='None', marker='None', mew=0, elinewidth=1.3, **{"zorder":0})
+axes[1].plot(xp, pthin(xp), linewidth=4, c='red', zorder=10)
+
+# All
+cmap = axes[2].scatter(x, y, c=nuvg, s=10, vmin=7, vmax=11, marker='D', edgecolor='black', cmap=cm.plasma_r, **{"zorder":5})
+axes[2].errorbar(x, y, xerr=rc['TEFF_ERR'], yerr=rc['FE_H_ERR'], ecolor='gray', fmt='None', marker='None', mew=0, elinewidth=1.3, **{"zorder":0})
+axes[2].plot(xp, p(xp), linewidth=4, c='red', zorder=10)
+
+axes[0].set_ylabel('[Fe/H]', fontsize=14)
+axes[1].set_ylabel('[Fe/H]', fontsize=14)
+axes[2].set_xlabel('T$_{eff}$', fontsize=14)
+axes[2].set_ylabel('[Fe/H]', fontsize=14)
+
+axes[0].set_xlim(4400, 5300)
+axes[0].set_ylim(-1.1, 0.55)
+fig.subplots_adjust(wspace=0)
+fig.subplots_adjust(right=.84)
+cbar_ax = fig.add_axes([0.85, 0.1, 0.03, 0.8])
+
+axes[0].annotate('[Fe/H] = -1.59 * 10$^{-3}$ * T$_{eff}$ + 7.34', xy=(4400, -1.05), color='black', size=13)
+axes[0].annotate('$\sigma$ = '+str(round(thickerr, 3)), xy=(4400, -0.92), color='black', size=13)
+
+axes[1].annotate('[Fe/H] = -1.16 * 10$^{-3}$ * T$_{eff}$ + 5.51', xy=(4400, -1.05), color='black', size=13)
+axes[1].annotate('$\sigma$ = '+str(round(thinerr, 3)), xy=(4400, -0.92), color='black', size=13)
+
+axes[2].annotate('[Fe/H] = -1.26 * 10$^{-3}$ * T$_{eff}$ + 5.94', xy=(4400, -1.05), color='black', size=13)
+axes[2].annotate('$\sigma$ = '+str(round(err, 3)), xy=(4400, -0.92), color='black', size=13)
+
+axes[0].annotate('Thick disk', xy=(5150, 0.4), size=13)
+axes[1].annotate('Thin disk', xy=(5150, 0.4), size=13)
+axes[2].annotate('Full sample', xy=(5150, 0.4), size=13)
+
+fig.subplots_adjust(hspace=0, wspace=0)
+fig.colorbar(cmap, cax=cbar_ax).set_label('NUV - G', fontsize=14)
 plt.show()
 
 
@@ -998,7 +1180,7 @@ rccut
   
 asc = fits.open('galex-asc-gaia-match_smaller.fits',memmap=True)[1].data
 pc = 1000./asc['parallax']
-negpar = np.where((pc > 0) & (asc['visibility_periods_used'] > 8) & (asc['parallax_error']/asc['parallax'] < 0.1) & (pc < 3500) & (asc['phot_bp_mean_mag'] > 0) & (asc['phot_rp_mean_mag'] > 0))
+negpar = np.where((pc > 0) & (asc['visibility_periods_used'] > 8) & (asc['parallax_error']/asc['parallax'] < 0.1)& (asc['phot_bp_mean_mag'] > 0) & (asc['phot_rp_mean_mag'] > 0))
 pc = pc[negpar]
 nuv = asc['mag_nuv']
 nuv = nuv[negpar]
