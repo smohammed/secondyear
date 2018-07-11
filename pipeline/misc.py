@@ -837,7 +837,6 @@ feh = rc['FE_H']
 def f(x, a, b, c):
     return a*x[0] + b*x[1] + c
 
-
 popt, pcov = curve_fit(f, x, feh)
 poptthin, pcovthin = curve_fit(f, xthin, feh[thin])
 poptthick, pcovthick = curve_fit(f, xthick, feh[thick])
@@ -1173,26 +1172,6 @@ for scan in scans:
 	ascii.write(cat, 'starcat_'+scan+'_03_26_2018.txt', format='basic')
 
 
-rccut
-6 < nuvg < 11.5, 0.9 > MG > -0.1
-
-
-  
-asc = fits.open('galex-asc-gaia-match_smaller.fits',memmap=True)[1].data
-pc = 1000./asc['parallax']
-negpar = np.where((pc > 0) & (asc['visibility_periods_used'] > 8) & (asc['parallax_error']/asc['parallax'] < 0.1)& (asc['phot_bp_mean_mag'] > 0) & (asc['phot_rp_mean_mag'] > 0))
-pc = pc[negpar]
-nuv = asc['mag_nuv']
-nuv = nuv[negpar]
-g = asc['phot_g_mean_mag']
-g = g[negpar]
-bp = asc['phot_bp_mean_mag']
-bp = bp[negpar]
-rp = asc['phot_rp_mean_mag']
-distmod = 5. * np.log10(pc) - 5
-
-
-
 
 thin = rc[thin]
 thick = rc[thick]
@@ -1247,22 +1226,72 @@ plt.show()
 
 
 
+rccut
+6 < nuvg < 11.5, 0.9 > MG > -0.1
 
 
 gg = fits.open('galex-asc-gaia-match_smaller.fits', memmap=True)[1].data
 pc = 1000./gg['parallax']
 negpar = np.where((pc > 0) & (gg['visibility_periods_used'] > 8) & (gg['parallax_error']/gg['parallax'] < 0.1) & (gg['phot_bp_mean_mag'] > 0) & (gg['phot_rp_mean_mag'] > 0)) 
+ra = gg['gaia_ra']
+dec = gg['gaia_dec']
 nuv = gg['mag_nuv']
-g = gg['phot_g_mean_mag']
+G = gg['phot_g_mean_mag']
 bp = gg['phot_bp_mean_mag']
 rp = gg['phot_rp_mean_mag']
 
+ra = ra[negpar]
+dec = dec[negpar]
 pc = pc[negpar]
 nuv = nuv[negpar]
-g = g[negpar]
+G = G[negpar]
 bp = bp[negpar]
 rp = rp[negpar]
 distmod = 5. * np.log10(pc) - 5.
+MG = G - distmod
+nuvg = nuv - G
+
+rccut = np.where((MG < 0.9) & (MG > -0.1) & (nuvg < 11.5) & (nuvg > 6))
+ra = ra[rccut]
+dec = dec[rccut]
+pc = pc[rccut]
+nuv = nuv[rccut]
+G = G[rccut]
+bp = bp[rccut]
+rp = rp[rccut]
+distmod = distmod[rccut]
+MG = G - distmod
+nuvg = nuv - G
+
+table = Table([ra, dec, nuv, G, bp, rp, distmod, MG, pc, nuvg], names=['ra', 'dec', 'nuv', 'G', 'bp', 'rp', 'distmod', 'MG', 'pc', 'nuvg'])
+ascii.write(table, 'gais_rcbox_testset.txt', format='basic')
+
+from dustmaps.bayestar import BayestarQuery
+coords = SkyCoord(ra*u.deg, dec*u.deg, distance=pc*u.pc, frame='icrs')
+bayestar = BayestarQuery()
+ebv = bayestar(coords, mode='median')
+table['ebv'] = ebv
+ascii.write(table, 'gais_rcbox_testset.txt', format='basic')
+
+#then combine with apo, then get alphafe
+table['ALPHAFE'] = table['ALPHA_M'] + table['M_H'] - table['FE_H']
+
+plt.scatter(nuvg, comb['FE_H'], c=alphafe, s=1, vmin=-0.5, vmax=0.3, label='Test set')
+plt.plot(xp, 0.26*xp - 2.2, label='Training set fit')
+plt.plot(xp, p[0]*xp + p[1], label='Test set fit')
+plt.xlabel('(NUV - G)$_0$')
+plt.ylabel('[Fe/H]')
+plt.xlim(6,11)
+plt.ylim(-1, 0.5)
+plt.legend(scatterpoints=1, loc=4)
+plt.colorbar().set_label(r'[$\alpha$/Fe]')
+plt.show()
+
+
+
+
+
+
 
 cg = fits.open('galex_gaiadr2_comb_05_10_18.fits')[1].data
 
@@ -1309,3 +1338,92 @@ axes[1, 1].set_ylim((14, -3.5))
 fig.subplots_adjust(hspace=0)
 fig.subplots_adjust(wspace=0)
 plt.show()
+
+
+
+#####################################################################
+# Fe/H comparisons
+#####################################################################
+def f1(x, a, b):
+    return a*x[0] + b
+popt1, pcov1 = curve_fit(f1, x, feh)
+err1 = np.sum(np.sqrt(np.diag(pcov1)))
+fehp1 = f1(x, popt1[0], popt1[1])
+
+
+def f2(x, a, b, c):
+    return a*x[0] + b*x[0]**2 + c
+popt2, pcov2 = curve_fit(f2, x, feh)
+err2 = np.sum(np.sqrt(np.diag(pcov2)))
+fehp2 = f2(x, popt2[0], popt2[1], popt2[2])
+
+
+def f3(x, a, b, c):
+    return a*x[0] + b*x[1] + c
+popt3, pcov3 = curve_fit(f3, x, feh)
+err3 = np.sum(np.sqrt(np.diag(pcov3)))
+fehp3 = f3(x, popt3[0], popt3[1], popt3[2])
+
+
+def f4(x, a, b, c, d):
+    return a*x[0] + b*x[1] + c*x[0]**2 + d
+popt4, pcov4 = curve_fit(f4, x, feh)
+err4 = np.sum(np.sqrt(np.diag(pcov4)))
+fehp4 = f4(x, popt4[0], popt4[1], popt4[2], popt4[3])
+
+
+def f5(x, a, b, c, d):
+    return a*x[0] + b*x[1] + c*x[1]**2 + d
+popt5, pcov5 = curve_fit(f5, x, feh)
+err5 = np.sum(np.sqrt(np.diag(pcov5)))
+fehp5 = f5(x, popt5[0], popt5[1], popt5[2], popt5[3])
+
+
+def f6(x, a, b, c, d, e):
+    return a*x[0] + b*x[1] + c*x[0]**2 + d*x[1]**2 + e
+popt6, pcov6 = curve_fit(f6, x, feh)
+err6 = np.sum(np.sqrt(np.diag(pcov6)))
+fehp6 = f6(x, popt6[0], popt6[1], popt6[2], popt6[3], popt6[4])
+
+
+
+fig, axes = plt.subplots(3, 2, sharex=True, sharey=True)
+cmap = axes[0, 0].scatter(feh, feh-fehp1, s=1, c=nuvg, vmin=7, vmax=11)
+axes[0, 0].axhline(y=0, c='black')
+axes[0, 0].annotate('[Fe/H]$_{phot}$ = '+str(round(popt1[0], 2))+'*nuvg + '+str(round(popt1[1], 2))+', $\sigma$='+str(round(err1, 3)), xy=(-1.2, -0.7), color='black', size=10)
+axes[0, 0].set_xlim(-1.2, 0.6)
+axes[0, 0].set_ylim(-0.75, 0.75)
+
+axes[0, 1].scatter(feh, feh-fehp2, s=1, c=nuvg, vmin=7, vmax=11)
+axes[0, 1].axhline(y=0, color='black')
+axes[0, 1].annotate('[Fe/H]$_{phot}$ = '+str(round(popt2[0], 2))+'*nuvg + '+str(round(popt2[1], 2))+'*nuvg$^2$ + '+str(round(popt2[2], 2))+', $\sigma$='+str(round(err2, 3)), xy=(-1.2, -0.7), color='black', size=10)
+
+axes[1, 0].scatter(feh, feh-fehp3, s=1, c=nuvg, vmin=7, vmax=11)
+axes[1, 0].axhline(y=0, color='black')
+axes[1, 0].annotate('[Fe/H]$_{phot}$ = '+str(round(popt3[0], 2))+'*nuvg + '+str(round(popt3[1], 2))+'*alphafe + '+str(round(popt3[2], 2))+', $\sigma$='+str(round(err3, 3)), xy=(-1.2, -0.7), color='black', size=10)
+axes[1, 0].set_ylabel('$\Delta$ [Fe/H]')
+
+axes[1, 1].scatter(feh, feh-fehp4, s=1, c=nuvg, vmin=7, vmax=11)
+axes[1, 1].axhline(y=0, color='black')
+axes[1, 1].annotate('[Fe/H]$_{phot}$ = '+str(round(popt4[0], 2))+'*nuvg + '+str(round(popt4[1], 2))+'*alphafe + '+str(round(popt4[2], 2))+'*nuvg$^2$ + '+str(round(popt4[3], 2))+', $\sigma$='+str(round(err4, 3)), xy=(-1.2, -0.7), color='black', size=10)
+
+
+axes[2, 0].scatter(feh, feh-fehp5, s=1, c=nuvg, vmin=7, vmax=11)
+axes[2, 0].axhline(y=0, color='black')
+axes[2, 0].annotate('[Fe/H]$_{phot}$ = '+str(round(popt5[0], 2))+'*nuvg + '+str(round(popt5[1], 2))+'*alphafe + '+str(round(popt5[2], 2))+'*alphafe$^2$ + '+str(round(popt5[3], 2))+', $\sigma$='+str(round(err5, 3)), xy=(-1.2, -0.7), color='black', size=10)
+axes[2, 0].set_xlabel('Spec [Fe/H]')
+
+axes[2, 1].scatter(feh, feh-fehp6, s=1, c=nuvg, vmin=7, vmax=11)
+axes[2, 1].axhline(y=0, color='black')
+axes[2, 1].annotate('[Fe/H]$_{phot}$ = '+str(round(popt6[0], 2))+'*nuvg + '+str(round(popt6[1], 2))+'*alphafe + '+str(round(popt6[2], 2))+'*nuvg$^2$ + '+str(round(popt6[3], 2))+'*alphafe$^2$ + '+str(round(popt6[4], 2))+', $\sigma$='+str(round(err6, 3)), xy=(-1.2, -0.7), color='black', size=10)
+axes[2, 1].set_xlabel('Spec [Fe/H]')
+
+fig.subplots_adjust(hspace=0, wspace=0)
+fig.subplots_adjust(wspace=0)
+fig.subplots_adjust(right=.84)
+cbar_ax = fig.add_axes([0.85, 0.1, 0.03, 0.8])
+fig.colorbar(cmap, cax=cbar_ax).set_label('NUV - G', fontsize=15)
+fig.suptitle('Thick only')
+
+plt.show()
+
