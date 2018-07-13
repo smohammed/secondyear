@@ -1349,13 +1349,14 @@ def f1(x, a, b):
 popt1, pcov1 = curve_fit(f1, x, feh)
 err1 = np.sum(np.sqrt(np.diag(pcov1)))
 fehp1 = f1(x, popt1[0], popt1[1])
-
+sig1 = np.sqrt(np.sum((f1(x, popt1[0], popt1[1])-feh)**2)/len(rc))
 
 def f2(x, a, b, c):
     return a*x[0] + b*x[0]**2 + c
 popt2, pcov2 = curve_fit(f2, x, feh)
 err2 = np.sum(np.sqrt(np.diag(pcov2)))
 fehp2 = f2(x, popt2[0], popt2[1], popt2[2])
+sig2 = np.sqrt(np.sum((fehp2-feh)**2)/len(rc))
 
 
 def f3(x, a, b, c):
@@ -1363,6 +1364,7 @@ def f3(x, a, b, c):
 popt3, pcov3 = curve_fit(f3, x, feh)
 err3 = np.sum(np.sqrt(np.diag(pcov3)))
 fehp3 = f3(x, popt3[0], popt3[1], popt3[2])
+sig3 = np.sqrt(np.sum((fehp3-feh)**2)/len(rc))
 
 
 def f4(x, a, b, c, d):
@@ -1370,6 +1372,7 @@ def f4(x, a, b, c, d):
 popt4, pcov4 = curve_fit(f4, x, feh)
 err4 = np.sum(np.sqrt(np.diag(pcov4)))
 fehp4 = f4(x, popt4[0], popt4[1], popt4[2], popt4[3])
+sig4 = np.sqrt(np.sum((fehp4-feh)**2)/len(rc))
 
 
 def f5(x, a, b, c, d):
@@ -1377,6 +1380,7 @@ def f5(x, a, b, c, d):
 popt5, pcov5 = curve_fit(f5, x, feh)
 err5 = np.sum(np.sqrt(np.diag(pcov5)))
 fehp5 = f5(x, popt5[0], popt5[1], popt5[2], popt5[3])
+sig5 = np.sqrt(np.sum((fehp5-feh)**2)/len(rc))
 
 
 def f6(x, a, b, c, d, e):
@@ -1384,6 +1388,7 @@ def f6(x, a, b, c, d, e):
 popt6, pcov6 = curve_fit(f6, x, feh)
 err6 = np.sum(np.sqrt(np.diag(pcov6)))
 fehp6 = f6(x, popt6[0], popt6[1], popt6[2], popt6[3], popt6[4])
+sig6 = np.sqrt(np.sum((fehp6-feh)**2)/len(rc))
 
 
 
