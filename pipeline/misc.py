@@ -631,5 +631,83 @@ fig.subplots_adjust(hspace=0)
 fig.subplots_adjust(wspace=0)
 plt.show()
 
+#############################################################
+# dx dy histogram by magnitude
+#############################################################
+cg = fits.open('plane_gaiadr2_comb_05_10_18.fits')[1].data
 
+dx = (cg['l']-cg['gl'])*3600
+dy = (cg['b']-cg['gb'])*3600
+
+for mag in range(12, 21,2):
+    cut = np.where((cg['nuv'] > mag) & (cg['nuv'] < mag+2))
+    dxmag = dx[cut]
+    dymag = dy[cut]
+    plt.hist(np.sqrt(dxmag**2+dymag**2), histtype='step', fill=False, stacked=True, label=str(mag)+'-'+str(mag+2), range=[0,3], bins=10)
+
+plt.legend(scatterpoints=1, loc=1)
+plt.xlabel('Radius (Gaia DR2 - plane)')
+plt.show()
+
+
+#############################################################
+# 
+#############################################################
+g = fits.open('gr67tile_table.fits')[1].data
+ra = np.array(g['ra_cent'], dtype=np.float32)
+dec = np.array(g['dec_cent'], dtype=np.float32)
+gal = SkyCoord(ra*u.deg, dec*u.deg, frame='icrs')
+gl = gal.galactic.l.degree
+gb = gal.galactic.b.degree
+q = np.where((gb > -10) & (gb < 10))
+g = g[q]
+
+ra = np.array(g['ra_cent'], dtype=np.float32)
+dec = np.array(g['dec_cent'], dtype=np.float32)
+gal = SkyCoord(ra*u.deg, dec*u.deg, frame='icrs')
+gl = gal.galactic.l.degree
+gb = gal.galactic.b.degree
+
+gl1 = gl[np.where((gl > 0.) & (gl < 90.))]
+gl2 = gl[np.where((gl > 90.) & (gl < 180.))]
+gl3 = gl[np.where((gl > 180.) & (gl < 270.))]
+gl4 = gl[np.where((gl > 270.) & (gl < 360.))]
+
+gb1 = gb[np.where((gl > 0.) & (gl < 90.))]
+gb2 = gb[np.where((gl > 90.) & (gl < 180.))]
+gb3 = gb[np.where((gl > 180.) & (gl < 270.))]
+gb4 = gb[np.where((gl > 270.) & (gl < 360.))]
+
+cat = fits.open('starcat_allscans_03-26-18.fits')[1].data
+cat1 = cat[np.where((cat['gl'] > 0.) & (cat['gl'] < 90.))]
+cat2 = cat[np.where((cat['gl'] > 90.) & (cat['gl'] < 180.))]
+cat3 = cat[np.where((cat['gl'] > 180.) & (cat['gl'] < 270.))]
+cat4 = cat[np.where((cat['gl'] > 270.) & (cat['gl'] < 360.))]
+
+fig, axes = plt.subplots(4, 1, sharey=True)
+
+cbar = axes[0].scatter(cat1['gl'], cat1['gb'], c=cat1['nuv'], vmin=12, vmax=20, s=3)
+axes[1].scatter(cat2['gl'], cat2['gb'], c=cat2['nuv'], vmin=12, vmax=20, s=3)
+axes[2].scatter(cat3['gl'], cat3['gb'], c=cat3['nuv'], vmin=12, vmax=20, s=3)
+axes[3].scatter(cat4['gl'], cat4['gb'], c=cat4['nuv'], vmin=12, vmax=20, s=3)
+
+axes[0].scatter(gl1, gb1, facecolor='none', edgecolor='red', s=150)
+axes[1].scatter(gl2, gb2, facecolor='none', edgecolor='red', s=150)
+axes[2].scatter(gl3, gb3, facecolor='none', edgecolor='red', s=150)
+axes[3].scatter(gl4, gb4, facecolor='none', edgecolor='red', s=150)
+
+fig.subplots_adjust(right=0.9)
+fig.colorbar(cbar, cax=fig.add_axes([0.92, 0.15, 0.02, 0.7])).set_label('NUV')
+
+axes[0].set_xlim(0, 90)
+axes[1].set_xlim(90, 180)
+axes[2].set_xlim(180, 270)
+axes[3].set_xlim(270, 360)
+
+axes[3].set_xlabel('gl')
+axes[0].set_ylabel('gb')
+axes[1].set_ylabel('gb')
+axes[2].set_ylabel('gb')
+axes[3].set_ylabel('gb')
+plt.show()
 
