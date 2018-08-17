@@ -65,9 +65,9 @@ if gais == 1:
 
     distmod = 5. * np.log10(pc) - 5
 
-rc = fits.open('../asc_gaia_aporc_match_dust-05-03-18.fits')[1].data
-q = np.where((rc['ebv'] > 0) & (rc['Fe_H_err'] > 0) & (rc['phot_bp_mean_mag'] > 0) & (rc['phot_rp_mean_mag'] > 0) & (rc['Classification'] == 'RC_Pristine') & (rc['dist'] < 3500) & (rc['visibility_periods_used'] > 8) & (rc['parallax_error']/rc['parallax'] < 0.1))
-rc = rc[q]
+#rc = fits.open('../asc_gaia_aporc_match_dust-05-03-18.fits')[1].data
+#q = np.where((rc['ebv'] > 0) & (rc['Fe_H_err'] > 0) & (rc['phot_bp_mean_mag'] > 0) & (rc['phot_rp_mean_mag'] > 0) & (rc['Classification'] == 'RC_Pristine') & (rc['dist'] < 3500) & (rc['visibility_periods_used'] > 8) & (rc['parallax_error']/rc['parallax'] < 0.1))
+#rc = rc[q]
 
 #cmd = Table.read('../cmdfiles/cmd_merged_zt.txt', format='ascii')
 #agerange = np.unique(cmd['logage'])
@@ -88,7 +88,7 @@ axes[1, 0].scatter(rc['phot_bp_mean_mag']-rc['phot_rp_mean_mag'], rc['phot_g_mea
 # Panel d
 scatter_contour((bp-ebv*2.85)-(rp-ebv*2.85), g-distmod-ebv*2.85, threshold=1000, log_counts=True, histogram2d_args=dict(bins=100, range=[[-0.5,3], [-4,15]]), plot_args=dict(color='k', markersize=1, alpha=0.01), contour_args=dict(cmap=cm.gray, zorder=10), ax=axes[1, 1])
 
-cbar = axes[1, 1].scatter((rc['phot_bp_mean_mag']-rc['ebv']*2.85)-(rc['phot_rp_mean_mag']-rc['ebv']*2.85), rc['phot_g_mean_mag']-rc['distmod']-rc['ebv']*2.85, s=15, edgecolor='none', c=rc['Fe_H'], vmin=vmin, vmax=vmax, cmap=viridis, zorder=20)
+#cbar = axes[1, 1].scatter((rc['phot_bp_mean_mag']-rc['ebv']*2.85)-(rc['phot_rp_mean_mag']-rc['ebv']*2.85), rc['phot_g_mean_mag']-rc['distmod']-rc['ebv']*2.85, s=15, edgecolor='none', c=rc['Fe_H'], vmin=vmin, vmax=vmax, cmap=viridis, zorder=20)
 
 
 axes[0, 0].set_xlim((-0.5, 3))
@@ -108,11 +108,11 @@ axes[1, 1].text(2.7, 13, '(d)')
 
 fig.subplots_adjust(hspace=0)
 fig.subplots_adjust(wspace=0)
-fig.subplots_adjust(right=0.84)
-cbar_ax = fig.add_axes([0.85, 0.15, 0.04, 0.7])
-fig.colorbar(cbar, cax=cbar_ax, label='[Fe/H]')
-#plt.show()
-plt.savefig('../etc.pdf')
+#fig.subplots_adjust(right=0.84)
+#cbar_ax = fig.add_axes([0.85, 0.15, 0.04, 0.7])
+#fig.colorbar(cbar, cax=cbar_ax, label='[Fe/H]')
+plt.show()
+#plt.savefig('../etc.pdf')
 
 
 

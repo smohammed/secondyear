@@ -380,68 +380,6 @@ for i in range(len(sg)):
     #plt.show()
 
 ######################################################################
-# CMD with lim mag G = 20
-######################################################################
-#cbarax = 'Fe_H'
-#cbarax = 'lnM'
-#cbarax = 'lnAge'
-cbarax = 'ALPHAFE'
-
-if cbarax == 'Fe_H':
-    vmin = -0.5
-    vmax = .35
-if cbarax == 'lnM':
-    vmin = -0.5
-    vmax = 1.25
-if cbarax == 'lnAge':
-    vmin = -1
-    vmax = 3
-if cbarax == 'ALPHAFE':
-    vmin = -0.05
-    vmax = 0.3
-
-afeval = []
-yaxval = []
-
-for i in range(6, 12):
-    cut = np.where(((c2['nuv_mag']-c2['phot_g_mean_mag']) > i) & ((c2['nuv_mag']-c2['phot_g_mean_mag']) < i+1))
-    afeval.append(np.mean(c2[cut]['FE_H']))
-    yaxval.append(np.mean(c2[cut][cbarax]))
-plt.scatter(c2['nuv_mag']-c2['phot_g_mean_mag'], c2['FE_H'], edgecolor='none', c=c2['ALPHAFE'], s=40, vmin=vmin, vmax=vmax, **{"zorder":100})
-plt.errorbar(c2['nuv_mag']-c2['phot_g_mean_mag'], c2['FE_H'], xerr=c2['nuv_magerr'], fmt=None, marker=None, mew=0, **{"zorder":0})
-plt.scatter([6.5,7.5,8.5,9.5,10.5, 11.5], afeval, s=100, marker='s', c=yaxval, vmin=vmin, vmax=vmax)
-
-if cbarax == 'Fe_H':
-    plt.colorbar().set_label('Fe/H')
-
-if cbarax == 'lnM':
-    plt.colorbar().set_label('lnM [Msol]')
-
-if cbarax == 'lnAge':
-    plt.colorbar().set_label('lnAge [Stellar age]')
-
-if cbarax == 'ALPHAFE':
-    plt.colorbar().set_label('Alpha/Fe')
-
-plt.xlabel('NUV - G')
-plt.ylabel('Fe/H')
-plt.title('GAIS + TGAS, RC stars')
-plt.xlim((4,12))
-plt.show()
-
-# B - V version
-plt.scatter(c2['B_AB']-c2['V_AB'], c2['FE_H'], edgecolor='none', c=c2['ALPHAFE'], s=80, vmin=-0.05, vmax=0.3, **{"zorder":100})
-plt.errorbar(c2['B_AB']-c2['V_AB'], c2['FE_H'], xerr=c2['B_ABerr']-c2['V_ABerr'], yerr=c2['FE_H_ERR'], fmt=None, marker=None, mew=0, **{"zorder":0})
-
-#plt.xlim((-1, 0.4))
-plt.xlabel('B - V')
-#plt.xlabel('(B - E$_{B-V}$ * 3.626) - (V - E$_{B-V}$ * 2.8542)')
-plt.ylabel('Fe/H')
-#plt.title('GAIS + Bovy RC stars, no extinction')
-plt.colorbar().set_label('Alpha/Fe')
-plt.show()
-
-######################################################################
 # CMD with MG and MNUV
 ######################################################################
 sg = fits.open('gais_tgas_apass_dust.fits')[1].data
@@ -585,6 +523,10 @@ for scan in scans:
 	ascii.write(cat, 'starcat_'+scan+'_03_26_2018.txt', format='basic')
 
 
+
+#############################################################
+# CMD for plane survey
+#############################################################
 cg = fits.open('galex_gaiadr2_comb_05_10_18.fits')[1].data
 
 negpar = np.where((cg['dist'] > 0) & (cg['visibility_periods_used'] > 8) & (cg['parallax_error']/cg['parallax'] < 0.1) & (cg['phot_bp_mean_mag'] > 0) & (cg['phot_rp_mean_mag'] > 0) & (cg['expsum'] > 10) & (cg['ebv'] > 0))
@@ -594,37 +536,35 @@ cg = cg[negpar]
 threshold = 5000
 bins = 100
 
-fig, axes = plt.subplots(nrows=2, ncols=2, sharex=True, sharey=True)
+fig, axes = plt.subplots(nrows=2, ncols=2)
 
-scatter_contour(cg['nuv']-cg['phot_g_mean_mag'], cg['phot_g_mean_mag']-cg['distmod'], threshold=threshold, log_counts=True, histogram2d_args=dict(bins=bins), plot_args=dict(color='k', markersize=1, alpha=0.05), contour_args=dict(cmap=cm.gray), ax=axes[0, 0])
+scatter_contour(cg['phot_bp_mean_mag']-cg['phot_rp_mean_mag'], cg['phot_g_mean_mag']-cg['distmod'], threshold=threshold, log_counts=True, histogram2d_args=dict(bins=bins), plot_args=dict(color='k', markersize=1, alpha=0.05), contour_args=dict(cmap=cm.gray), ax=axes[0, 0])
 
-scatter_contour(nuv-g, g-distmod, threshold=threshold, log_counts=True, histogram2d_args=dict(bins=bins), plot_args=dict(color='k', markersize=1, alpha=0.05), contour_args=dict(cmap=cm.gray), ax=axes[0, 1])
+scatter_contour(cg['nuv']-cg['phot_g_mean_mag'], cg['phot_g_mean_mag']-cg['distmod'], threshold=threshold, log_counts=True, histogram2d_args=dict(bins=bins, range=[[-1,12], [-2,14]]), plot_args=dict(color='k', markersize=1, alpha=0.05), contour_args=dict(cmap=cm.gray), ax=axes[0, 1])
+
+scatter_contour(cg['phot_bp_mean_mag']-cg['phot_rp_mean_mag'], cg['phot_g_mean_mag']-cg['distmod']-cg['ebv']*2.85, threshold=threshold, log_counts=True, histogram2d_args=dict(bins=bins), plot_args=dict(color='k', markersize=1, alpha=0.05), contour_args=dict(cmap=cm.gray), ax=axes[1, 0])
+
+scatter_contour((cg['nuv']-cg['ebv']*7.24)-(cg['phot_g_mean_mag']-cg['ebv']*2.85), cg['phot_g_mean_mag']-cg['distmod']-cg['ebv']*2.85, threshold=threshold, log_counts=True, histogram2d_args=dict(bins=bins, range=[[-1,12], [-2,14]]), plot_args=dict(color='k', markersize=1, alpha=0.05), contour_args=dict(cmap=cm.gray), ax=axes[1, 1])
 
 
-scatter_contour((cg['nuv']-cg['ebv']*7.24)-(cg['phot_g_mean_mag']-cg['ebv']*2.85), cg['phot_g_mean_mag']-cg['distmod']-cg['ebv']*2.85, threshold=threshold, log_counts=True, histogram2d_args=dict(bins=bins), plot_args=dict(color='k', markersize=1, alpha=0.05), contour_args=dict(cmap=cm.gray), ax=axes[1, 0])
-
-scatter_contour((nuv-ebv*7.24)-(g-ebv*2.85), g-distmod-ebv*2.85, threshold=threshold, log_counts=True, histogram2d_args=dict(bins=bins), plot_args=dict(color='k', markersize=1, alpha=0.05), contour_args=dict(cmap=cm.gray), ax=axes[1, 1])
-
-
-axes[1, 0].set_xlabel('NUV - G')
+axes[1, 0].set_xlabel('(G$_{BP}$ - G$_{RP}$)$_0$')
 axes[1, 1].set_xlabel('NUV - G')
 
 axes[0, 0].set_ylabel('M$_G$')
 axes[1, 0].set_ylabel('M$_G$')
 
+axes[0, 0].text(2, 13.9, 'E(B-V) = 0')
+axes[0, 1].text(8, 13.9, 'E(B-V) = 0')
 
-axes[0, 0].text(8, 13.9, 'E(B-V) = 0, Plane')
-axes[0, 1].text(8, 13.9, 'E(B-V) = 0, GAIS')
+axes[0, 0].set_xlim((-0.5, 3))
+axes[0, 0].set_ylim((14, -3))
+axes[1, 0].set_xlim((-0.5, 3))
+axes[1, 0].set_ylim((14, -3))
 
-axes[0, 0].set_xlim((-2.4, 13.5))
-axes[0, 1].set_xlim((-2.4, 13.5))
-axes[1, 0].set_xlim((-2.4, 13.5))
-axes[1, 1].set_xlim((-2.4, 13.5))
-
-axes[0, 0].set_ylim((14, -3.5))
-axes[0, 1].set_ylim((14, -3.5))
-axes[1, 0].set_ylim((14, -3.5))
-axes[1, 1].set_ylim((14, -3.5))
+axes[0, 1].set_xlim((-2, 11.6))
+axes[0, 1].set_ylim((14, -3))
+axes[1, 1].set_xlim((-2, 11.6))
+axes[1, 1].set_ylim((14, -3))
 
 
 fig.subplots_adjust(hspace=0)
@@ -686,15 +626,15 @@ cat4 = cat[np.where((cat['gl'] > 270.) & (cat['gl'] < 360.))]
 
 fig, axes = plt.subplots(4, 1, sharey=True)
 
-cbar = axes[0].scatter(cat1['gl'], cat1['gb'], c=cat1['nuv'], vmin=12, vmax=20, s=3)
-axes[1].scatter(cat2['gl'], cat2['gb'], c=cat2['nuv'], vmin=12, vmax=20, s=3)
-axes[2].scatter(cat3['gl'], cat3['gb'], c=cat3['nuv'], vmin=12, vmax=20, s=3)
-axes[3].scatter(cat4['gl'], cat4['gb'], c=cat4['nuv'], vmin=12, vmax=20, s=3)
+cbar = axes[0].scatter(cat1['gl'], cat1['gb'], c=cat1['nuv'], vmin=12, vmax=20, s=3, alpha=0.5)
+axes[1].scatter(cat2['gl'], cat2['gb'], c=cat2['nuv'], vmin=12, vmax=20, s=3, alpha=0.5)
+axes[2].scatter(cat3['gl'], cat3['gb'], c=cat3['nuv'], vmin=12, vmax=20, s=3, alpha=0.5)
+axes[3].scatter(cat4['gl'], cat4['gb'], c=cat4['nuv'], vmin=12, vmax=20, s=3, alpha=0.5)
 
-axes[0].scatter(gl1, gb1, facecolor='none', edgecolor='red', s=150)
-axes[1].scatter(gl2, gb2, facecolor='none', edgecolor='red', s=150)
-axes[2].scatter(gl3, gb3, facecolor='none', edgecolor='red', s=150)
-axes[3].scatter(gl4, gb4, facecolor='none', edgecolor='red', s=150)
+axes[0].scatter(gl1, gb1, facecolor='none', edgecolor='red', s=75)
+axes[1].scatter(gl2, gb2, facecolor='none', edgecolor='red', s=75)
+axes[2].scatter(gl3, gb3, facecolor='none', edgecolor='red', s=75)
+axes[3].scatter(gl4, gb4, facecolor='none', edgecolor='red', s=75)
 
 fig.subplots_adjust(right=0.9)
 fig.colorbar(cbar, cax=fig.add_axes([0.92, 0.15, 0.02, 0.7])).set_label('NUV')
@@ -711,3 +651,36 @@ axes[2].set_ylabel('gb')
 axes[3].set_ylabel('gb')
 plt.show()
 
+
+fig, axes = plt.subplots(4, 1, sharey=True)
+
+cbar = axes[0].hist2d(cat1['gl'], cat1['gb'], bins=(90, 20), norm=LogNorm())
+axes[1].hist2d(cat2['gl'], cat2['gb'], bins=(90, 20), norm=LogNorm())
+axes[2].hist2d(cat3['gl'], cat3['gb'], bins=(90, 20), norm=LogNorm())
+axes[3].hist2d(cat4['gl'], cat4['gb'], bins=(90, 20), norm=LogNorm())
+
+axes[0].scatter(gl1, gb1, facecolor='none', edgecolor='red', s=75)
+axes[1].scatter(gl2, gb2, facecolor='none', edgecolor='red', s=75)
+axes[2].scatter(gl3, gb3, facecolor='none', edgecolor='red', s=75)
+axes[3].scatter(gl4, gb4, facecolor='none', edgecolor='red', s=75)
+
+fig.subplots_adjust(right=0.9)
+fig.colorbar(cbar[3], cax=fig.add_axes([0.92, 0.15, 0.02, 0.7]))
+
+axes[0].set_xlim(0, 90)
+axes[1].set_xlim(90, 180)
+axes[2].set_xlim(180, 270)
+axes[3].set_xlim(270, 360)
+
+axes[3].set_xlabel('gl')
+axes[0].set_ylabel('gb')
+axes[1].set_ylabel('gb')
+axes[2].set_ylabel('gb')
+axes[3].set_ylabel('gb')
+plt.show()
+
+
+
+cg = fits.open('plane_gaiadr2_comb_05_10_18.fits')[1].data
+q = np.where(cg['ebv'] > 0)
+cg = cg[q]
