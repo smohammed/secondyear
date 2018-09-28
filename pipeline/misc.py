@@ -408,22 +408,28 @@ plt.show()
 
 
 #################################################
-# Combine all starcat files
+# Combine all starcat files with no overlap
 #################################################
-scans = ['18-28', '27-37', '36-46', '45-55', '63-73', '108-118', '117-127', '126-136', '135-145', '144-154', '153-163', '189-199', '198-208', '207-217', '216-226', '270-280', '279-289', '288-298', '297-307', '351-1', '72-82', '144-154', '225-235', '306-316', '81-91', '153-163', '234-244', '315-325', '90-100', '162-172', '243-253', '324-334', '9-19', '171-181', '252-262', '333-343', '99-109', '180-190', '261-271', '342-352']
+scans = ['9-19', '18-28', '27-37', '36-46', '45-55', '63-73', '72-82', '81-91', '90-100', '99-109', '108-118', '117-127', '126-136', '135-145', '144-154', '153-163', '162-172', '171-181', '180-190', '189-199', '198-208', '207-217', '216-226', '225-235', '234-244', '243-253', '252-262', '261-271', '270-280', '279-289', '288-298', '297-307', '306-316', '315-325', '324-334', '333-343', '342-352', '351-1']
 
 alldata = Table.read('starcat_0-10_03_26_2018.txt', format='ascii')
+alldata = alldata[np.where(alldata['gl'] < 300.)]
 
 for region in scans:
-	a = Table.read('starcat_'+region+'_03_26_2018.txt', format='ascii')
-	a = a[np.where((a['FWHM_IMAGE'] > 0) & (a['FWHM_IMAGE'] < 10))]
-	alldata = vstack([alldata, a])
-	print region
+    a = Table.read('starcat_'+region+'_03_26_2018.txt', format='ascii')
+    if region == '351-1':
+        a = a[np.where(a['gl'] > 300.)]
+    a = a[np.where((a['FWHM_IMAGE'] > 0) & (a['FWHM_IMAGE'] < 10) & (a['gl'] > np.min(a['gl']+1.562)))]
+    alldata = vstack([alldata, a])
+    print region
 
-ascii.write(alldata, 'starcat_allscans_03-26-18.txt', format='basic', overwrite=True)
+ascii.write(alldata, 'starcat_allscans_09-19-18.txt', format='basic', overwrite=True)
 
-catgal = SkyCoord(alldata['gl']*u.deg,alldata['gb']*u.deg, frame='galactic')
-
+#################################################
+# Match PS1 to scan data
+#################################################
+cat = fits.open('starcat_allscans_09-19-18.fits')[1].data
+catgal = SkyCoord(cat['gl']*u.deg,cat['gb']*u.deg, frame='galactic')
 pscans = ['0-100', '100-200', '200-300', '300-360']
 
 for scan in pscans:
@@ -434,7 +440,7 @@ for scan in pscans:
     comb = hstack([Table(cat[catind]), Table(ps[psind])])
     comb['angsep'] = angsep
     ascii.write(comb, 'starcat_ps1'+scan+'_g10-20.txt', format='basic')
-
+# Then use topcat to combine
 
 ######################################################################
 # Add cmd lines to cmd
@@ -459,11 +465,10 @@ for i in zrange:
 		plt.clf()
 
 
-
 ################################################################
-# Make plots for scan outputs
+# Image plots for each scan output
 ################################################################
-scans = ['0-10', '18-28', '27-37', '36-46', '45-55', '63-73', '108-118', '117-127', '126-136', '135-145', '144-154', '153-163', '189-199', '198-208', '207-217', '216-226', '270-280', '279-289', '288-298', '297-307', '351-1', '72-82', '144-154', '225-235', '306-316', '81-91', '153-163', '234-244', '315-325', '90-100', '162-172', '243-253', '324-334', '9-19', '171-181', '252-262', '333-343', '99-109', '180-190', '261-271', '342-352']
+scans = ['0-10', '9-19', '18-28', '27-37', '36-46', '45-55', '63-73', '72-82', '81-91', '90-100', '99-109', '108-118', '117-127', '126-136', '135-145', '144-154', '153-163', '162-172', '171-181', '180-190', '189-199', '198-208', '207-217', '216-226', '225-235', '234-244', '243-253', '252-262', '261-271', '270-280', '279-289', '288-298', '297-307', '306-316', '315-325', '324-334', '333-343', '342-352', '351-1']
 
 
 for scan in scans:
@@ -505,9 +510,9 @@ for scan in scans:
 	del hdu
 
 #############################################################
-# Get values from maps
+# Get values from count, exp, and bkgd map
 #############################################################
-scans = ['0-10', '18-28', '27-37', '36-46', '45-55', '63-73', '108-118', '117-127', '126-136', '135-145', '144-154', '153-163', '189-199', '198-208', '207-217', '216-226', '270-280', '279-289', '288-298', '297-307', '351-1', '72-82', '144-154', '225-235', '306-316', '81-91', '153-163', '234-244', '315-325', '90-100', '162-172', '243-253', '324-334', '9-19', '171-181', '252-262', '333-343', '99-109', '180-190', '261-271', '342-352']
+scans = ['0-10', '9-19', '18-28', '27-37', '36-46', '45-55', '63-73', '72-82', '81-91', '90-100', '99-109', '108-118', '117-127', '126-136', '135-145', '144-154', '153-163', '162-172', '171-181', '180-190', '189-199', '198-208', '207-217', '216-226', '225-235', '234-244', '243-253', '252-262', '261-271', '270-280', '279-289', '288-298', '297-307', '306-316', '315-325', '324-334', '333-343', '342-352', '351-1']
 
 from photutils import aperture_photometry
 from photutils import CircularAperture
@@ -523,42 +528,48 @@ for scan in scans:
 	ascii.write(cat, 'starcat_'+scan+'_03_26_2018.txt', format='basic')
 
 
-
 #############################################################
-# CMD for plane survey
+# CMD for plane survey vs GAIS
 #############################################################
-cg = fits.open('galex_gaiadr2_comb_05_10_18.fits')[1].data
+cg = fits.open('plane_gaiadr2_dust_09_27_18.fits')[1].data
+gag = fits.open('gais_gaiadr2_negparcuts_dust_09_27_18.fits')[1].data
 
-negpar = np.where((cg['dist'] > 0) & (cg['visibility_periods_used'] > 8) & (cg['parallax_error']/cg['parallax'] < 0.1) & (cg['phot_bp_mean_mag'] > 0) & (cg['phot_rp_mean_mag'] > 0) & (cg['expsum'] > 10) & (cg['ebv'] > 0))
+negpar = np.where((cg['dist'] > 0) & (cg['visibility_periods_used'] > 8) & (cg['phot_bp_mean_mag'] > 0) & (cg['phot_rp_mean_mag'] > 0) & (cg['expsum'] > 10) & (cg['ebv'] > 0) & (cg['parallax_error']/cg['parallax'] < 0.1))
+#cut = np.where((gag['parallax'] > 0) & (gag['phot_g_mean_mag'] > 0) & (gag['phot_bp_mean_mag'] > 0) & (gag['phot_rp_mean_mag'] > 0) & (gag['visibility_periods_used'] > 8) & (gag['mag_nuv'] > 0) & (gag['glat'] > -10) & (gag['glat'] < 10))
 
 cg = cg[negpar]
+gag = gag[np.where((gag['ebv'] > 0) & (gag['parallax_error']/gag['parallax'] < 0.1))]
 
-threshold = 5000
-bins = 100
+threshold = 1000
+bins = 40
 
 fig, axes = plt.subplots(nrows=2, ncols=2)
 
-scatter_contour(cg['phot_bp_mean_mag']-cg['phot_rp_mean_mag'], cg['phot_g_mean_mag']-cg['distmod'], threshold=threshold, log_counts=True, histogram2d_args=dict(bins=bins), plot_args=dict(color='k', markersize=1, alpha=0.05), contour_args=dict(cmap=cm.gray), ax=axes[0, 0])
+scatter_contour(gag['mag_nuv']-gag['phot_g_mean_mag'], gag['phot_g_mean_mag']-gag['distmod'], threshold=threshold, log_counts=True, histogram2d_args=dict(bins=bins, range=[[-1,12], [-2,14]]), plot_args=dict(color='k', markersize=1, alpha=0.1), contour_args=dict(cmap=cm.gray, zorder=10), ax=axes[0, 0])
 
-scatter_contour(cg['nuv']-cg['phot_g_mean_mag'], cg['phot_g_mean_mag']-cg['distmod'], threshold=threshold, log_counts=True, histogram2d_args=dict(bins=bins, range=[[-1,12], [-2,14]]), plot_args=dict(color='k', markersize=1, alpha=0.05), contour_args=dict(cmap=cm.gray), ax=axes[0, 1])
+scatter_contour(cg['nuv']-cg['phot_g_mean_mag'], cg['phot_g_mean_mag']-cg['distmod'], threshold=threshold, log_counts=True, histogram2d_args=dict(bins=bins, range=[[-1,12], [-2,14]]), plot_args=dict(color='k', markersize=1, alpha=0.1), contour_args=dict(cmap=cm.gray, zorder=10), ax=axes[0, 1])
 
-scatter_contour(cg['phot_bp_mean_mag']-cg['phot_rp_mean_mag'], cg['phot_g_mean_mag']-cg['distmod']-cg['ebv']*2.85, threshold=threshold, log_counts=True, histogram2d_args=dict(bins=bins), plot_args=dict(color='k', markersize=1, alpha=0.05), contour_args=dict(cmap=cm.gray), ax=axes[1, 0])
+# If I want a RC paper CMD template
+#scatter_contour(cg['phot_bp_mean_mag']-cg['phot_rp_mean_mag'], cg['phot_g_mean_mag']-cg['distmod']-cg['ebv']*2.85, threshold=threshold, log_counts=True, histogram2d_args=dict(bins=bins, range=[[-0.5, 2.5],[-2, 14]]), plot_args=dict(color='k', markersize=1, alpha=0.1), contour_args=dict(cmap=cm.gray, zorder=10), ax=axes[1, 0])
 
-scatter_contour((cg['nuv']-cg['ebv']*7.24)-(cg['phot_g_mean_mag']-cg['ebv']*2.85), cg['phot_g_mean_mag']-cg['distmod']-cg['ebv']*2.85, threshold=threshold, log_counts=True, histogram2d_args=dict(bins=bins, range=[[-1,12], [-2,14]]), plot_args=dict(color='k', markersize=1, alpha=0.05), contour_args=dict(cmap=cm.gray), ax=axes[1, 1])
+scatter_contour((gag['mag_nuv']-gag['ebv']*7.24)-(gag['phot_g_mean_mag']-gag['ebv']*2.85), gag['phot_g_mean_mag']-gag['distmod']-gag['ebv']*2.85, threshold=threshold, log_counts=True, histogram2d_args=dict(bins=bins, range=[[-1,12], [-2,14]]), plot_args=dict(color='k', markersize=1, alpha=0.1), contour_args=dict(cmap=cm.gray, zorder=10), ax=axes[1, 0])
 
 
-axes[1, 0].set_xlabel('(G$_{BP}$ - G$_{RP}$)$_0$')
-axes[1, 1].set_xlabel('NUV - G')
+scatter_contour((cg['nuv']-cg['ebv']*7.24)-(cg['phot_g_mean_mag']-cg['ebv']*2.85), cg['phot_g_mean_mag']-cg['distmod']-cg['ebv']*2.85, threshold=threshold, log_counts=True, histogram2d_args=dict(bins=bins, range=[[-1,12], [-2,14]]), plot_args=dict(color='k', markersize=1, alpha=0.1), contour_args=dict(cmap=cm.gray, zorder=10), ax=axes[1, 1])
+
+
+axes[1, 0].set_xlabel('NUV$_{GAIS}$ - G')
+axes[1, 1].set_xlabel('NUV$_{Plane}$ - G')
 
 axes[0, 0].set_ylabel('M$_G$')
-axes[1, 0].set_ylabel('M$_G$')
+axes[1, 0].set_ylabel('M$_{G_0}$')
 
-axes[0, 0].text(2, 13.9, 'E(B-V) = 0')
-axes[0, 1].text(8, 13.9, 'E(B-V) = 0')
+axes[0, 0].text(8.4, 13.9, 'E(B-V) = 0')
+axes[0, 1].text(8.4, 13.9, 'E(B-V) = 0')
 
-axes[0, 0].set_xlim((-0.5, 3))
+axes[0, 0].set_xlim((-2, 11.6))
 axes[0, 0].set_ylim((14, -3))
-axes[1, 0].set_xlim((-0.5, 3))
+axes[1, 0].set_xlim((-2, 11.6))
 axes[1, 0].set_ylim((14, -3))
 
 axes[0, 1].set_xlim((-2, 11.6))
@@ -566,10 +577,22 @@ axes[0, 1].set_ylim((14, -3))
 axes[1, 1].set_xlim((-2, 11.6))
 axes[1, 1].set_ylim((14, -3))
 
-
+axes[0, 0].set_xticks([])
+axes[0, 1].set_yticks([])
+axes[1, 1].set_yticks([])
 fig.subplots_adjust(hspace=0)
 fig.subplots_adjust(wspace=0)
 plt.show()
+
+
+#############################################################
+# FWHM vs NUV
+#############################################################
+
+q = np.where((cat['FWHM_IMAGE'] > 0) & (cat['FWHM_IMAGE'] < 10))
+cat = cat[q]
+
+
 
 #############################################################
 # dx dy histogram by magnitude
@@ -589,9 +612,8 @@ plt.legend(scatterpoints=1, loc=1)
 plt.xlabel('Radius (Gaia DR2 - plane)')
 plt.show()
 
-
 #############################################################
-# 
+# Sky plot matching the overlap with GAIS
 #############################################################
 g = fits.open('gr67tile_table.fits')[1].data
 ra = np.array(g['ra_cent'], dtype=np.float32)
@@ -651,9 +673,8 @@ axes[2].set_ylabel('gb')
 axes[3].set_ylabel('gb')
 plt.show()
 
-
+# Same as above but normalizing the histogram
 fig, axes = plt.subplots(4, 1, sharey=True)
-
 cbar = axes[0].hist2d(cat1['gl'], cat1['gb'], bins=(90, 20), norm=LogNorm())
 axes[1].hist2d(cat2['gl'], cat2['gb'], bins=(90, 20), norm=LogNorm())
 axes[2].hist2d(cat3['gl'], cat3['gb'], bins=(90, 20), norm=LogNorm())
@@ -680,7 +701,67 @@ axes[3].set_ylabel('gb')
 plt.show()
 
 
+#############################################################
+# Finding all Plane points overlapping in GAIS
+#############################################################
+g = fits.open('gr67tile_table.fits')[1].data
+ra = np.array(g['ra_cent'], dtype=np.float32)
+dec = np.array(g['dec_cent'], dtype=np.float32)
+gal = SkyCoord(ra*u.deg, dec*u.deg, frame='icrs')
+gl = gal.galactic.l.degree
+gb = gal.galactic.b.degree
+q = np.where((gb > -10) & (gb < 10))
+g = g[q]
+ra = np.array(g['ra_cent'], dtype=np.float32)
+dec = np.array(g['dec_cent'], dtype=np.float32)
+gal = SkyCoord(ra*u.deg, dec*u.deg, frame='icrs').galactic
 
-cg = fits.open('plane_gaiadr2_comb_05_10_18.fits')[1].data
-q = np.where(cg['ebv'] > 0)
-cg = cg[q]
+cat = fits.open('starcat_allscans_09-19-18.fits')[1].data
+cat = cat[np.where(cat['expsum'] > 10)]
+catgal = SkyCoord(cat['gl']*u.deg, cat['gb']*u.deg, frame='galactic')
+cid, gid, angsep, ang3d = gal.search_around_sky(catgal, 1*u.degree)
+q = np.unique(cid)
+c2 = cat[q]
+
+
+#############################################################
+# SQL query for matching Gaia data
+#############################################################
+SELECT crossmatch_positional('user_smohamme','table1','gaiadr2','gaia_source',3.0,'galexmatch') FROM dual
+
+SELECT a."table1_oid", a."number", a."alpha_j2000", a."delta_j2000", gaia."solution_id", gaia."source_id", gaia."ra", gaia."ra_error", gaia."dec", gaia."dec_error", gaia."parallax", gaia."parallax_error",  gaia."visibility_periods_used", gaia."duplicated_source",gaia."phot_g_mean_flux", gaia."phot_g_mean_flux_error", gaia."phot_g_mean_mag", gaia."phot_bp_mean_flux", gaia."phot_bp_mean_flux_error", gaia."phot_bp_mean_mag", gaia."phot_rp_mean_flux", gaia."phot_rp_mean_flux_error", gaia."phot_rp_mean_mag", gaia."radial_velocity", gaia."radial_velocity_error", gaia."rv_template_teff", gaia."rv_template_logg", gaia."rv_template_fe_h", gaia."phot_variable_flag", gaia."teff_val", gaia."flame_flags", distance(
+  POINT('ICRS', a.alpha_j2000, a.delta_j2000),
+  POINT('ICRS', gaia.ra, gaia.dec)) AS dist
+FROM gaiadr2.gaia_source AS gaia, user_smohamme.table1 AS a
+WHERE 1=CONTAINS(
+  POINT('ICRS', a.alpha_j2000, a.delta_j2000),
+  CIRCLE('ICRS', gaia.ra, gaia.dec, 0.0008333333333333334)
+)
+
+
+#############################################################
+# Match dust to plane data. Do twice because query is killed
+#############################################################
+# Remember to rename the 'dist' column too 'angsep'
+from dustmaps.bayestar import BayestarQuery
+cg = fits.open('plane_gaiadr2_pt1_getdust.fits')[1].data
+cg = Table(cg)
+
+negpar = np.where((cg['parallax'] > 0.) & (cg['phot_g_mean_mag'] > 0.) & (cg['phot_bp_mean_mag'] > 0.) & (cg['phot_rp_mean_mag'] > 0.) & (cg['expsum'] > 10.))
+pc = 1000./cg['parallax']
+distmod = 5. * np.log10(pc) - 5
+cggal = SkyCoord(cg['ra_gaia']*u.deg, cg['dec_gaia']*u.deg, distance=pc*u.pc, frame='icrs')
+
+baye = BayestarQuery()
+ebv = baye(cggal, mode='median')
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    
+cg['dist'] = pc
+cg['distmod'] = distmod
+cg['ebv'] = ebv
+ascii.write(cg, 'plane_gaiadr2_dust_pt1.txt', format='basic')
+
+
+
+
+
+
