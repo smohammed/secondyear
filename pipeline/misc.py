@@ -423,7 +423,7 @@ for region in scans:
     alldata = vstack([alldata, a])
     print region
 
-ascii.write(alldata, 'starcat_allscans_09-19-18.txt', format='basic', overwrite=True)
+ascii.write(alldata, 'starcat_allscans_09-28-18.txt', format='basic', overwrite=True)
 
 #################################################
 # Match PS1 to scan data
