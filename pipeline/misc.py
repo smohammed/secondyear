@@ -763,5 +763,6 @@ ascii.write(cg, 'plane_gaiadr2_dust_pt1.txt', format='basic')
 
 
 
-
+for obj in data:
+    
 
