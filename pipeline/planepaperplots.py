@@ -20,7 +20,7 @@ gg = fits.open('../plane_gais_09_26_18.fits')[1].data # GAIS
 # 1. Gaia CMD
 gag = fits.open('gais_gaiadr2_negparcuts_dust_09_27_18.fits')[1].data 
 
-negpar = np.where((cg['dist'] > 0) & (cg['visibility_periods_used'] > 8) & (cg['phot_bp_mean_mag'] > 0) & (cg['phot_rp_mean_mag'] > 0) & (cg['expsum'] > 10) & (cg['ebv'] > 0) & (cg['parallax_error']/cg['parallax'] < 0.1))
+negpar = np.where((cg['dist'] > 0) & (cg['visibility_periods_used'] > 8) & (cg['phot_bp_mean_mag'] > 0) & (cg['phot_rp_mean_mag'] > 0) & (cg['expsum'] > 5) & (cg['ebv'] > 0) & (cg['parallax_error']/cg['parallax'] < 0.1))
 #cut = np.where((gag['parallax'] > 0) & (gag['phot_g_mean_mag'] > 0) & (gag['phot_bp_mean_mag'] > 0) & (gag['phot_rp_mean_mag'] > 0) & (gag['visibility_periods_used'] > 8) & (gag['mag_nuv'] > 0) & (gag['glat'] > -10) & (gag['glat'] < 10))
 
 cg = cg[negpar]
@@ -84,18 +84,18 @@ plt.show()
 ############################################################
 # NUV comparison
 ############################################################
-gg = fits.open('plane_gais_09-26-18.fits')[1].data
+gg = fits.open('plane_gais_10_13_18.fits')[1].data
 
 averages = []
-deln = gg['nuv_mag']-gg['nuv']
-delnavg = gg['nuv_mag']-gg['nuv']
+deln = gg['nuv_mag']-gg['nuv_plane']
+delnavg = gg['nuv_mag']-gg['nuv_plane']
 for mag in np.arange(12.5, 20.5, 0.5):
 	cut = np.where((gg['nuv_mag'] > mag) & (gg['nuv_mag'] < mag+0.5))
 	avg = np.average(deln[cut]) - 0.03
 	delnavg[cut] = delnavg[cut] - avg
 	averages.append(avg)
 
-scatter_contour(gg['nuv_mag'], gg['nuv_mag']-gg['nuv'], threshold=10000, log_counts=True, histogram2d_args=dict(bins=(40)), plot_args=dict(color='k', markersize=1, alpha=0.1), contour_args=dict(cmap=cm.gray))
+scatter_contour(gg['nuv_mag'], gg['nuv_mag']-gg['nuv_plane'], threshold=10000, log_counts=True, histogram2d_args=dict(bins=(40)), plot_args=dict(color='k', markersize=1, alpha=0.1), contour_args=dict(cmap=cm.gray))
 
 plt.axhline(y=0, color='red')
 plt.xlim(12, 22.5)
@@ -113,7 +113,7 @@ a = dict(zip(np.arange(12.5, 20.5, 0.5), averages))
 
 
 # Modify NUV values
-cat = fits.open('../starcat_allscans_09-19-18')[1].data # catalog
+cat = fits.open('../starcat_allscans_10-13-18')[1].data # catalog
 
 	for mag in np.arange(12.5, 20.5, 0.5):
 		cut = np.where((matched['nuv'] > mag) & (matched['nuv'] < mag+0.5))
@@ -194,6 +194,11 @@ plt.gca().add_patch(matplotlib.patches.Rectangle((-0.5, 1.1), 6.5, 0.5, facecolo
 plt.gca().add_patch(matplotlib.patches.Rectangle((2, -0.1), 6, 0.8, facecolor='lightblue', alpha=0.5, angle=5))
 plt.gca().add_patch(matplotlib.patches.Rectangle((-1.9, -0.75), 3, 0.65, facecolor='gray', alpha=0.5))
 plt.arrow(3,  -0.75,  2.972-1.1838,  1.1838-0.8664,  head_length=0.05,  head_width=0.02,  color='red')
+
+
+pickles = Table.read('picklemags_laphare_final.txt', format='ascii')
+scatter_contour(ps['nuv']-ps['g_ps'], ps['g_ps']-ps['r_ps'], threshold=10000, log_counts=True, histogram2d_args=dict(bins=40), plot_args=dict(color='k', markersize=1, alpha=0.1), contour_args=dict(cmap=cm.gray))
+plt.scatter(pickles['nuv']-pickles['g'], pickles['g']-pickles['r'], color='red', label='SED model',  s=30)
 plt.xlim((-2.1, 9.1))
 plt.ylim((-1, 2))
 

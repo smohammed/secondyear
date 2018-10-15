@@ -412,23 +412,23 @@ plt.show()
 #################################################
 scans = ['9-19', '18-28', '27-37', '36-46', '45-55', '63-73', '72-82', '81-91', '90-100', '99-109', '108-118', '117-127', '126-136', '135-145', '144-154', '153-163', '162-172', '171-181', '180-190', '189-199', '198-208', '207-217', '216-226', '225-235', '234-244', '243-253', '252-262', '261-271', '270-280', '279-289', '288-298', '297-307', '306-316', '315-325', '324-334', '333-343', '342-352', '351-1']
 
-alldata = Table.read('starcat_0-10_03_26_2018.txt', format='ascii')
+alldata = Table.read('starcat_0-10_10_12_2018.txt', format='ascii')
 alldata = alldata[np.where(alldata['gl'] < 300.)]
 
 for region in scans:
-    a = Table.read('starcat_'+region+'_03_26_2018.txt', format='ascii')
+    a = Table.read('starcat_'+region+'_10_12_2018.txt', format='ascii')
     if region == '351-1':
         a = a[np.where(a['gl'] > 300.)]
     a = a[np.where((a['FWHM_IMAGE'] > 0) & (a['FWHM_IMAGE'] < 10) & (a['gl'] > np.min(a['gl']+1.562)))]
     alldata = vstack([alldata, a])
     print region
 
-ascii.write(alldata, 'starcat_allscans_09-28-18.txt', format='basic', overwrite=True)
+ascii.write(alldata, 'starcat_allscans_10-12-18.txt', format='basic', overwrite=True)
 
 #################################################
 # Match PS1 to scan data
 #################################################
-cat = fits.open('starcat_allscans_09-19-18.fits')[1].data
+cat = fits.open('starcat_allscans_10-12-18.fits')[1].data
 catgal = SkyCoord(cat['gl']*u.deg,cat['gb']*u.deg, frame='galactic')
 pscans = ['0-100', '100-200', '200-300', '300-360']
 
@@ -519,10 +519,10 @@ scans = ['0-10', '9-19', '18-28', '27-37', '36-46', '45-55', '63-73', '72-82', '
 
 for scan in scans:
     print(scan)
-    cat = Table.read('starcat_'+scan+'_03_26_2018.txt', format='ascii')
+    cat = Table.read('starcat_'+scan+'_10_11_2018.txt', format='ascii')
     #bkgd = fits.open('background_im1_'+scan+'.fits')[0].data
-    exp = fits.open('count_map_'+scan+'_exp.fits')[0].data
-    #ct = fits.open('count_map_'+scan+'_count.fits')[0].data
+    #exp = fits.open('count_map_'+scan+'_exp.fits')[0].data
+    ct = fits.open('count_map_'+scan+'_count.fits')[0].data
     positions = [cat['X_IMAGE'], cat['Y_IMAGE']]
 	#apertures = CircularAperture(positions, r=3.)
 	#sums = aperture_photometry(img, apertures)
@@ -530,13 +530,16 @@ for scan in scans:
 	#ascii.write(cat, 'starcat_'+scan+'_03_26_2018.txt', format='basic')
     #bkgdval = []
     #ctval = []
-    expval = []
+    ctval = []
     for line in range(len(cat)):
         #bkgdval.append(bkgd[int(cat['X_IMAGE'][line]), int(cat['Y_IMAGE'][line])])
         #ctval.append(ct[int(cat['X_IMAGE'][line]), int(cat['Y_IMAGE'][line])])
-        expval.append(exp[int(cat['X_IMAGE'][line]), int(cat['Y_IMAGE'][line])])
-    cat['expsum'] = expval
-    ascii.write(cat, 'starcat_'+scan+'_10_03_2018.txt', format='basic')
+        try:
+            ctval.append(ct[int(cat['Y_IMAGE'][line]), int(cat['X_IMAGE'][line])])
+        except IndexError:
+            ctval.append(ct[int(cat['Y_IMAGE'][line])-1, int(cat['X_IMAGE'][line])-1])            
+    cat['ctsum'] = ctval
+    ascii.write(cat, 'starcat_'+scan+'_10_12_2018.txt', format='basic')
 
 
 
@@ -728,8 +731,8 @@ ra = np.array(g['ra_cent'], dtype=np.float32)
 dec = np.array(g['dec_cent'], dtype=np.float32)
 gal = SkyCoord(ra*u.deg, dec*u.deg, frame='icrs').galactic
 
-cat = fits.open('starcat_allscans_09-19-18.fits')[1].data
-cat = cat[np.where(cat['expsum'] > 10)]
+cat = fits.open('starcat_allscans_10-12-18_cuts.fits')[1].data
+cat = cat[np.where(cat['expsum'] > 5)]
 catgal = SkyCoord(cat['gl']*u.deg, cat['gb']*u.deg, frame='galactic')
 cid, gid, angsep, ang3d = gal.search_around_sky(catgal, 1*u.degree)
 q = np.unique(cid)
@@ -739,14 +742,14 @@ c2 = cat[q]
 #############################################################
 # SQL query for matching Gaia data
 #############################################################
-SELECT crossmatch_positional('user_smohamme','table1','gaiadr2','gaia_source',3.0,'galexmatch') FROM dual
+SELECT crossmatch_positional('user_smohamme','plane','gaiadr2','gaia_source',3.0,'galexmatch') FROM dual
 
-SELECT a."table1_oid", a."number", a."alpha_j2000", a."delta_j2000", gaia."solution_id", gaia."source_id", gaia."ra", gaia."ra_error", gaia."dec", gaia."dec_error", gaia."parallax", gaia."parallax_error",  gaia."visibility_periods_used", gaia."duplicated_source",gaia."phot_g_mean_flux", gaia."phot_g_mean_flux_error", gaia."phot_g_mean_mag", gaia."phot_bp_mean_flux", gaia."phot_bp_mean_flux_error", gaia."phot_bp_mean_mag", gaia."phot_rp_mean_flux", gaia."phot_rp_mean_flux_error", gaia."phot_rp_mean_mag", gaia."radial_velocity", gaia."radial_velocity_error", gaia."rv_template_teff", gaia."rv_template_logg", gaia."rv_template_fe_h", gaia."phot_variable_flag", gaia."teff_val", gaia."flame_flags", distance(
-  POINT('ICRS', a.alpha_j2000, a.delta_j2000),
+SELECT a."plane_oid", a."col0", a."col1", a."col2", gaia."solution_id", gaia."source_id", gaia."ra", gaia."ra_error", gaia."dec", gaia."dec_error", gaia."parallax", gaia."parallax_error",  gaia."visibility_periods_used", gaia."duplicated_source",gaia."phot_g_mean_flux", gaia."phot_g_mean_flux_error", gaia."phot_g_mean_mag", gaia."phot_bp_mean_flux", gaia."phot_bp_mean_flux_error", gaia."phot_bp_mean_mag", gaia."phot_rp_mean_flux", gaia."phot_rp_mean_flux_error", gaia."phot_rp_mean_mag", gaia."radial_velocity", gaia."radial_velocity_error", gaia."rv_template_teff", gaia."rv_template_logg", gaia."rv_template_fe_h", gaia."phot_variable_flag", gaia."teff_val", gaia."flame_flags", distance(
+  POINT('ICRS', a.col1, a.col2),
   POINT('ICRS', gaia.ra, gaia.dec)) AS dist
-FROM gaiadr2.gaia_source AS gaia, user_smohamme.table1 AS a
+FROM gaiadr2.gaia_source AS gaia, user_smohamme.plane AS a
 WHERE 1=CONTAINS(
-  POINT('ICRS', a.alpha_j2000, a.delta_j2000),
+  POINT('ICRS', a.col1, a.col2),
   CIRCLE('ICRS', gaia.ra, gaia.dec, 0.0008333333333333334)
 )
 
@@ -754,12 +757,25 @@ WHERE 1=CONTAINS(
 #############################################################
 # Match dust to plane data. Do twice because query is killed
 #############################################################
+# 1. Make coord file from plane data from ra and dec
+# 2. Upload to gaia archive and set ra and dec in the table
+# 3. Cross match using the match button
+# 4. Run query from above SQL query section
+# 5. Do below twice
+
 # Remember to rename the 'dist' column too 'angsep'
 from dustmaps.bayestar import BayestarQuery
-cg = fits.open('plane_gaiadr2_pt1_getdust.fits')[1].data
+cg = fits.open('plane_gaia_pt2_10_12_18.fits')[1].data
 cg = Table(cg)
 
+cg.remove_columns(('col0', 'col1', 'col2'))
+cg.rename_column('ALPHA_J2000', 'ra_plane')
+cg.rename_column('DELTA_J2000', 'dec_plane')
+cg.rename_column('dec', 'dec_gaia')
+cg.rename_column('ra', 'ra_gaia')
+
 negpar = np.where((cg['parallax'] > 0.) & (cg['phot_g_mean_mag'] > 0.) & (cg['phot_bp_mean_mag'] > 0.) & (cg['phot_rp_mean_mag'] > 0.) & (cg['expsum'] > 10.))
+cg = cg[negpar]
 pc = 1000./cg['parallax']
 distmod = 5. * np.log10(pc) - 5
 cggal = SkyCoord(cg['ra_gaia']*u.deg, cg['dec_gaia']*u.deg, distance=pc*u.pc, frame='icrs')
@@ -770,7 +786,7 @@ ebv = baye(cggal, mode='median')
 cg['dist'] = pc
 cg['distmod'] = distmod
 cg['ebv'] = ebv
-ascii.write(cg, 'plane_gaiadr2_dust_pt1.txt', format='basic')
-addhash('plane_gaiadr2_dust_pt1.txt')
+ascii.write(cg, 'plane_gaiadr2_dust_pt2.txt', format='basic')
+addhash('plane_gaiadr2_dust_pt2.txt')
 
 
