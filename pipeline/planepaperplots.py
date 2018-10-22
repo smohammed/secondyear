@@ -9,10 +9,10 @@ matplotlib.rcParams['font.size'] = 18
 from colormaps import *
 
 # Load original and matched catalogs
-cat = fits.open('../starcat_allscans_09-19-18')[1].data # catalog
-ps = fits.open('../plane_ps1_g10-20_09_26_18.fits')[1].data # Pan starrs
-cg = fits.open('../plane_gaiadr2_dust_09_27_18.fits')[1].data  # gaia
-gg = fits.open('../plane_gais_09_26_18.fits')[1].data # GAIS 
+cat = fits.open('../starcat_allscans_10-12-18')[1].data # catalog
+ps = fits.open('../plane_ps1_g10-20_10_12_18.fits')[1].data # Pan starrs
+cg = fits.open('../plane_gaiadr2_dust_10_13_18.fits')[1].data  # gaia
+gg = fits.open('../plane_gais_10_13_18.fits')[1].data # GAIS 
 
 ############################################################
 # Now make plots
@@ -104,25 +104,6 @@ plt.xlabel('NUV (GAIS)')
 plt.ylabel('$\Delta$NUV (GAIS - Plane)')
 plt.show()
 
-
-
-
-# For all data
-averages = [-0.5088040321564006, -0.30568558997508744, -0.08878561654404307, 0.06906811684820328, 0.15215738430922907, 0.18585467134802813, 0.2044312305142438, 0.21806953210465735, 0.22379168603395064, 0.22521566946951102, 0.2222612442213893, 0.21768934311656635, 0.23189637728274717, 0.3016845341048976, 0.3764177765040423, 0.6407062596745744]
-a = dict(zip(np.arange(12.5, 20.5, 0.5), averages))
-
-
-# Modify NUV values
-cat = fits.open('../starcat_allscans_10-13-18')[1].data # catalog
-
-	for mag in np.arange(12.5, 20.5, 0.5):
-		cut = np.where((matched['nuv'] > mag) & (matched['nuv'] < mag+0.5))
-		matched['nuv'][cut] = matched['nuv'][cut] - a[mag]
-	lower = np.where(matched['nuv'] < 12.5)
-	higher = np.where(matched['nuv'] > 20.5)
-	matched['nuv'][lower] = matched['nuv'][lower] - a[12.5]
-	matched['nuv'][higher] = matched['nuv'][higher] - a[20]
-#ascii.write(matched, '...', format='basic')
 
 ############################################################
 # NUV histogram for all surveys
