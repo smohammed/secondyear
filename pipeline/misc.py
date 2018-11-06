@@ -790,3 +790,60 @@ ascii.write(cg, 'plane_gaiadr2_dust_pt2.txt', format='basic')
 addhash('plane_gaiadr2_dust_pt2.txt')
 
 
+# Pickles pysynphot files
+# Use site to find out which star to observe. Ex: pickles_uk_7 is a B8V star
+# http://www.stsci.edu/hst/observatory/crds/pickles_atlas.html
+
+os.system('export PYSYN_CDBS=~/cdbs/')
+
+filename = os.path.join(os.environ['PYSYN_CDBS'], 'grid', 'pickles', 'dat_uvk', 'pickles_uk_27.fits')
+sp = S.FileSpectrum(filename)
+
+obs = S.Observation(sp, S.ObsBandpass('galex,nuv'))
+
+# Get ABmag
+obs.effstim('abmag')
+
+nuv = []
+g = []
+r = []
+for star in range(1, 132):
+    sp = S.FileSpectrum(os.path.join(os.environ['PYSYN_CDBS'], 'grid', 'pickles', 'dat_uvk', 'pickles_uk_'+str(star)+'.fits'))
+    nuvobs = S.Observation(sp, S.ObsBandpass('galex,nuv'))
+    gobs = S.Observation(sp, S.ObsBandpass('sdss,g'))
+    robs = S.Observation(sp, S.ObsBandpass('sdss,r'))
+
+    nuv.append(nuvobs.effstim('abmag'))
+    g.append(gobs.effstim('abmag'))
+    r.append(robs.effstim('abmag'))
+
+nuv = np.array(nuv)
+g = np.array(g)
+r = np.array(r)
+
+
+
+#############################################################
+# Get plane table with no outside catalog matches 
+#############################################################
+cat = fits.open('starcat_allscans_10-12-18_cuts.fits')[1].data
+cg = fits.open('plane_gaiadr2_dust_10_13_18.fits')[1].data
+
+catgal = SkyCoord(cat['ALPHA_J2000']*u.deg, cat['DELTA_J2000']*u.deg, frame='icrs')
+cggal = SkyCoord(cg['ra_plane']*u.deg, cg['dec_plane']*u.deg, frame='icrs')
+catind, cgind, angsep, ang3d = search_around_sky(catgal, cggal, 1*u.arcsec)
+cat = Table(cat)
+cat.remove_rows(catind)
+
+catgal = SkyCoord(cat['ALPHA_J2000']*u.deg, cat['DELTA_J2000']*u.deg, frame='icrs')
+ps = fits.open('plane_ps1_g10-20_10_12_18.fits')[1].data
+psgal = SkyCoord(ps['ALPHA_J2000']*u.deg, ps['DELTA_J2000']*u.deg, frame='icrs')
+catind, psind, angsep, ang3d = search_around_sky(catgal, psgal, 1*u.arcsec)
+cat.remove_rows(catind)
+
+gg = fits.open('plane_gais_10_13_18.fits')[1].data
+catgal = SkyCoord(cat['ALPHA_J2000']*u.deg, cat['DELTA_J2000']*u.deg, frame='icrs')
+gggal = SkyCoord(gg['ra_plane']*u.deg, gg['dec_plane']*u.deg, frame='icrs')
+catind, ggind, angsep, ang3d = search_around_sky(catgal, gggal, 1*u.arcsec)
+cat.remove_rows(catind)
+ascii.write(cat, 'plane_innosurveys_11_02_18.txt', format='basic')

@@ -17,7 +17,16 @@ gg = fits.open('../plane_gais_10_13_18.fits')[1].data # GAIS
 ############################################################
 # Now make plots
 ############################################################
-# 1. Gaia CMD
+# NUV vs FWHM
+scatter_contour(cat['nuv'], cat['FWHM_IMAGE'], threshold=1000, log_counts=True, histogram2d_args=dict(bins=40), plot_args=dict(color='k', markersize=1, alpha=0.1), contour_args=dict(cmap=cm.gray, zorder=10))
+plt.xlim(12, 21)
+plt.xlabel('NUV')
+plt.ylabel('FWHM [pixels]')
+plt.show()
+
+############################################################
+# Gaia CMD
+############################################################
 gag = fits.open('gais_gaiadr2_negparcuts_dust_09_27_18.fits')[1].data 
 
 negpar = np.where((cg['dist'] > 0) & (cg['visibility_periods_used'] > 8) & (cg['phot_bp_mean_mag'] > 0) & (cg['phot_rp_mean_mag'] > 0) & (cg['expsum'] > 5) & (cg['ebv'] > 0) & (cg['parallax_error']/cg['parallax'] < 0.1))
@@ -86,6 +95,7 @@ plt.show()
 ############################################################
 gg = fits.open('plane_gais_10_13_18.fits')[1].data
 
+'''
 averages = []
 deln = gg['nuv_mag']-gg['nuv_plane']
 delnavg = gg['nuv_mag']-gg['nuv_plane']
@@ -94,6 +104,7 @@ for mag in np.arange(12.5, 20.5, 0.5):
 	avg = np.average(deln[cut]) - 0.03
 	delnavg[cut] = delnavg[cut] - avg
 	averages.append(avg)
+'''
 
 scatter_contour(gg['nuv_mag'], gg['nuv_mag']-gg['nuv_plane'], threshold=10000, log_counts=True, histogram2d_args=dict(bins=(40)), plot_args=dict(color='k', markersize=1, alpha=0.1), contour_args=dict(cmap=cm.gray))
 
@@ -108,30 +119,21 @@ plt.show()
 ############################################################
 # NUV histogram for all surveys
 ############################################################
-cat = fits.open('starcat_allscans_09-28-18.fits')[1].data # catalog
-ps = fits.open('plane_ps1_g10-20_09_26_18.fits')[1].data # Pan starrs
-cg = fits.open('plane_gaiadr2_dust_09_27_18.fits')[1].data  # gaia
-gg = fits.open('plane_gais_09-26-18.fits')[1].data # GAIS 
-allcat = fits.open('plane_gaia_gais_ps1_all_09_27_18.fits')[1].data
-none = Table.read('plane_innosurveys.txt', format='ascii')
+cat = fits.open('starcat_allscans_10-12-18.fits')[1].data # catalog
+ps = fits.open('plane_ps1_g10-20_10_12_18.fits')[1].data # Pan starrs
+cg = fits.open('plane_gaiadr2_dust_10_13_18.fits')[1].data  # gaia
+gg = fits.open('plane_gais_10_13_18.fits')[1].data # GAIS 
+allcat = fits.open('plane_gaiadr2_gais_ps1_11_02_18.fits')[1].data
+none = Table.read('plane_innosurveys_11_02_18.txt', format='ascii')
 
-'''
-cat = cat[np.where(cat['nuv'] < 20.)]
-ps = ps[np.where(ps['nuv'] < 20.)]
-cg = cg[np.where(cg['nuv'] < 20.)]
-gg = gg[np.where(gg['nuv'] < 20.)]
-allcat = allcat[np.where(allcat['nuv'] < 20.)]
-none = none[np.where(none['nuv'] < 20.)]
-'''
 
-ps = ps[np.where(ps['nuv'] < 20.5)]
 
 plt.hist(cat['nuv'], bins=20, range=[12,21], label='Plane')
 plt.hist(cg['nuv'], bins=20, range=[12, 21], histtype='step',linewidth=3, stacked=True, label='Plane+Gaia')
 plt.hist(ps['nuv'], bins=20, range=[12, 21], histtype='step', linewidth=3, stacked=True, label='Plane+PS1')
-plt.hist(gg['nuv'], bins=20, range=[12, 21], histtype='step', linewidth=2, stacked=True, label='Plane+GAIS')
+plt.hist(gg['nuv_plane'], bins=20, range=[12, 21], histtype='step', linewidth=2, stacked=True, label='Plane+GAIS')
 plt.hist(none['nuv'], bins=20, range=[12, 21], histtype='step', linewidth=2, stacked=True, label='No surveys', color='yellow')
-plt.hist(allcat['nuv'], bins=20, range=[12, 21], histtype='step', linewidth=2, stacked=True, label='Plane+All surveys')
+plt.hist(allcat['nuv_1'], bins=20, range=[12, 21], histtype='step', linewidth=2, stacked=True, label='Plane+All surveys')
 
 plt.legend(loc=2)
 plt.xlabel('NUV')
@@ -141,11 +143,12 @@ plt.show()
 # NUV offset histogram with GAIS
 ############################################################
 for mag in range(12, 21,2):
-    cut = np.where((gg['nuv'] > mag) & (gg['nuv'] < mag+2))
-    dnuv = (gg['nuv_mag']-gg['nuv'])[cut] 
+    cut = np.where((gg['nuv_plane'] > mag) & (gg['nuv_plane'] < mag+2))
+    dnuv = (gg['nuv_mag']-gg['nuv_plane'])[cut] 
     plt.hist(dnuv, histtype='step', fill=False, stacked=True, label=str(mag)+'-'+str(mag+2), range=[-1, 1], bins=40)
 plt.legend(scatterpoints=1, loc=2)
 plt.xlabel('dNUV (GAIS - plane)')
+plt.xlim(-0.4, 1)
 plt.show()
 
 
@@ -157,7 +160,7 @@ bins = 4
 
 scatter_contour(ps['g_ps']-ps['r_ps'], ps['g_ps'], threshold=threshold, log_counts=True, histogram2d_args=dict(bins=(bins)), plot_args=dict(color='k', markersize=1, alpha=0.1), contour_args=dict(cmap=cm.gray))
 plt.gca().invert_yaxis()
-plt.xlim(-7, 7.5)
+plt.xlim(-4, 4)
 plt.ylim(20, 11)
 plt.xlabel('g - r')
 plt.ylabel('g')
@@ -167,22 +170,11 @@ plt.show()
 ############################################################
 # g-r vs NUV-g
 ############################################################
+fig, ax = plt.subplots()
 pickles = Table.read('picklemags_laphare_final.txt', format='ascii')
 scatter_contour(ps['nuv']-ps['g_ps'], ps['g_ps']-ps['r_ps'], threshold=10000, log_counts=True, histogram2d_args=dict(bins=40), plot_args=dict(color='k', markersize=1, alpha=0.1), contour_args=dict(cmap=cm.gray))
 plt.scatter(pickles['nuv']-pickles['g'], pickles['g']-pickles['r'], color='red', label='SED model',  s=30)
-plt.gca().add_patch(matplotlib.patches.Rectangle((-0.5, 0.6), 2.5, 0.5, facecolor='yellow', alpha=0.5))
-plt.gca().add_patch(matplotlib.patches.Rectangle((-0.5, 1.1), 6.5, 0.5, facecolor='yellow', alpha=0.5))
-plt.gca().add_patch(matplotlib.patches.Rectangle((2, -0.1), 6, 0.8, facecolor='lightblue', alpha=0.5, angle=5))
-plt.gca().add_patch(matplotlib.patches.Rectangle((-1.9, -0.75), 3, 0.65, facecolor='gray', alpha=0.5))
-plt.arrow(3,  -0.75,  2.972-1.1838,  1.1838-0.8664,  head_length=0.05,  head_width=0.02,  color='red')
-
-
-
-
-pickles = Table.read('picklemags_laphare_final.txt', format='ascii')
-scatter_contour(ps['nuv']-ps['g_ps'], ps['g_ps']-ps['r_ps'], threshold=10000, log_counts=True, histogram2d_args=dict(bins=40), plot_args=dict(color='k', markersize=1, alpha=0.1), contour_args=dict(cmap=cm.gray))
-plt.scatter(pickles['nuv']-pickles['g'], pickles['g']-pickles['r'], color='red', label='SED model',  s=30)
-plt.xlim((-2.1, 9.1))
+plt.xlim((-1.2, 7))
 plt.ylim((-1, 2))
 
 plt.annotate('O', xy=(0, -0.9), size=20)
@@ -195,7 +187,19 @@ plt.xlabel('NUV - g')
 plt.ylabel('g - r')
 plt.arrow(3,  -0.75,  2.972-1.1838,  1.1838-0.8664,  head_length=0.05,  head_width=0.02,  color='red')
 plt.legend(scatterpoints=1, loc=4)
+
+# MS, WDs and binaries respectively
+p1 = Polygon([[1.7, -0.5], [1.9, 0.3], [2.7, 0.7], [4, 1.05], [5.2, 1.05], [5.8, 1], [6.5, 0.95], [6.6, 0.3], [6, -0.1], [4.6, -0.4], [3.2, -0.5], [1.7, -0.5]])
+p2 = Polygon([[-1, -0.6], [0.9, -0.25], [0.73, 0], [-1, -0.3], [-1, -0.6]])
+p3 = Polygon([[1.7, -0.5], [1.9, 0.3], [2.7, 0.7], [4, 1.05], [5.2, 1.05], [5.8, 1], [6.5, 0.95], [6.5, 2], [-2.1, 2], [-2.1, 0.5], [1.9, 0.3]])
+
+patches = [p1, p2, p3]
+p = PatchCollection(patches, alpha=0.3, cmap=matplotlib.cm.jet)
+p.set_array(np.array([100, 50, 80]))
+#p.set_array(np.array(100.*np.random.rand(3)))
+ax.add_collection(p)
 plt.show()
+
 
 ####################################################################
 # NUV - g vs g - i
@@ -281,3 +285,10 @@ cind, cgind, a, b = search_around_sky(catgal, cggal, 0.1*u.arcsec)
 cat.remove_rows(cind)
 
 len(cat)
+
+
+
+
+
+
+
