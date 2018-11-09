@@ -765,16 +765,16 @@ WHERE 1=CONTAINS(
 
 # Remember to rename the 'dist' column too 'angsep'
 from dustmaps.bayestar import BayestarQuery
-cg = fits.open('plane_gaia_pt2_10_12_18.fits')[1].data
+cg = fits.open('plane_gaiadr2_pt1.fits')[1].data
 cg = Table(cg)
 
-cg.remove_columns(('col0', 'col1', 'col2'))
+#cg.remove_columns(('col0', 'col1', 'col2'))
 cg.rename_column('ALPHA_J2000', 'ra_plane')
 cg.rename_column('DELTA_J2000', 'dec_plane')
-cg.rename_column('dec', 'dec_gaia')
-cg.rename_column('ra', 'ra_gaia')
+#cg.rename_column('dec', 'dec_gaia')
+#cg.rename_column('ra', 'ra_gaia')
 
-negpar = np.where((cg['parallax'] > 0.) & (cg['phot_g_mean_mag'] > 0.) & (cg['phot_bp_mean_mag'] > 0.) & (cg['phot_rp_mean_mag'] > 0.) & (cg['expsum'] > 10.))
+negpar = np.where((cg['parallax'] > 0.) & (cg['phot_g_mean_mag'] > 0.) & (cg['phot_bp_mean_mag'] > 0.) & (cg['phot_rp_mean_mag'] > 0.) & (cg['expsum'] > 3.) & (cg['ctsum'] > 1) & (cg['bkgdsum'] > 0) & (cg['angsep'] < 2))
 cg = cg[negpar]
 pc = 1000./cg['parallax']
 distmod = 5. * np.log10(pc) - 5
@@ -787,7 +787,7 @@ cg['dist'] = pc
 cg['distmod'] = distmod
 cg['ebv'] = ebv
 ascii.write(cg, 'plane_gaiadr2_dust_pt2.txt', format='basic')
-addhash('plane_gaiadr2_dust_pt2.txt')
+addhash('plane_gaiadr2_dust_pt1.txt')
 
 
 # Pickles pysynphot files

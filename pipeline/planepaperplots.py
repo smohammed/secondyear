@@ -79,14 +79,12 @@ plt.show()
 ############################################################
 # Angular separations for Gaia and PS1
 ############################################################
-cg = fits.open('plane_gaiadr2_dust_09_27_18.fits')[1].data
-plt.hist(cg['angsep']*3600, bins=20),plt.show()
-plt.xlabel('Angular Separation [Plane to Gaia]')
-plt.show()
-
-ps = fits.open('plane_ps1_g10-20_09_26_18.fits')[1].data
-plt.hist(ps['angsep']*3600, bins=20)
-plt.xlabel('Angular Separation [Plane to PS1]')
+cg = fits.open('plane_gaiadr2_dust_10_13_18.fits')[1].data
+ps = fits.open('plane_ps1_g10-20_10_12_18.fits')[1].data
+plt.hist(cg['angsep']*3600, bins=20, alpha=0.7, label='Gaia match', color='#00E6FF')
+plt.hist(ps['angsep']*3600, bins=20, alpha=0.7, label='PS1 match', color='#FF5C5C')
+plt.xlabel('Angular Separation')
+plt.legend(scatterpoints=1)
 plt.show()
 
 
@@ -128,7 +126,7 @@ none = Table.read('plane_innosurveys_11_02_18.txt', format='ascii')
 
 
 
-plt.hist(cat['nuv'], bins=20, range=[12,21], label='Plane')
+plt.hist(cat['nuv'], bins=20, range=[12,21], label='Plane', alpha=0.7, color='#00E6FF')
 plt.hist(cg['nuv'], bins=20, range=[12, 21], histtype='step',linewidth=3, stacked=True, label='Plane+Gaia')
 plt.hist(ps['nuv'], bins=20, range=[12, 21], histtype='step', linewidth=3, stacked=True, label='Plane+PS1')
 plt.hist(gg['nuv_plane'], bins=20, range=[12, 21], histtype='step', linewidth=2, stacked=True, label='Plane+GAIS')
@@ -201,28 +199,6 @@ ax.add_collection(p)
 plt.show()
 
 
-####################################################################
-# NUV - g vs g - i
-####################################################################
-scatter_contour(ps['g_ps']-ps['i_ps'],ps['nuv']-ps['g_ps'],threshold=10000,log_counts=True,histogram2d_args=dict(bins=40),plot_args=dict(color='k',markersize=1, alpha=0.1), contour_args=dict(cmap=cm.gray))
-plt.scatter(pickles['g']-pickles['i'],pickles['nuv']-pickles['g'],color='red', label='SED model', s=30, zorder=10)
-plt.arrow(-1.9, 2, 1.1936-0.6533, 2.9720-1.1936, head_length=0.05, head_width=0.02, color='red', zorder=10)
-plt.xlim((-2, 3))
-plt.ylim((8, -2))
-
-plt.annotate('O', xy=(-1.2, 0), size=20)
-plt.annotate('B', xy=(-1.1, 1), size=20)
-plt.annotate('A', xy=(-0.9, 2.3), size=20)
-plt.annotate('F', xy=(-0.5, 3.5), size=20)
-plt.annotate('G', xy=(1.1, 5), size=20)
-plt.annotate('K', xy=(1.5, 6), size=20)
-
-plt.xlabel('g - i')
-plt.ylabel('NUV - g')
-plt.legend(scatterpoints=1, loc=3)
-plt.show()
-
-
 ############################################################
 # Area
 ############################################################
@@ -238,16 +214,16 @@ ra = np.array(g['ra_cent'], dtype=np.float32)
 dec = np.array(g['dec_cent'], dtype=np.float32)
 gal = SkyCoord(ra*u.deg, dec*u.deg, frame='icrs').galactic
 
-cat = fits.open('starcat_allscans_09-28-18.fits')[1].data
+cat = fits.open('starcat_allscans_10-12-18.fits')[1].data
 catgal = SkyCoord(cat['gl']*u.deg, cat['gb']*u.deg, frame='galactic')
 cid, gid, angsep, ang3d = gal.search_around_sky(catgal, 1*u.degree)
 q = np.unique(cid)
 c2 = cat[q]
 
-gais = fits.open('GALEXPlanenew.fits')[1].data
+gais = fits.open('GAISPlane.fits')[1].data
 
-plt.hist(gais['nuv_mag'], range=[12,22], bins=20, label='GAIS', log=True)
-plt.hist(c2['nuv'], range=[12,22], bins=20, histtype='step', linewidth=2, stacked=True, label='Plane in GAIS area', log=True)
+plt.hist(gais['nuv_mag'], range=[12,25], bins=20, label='GAIS', log=True, alpha=0.7, color='#00E6FF')
+plt.hist(c2['nuv'], range=[12,25], bins=20, histtype='step', linewidth=2, stacked=True, label='Plane in GAIS area', log=True, color='red')
 plt.legend(scatterpoints=1, loc=2)
 plt.xlabel('NUV')
 plt.show()
@@ -257,10 +233,10 @@ plt.show()
 ############################################################
 # How many objects in the plane survey are in none of the others = 483,956
 ############################################################
-cat = fits.open('starcat_allscans_09-19-18.fits')[1].d28a # catalog
-ps = fits.open('plane_ps1_g10-20_09_26_18.fits')[1].data # Pan starrs
-cg = fits.open('plane_gaiadr2_dust_09_27_18.fits')[1].data  # gaia
-gg = fits.open('plane_gais_09-26-18.fits')[1].data # GAIS 
+cat = fits.open('starcat_allscans_10-12-18')[1].data # catalog
+ps = fits.open('plane_ps1_g10-20_10_12_18.fits')[1].data # Pan starrs
+cg = fits.open('plane_gaiadr2_dust_10_13_18.fits')[1].data  # gaia
+gg = fits.open('plane_gais_10_13_18.fits')[1].data # GAIS 
 
 
 catgal = SkyCoord(cat['ALPHA_J2000']*u.deg, cat['DELTA_J2000']*u.deg, frame='icrs')
