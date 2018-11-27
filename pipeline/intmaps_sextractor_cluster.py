@@ -4,6 +4,13 @@ from astropy.table import Table, hstack
 from astropy.coordinates import SkyCoord
 from astropy.wcs import WCS
 import os
+import matplotlib
+import matplotlib.cm as cm
+from matplotlib import pyplot as plt
+from astroML.plotting import scatter_contour
+matplotlib.rcParams['figure.figsize'] = 14, 12
+matplotlib.rcParams['font.size'] = 18
+
 
 # Files written:
 # 1. Background 
@@ -103,10 +110,12 @@ for currregion in skyrange:
 
     scatter_contour(alldata['nuv'], alldata['FWHM_IMAGE'], threshold=1000, log_counts=True, histogram2d_args=dict(bins=40), plot_args=dict(color='k', markersize=1, alpha=0.1), contour_args=dict(cmap=cm.gray, zorder=10))
     plt.xlim(12, 21)
+    plt.ylim(0, 10)
     plt.xlabel('NUV')
     plt.ylabel('FWHM [pixels]')
-    plt.title('')
-    plt.savefig('fwhmvsnuv_tests_detect_thresh_6.png')
+    plt.title('detect_thresh_6')
+
+    plt.savefig('../images/11-09-18-fwhmvsnuv_tests_detect_thresh_6.png')
 
     if weight == 0:
         ascii.write(alldata, '../../galexscans/tests_starcat_'+currregion+'_11_08_2018.txt', format='ipac')

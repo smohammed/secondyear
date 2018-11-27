@@ -765,29 +765,31 @@ WHERE 1=CONTAINS(
 
 # Remember to rename the 'dist' column too 'angsep'
 from dustmaps.bayestar import BayestarQuery
-cg = fits.open('plane_gaiadr2_pt1.fits')[1].data
+cg = fits.open('plane_gaiadr2_pt2.fits')[1].data
 cg = Table(cg)
+cg.rename_column('dist', 'angsep')
 
 #cg.remove_columns(('col0', 'col1', 'col2'))
 cg.rename_column('ALPHA_J2000', 'ra_plane')
 cg.rename_column('DELTA_J2000', 'dec_plane')
-#cg.rename_column('dec', 'dec_gaia')
-#cg.rename_column('ra', 'ra_gaia')
+cg.rename_column('dec', 'dec_gaia')
+cg.rename_column('ra', 'ra_gaia')
 
-negpar = np.where((cg['parallax'] > 0.) & (cg['phot_g_mean_mag'] > 0.) & (cg['phot_bp_mean_mag'] > 0.) & (cg['phot_rp_mean_mag'] > 0.) & (cg['expsum'] > 3.) & (cg['ctsum'] > 1) & (cg['bkgdsum'] > 0) & (cg['angsep'] < 2))
+negpar = np.where((cg['parallax'] > 0.) & (cg['phot_g_mean_mag'] > 0.) & (cg['phot_bp_mean_mag'] > 0.) & (cg['phot_rp_mean_mag'] > 0.) & (cg['expsum'] > 3.) & (cg['ctsum'] > 1) & (cg['bkgdsum'] > 0) & (cg['angsep']*3600. < 2))
 cg = cg[negpar]
 pc = 1000./cg['parallax']
 distmod = 5. * np.log10(pc) - 5
 cggal = SkyCoord(cg['ra_gaia']*u.deg, cg['dec_gaia']*u.deg, distance=pc*u.pc, frame='icrs')
 
+print 'running dust query'
 baye = BayestarQuery()
 ebv = baye(cggal, mode='median')
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    
+
 cg['dist'] = pc
 cg['distmod'] = distmod
 cg['ebv'] = ebv
 ascii.write(cg, 'plane_gaiadr2_dust_pt2.txt', format='basic')
-addhash('plane_gaiadr2_dust_pt1.txt')
+addhash('plane_gaiadr2_dust_pt2.txt')
 
 
 # Pickles pysynphot files
@@ -827,7 +829,7 @@ r = np.array(r)
 # Get plane table with no outside catalog matches 
 #############################################################
 cat = fits.open('starcat_allscans_10-12-18_cuts.fits')[1].data
-cg = fits.open('plane_gaiadr2_dust_10_13_18.fits')[1].data
+cg = fits.open('plane_gaiadr2_dust_11_14_18.fits')[1].data
 
 catgal = SkyCoord(cat['ALPHA_J2000']*u.deg, cat['DELTA_J2000']*u.deg, frame='icrs')
 cggal = SkyCoord(cg['ra_plane']*u.deg, cg['dec_plane']*u.deg, frame='icrs')
@@ -841,9 +843,9 @@ psgal = SkyCoord(ps['ALPHA_J2000']*u.deg, ps['DELTA_J2000']*u.deg, frame='icrs')
 catind, psind, angsep, ang3d = search_around_sky(catgal, psgal, 1*u.arcsec)
 cat.remove_rows(catind)
 
-gg = fits.open('plane_gais_10_13_18.fits')[1].data
+gg = fits.open('plane_gais_11_27_18.fits')[1].data
 catgal = SkyCoord(cat['ALPHA_J2000']*u.deg, cat['DELTA_J2000']*u.deg, frame='icrs')
-gggal = SkyCoord(gg['ra_plane']*u.deg, gg['dec_plane']*u.deg, frame='icrs')
+gggal = SkyCoord(gg['ALPHA_J2000']*u.deg, gg['DELTA_J2000']*u.deg, frame='icrs')
 catind, ggind, angsep, ang3d = search_around_sky(catgal, gggal, 1*u.arcsec)
 cat.remove_rows(catind)
-ascii.write(cat, 'plane_innosurveys_11_02_18.txt', format='basic')
+ascii.write(cat, 'plane_innosurveys_11_27_18.txt', format='basic')

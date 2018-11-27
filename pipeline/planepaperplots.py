@@ -9,10 +9,10 @@ matplotlib.rcParams['font.size'] = 18
 from colormaps import *
 
 # Load original and matched catalogs
-cat = fits.open('../starcat_allscans_10-12-18')[1].data # catalog
-ps = fits.open('../plane_ps1_g10-20_10_12_18.fits')[1].data # Pan starrs
-cg = fits.open('../plane_gaiadr2_dust_10_13_18.fits')[1].data  # gaia
-gg = fits.open('../plane_gais_10_13_18.fits')[1].data # GAIS 
+cat = fits.open('../starcat_allscans_10-12-18_cuts.fits')[1].data # catalog
+ps = fits.open('../plane_ps1_g10-20_11_27_18.fits')[1].data # Pan starrs
+cg = fits.open('../plane_gaiadr2_dust_11_14_18.fits')[1].data  # gaia
+gg = fits.open('../plane_gais_11_27_18.fits')[1].data # GAIS 
 
 ############################################################
 # Now make plots
@@ -79,10 +79,13 @@ plt.show()
 ############################################################
 # Angular separations for Gaia and PS1
 ############################################################
-cg = fits.open('plane_gaiadr2_dust_10_13_18.fits')[1].data
-ps = fits.open('plane_ps1_g10-20_10_12_18.fits')[1].data
-plt.hist(cg['angsep']*3600, bins=20, alpha=0.7, label='Gaia match', color='#00E6FF')
-plt.hist(ps['angsep']*3600, bins=20, alpha=0.7, label='PS1 match', color='#FF5C5C')
+cg = fits.open('plane_gaiadr2_dust_11_14_18.fits')[1].data
+ps = fits.open('plane_ps1_g10-20_11_27_18.fits')[1].data
+cg = cg[np.where(cg['angsep']*3600. < 2.0)]
+ps = ps[np.where(ps['angsep']*3600. < 2.0)]
+
+plt.hist(cg['angsep']*3600, bins=20, alpha=0.7, label='Gaia match', color='#00E6FF', edgecolor='black')
+plt.hist(ps['angsep']*3600, bins=20, alpha=0.7, label='PS1 match', color='#FF5C5C', edgecolor='black')
 plt.xlabel('Angular Separation')
 plt.legend(scatterpoints=1)
 plt.show()
@@ -91,7 +94,7 @@ plt.show()
 ############################################################
 # NUV comparison
 ############################################################
-gg = fits.open('plane_gais_10_13_18.fits')[1].data
+gg = fits.open('plane_gais_11_27_18.fits')[1].data
 
 '''
 averages = []
@@ -104,7 +107,8 @@ for mag in np.arange(12.5, 20.5, 0.5):
 	averages.append(avg)
 '''
 
-scatter_contour(gg['nuv_mag'], gg['nuv_mag']-gg['nuv_plane'], threshold=10000, log_counts=True, histogram2d_args=dict(bins=(40)), plot_args=dict(color='k', markersize=1, alpha=0.1), contour_args=dict(cmap=cm.gray))
+# Subtract 0.25 mag from plane NUV because the offset was added to the _cut.fits file
+scatter_contour(gg['nuv_mag'], gg['nuv_mag']-(gg['nuv']-0.25), threshold=10000, log_counts=True, histogram2d_args=dict(bins=(40)), plot_args=dict(color='k', markersize=1, alpha=0.1), contour_args=dict(cmap=cm.gray))
 
 plt.axhline(y=0, color='red')
 plt.xlim(12, 22.5)
@@ -117,21 +121,23 @@ plt.show()
 ############################################################
 # NUV histogram for all surveys
 ############################################################
-cat = fits.open('starcat_allscans_10-12-18.fits')[1].data # catalog
-ps = fits.open('plane_ps1_g10-20_10_12_18.fits')[1].data # Pan starrs
-cg = fits.open('plane_gaiadr2_dust_10_13_18.fits')[1].data  # gaia
-gg = fits.open('plane_gais_10_13_18.fits')[1].data # GAIS 
-allcat = fits.open('plane_gaiadr2_gais_ps1_11_02_18.fits')[1].data
-none = Table.read('plane_innosurveys_11_02_18.txt', format='ascii')
+cat = fits.open('starcat_allscans_10-12-18_cuts.fits')[1].data # catalog
+ps = fits.open('plane_ps1_g10-20_11_27_18.fits')[1].data # Pan starrs
+cg = fits.open('plane_gaiadr2_dust_11_14_18.fits')[1].data  # gaia
+gg = fits.open('plane_gais_11_27_18.fits')[1].data # GAIS 
+allcat = fits.open('plane_gaiadr2_gais_ps1_11_27_18.fits')[1].data
+none = fits.open('plane_innosurveys_11_27_18.fits')[1].data
+#cg = cg[np.where(cg['angsep']*3600. < 2.0)]
+#ps = ps[np.where((ps['angsep']*3600. < 2.0) & (ps['expsum'] > 3.) & (ps['ctsum'] > 1))]
+#ps = ps[~np.isnan(cat['bkgdsum'])]
 
 
-
-plt.hist(cat['nuv'], bins=20, range=[12,21], label='Plane', alpha=0.7, color='#00E6FF')
-plt.hist(cg['nuv'], bins=20, range=[12, 21], histtype='step',linewidth=3, stacked=True, label='Plane+Gaia')
-plt.hist(ps['nuv'], bins=20, range=[12, 21], histtype='step', linewidth=3, stacked=True, label='Plane+PS1')
-plt.hist(gg['nuv_plane'], bins=20, range=[12, 21], histtype='step', linewidth=2, stacked=True, label='Plane+GAIS')
+plt.hist(cat['nuv'], bins=20, range=[12,21], label='UVGAPS', alpha=0.7, color='#00E6FF')
 plt.hist(none['nuv'], bins=20, range=[12, 21], histtype='step', linewidth=2, stacked=True, label='No surveys', color='yellow')
-plt.hist(allcat['nuv_1'], bins=20, range=[12, 21], histtype='step', linewidth=2, stacked=True, label='Plane+All surveys')
+plt.hist(cg['nuv'], bins=20, range=[12, 21], histtype='step',linewidth=3, stacked=True, label='UVGAPS+Gaia')
+plt.hist(gg['nuv'], bins=20, range=[12, 21], histtype='step', linewidth=2, stacked=True, label='UVGAPS+GAIS')
+plt.hist(ps['nuv'], bins=20, range=[12, 21], histtype='step', linewidth=3, stacked=True, label='UVGAPS+PS1')
+plt.hist(allcat['nuv_plane'], bins=20, range=[12, 21], histtype='step', linewidth=2, stacked=True, label='UVGAPS+All surveys')
 
 plt.legend(loc=2)
 plt.xlabel('NUV')
@@ -140,12 +146,16 @@ plt.show()
 ############################################################
 # NUV offset histogram with GAIS
 ############################################################
+gg = fits.open('plane_gais_11_27_18.fits')[1].data # GAIS 
+
+nuv = gg['nuv'] - 0.25
+
 for mag in range(12, 21,2):
-    cut = np.where((gg['nuv_plane'] > mag) & (gg['nuv_plane'] < mag+2))
-    dnuv = (gg['nuv_mag']-gg['nuv_plane'])[cut] 
+    cut = np.where((nuv > mag) & (nuv < mag+2))
+    dnuv = (gg['nuv_mag']-nuv)[cut] 
     plt.hist(dnuv, histtype='step', fill=False, stacked=True, label=str(mag)+'-'+str(mag+2), range=[-1, 1], bins=40)
 plt.legend(scatterpoints=1, loc=2)
-plt.xlabel('dNUV (GAIS - plane)')
+plt.xlabel('$\Delta$NUV (GAIS - plane)')
 plt.xlim(-0.4, 1)
 plt.show()
 
@@ -168,6 +178,8 @@ plt.show()
 ############################################################
 # g-r vs NUV-g
 ############################################################
+from matplotlib.patches import Polygon
+from matplotlib.collections import PatchCollection
 fig, ax = plt.subplots()
 pickles = Table.read('picklemags_laphare_final.txt', format='ascii')
 scatter_contour(ps['nuv']-ps['g_ps'], ps['g_ps']-ps['r_ps'], threshold=10000, log_counts=True, histogram2d_args=dict(bins=40), plot_args=dict(color='k', markersize=1, alpha=0.1), contour_args=dict(cmap=cm.gray))
@@ -178,8 +190,8 @@ plt.ylim((-1, 2))
 plt.annotate('O', xy=(0, -0.9), size=20)
 plt.annotate('B', xy=(1, -0.81), size=20)
 plt.annotate('A', xy=(2.5, -0.5), size=20)
-plt.annotate('F', xy=(3.7, -0.4), size=20)
-plt.annotate('G', xy=(5, -0.2), size=20)
+plt.annotate('F', xy=(3.7, -0.5), size=20)
+plt.annotate('G', xy=(5, -0.3), size=20)
 plt.annotate('K', xy=(6.2, -0.1), size=20)
 plt.xlabel('NUV - g')
 plt.ylabel('g - r')
@@ -235,7 +247,7 @@ plt.show()
 ############################################################
 cat = fits.open('starcat_allscans_10-12-18')[1].data # catalog
 ps = fits.open('plane_ps1_g10-20_10_12_18.fits')[1].data # Pan starrs
-cg = fits.open('plane_gaiadr2_dust_10_13_18.fits')[1].data  # gaia
+cg = fits.open('plane_gaiadr2_dust_11_14_18.fits')[1].data  # gaia
 gg = fits.open('plane_gais_10_13_18.fits')[1].data # GAIS 
 
 
