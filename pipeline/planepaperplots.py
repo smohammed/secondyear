@@ -226,7 +226,7 @@ ra = np.array(g['ra_cent'], dtype=np.float32)
 dec = np.array(g['dec_cent'], dtype=np.float32)
 gal = SkyCoord(ra*u.deg, dec*u.deg, frame='icrs').galactic
 
-cat = fits.open('starcat_allscans_10-12-18.fits')[1].data
+cat = fits.open('starcat_allscans_10-12-18_cuts.fits')[1].data
 catgal = SkyCoord(cat['gl']*u.deg, cat['gb']*u.deg, frame='galactic')
 cid, gid, angsep, ang3d = gal.search_around_sky(catgal, 1*u.degree)
 q = np.unique(cid)
@@ -235,7 +235,7 @@ c2 = cat[q]
 gais = fits.open('GAISPlane.fits')[1].data
 
 plt.hist(gais['nuv_mag'], range=[12,25], bins=20, label='GAIS', log=True, alpha=0.7, color='#00E6FF')
-plt.hist(c2['nuv'], range=[12,25], bins=20, histtype='step', linewidth=2, stacked=True, label='Plane in GAIS area', log=True, color='red')
+plt.hist(c2['nuv'], range=[12,25], bins=20, histtype='step', linewidth=2, stacked=True, label='UVGAPS in GAIS area', log=True, color='red')
 plt.legend(scatterpoints=1, loc=2)
 plt.xlabel('NUV')
 plt.show()
