@@ -896,3 +896,10 @@ for i in range(len(exp)):
         plt.plot(np.linspace(-10, 10, len(expvals)), expvals, label=str(i))
         expvals = 0
 plt.show()
+
+
+
+plt.ylim(14, -3)
+plt.xlim(-2, 11.6)
+plt.xlabel('(NUV - G)$_0$')
+plt.ylabel('M$_G$')
