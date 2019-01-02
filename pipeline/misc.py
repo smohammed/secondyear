@@ -743,6 +743,35 @@ WHERE 1=CONTAINS(
   CIRCLE('ICRS', gaia.ra, gaia.dec, 0.0008333333333333334)
 )
 
+# Now try for PS1 DR1
+SELECT crossmatch_positional('MyDB','planecoords','PanSTARRS_DR1','StackObjectThin',3.0,'galexmatch') FROM dual
+
+SELECT a."ra", a."dec", ps."objID", ps."gra", ps."gdec", ps."gApMag", ps."gApMagErr", ps."rra", ps."rdec", ps."rApMag", ps."rApMagErr",ps."ira", ps."idec", ps."iApMag", ps."iApMagErr",ps."zra", ps."zdec", ps."zApMag", ps."zApMagErr",ps."yra", ps."ydec", ps."yApMag", ps."yApMagErr", distance(
+  POINT('ICRS', a.col1, a.col2),
+  POINT('ICRS', ps.gra, ps.gdec)) AS dist
+FROM PanSTARRS_DR1.StackObjectThin AS ps, MyDB.planecoords AS a
+WHERE 1=CONTAINS(
+  POINT('ICRS', a.ra, a.dec),
+  CIRCLE('ICRS', ps.ra, ps.dec, 0.0008333333333333334)
+)
+
+# casjobs says do this except they don't have spgetneighbors...wtf
+CREATE TABLE #UPLOAD(
+   up_ra FLOAT,
+   up_dec FLOAT,
+   up_id int
+)
+INSERT INTO #UPLOAD
+SELECT RA AS UP_RA,DEC AS UP_DEC,search_id AS UP_ID
+FROM MyDB.planecoords 
+CREATE TABLE #tmp (
+              up_id int,
+               objid bigint
+)
+INSERT INTO #tmp
+EXEC spGetNeighbors 0.05
+INSERT INTO MyDB.pan
+select a.*,t.objid as matched_id from #tmp t, MyDB.planecoords a  where t.up_id = a.search_id 
 
 #############################################################
 # Match dust to plane data. Do twice because query is killed

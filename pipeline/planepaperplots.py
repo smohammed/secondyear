@@ -182,7 +182,7 @@ from matplotlib.patches import Polygon
 from matplotlib.collections import PatchCollection
 fig, ax = plt.subplots()
 pickles = Table.read('picklemags_laphare_final.txt', format='ascii')
-scatter_contour(ps['nuv']-ps['g_ps'], ps['g_ps']-ps['r_ps'], threshold=10000, log_counts=True, histogram2d_args=dict(bins=40), plot_args=dict(color='k', markersize=1, alpha=0.1), contour_args=dict(cmap=cm.gray))
+scatter_contour(ps['nuv_1']-ps['g_ps'], ps['g_ps']-ps['r_ps'], threshold=10000, log_counts=True, histogram2d_args=dict(bins=40), plot_args=dict(color='k', markersize=1, alpha=0.1), contour_args=dict(cmap=cm.gray))
 plt.scatter(pickles['nuv']-pickles['g'], pickles['g']-pickles['r'], color='red', label='SED model',  s=30)
 plt.xlim((-1.2, 7))
 plt.ylim((-1, 2))
@@ -197,6 +197,7 @@ plt.xlabel('NUV - g')
 plt.ylabel('g - r')
 plt.arrow(3,  -0.75,  2.972-1.1838,  1.1838-0.8664,  head_length=0.05,  head_width=0.02,  color='red')
 plt.legend(scatterpoints=1, loc=4)
+plt.show()
 
 # MS, WDs and binaries respectively
 p1 = Polygon([[1.7, -0.5], [1.9, 0.3], [2.7, 0.7], [4, 1.05], [5.2, 1.05], [5.8, 1], [6.5, 0.95], [6.6, 0.3], [6, -0.1], [4.6, -0.4], [3.2, -0.5], [1.7, -0.5]])
