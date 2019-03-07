@@ -1,0 +1,75 @@
+AAS talk outline:
+
+Slide 1:
+- Plane surveys over many wavelengths
+- Many UV telescopes existed but either provided spotty coverage or low resolution data
+
+Slide 2:
+- GALEX was the latest UV telescope from a 10 year long mission
+- Producted 3 surveys, A, M, and DIS using pointing method
+- Still avoided the Galactic plane due to bright star restrictions
+- At end of lifetime, restrictions were relaxed and data finally started coming in of GP
+
+Slide 3:
+- UVGAPS: The Ultraviolet Galactic Plane Survey (authors)
+- Highest resolution and largest footprint of the Galactic plane that exists
+- Quality comparable to previous GALEX data
+
+Slide 4: 
+- Intensity maps were created using count and exposure maps (pipeline by Wang et al)
+- Show GP images, highlight regions
+- Galactic center is obscured due to dust, but many features are visible 
+- Exposure times varried between each scan. Some scans did not reach gb = -10 to 10 
+- (Talk about the pipeline/distortion map?)
+
+
+Slide 5:
+- Source EXtractor was used on the images with custom input file
+- Flow chart: run SE, get bkmap, manually subtract, run SE with 0 bk sub
+- Yielded about ~3 million objects (add calculation for what we expect to see)
+
+
+Slide 6: Calibration
+- Are our outputs correct?
+- FWHM vs NUV plot
+- Compared to AIS, yielded n objects between the two
+- NUV histogram vs NUV histogram of AIS, then offset by magnitude
+- Slight offset between the two due to a few things:
+-- Drift scan vs stare mode, slightly different/updated pipeline
+- Manually subtract 0.2 mag from all observations
+
+Slide 7: Other surveys
+-Compared to Gaia DR2, PS1, AIS
+-- Show NUV histograms
+- GAIA DR2 CMD. RC, WDs, main sequence visible. Show comparison to AIS with dust from GSF17
+- Pan-STARRs color-color plots. gr vs nuvg
+- Show cc plot again but highlight different regions from Gaia CMD
+
+Slide 8: How useful is this survey actually?
+- Catalog of OB stars via color color and CMD
+- Red Clump stars
+- Dust!
+
+Slide 9: Red Clump stars in AIS
+- Looking at RC stars, separate from rest of cmd in AIS
+- Compare to results from APOGEE. Show CMD for AIS and Gaia BPRP
+- Compared to catalog from Ting+18. Yielded 5157 objects
+-- Show histograms of gb, ext, etc
+
+Slide 10:
+- NUV-g vs TEFF
+- Alpha/Fe vs Fe/H separation. Use as two different groups
+
+Slide 11:
+- Finally Fe/H vs NUV-G trend. Add trend lines
+- If used as a test set on AIS data, still fits the trend
+
+Slide 12: 
+- Use RC as a metallicity finder for RC stars in AIS and UVGAPS
+
+Slide 13:
+Conclusions
+
+
+
+
