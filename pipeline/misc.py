@@ -932,3 +932,29 @@ plt.ylim(14, -3)
 plt.xlim(-2, 11.6)
 plt.xlabel('(NUV - G)$_0$')
 plt.ylabel('M$_G$')
+
+
+
+
+psg.remove_columns(('NUMBER_2','X_IMAGE_2','Y_IMAGE_2','ra_plane','dec_plane','FLUX_AUTO_2','FLUXERR_AUTO_2','FLUX_APER_2','A_IMAGE_2','B_IMAGE_2','THETA_IMAGE_2','FWHM_IMAGE_2','nuv_2','gl_2','gb_2','expsum_2','ctsum_2','bkgdsum_2'))
+
+
+
+['NUMBER_1',
+ 'X_IMAGE_1',
+ 'Y_IMAGE_1',
+ 'ALPHA_J2000',
+ 'DELTA_J2000',
+ 'FLUX_AUTO_1',
+ 'FLUXERR_AUTO_1',
+ 'FLUX_APER_1',
+ 'A_IMAGE_1',
+ 'B_IMAGE_1',
+ 'THETA_IMAGE_1',
+ 'FWHM_IMAGE_1',
+ 'nuv_1',
+ 'gl_1',
+ 'gb_1',
+ 'expsum_1',
+ 'ctsum_1',
+ 'bkgdsum_1',
