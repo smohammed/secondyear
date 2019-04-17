@@ -940,21 +940,10 @@ psg.remove_columns(('NUMBER_2','X_IMAGE_2','Y_IMAGE_2','ra_plane','dec_plane','F
 
 
 
-['NUMBER_1',
- 'X_IMAGE_1',
- 'Y_IMAGE_1',
- 'ALPHA_J2000',
- 'DELTA_J2000',
- 'FLUX_AUTO_1',
- 'FLUXERR_AUTO_1',
- 'FLUX_APER_1',
- 'A_IMAGE_1',
- 'B_IMAGE_1',
- 'THETA_IMAGE_1',
- 'FWHM_IMAGE_1',
- 'nuv_1',
- 'gl_1',
- 'gb_1',
- 'expsum_1',
- 'ctsum_1',
- 'bkgdsum_1',
+cgp = fits.open('plane_gaia_ps2_03-22-19.fits')[1].data
+nuvg = (cgp['nuv']-cgp['ebv']*7.24)-(cgp['phot_g_mean_mag']-cgp['ebv']*2.85)
+mg = cgp['phot_g_mean_mag']-cgp['distmod']-cgp['ebv']*2.85
+obcut = np.where((mg < -0.5) & (mg > -2) & (nuvg > 0) & (nuvg < 1))
+ob = cgp[obcut]
+cuts,= np.where((ob['visibility_periods_used'] > 8) & (ob['expsum'] > 10) & (ob['parallax_error']/ob['parallax'] < 0.1) & (ob['ng'] > 8) & (ob['nr'] > 8) & (ob['ni'] > 8) & (ob['nz'] > 8) & (ob['ny'] > 8))
+ob2 = ob[cuts]
