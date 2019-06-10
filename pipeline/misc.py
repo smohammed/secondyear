@@ -412,18 +412,18 @@ plt.show()
 #################################################
 scans = ['9-19', '18-28', '27-37', '36-46', '45-55', '63-73', '72-82', '81-91', '90-100', '99-109', '108-118', '117-127', '126-136', '135-145', '144-154', '153-163', '162-172', '171-181', '180-190', '189-199', '198-208', '207-217', '216-226', '225-235', '234-244', '243-253', '252-262', '261-271', '270-280', '279-289', '288-298', '297-307', '306-316', '315-325', '324-334', '333-343', '342-352', '351-1']
 
-alldata = Table.read('starcat_0-10_10_12_2018.txt', format='ascii')
+alldata = Table.read('starcat_0-10_06_06_2019.txt', format='ascii')
 alldata = alldata[np.where(alldata['gl'] < 300.)]
 
 for region in scans:
-    a = Table.read('starcat_'+region+'_10_12_2018.txt', format='ascii')
+    a = Table.read('starcat_'+region+'_06_06_2019.txt', format='ascii')
     if region == '351-1':
         a = a[np.where(a['gl'] > 300.)]
     a = a[np.where((a['FWHM_IMAGE'] > 0) & (a['FWHM_IMAGE'] < 10) & (a['gl'] > np.min(a['gl']+1.562)))]
     alldata = vstack([alldata, a])
     print region
 
-ascii.write(alldata, 'starcat_allscans_10-12-18.txt', format='basic', overwrite=True)
+ascii.write(alldata, 'starcat_allscans_06-06-19.txt', format='basic', overwrite=True)
 
 #################################################
 # Match PS1 to scan data
@@ -514,32 +514,33 @@ for scan in scans:
 #############################################################
 scans = ['0-10', '9-19', '18-28', '27-37', '36-46', '45-55', '63-73', '72-82', '81-91', '90-100', '99-109', '108-118', '117-127', '126-136', '135-145', '144-154', '153-163', '162-172', '171-181', '180-190', '189-199', '198-208', '207-217', '216-226', '225-235', '234-244', '243-253', '252-262', '261-271', '270-280', '279-289', '288-298', '297-307', '306-316', '315-325', '324-334', '333-343', '342-352', '351-1']
 
-#from photutils import aperture_photometry
-#from photutils import CircularAperture
 
 for scan in scans:
     print(scan)
-    cat = Table.read('starcat_'+scan+'_10_11_2018.txt', format='ascii')
+    cat = Table.read('starcat_'+scan+'_06_06_2019.txt', format='ascii')
+
     #bkgd = fits.open('background_im1_'+scan+'.fits')[0].data
-    #exp = fits.open('count_map_'+scan+'_exp.fits')[0].data
-    ct = fits.open('count_map_'+scan+'_count.fits')[0].data
+    exp = fits.open('count_map_'+scan+'_exp.fits')[0].data
+    #ct = fits.open('count_map_'+scan+'_count.fits')[0].data
+
     positions = [cat['X_IMAGE'], cat['Y_IMAGE']]
-	#apertures = CircularAperture(positions, r=3.)
-	#sums = aperture_photometry(img, apertures)
-    #cat['bkgdsum'] = sums['aperture_sum']
-	#ascii.write(cat, 'starcat_'+scan+'_03_26_2018.txt', format='basic')
     #bkgdval = []
+    expval = []
     #ctval = []
-    ctval = []
     for line in range(len(cat)):
-        #bkgdval.append(bkgd[int(cat['X_IMAGE'][line]), int(cat['Y_IMAGE'][line])])
-        #ctval.append(ct[int(cat['X_IMAGE'][line]), int(cat['Y_IMAGE'][line])])
         try:
-            ctval.append(ct[int(cat['Y_IMAGE'][line]), int(cat['X_IMAGE'][line])])
+            #ctval.append(ct[int(cat['Y_IMAGE'][line]), int(cat['X_IMAGE'][line])])
+            #bkgdval.append(bkgd[int(cat['Y_IMAGE'][line]), int(cat['X_IMAGE'][line])])
+            expval.append(exp[int(cat['Y_IMAGE'][line]), int(cat['X_IMAGE'][line])])
         except IndexError:
-            ctval.append(ct[int(cat['Y_IMAGE'][line])-1, int(cat['X_IMAGE'][line])-1])            
-    cat['ctsum'] = ctval
-    ascii.write(cat, 'starcat_'+scan+'_10_12_2018.txt', format='basic')
+            #ctval.append(ct[int(cat['Y_IMAGE'][line])-1, int(cat['X_IMAGE'][line])-1])
+            #bkgdval.append(bkgd[int(cat['Y_IMAGE'][line])-1, int(cat['X_IMAGE'][line])-1])
+            expval.append(exp[int(cat['Y_IMAGE'][line])-1, int(cat['X_IMAGE'][line])-1])
+    #cat['ctsum'] = ctval
+    #cat['bkgdsum'] = bkgdval
+    cat['expsum'] = expval
+
+    ascii.write(cat, 'starcat_'+scan+'_06_06_2019.txt', format='basic', overwrite=True)
 
 
 
