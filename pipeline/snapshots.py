@@ -44,10 +44,10 @@ def snap(gl, gb):
 	fig = plt.figure()
 	fig.add_subplot(111, projection=wcsmap)
 	plt.imshow(im, cmap=cm.gray, origin='lower', vmin=0, vmax=0.7)
-	plt.xlabel('nuv = '+str(ob2['nuv'][i])[:4])
-	plt.title('sourceid = '+str(ob2['source_id'][i]))
+	#plt.xlabel('nuv = '+str(ob2['nuv'][i])[:4])
+	#plt.title('sourceid = '+str(ob2['source_id'][i]))
 	#plt.show()
-	plt.savefig('../images/blueobj/planeobj_'+str(gl)[:4]+'_'+str(gb)[:4]+'.png')
+	plt.savefig('../images/kbobj_'+str(gl)[:4]+'_'+str(gb)[:4]+'.png')
 	plt.close()
 
 
