@@ -182,8 +182,8 @@ from matplotlib.patches import Polygon
 from matplotlib.collections import PatchCollection
 fig, ax = plt.subplots()
 pickles = Table.read('picklemags_laphare_final.txt', format='ascii')
-scatter_contour(ps['nuv_1']-ps['g_ps'], ps['g_ps']-ps['r_ps'], threshold=10000, log_counts=True, histogram2d_args=dict(bins=40), plot_args=dict(color='k', markersize=1, alpha=0.1), contour_args=dict(cmap=cm.gray))
-plt.scatter(pickles['nuv']-pickles['g'], pickles['g']-pickles['r'], color='red', label='SED model',  s=30)
+scatter_contour(ps['nuv']-ps['gMeanPSFMag'], ps['gMeanPSFMag']-ps['rMeanPSFMag'], threshold=10000, log_counts=True, histogram2d_args=dict(bins=40), plot_args=dict(color='k', markersize=1, alpha=0.1), contour_args=dict(cmap=cm.gray))
+plt.scatter(pickles['nuv']-pickles['g'], pickles['g']-pickles['r'], color='red', label='SED model',  s=30, zorder=10)
 plt.xlim((-1.2, 7))
 plt.ylim((-1, 2))
 
@@ -227,19 +227,19 @@ ra = np.array(g['ra_cent'], dtype=np.float32)
 dec = np.array(g['dec_cent'], dtype=np.float32)
 gal = SkyCoord(ra*u.deg, dec*u.deg, frame='icrs').galactic
 
-cat = fits.open('starcat_allscans_10-12-18_cuts.fits')[1].data
+#cat = fits.open('starcat_allscans_10-12-18_cuts.fits')[1].data
 catgal = SkyCoord(cat['gl']*u.deg, cat['gb']*u.deg, frame='galactic')
-cid, gid, angsep, ang3d = gal.search_around_sky(catgal, 1*u.degree)
+cid, gid, angsep, ang3d = gal.search_around_sky(catgal, 3*u.degree)
 q = np.unique(cid)
-c2 = cat[q]
+carea = cat[q]
 
-gais = fits.open('GAISPlane.fits')[1].data
+#galex = fits.open('GAISPlane.fits')[1].data
 
-plt.hist(gais['nuv_mag'], range=[12,25], bins=20, label='GAIS', log=True, alpha=0.7, color='#00E6FF')
-plt.hist(c2['nuv'], range=[12,25], bins=20, histtype='step', linewidth=2, stacked=True, label='UVGAPS in GAIS area', log=True, color='red')
+plt.hist(galex['nuv_mag'], range=[12,25], bins=20, label='GAIS', log=True, alpha=0.7, color='#00E6FF')
+plt.hist(carea['nuv'], range=[12,25], bins=20, histtype='step', linewidth=2, stacked=True, label='UVGAPS in GAIS area', log=True, color='red')
 plt.legend(scatterpoints=1, loc=2)
 plt.xlabel('NUV')
-plt.show()
+plt.show()a
 
 
 
@@ -279,5 +279,27 @@ len(cat)
 
 
 
+a5 = a[:len(a)/4]
+a6 = a[len(a)/4:len(a)/2]
+a7 = a[len(a)/2:len(a)*3/4]
+a8 = a[len(a)*3/4:]
+plt.scatter(a['ra'], a['dec'], s=1)
+plt.scatter(a5['ra'], a5['dec']-50, s=1, c='red')
+plt.scatter(a6['ra'], a6['dec']-50, s=1, c='green')
+plt.scatter(a7['ra'], a7['dec']-50, s=1, c='purple')
+plt.scatter(a8['ra'], a8['dec']-50, s=1, c='orange')
+plt.show()
+ascii.write(a5, 'starcat_coords_pt5_07_03_19.txt', format='basic')
+ascii.write(a6, 'starcat_coords_pt6_07_03_19.txt', format='basic')
+ascii.write(a7, 'starcat_coords_pt7_07_03_19.txt', format='basic')
+ascii.write(a8, 'starcat_coords_pt8_07_03_19.txt', format='basic')
 
 
+addhash('starcat_coords_pt1_07_03_19.txt')
+addhash('starcat_coords_pt2_07_03_19.txt')
+addhash('starcat_coords_pt3_07_03_19.txt')
+addhash('starcat_coords_pt4_07_03_19.txt')
+addhash('starcat_coords_pt5_07_03_19.txt')
+addhash('starcat_coords_pt6_07_03_19.txt')
+addhash('starcat_coords_pt7_07_03_19.txt')
+addhash('starcat_coords_pt8_07_03_19.txt')
