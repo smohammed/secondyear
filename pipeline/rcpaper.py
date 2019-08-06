@@ -69,7 +69,7 @@ thin, = np.where((rc['ALPHAFE'] < 0.08) | (rc['ALPHAFE'] < (m*rc['FE_H'] + b)))
 
 #y1 = (rc['B_apass']-rc['ebv']*3.626)-(rc['V_apass']-rc['ebv']*2.742)
 y1 = rc['phot_bp_mean_mag']-rc['phot_rp_mean_mag']
-y2 = (rc['nuv_mag']-rc['ebv']*7.24)-(rc['phot_g_mean_mag']-rc['ebv']*3.303)
+y2 = (rc['nuv_mag']-rc['ebv']*7.24)-(rc['phot_g_mean_mag']-rc['ebv']*2.85)
 x = rc['TEFF']
 m1, b1, rval1, pval1, stderr1 = stats.linregress(x, y1)
 line1 = m1*x + b1
@@ -125,11 +125,11 @@ rc2 = rc[np.where(rc['FE_H'] > 0.02)]
 
 thick1,= np.where((rc1['ALPHAFE'] > 0.08) & (rc1['ALPHAFE'] > (m*rc1['FE_H'] + b)))
 thin1,= np.where((rc1['ALPHAFE'] < 0.08) | (rc1['ALPHAFE'] < (m*rc1['FE_H'] + b)))
-nuvg1 = ((rc1['nuv_mag']-rc1['ebv']*7.24)-(rc1['phot_g_mean_mag']-rc1['ebv']*3.303))
+nuvg1 = ((rc1['nuv_mag']-rc1['ebv']*7.24)-(rc1['phot_g_mean_mag']-rc1['ebv']*2.85))
 
 thick2,= np.where(rc2['ALPHAFE'] > 0.065)
 thin2,= np.where(rc2['ALPHAFE'] < 0.065)
-nuvg2 = ((rc2['nuv_mag']-rc2['ebv']*7.24)-(rc2['phot_g_mean_mag']-rc2['ebv']*3.303))
+nuvg2 = ((rc2['nuv_mag']-rc2['ebv']*7.24)-(rc2['phot_g_mean_mag']-rc2['ebv']*2.85))
 
 #rc['ALPHAFE'][afe_apo] = (rc['ALPHA_M'] + rc['M_H'] - rc['FE_H'])[afe_apo]
 #alphafe = rc['ALPHAFE']
@@ -219,7 +219,7 @@ ax1.errorbar(xa[thin], y[thin], xerr =nuvgerr[thin], yerr=rc['FE_H_ERR'][thin], 
 
 ax1.scatter(xa[thick], y[thick], c=rc['ALPHAFE'][thick], s=20, vmin=-0.05, vmax=0.3, marker='s', edgecolor='black', cmap=cm.plasma_r, **{"zorder":5})
 ax1.errorbar(xa[thick], y[thick], xerr =nuvgerr[thick], yerr=rc['FE_H_ERR'][thick], ecolor='black', fmt='None', marker='None', mew=0, elinewidth=1.3, **{"zorder":0})
-ax1.plot(xp, pa1(xp), linewidth=4, c='black', zorder=10) 
+ax1.plot(xp, pa(xp), linewidth=4, c='black', zorder=10) 
 
 # Dust, all points
 ax2.scatter(xb[thin], y[thin], c=rc['ALPHAFE'][thin], s=20, vmin=-0.05, vmax=0.3, marker='D', edgecolor='black', cmap=cm.plasma_r, **{"zorder":5})
@@ -228,7 +228,7 @@ ax2.errorbar(xb[thin], y[thin], xerr =nuvgerr[thin], yerr=rc['FE_H_ERR'][thin], 
 ax2.scatter(xb[thick], y[thick], c=rc['ALPHAFE'][thick], s=20, vmin=-0.05, vmax=0.3, marker='s', edgecolor='black', cmap=cm.plasma_r, **{"zorder":5})
 ax2.errorbar(xb[thick], y[thick], xerr =nuvgerr[thick], yerr=rc['FE_H_ERR'][thick], ecolor='black', fmt='None', marker='None', mew=0, elinewidth=1.3, **{"zorder":0})
 
-ax2.plot(xp, pb1(xp), linewidth=4, c='black', zorder=10)
+ax2.plot(xp, pb(xp), linewidth=4, c='black', zorder=10)
 
 # No dust, thin disk
 ax3.scatter(xa[thin], y[thin], c=rc['ALPHAFE'][thin], s=20, vmin=-0.05, vmax=0.3, marker='D', edgecolor='black', cmap=cm.plasma_r, **{"zorder":5})

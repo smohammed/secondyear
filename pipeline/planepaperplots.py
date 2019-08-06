@@ -79,13 +79,19 @@ plt.show()
 ############################################################
 # Angular separations for Gaia and PS1
 ############################################################
-cg = fits.open('plane_gaiadr2_dust_11_14_18.fits')[1].data
-ps = fits.open('plane_ps1_g10-20_11_27_18.fits')[1].data
+cg = fits.open('plane_gaiadr2_dust_06_12_19.fits')[1].data
+ps = fits.open('plane_ps2_09_01_19.fits')[1].data
+ps = Table(ps)
+dra = (ps['ALPHA_J2000']-ps['raMean'])*3600
+ddec = (ps['DELTA_J2000']-ps['decMean'])*3600
+angsep = np.sqrt(dra**2+ddec**2)
+ps['angsep'] = angsep
+
 cg = cg[np.where(cg['angsep']*3600. < 2.0)]
-ps = ps[np.where(ps['angsep']*3600. < 2.0)]
+ps = ps[np.where(ps['angsep'] < 2.0)]
 
 plt.hist(cg['angsep']*3600, bins=20, alpha=0.7, label='Gaia match', color='#00E6FF', edgecolor='black')
-plt.hist(ps['angsep']*3600, bins=20, alpha=0.7, label='PS1 match', color='#FF5C5C', edgecolor='black')
+plt.hist(ps['angsep'], bins=20, alpha=0.7, label='PS2 match', color='#FF5C5C', edgecolor='black')
 plt.xlabel('Angular Separation')
 plt.legend(scatterpoints=1)
 plt.show()
@@ -122,7 +128,7 @@ plt.show()
 # NUV histogram for all surveys
 ############################################################
 cat = fits.open('starcat_allscans_10-12-18_cuts.fits')[1].data # catalog
-ps = fits.open('plane_ps1_g10-20_11_27_18.fits')[1].data # Pan starrs
+ps = fits.open('plane_ps2_09_01_19.fits')[1].data # Pan starrs
 cg = fits.open('plane_gaiadr2_dust_11_14_18.fits')[1].data  # gaia
 gg = fits.open('plane_gais_11_27_18.fits')[1].data # GAIS 
 allcat = fits.open('plane_gaiadr2_gais_ps1_11_27_18.fits')[1].data
@@ -185,7 +191,7 @@ pickles = Table.read('picklemags_laphare_final.txt', format='ascii')
 scatter_contour(ps['nuv']-ps['gMeanPSFMag'], ps['gMeanPSFMag']-ps['rMeanPSFMag'], threshold=10000, log_counts=True, histogram2d_args=dict(bins=40), plot_args=dict(color='k', markersize=1, alpha=0.1), contour_args=dict(cmap=cm.gray))
 plt.scatter(pickles['nuv']-pickles['g'], pickles['g']-pickles['r'], color='red', label='SED model',  s=30, zorder=10)
 plt.xlim((-1.2, 7))
-plt.ylim((-1, 2))
+plt.ylim((-1, 1))
 
 plt.annotate('O', xy=(0, -0.9), size=20)
 plt.annotate('B', xy=(1, -0.81), size=20)
@@ -303,3 +309,13 @@ addhash('starcat_coords_pt5_07_03_19.txt')
 addhash('starcat_coords_pt6_07_03_19.txt')
 addhash('starcat_coords_pt7_07_03_19.txt')
 addhash('starcat_coords_pt8_07_03_19.txt')
+
+
+
+
+ps = fits.open('plane_ps2_09_01_19.fits')[1].data
+dra = (ps['ALPHA_J2000']-ps['raMean'])*3600
+ddec = (ps['DELTA_J2000']-ps['decMean'])*3600
+w = np.where((np.sqrt(dra**2+ddec**2) < 3) & (ps['ng'] > 5) & (ps['nr'] > 5) & (ps['ni'] > 5) & (ps['nz'] > 5) & (ps['ny'] > 5) & (ps['expsum'] > 4) & (ps['ctsum'] > 1))
+
+

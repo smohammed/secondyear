@@ -731,7 +731,7 @@ c2 = cat[q]
 
 
 #############################################################
-# SQL query for matching Gaia data
+# SQL query for matching Gaia data from main gaia query page
 #############################################################
 SELECT crossmatch_positional('user_smohamme','plane','gaiadr2','gaia_source',3.0,'galexmatch') FROM dual
 
@@ -785,18 +785,22 @@ select a.*,t.objid as matched_id from #tmp t, MyDB.planecoords a  where t.up_id 
 
 # Remember to rename the 'dist' column too 'angsep'
 from dustmaps.bayestar import BayestarQuery
-cg = fits.open('plane_gaiadr2_pt2.fits')[1].data
+cg = fits.open('plane_gaiadr2_06_12_19.fits')[1].data
 cg = Table(cg)
 cg.rename_column('dist', 'angsep')
 
 #cg.remove_columns(('col0', 'col1', 'col2'))
 cg.rename_column('ALPHA_J2000', 'ra_plane')
 cg.rename_column('DELTA_J2000', 'dec_plane')
-cg.rename_column('dec', 'dec_gaia')
-cg.rename_column('ra', 'ra_gaia')
+#cg.rename_column('dec', 'dec_gaia')
+#cg.rename_column('ra', 'ra_gaia')
 
 negpar = np.where((cg['parallax'] > 0.) & (cg['phot_g_mean_mag'] > 0.) & (cg['phot_bp_mean_mag'] > 0.) & (cg['phot_rp_mean_mag'] > 0.) & (cg['expsum'] > 3.) & (cg['ctsum'] > 1) & (cg['bkgdsum'] > 0) & (cg['angsep']*3600. < 2))
 cg = cg[negpar]
+
+
+cg = cg[1237628:]
+
 pc = 1000./cg['parallax']
 distmod = 5. * np.log10(pc) - 5
 cggal = SkyCoord(cg['ra_gaia']*u.deg, cg['dec_gaia']*u.deg, distance=pc*u.pc, frame='icrs')
@@ -948,3 +952,37 @@ obcut = np.where((mg < -0.5) & (mg > -2) & (nuvg > 0) & (nuvg < 1))
 ob = cgp[obcut]
 cuts,= np.where((ob['visibility_periods_used'] > 8) & (ob['expsum'] > 10) & (ob['parallax_error']/ob['parallax'] < 0.1) & (ob['ng'] > 8) & (ob['nr'] > 8) & (ob['ni'] > 8) & (ob['nz'] > 8) & (ob['ny'] > 8))
 ob2 = ob[cuts]
+
+
+
+q = np.where((cg['gl'] > mol['llower'][n]) & (cg['gl'] < mol['lupper'][n]) & (cg['gb'] > mol['blower'][n]) & (cg['gb'] > mol['bupper'][n]) & (cg['dist'] > mol['dist'][n]-100) & (cg['dist'] < mol['dist'][n]+100))
+
+
+plt.hist(c1['nuv'], range=[12,20], bins=20, label=mol['name'][1])
+plt.hist(c0['nuv'], range=[12,20], bins=20, histtype='step', stacked=True, label=mol['name'][0])
+plt.hist(c5['nuv'], range=[12,20], bins=20, histtype='step', stacked=True, label=mol['name'][5])
+plt.hist(c10['nuv'], range=[12,20], bins=20, histtype='step', stacked=True, label=mol['name'][10])
+plt.hist(c11['nuv'], range=[12,20], bins=20, histtype='step', stacked=True, label=mol['name'][11])
+plt.hist(c4['nuv'], range=[12,20], bins=20, histtype='step', stacked=True, label=mol['name'][4])
+plt.hist(c7['nuv'], range=[12,20], bins=20, histtype='step', stacked=True, label=mol['name'][7])
+plt.hist(c9['nuv'], range=[12,20], bins=20, histtype='step', stacked=True, label=mol['name'][9])
+plt.hist(c12['nuv'], range=[12,20], bins=20, histtype='step', stacked=True, label=mol['name'][12])
+plt.legend(loc=2)
+plt.xlabel('NUV')
+plt.show()
+
+
+
+
+plt.hist((c1['nuv']-c1['ebv']*7.24)-(c1['phot_g_mean_mag']-c1['ebv']*2.85), range=[0, 10], bins=20, label=mol['name'][1])
+plt.hist((c0['nuv']-c0['ebv']*7.24)-(c0['phot_g_mean_mag']-c0['ebv']*2.85), range=[0, 10], bins=20, histtype='step', stacked=True, label=mol['name'][0])
+plt.hist((c4['nuv']-c4['ebv']*7.24)-(c4['phot_g_mean_mag']-c4['ebv']*2.85), range=[0, 10], bins=20, histtype='step', stacked=True, label=mol['name'][4])
+plt.hist((c5['nuv']-c5['ebv']*7.24)-(c5['phot_g_mean_mag']-c5['ebv']*2.85), range=[0, 10], bins=20, histtype='step', stacked=True, label=mol['name'][5])
+plt.hist((c7['nuv']-c7['ebv']*7.24)-(c7['phot_g_mean_mag']-c7['ebv']*2.85), range=[0, 10], bins=20, histtype='step', stacked=True, label=mol['name'][7])
+plt.hist((c9['nuv']-c9['ebv']*7.24)-(c9['phot_g_mean_mag']-c9['ebv']*2.85), range=[0, 10], bins=20, histtype='step', stacked=True, label=mol['name'][9])
+plt.hist((c10['nuv']-c10['ebv']*7.24)-(c10['phot_g_mean_mag']-c10['ebv']*2.85), range=[0, 10], bins=20, histtype='step', stacked=True, label=mol['name'][10])
+plt.hist((c11['nuv']-c11['ebv']*7.24)-(c11['phot_g_mean_mag']-c11['ebv']*2.85), range=[0, 10], bins=20, histtype='step', stacked=True, label=mol['name'][11])
+plt.hist((c12['nuv']-c12['ebv']*7.24)-(c12['phot_g_mean_mag']-c12['ebv']*2.85), range=[0, 10], bins=20, histtype='step', stacked=True, label=mol['name'][12])
+plt.legend(loc=2)
+plt.xlabel('(NUV - G)$_0$')
+plt.show()
