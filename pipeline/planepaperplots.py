@@ -77,6 +77,55 @@ fig.subplots_adjust(wspace=0)
 plt.show()
 
 ############################################################
+# CMD with Gaia and PS2
+############################################################
+cat = fits.open('../plane_gaiadr2_dust_06_12_19.fits')[1].data
+cgp = fits.open('../plane_gaia_ps2_08_06_19.fits')[1].data
+
+
+threshold = 1000
+bins = 40
+
+fig, axes = plt.subplots(nrows=2, ncols=2)
+
+scatter_contour(cat['mag_nuv']-cat['phot_g_mean_mag'], cat['phot_g_mean_mag']-cat['distmod'], threshold=threshold, log_counts=True, histogram2d_args=dict(bins=bins, range=[[-1,12], [-2,14]]), plot_args=dict(color='k', markersize=1, alpha=0.1), contour_args=dict(cmap=cm.gray, zorder=10), ax=axes[0, 0])
+
+scatter_contour(cgp['nuv']-cgp['phot_g_mean_mag'], cgp['phot_g_mean_mag']-cgp['distmod'], threshold=threshold, log_counts=True, histogram2d_args=dict(bins=bins, range=[[-1,12], [-2,14]]), plot_args=dict(color='k', markersize=1, alpha=0.1), contour_args=dict(cmap=cm.gray, zorder=10), ax=axes[0, 1])
+
+scatter_contour((cat['mag_nuv']-cat['ebv']*7.24)-(cat['phot_g_mean_mag']-cat['ebv']*2.85), cat['phot_g_mean_mag']-cat['distmod']-cat['ebv']*2.85, threshold=threshold, log_counts=True, histogram2d_args=dict(bins=bins, range=[[-1,12], [-2,14]]), plot_args=dict(color='k', markersize=1, alpha=0.1), contour_args=dict(cmap=cm.gray, zorder=10), ax=axes[1, 0])
+
+
+scatter_contour((cgp['nuv']-cgp['ebv']*7.24)-(cgp['phot_g_mean_mag']-cgp['ebv']*2.85), cgp['phot_g_mean_mag']-cgp['distmod']-cgp['ebv']*2.85, threshold=threshold, log_counts=True, histogram2d_args=dict(bins=bins, range=[[-1,12], [-2,14]]), plot_args=dict(color='k', markersize=1, alpha=0.1), contour_args=dict(cmap=cm.gray, zorder=10), ax=axes[1, 1])
+
+
+axes[1, 0].set_xlabel('NUV$_{Gaia}$ - G')
+axes[1, 1].set_xlabel('NUV$_{Gaia+PS2}$ - G')
+
+axes[0, 0].set_ylabel('M$_G$')
+axes[1, 0].set_ylabel('M$_{G_0}$')
+
+axes[0, 0].text(8.4, 13.9, 'E(B-V) = 0')
+axes[0, 1].text(8.4, 13.9, 'E(B-V) = 0')
+
+axes[0, 0].set_xlim((-2, 11.6))
+axes[0, 0].set_ylim((14, -3))
+axes[1, 0].set_xlim((-2, 11.6))
+axes[1, 0].set_ylim((14, -3))
+
+axes[0, 1].set_xlim((-2, 11.6))
+axes[0, 1].set_ylim((14, -3))
+axes[1, 1].set_xlim((-2, 11.6))
+axes[1, 1].set_ylim((14, -3))
+
+axes[0, 0].set_xticks([])
+axes[0, 1].set_yticks([])
+axes[1, 1].set_yticks([])
+fig.subplots_adjust(hspace=0)
+fig.subplots_adjust(wspace=0)
+plt.show()
+
+
+############################################################
 # Angular separations for Gaia and PS1
 ############################################################
 cg = fits.open('plane_gaiadr2_dust_06_12_19.fits')[1].data
@@ -245,27 +294,23 @@ plt.hist(galex['nuv_mag'], range=[12,25], bins=20, label='GAIS', log=True, alpha
 plt.hist(carea['nuv'], range=[12,25], bins=20, histtype='step', linewidth=2, stacked=True, label='UVGAPS in GAIS area', log=True, color='red')
 plt.legend(scatterpoints=1, loc=2)
 plt.xlabel('NUV')
-plt.show()a
+plt.show()
 
 
 
 ############################################################
 # How many objects in the plane survey are in none of the others = 483,956
 ############################################################
-cat = fits.open('starcat_allscans_10-12-18')[1].data # catalog
-ps = fits.open('plane_ps1_g10-20_10_12_18.fits')[1].data # Pan starrs
-cg = fits.open('plane_gaiadr2_dust_11_14_18.fits')[1].data  # gaia
-gg = fits.open('plane_gais_10_13_18.fits')[1].data # GAIS 
+cat = fits.open('starcat_allscans_06_12_19.fits')[1].data # catalog
+w = np.where((cat['expsum'] > 4) & (cat['ctsum'] > 1))
+cat = Table(cat[w])
+ps = fits.open('plane_ps2_09_01_19.fits')[1].data # Pan starrs
+cg = fits.open('plane_gaiadr2_dust_06_12_19.fits')[1].data  # gaia
+gg = fits.open('plane_gais_06_12_19.fits')[1].data # GAIS 
 
 
 catgal = SkyCoord(cat['ALPHA_J2000']*u.deg, cat['DELTA_J2000']*u.deg, frame='icrs')
-psgal = SkyCoord(ps['ALPHA_J2000']*u.deg, ps['DELTA_J2000']*u.deg, frame='icrs')
-cggal = SkyCoord(cg['ALPHA_J2000']*u.deg, cg['DELTA_J2000']*u.deg, frame='icrs')
 gggal = SkyCoord(gg['ALPHA_J2000']*u.deg, gg['DELTA_J2000']*u.deg, frame='icrs')
-
-
-cat = Table(cat)
-
 cind, ggind, a, b = search_around_sky(catgal, gggal, 0.1*u.arcsec)
 cat.remove_rows(cind)
 
@@ -276,6 +321,7 @@ cat.remove_rows(cind)
 
 
 catgal = SkyCoord(cat['ALPHA_J2000']*u.deg, cat['DELTA_J2000']*u.deg, frame='icrs')
+cggal = SkyCoord(cg['ra_plane']*u.deg, cg['dec_plane']*u.deg, frame='icrs')
 cind, cgind, a, b = search_around_sky(catgal, cggal, 0.1*u.arcsec)
 cat.remove_rows(cind)
 
