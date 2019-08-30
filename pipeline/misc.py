@@ -384,8 +384,8 @@ for i in range(len(sg)):
 ######################################################################
 sg = fits.open('gais_tgas_apass_dust.fits')[1].data
 sg = sg[~np.isnan(sg['ebv'])]
-
-fig, (ax1, ax2) = plt.subplots(2, 1)
+artefact
+fig, (ax1, ax2) = plt.subplots(2, 1)artefact
 scatter_contour((sg['nuv_mag']-sg['ebv']*7.24)-(sg['phot_g_mean_mag']-sg['ebv']*3.303), (sg['MNUV']-sg['ebv']*7.24), threshold=1000, log_counts=True, histogram2d_args=dict(bins=40), plot_args=dict(color='k', markersize=1, alpha=0.1), contour_args=dict(cmap=cm.gray), ax=ax2)
 scatter_contour((sg['nuv_mag']-sg['ebv']*7.24)-(sg['phot_g_mean_mag']-sg['ebv']*3.303), (sg['MG']-sg['ebv']*3.303), threshold=1000, log_counts=True, histogram2d_args=dict(bins=40), plot_args=dict(color='k', markersize=1, alpha=0.1), contour_args=dict(cmap=cm.gray), ax=ax1)
 ax1.set_xlim((0, 12))
@@ -920,15 +920,20 @@ for scan in scans:
 ascii.write(allexp, 'expdata_11_28_18.txt', format='basic')
 
 
+exp = fits.open('expdata_11_28_18.fits')[1].data
+
 scans = ['scan0.5', 'scan1.4', 'scan2.3', 'scan3.2', 'scan4.1', 'scan5.0', 'scan5.9', 'scan6.8', 'scan8.6', 'scan9.5', 'scan10.4', 'scan11.3', 'scan12.2', 'scan14.0', 'scan14.9', 'scan15.8', 'scan16.7', 'scan17.6', 'scan18.5', 'scan19.4', 'scan20.3', 'scan21.2', 'scan22.1', 'scan23.0', 'scan23.9', 'scan24.8', 'scan25.7', 'scan28.4', 'scan29.3', 'scan30.2', 'scan31.1', 'scan32.0', 'scan32.9', 'scan33.8', 'scan34.7', 'scan35.6', 'scan39.2', 'scan42.8', 'scan43.7', 'scan44.6', 'scan45.5', 'scan46.4', 'scan47.3', 'scan48.2', 'scan49.1', 'scan50.0', 'scan67.1', 'scan68.9', 'scan71.6', 'scan74.3', 'scan75.2', 'scan76.1', 'scan77.0', 'scan77.9', 'scan78.8', 'scan79.7', 'scan80.6', 'scan81.5', 'scan82.4', 'scan83.3', 'scan87.8', 'scan88.7', 'scan89.6', 'scan90.5', 'scan91.4', 'scan92.3', 'scan93.2', 'scan94.1', 'scan95.0', 'scan95.9', 'scan96.8', 'scan97.7', 'scan98.6', 'scan99.5', 'scan100.4', 'scan101.3', 'scan102.2', 'scan103.1', 'scan104.0', 'scan104.9', 'scan105.8', 'scan106.7', 'scan107.6', 'scan110.3', 'scan111.2', 'scan112.1', 'scan113.0', 'scan113.9', 'scan114.8', 'scan119.3', 'scan121.1', 'scan122.9', 'scan124.7', 'scan125.6', 'scan126.5', 'scan127.4', 'scan128.3', 'scan129.2', 'scan130.1', 'scan131.0', 'scan131.9', 'scan132.8', 'scan133.7', 'scan134.6', 'scan135.5', 'scan136.4', 'scan137.3', 'scan138.2', 'scan139.1', 'scan140.0', 'scan140.9', 'scan141.8', 'scan143.6', 'scan144.5', 'scan145.4', 'scan148.1', 'scan149.0', 'scan149.9', 'scan150.8', 'scan151.7', 'scan152.6', 'scan153.5', 'scan155.3', 'scan156.2', 'scan157.1', 'scan158.0', 'scan160.7', 'scan161.6', 'scan163.4', 'scan167.0', 'scan167.9', 'scan172.4', 'scan173.3', 'scan174.2', 'scan175.1', 'scan176.0', 'scan176.9', 'scan177.8', 'scan178.7', 'scan179.6', 'scan180.5', 'scan183.2', 'scan185.0', 'scan190.4', 'scan191.3', 'scan197.6', 'scan198.5', 'scan200.3', 'scan201.2', 'scan203.0', 'scan203.9', 'scan205.7', 'scan206.6', 'scan207.5', 'scan208.4', 'scan209.3', 'scan210.2', 'scan211.1', 'scan212.0', 'scan212.9', 'scan213.8', 'scan214.7', 'scan215.6', 'scan216.5', 'scan217.4', 'scan218.3', 'scan219.2', 'scan220.1', 'scan221.0', 'scan221.9', 'scan222.8', 'scan223.7', 'scan224.6', 'scan225.5', 'scan226.4', 'scan228.2', 'scan229.1', 'scan230.0', 'scan230.9', 'scan231.8', 'scan234.5', 'scan235.4', 'scan236.3', 'scan237.2', 'scan238.1', 'scan239.0', 'scan239.9', 'scan240.8', 'scan241.7', 'scan242.6', 'scan243.5', 'scan244.4', 'scan245.3', 'scan246.2', 'scan247.1', 'scan248.0', 'scan248.9', 'scan249.8', 'scan250.7', 'scan251.6', 'scan252.5', 'scan253.4', 'scan254.3', 'scan255.2', 'scan256.1', 'scan257.0', 'scan258.8', 'scan259.7', 'scan260.6', 'scan261.5', 'scan263.3', 'scan264.2', 'scan265.1', 'scan266.0', 'scan266.9', 'scan268.7', 'scan269.6', 'scan270.5', 'scan271.4', 'scan272.3', 'scan273.2', 'scan274.1', 'scan275.0', 'scan275.9', 'scan276.8', 'scan278.6', 'scan279.5', 'scan281.3', 'scan283.1', 'scan284.0', 'scan285.8', 'scan286.7', 'scan288.5', 'scan289.4', 'scan290.3', 'scan291.2', 'scan292.1', 'scan293.0', 'scan293.9', 'scan295.7', 'scan297.5', 'scan298.4', 'scan301.1', 'scan302.0', 'scan302.9', 'scan303.8', 'scan304.7', 'scan305.6', 'scan306.5', 'scan308.3', 'scan309.2', 'scan310.1', 'scan315.5', 'scan316.4', 'scan317.3', 'scan318.2', 'scan319.1', 'scan320.0', 'scan320.9', 'scan321.8', 'scan322.7', 'scan323.6', 'scan324.5', 'scan325.4', 'scan326.3', 'scan327.2', 'scan328.1', 'scan329.0', 'scan329.9', 'scan331.7', 'scan332.6', 'scan333.5', 'scan334.4', 'scan335.3', 'scan338.0', 'scan338.9', 'scan339.8', 'scan341.6', 'scan342.5', 'scan343.4', 'scan345.2', 'scan348.8', 'scan349.7', 'scan350.6', 'scan351.5', 'scan352.4', 'scan353.3', 'scan354.2', 'scan355.1', 'scan356.0', 'scan357.8', 'scan358.7', 'scan359.0']
 
 expvals = 0
-for i in range(len(exp)):
+for i in range(len(scans)):
     expvals += exp[scans[i]]
-    if (i % 20 == 0) & (i != 0):
-        expvals = expvals/20.
-        plt.plot(np.linspace(-10, 10, len(expvals)), expvals, label=str(i))
-        expvals = 0
+    #if (i % 20 == 0) & (i != 0):
+    expvals = expvals#/20.
+    plt.plot(np.linspace(-10, 10, len(expvals)), expvals, label=str(i), linewidth=0.1, alpha=0.3)
+    expvals = 0
+plt.xlabel('Galactic Latitude')
+plt.ylabel('Exposure time [s]')
+plt.ylim(0, 200)
 plt.show()
 
 
