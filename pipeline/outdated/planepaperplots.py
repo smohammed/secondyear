@@ -19,10 +19,13 @@ gg = fits.open('../plane_gais_11_27_18.fits')[1].data # GAIS
 ############################################################
 # NUV vs FWHM
 scatter_contour(cat['nuv'], cat['FWHM_IMAGE'], threshold=1000, log_counts=True, histogram2d_args=dict(bins=40), plot_args=dict(color='k', markersize=1, alpha=0.1), contour_args=dict(cmap=cm.gray, zorder=10))
-plt.xlim(12, 21)
+plt.xlim(13, 20)
 plt.xlabel('NUV')
 plt.ylabel('FWHM [pixels]')
 plt.show()
+
+
+
 
 ############################################################
 # Gaia CMD
@@ -75,6 +78,87 @@ axes[1, 1].set_yticks([])
 fig.subplots_adjust(hspace=0)
 fig.subplots_adjust(wspace=0)
 plt.show()
+
+
+fig, axes = plt.subplots(nrows=2, ncols=2)
+axes[0, 0].hist2d(gag['mag_nuv']-gag['phot_g_mean_mag'], gag['phot_g_mean_mag']-gag['distmod'], bins=(1000, 1000), norm=matplotlib.colors.LogNorm())
+
+axes[0, 1].hist2d(cg['nuv']-cg['phot_g_mean_mag'], cg['phot_g_mean_mag']-cg['distmod'], bins=(1000, 1000), norm=matplotlib.colors.LogNorm())
+
+axes[1, 0].hist2d((gag['mag_nuv']-gag['ebv']*7.24)-(gag['phot_g_mean_mag']-gag['ebv']*2.85), gag['phot_g_mean_mag']-gag['distmod']-gag['ebv']*2.85, bins=(1000, 1000), norm=matplotlib.colors.LogNorm())
+
+axes[1, 1].hist2d((cg['nuv']-cg['ebv']*7.24)-(cg['phot_g_mean_mag']-cg['ebv']*2.85), cg['phot_g_mean_mag']-cg['distmod']-cg['ebv']*2.85, bins=(1000, 1000), norm=matplotlib.colors.LogNorm())
+
+
+axes[1, 0].set_xlabel('NUV$_{GAIS}$ - G')
+axes[1, 1].set_xlabel('NUV$_{Plane}$ - G')
+
+axes[0, 0].set_ylabel('M$_G$')
+axes[1, 0].set_ylabel('M$_{G_0}$')
+
+axes[0, 0].text(8.4, 13.9, 'E(B-V) = 0')
+axes[0, 1].text(8.4, 13.9, 'E(B-V) = 0')
+
+axes[0, 0].set_xlim((-2, 11.6))
+axes[0, 0].set_ylim((14, -5))
+axes[1, 0].set_xlim((-2, 11.6))
+axes[1, 0].set_ylim((14, -5))
+
+axes[0, 1].set_xlim((-2, 11.6))
+axes[0, 1].set_ylim((14, -5))
+axes[1, 1].set_xlim((-2, 11.6))
+axes[1, 1].set_ylim((14, -5))
+
+axes[0, 0].set_xticks([])
+axes[0, 1].set_yticks([])
+axes[1, 1].set_yticks([])
+fig.subplots_adjust(hspace=0)
+fig.subplots_adjust(wspace=0)
+plt.show()
+
+
+
+############################################################
+# Gaia NUVG vs MNUV
+############################################################
+fig, axes = plt.subplots(nrows=2, ncols=2)
+axes[0, 0].hist2d(gag['mag_nuv']-gag['phot_g_mean_mag'], gag['mag_nuv']-gag['distmod'], bins=(1000, 1000), norm=matplotlib.colors.LogNorm())
+
+axes[0, 1].hist2d(cg['nuv']-cg['phot_g_mean_mag'], cg['nuv']-cg['distmod'], bins=(1000, 1000), norm=matplotlib.colors.LogNorm())
+
+axes[1, 0].hist2d((gag['mag_nuv']-gag['ebv']*7.24)-(gag['phot_g_mean_mag']-gag['ebv']*2.85), gag['mag_nuv']-gag['distmod']-gag['ebv']*7.24, bins=(1000, 1000), norm=matplotlib.colors.LogNorm())
+
+axes[1, 1].hist2d((cg['nuv']-cg['ebv']*7.24)-(cg['phot_g_mean_mag']-cg['ebv']*2.85), cg['nuv']-cg['distmod']-cg['ebv']*7.24, bins=(1000, 1000), norm=matplotlib.colors.LogNorm())
+
+
+axes[1, 0].set_xlabel('NUV$_{GAIS}$ - G')
+axes[1, 1].set_xlabel('NUV$_{Plane}$ - G')
+
+axes[0, 0].set_ylabel('M$_NUV$')
+axes[1, 0].set_ylabel('M$_{NUV_0}$')
+
+axes[0, 0].text(8.4, -3, 'E(B-V) = 0')
+axes[0, 1].text(8.4, -3, 'E(B-V) = 0')
+
+axes[0, 0].set_xlim((-2, 11.6))
+axes[0, 0].set_ylim((18, -5))
+axes[1, 0].set_xlim((-2, 11.6))
+axes[1, 0].set_ylim((18, -5))
+
+axes[0, 1].set_xlim((-2, 11.6))
+axes[0, 1].set_ylim((18, -5))
+axes[1, 1].set_xlim((-2, 11.6))
+axes[1, 1].set_ylim((18, -5))
+
+axes[0, 0].set_xticks([])
+axes[0, 1].set_yticks([])
+axes[1, 1].set_yticks([])
+fig.subplots_adjust(hspace=0)
+fig.subplots_adjust(wspace=0)
+plt.show()
+
+
+
 
 ############################################################
 # CMD with Gaia and PS2
@@ -151,17 +235,6 @@ plt.show()
 ############################################################
 gg = fits.open('plane_gais_06_12_19.fits')[1].data
 
-'''
-averages = []
-deln = gg['nuv_mag']-gg['nuv_plane']
-delnavg = gg['nuv_mag']-gg['nuv_plane']
-for mag in np.arange(12.5, 20.5, 0.5):
-	cut = np.where((gg['nuv_mag'] > mag) & (gg['nuv_mag'] < mag+0.5))
-	avg = np.average(deln[cut]) - 0.03
-	delnavg[cut] = delnavg[cut] - avg
-	averages.append(avg)
-'''
-
 # Subtract 0.25 mag from plane NUV because the offset was added to the _cut.fits file
 scatter_contour(gg['nuv_mag'], gg['nuv_mag']-(gg['nuv']), threshold=10000, log_counts=True, histogram2d_args=dict(bins=(40)), plot_args=dict(color='k', markersize=1, alpha=0.1), contour_args=dict(cmap=cm.gray))
 
@@ -173,45 +246,58 @@ plt.ylabel('$\Delta$NUV (GAIS - Plane)')
 plt.show()
 
 
+plt.hist2d(gg['nuv_mag'], gg['nuv_mag']-gg['nuv']-0.25, bins=(400,400))
+
+plt.axhline(y=0.25, color='black', linestyle='--')
+plt.axhline(y=0, color='red')
+plt.xlim(13, 21)
+plt.ylim(-0.5, 1)
+plt.xlabel('NUV (GAIS)')
+plt.ylabel('$\Delta$NUV (GAIS - Plane)')
+plt.colorbar()
+plt.show()
+
 ############################################################
 # NUV histogram for all surveys
 ############################################################
-cat = fits.open('starcat_allscans_10-12-18_cuts.fits')[1].data # catalog
-ps = fits.open('plane_ps2_09_01_19.fits')[1].data # Pan starrs
-cg = fits.open('plane_gaiadr2_dust_11_14_18.fits')[1].data  # gaia
-gg = fits.open('plane_gais_11_27_18.fits')[1].data # GAIS 
-allcat = fits.open('plane_gaiadr2_gais_ps1_11_27_18.fits')[1].data
-none = fits.open('plane_innosurveys_11_27_18.fits')[1].data
+cat = fits.open('starcat_allscans_06_12_19.fits')[1].data # catalog
+ps = fits.open('plane_ps2_08_01_19.fits')[1].data # Pan starrs
+cg = fits.open('plane_gaiadr2_dust_06_12_19.fits')[1].data  # gaia
+gg = fits.open('plane_gais_08_26_19.fits')[1].data # GAIS 
+allcat = fits.open('plane_gaiadr2_gais_ps2_09_04_19.fits')[1].data
+none = Table.read('plane_innosurveys_08_16_19.txt',format='ascii')
 #cg = cg[np.where(cg['angsep']*3600. < 2.0)]
 #ps = ps[np.where((ps['angsep']*3600. < 2.0) & (ps['expsum'] > 3.) & (ps['ctsum'] > 1))]
 #ps = ps[~np.isnan(cat['bkgdsum'])]
 
+import matplotlib.ticker as ticker
+fig, ax = plt.subplots()
+ax.hist(cat['nuv'], bins=20, range=[12,21], label='UVGAPS', alpha=0.7, color='#00E6FF')
+ax.hist(none['nuv'], bins=20, range=[12, 21], histtype='step', linewidth=2, stacked=True, label='No surveys', color='yellow')
+ax.hist(cg['nuv'], bins=20, range=[12, 21], histtype='step',linewidth=3, stacked=True, label='UVGAPS+Gaia')
+ax.hist(gg['nuv'], bins=20, range=[12, 21], histtype='step', linewidth=2, stacked=True, label='UVGAPS+GAIS')
+ax.hist(ps['nuv'], bins=20, range=[12, 21], histtype='step', linewidth=3, stacked=True, label='UVGAPS+PS2')
+ax.hist(allcat['nuv'], bins=20, range=[12, 21], histtype='step', linewidth=2, stacked=True, label='UVGAPS+All surveys')
 
-plt.hist(cat['nuv'], bins=20, range=[12,21], label='UVGAPS', alpha=0.7, color='#00E6FF')
-plt.hist(none['nuv'], bins=20, range=[12, 21], histtype='step', linewidth=2, stacked=True, label='No surveys', color='yellow')
-plt.hist(cg['nuv'], bins=20, range=[12, 21], histtype='step',linewidth=3, stacked=True, label='UVGAPS+Gaia')
-plt.hist(gg['nuv'], bins=20, range=[12, 21], histtype='step', linewidth=2, stacked=True, label='UVGAPS+GAIS')
-plt.hist(ps['nuv'], bins=20, range=[12, 21], histtype='step', linewidth=3, stacked=True, label='UVGAPS+PS1')
-plt.hist(allcat['nuv_plane'], bins=20, range=[12, 21], histtype='step', linewidth=2, stacked=True, label='UVGAPS+All surveys')
-
-plt.legend(loc=2)
-plt.xlabel('NUV')
+ax.legend(loc=2)
+ax.set_xlabel('NUV')
+ax.yaxis.set_major_formatter(ticker.PercentFormatter(xmax=len(cat)))
 plt.show()
 
 ############################################################
 # NUV offset histogram with GAIS
 ############################################################
-gg = fits.open('plane_gais_11_27_18.fits')[1].data # GAIS 
+gg = fits.open('plane_gais_08_26_19.fits')[1].data # GAIS 
 
-nuv = gg['nuv'] - 0.25
+nuv = gg['nuv']
 
 for mag in range(12, 21,2):
     cut = np.where((nuv > mag) & (nuv < mag+2))
-    dnuv = (gg['nuv_mag']-nuv)[cut] 
+    dnuv = (gg['nuv_mag']-nuv)[cut] - 0.25
     plt.hist(dnuv, histtype='step', fill=False, stacked=True, label=str(mag)+'-'+str(mag+2), range=[-1, 1], bins=40)
 plt.legend(scatterpoints=1, loc=2)
 plt.xlabel('$\Delta$NUV (GAIS - plane)')
-plt.xlim(-0.4, 1)
+plt.xlim(-0.6, 0.6)
 plt.show()
 
 
@@ -267,12 +353,23 @@ ax.add_collection(p)
 plt.show()
 
 
+
+# Or do this hist2d plot
+fig, axes = plt.subplots(nrows=2, ncols=2)
+
+axes[0, 0].hist2d(ps['nuv']-ps['gMeanPSFMag'], ps['gMeanPSFMag']-ps['rMeanPSFMag'], bins=(300,300),vmin=0, vmax=300)
+plt.xlim(-2, 10)
+plt.ylim(-1, 1.5)
+plt.colorbar()
+plt.show()
+
+
 ############################################################
 # Area
 ############################################################
 g = fits.open('gr67tile_table.fits')[1].data
 ra = np.array(g['ra_cent'], dtype=np.float32)
-dec = np.array(g['dec_cent'], dtype=np.float32)
+dec = np.raray(g['dec_cent'], dtype=np.float32)
 gal = SkyCoord(ra*u.deg, dec*u.deg, frame='icrs')
 gl = gal.galactic.l.degree
 gb = gal.galactic.b.degree
@@ -292,16 +389,23 @@ carea = cat[q]
 
 
 # Or load this instead
+cat = fits.open('starcat_allscans_06_12_19.fits')[1].data
+w = np.where((cat['expsum'] > 4) & (cat['ctsum'] > 1))
+cat = cat[w]
 carea = fits.open('plane_ingaisarea.fits')[1].data
-
+r = np.where(carea['FLUXERR_AUTO']/carea['FLUX_AUTO'] < 0.2)
+carea = carea[r]
 galex = fits.open('GAISPlane.fits')[1].data
-q = np.where((galex['nuv_magerr'] > 0) & (galex['nuv_magerr'] < 100) & (galex['nuv_magerr']/galex['nuv_mag'] < 0.1))
+q = np.where((galex['nuv_magerr'] > 0) & (galex['nuv_magerr'] < 100) & (galex['nuv_magerr'] < 0.2) & (galex['primary_flag'] == 1) & (galex['nuv_weight'] > 0))
 galex = galex[q]
 
+
 plt.hist(galex['nuv_mag'], range=[12,25], bins=20, label='GAIS', log=True, alpha=0.7, color='#00E6FF')
+plt.hist(cat['nuv'], bins=20, range=[12,25], histtype='step', linewidth=2, stacked=True, label='UVGAPS', log=True, color='black')
 plt.hist(carea['nuv'], range=[12,25], bins=20, histtype='step', linewidth=2, stacked=True, label='UVGAPS in GAIS area', log=True, color='red')
 plt.legend(scatterpoints=1, loc=2)
 plt.xlabel('NUV')
+#plt.ylim(100, 10**7)
 plt.show()
 
 
