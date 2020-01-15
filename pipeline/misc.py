@@ -991,3 +991,24 @@ plt.hist((c12['nuv']-c12['ebv']*7.24)-(c12['phot_g_mean_mag']-c12['ebv']*2.85), 
 plt.legend(loc=2)
 plt.xlabel('(NUV - G)$_0$')
 plt.show()
+
+
+
+cg = fits.open('plane_gaiadr2_dust_06_12_19.fits')[1].data
+cg = cg[np.where((cg['expsum'] > 3) & (cg['ebv'] > 0))]
+    
+plt.hist2d(cg['nuv']-cg['phot_g_mean_mag'], cg['phot_g_mean_mag']-cg['distmod'], bins=(1000,1000), norm=matplotlib.colors.LogNorm())
+plt.xlim(-2, 11.6)
+plt.ylim(14, -3)
+plt.show()
+
+nuvg = cg['nuv'] - cg['phot_g_mean_mag']
+bprp = cg['phot_bp_mean_mag'] - cg['phot_rp_mean_mag']
+mg = cg['phot_g_mean_mag'] - cg['distmod']
+rc1cut = np.where((bprp > 1.11) & (mg < 1.11))
+rc2cut = np.where((nuvg > 6.8) & (mg < 1.4))
+
+
+
+
+
