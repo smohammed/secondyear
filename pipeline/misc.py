@@ -990,7 +990,7 @@ plt.hist((c11['nuv']-c11['ebv']*7.24)-(c11['phot_g_mean_mag']-c11['ebv']*2.85), 
 plt.hist((c12['nuv']-c12['ebv']*7.24)-(c12['phot_g_mean_mag']-c12['ebv']*2.85), range=[0, 10], bins=20, histtype='step', stacked=True, label=mol['name'][12])
 plt.legend(loc=2)
 plt.xlabel('(NUV - G)$_0$')
-plt.show()
+plt.show(
 
 
 
@@ -1012,3 +1012,21 @@ rc2cut = np.where((nuvg > 6.8) & (mg < 1.4))
 
 
 
+
+
+fig, (ax1, ax2) = plt.subplots(1, 2)
+
+ax1.scatter(np.log10(gm1['Teff']), gm1['logg'], s=1, label='M20')
+ax2.scatter(np.log10(rc['Teff']), rc['Logg'], s=1, label='GAIS')
+ax1.set_xlabel('Teff')
+ax2.set_xlabel('Teff')
+ax1.set_ylabel('Logg')
+
+ax1.set_xlim(3.63, 3.73)
+ax2.set_xlim(3.63, 3.73)
+
+ax1.set_ylim(2.2, 3.2)
+ax2.set_ylim(2.2, 3.2)
+ax1.set_title('M20')
+ax2.set_title('GAIS')
+plt.show()
