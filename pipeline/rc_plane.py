@@ -549,14 +549,28 @@ b = 0.0694
 def gb(f, a, b):
 	return np.where((f['glat'] > a) & (f['glat'] < b))
 
-thickg = rcg[np.where((rcg['AFE'] > 0.08) & (rcg['AFE'] > (m*rcg['FEH'] + b))https://www.youtube.com/watch?v=UMriYK0ewmM)]
-thing = rcg[np.where((rcg['AFE'] < 0.08) | (rcg['AFE'] < (m*rcg['FEH'] + b)))]
+'''
+# APOGEE
+thickg = rcg[np.where((rcg['alphafe'] > 0.08) & (rcg['alphafe'] > (m*rcg['FE_H'] + b)))]
+thing = rcg[np.where((rcg['alphafe'] < 0.08) | (rcg['alphafe'] < (m*rcg['FE_H'] + b)))]
+brthin = thing['phot_bp_mean_mag']-thing['phot_rp_mean_mag']
+ngthin = (thing['mag_nuv']-thing['ebv']*7.24) - (thing['phot_g_mean_mag']-thing['ebv']*2.85)
+fehthin = thing['FE_H']
+brthick = thickg['phot_bp_mean_mag']-thickg['phot_rp_mean_mag']
+ngthick = (thickg['mag_nuv']-thickg['ebv']*7.24) - (thickg['phot_g_mean_mag']-thickg['ebv']*2.85)
+fehthick = thickg['FE_H']
+'''
+
+# LAMOST
+thickg = lg[np.where((lg['AFE'] > 0.08) & (lg['AFE'] > (m*lg['FEH'] + b)))]
+thing = lg[np.where((lg['AFE'] < 0.08) | (lg['AFE'] < (m*lg['FEH'] + b)))]
 brthin = thing['phot_bp_mean_mag']-thing['phot_rp_mean_mag']
 ngthin = (thing['mag_nuv']-thing['ebv']*7.24) - (thing['phot_g_mean_mag']-thing['ebv']*2.85)
 fehthin = thing['FEH']
 brthick = thickg['phot_bp_mean_mag']-thickg['phot_rp_mean_mag']
 ngthick = (thickg['mag_nuv']-thickg['ebv']*7.24) - (thickg['phot_g_mean_mag']-thickg['ebv']*2.85)
 fehthick = thickg['FEH']
+
 
 
 fig, axes = plt.subplots(4, 2, sharex=True, sharey=True)
@@ -602,7 +616,7 @@ axes[3, 1].plot(xp, 0.21*xp - 1.81, c='green', label='thin eq')
 axes[3, 1].plot(xp, 0.27*xp - 2.53, c='red', label='thick eq')
 
 
-#axes[0, 0].legend(loc=4, prop={'size': 10})
+axes[0, 0].legend(loc=4, prop={'size': 10})
 axes[3, 0].set_xlabel('(NUV - G)$_0$')
 axes[3, 1].set_xlabel('(NUV - G)$_0$')
 axes[0, 0].set_ylabel('[Fe/H]')
@@ -610,13 +624,13 @@ axes[1, 0].set_ylabel('[Fe/H]')
 axes[2, 0].set_ylabel('[Fe/H]')
 axes[3, 0].set_ylabel('[Fe/H]')
 axes[0, 0].annotate('gb = 0-10', xy=(9., -1.1), size=10)
-axes[0, 1].annotate('gb = 10-20', xy=(9.7, -1.1), size=10)
-axes[1, 0].annotate('gb = 20-30', xy=(9.7, -1.1), size=10)
-axes[1, 1].annotate('gb = 30-40', xy=(9.7, -1.1), size=10)
-axes[2, 0].annotate('gb = 40-50', xy=(9.7, -1.1), size=10)
-axes[2, 1].annotate('gb = 50-60', xy=(9.7, -1.1), size=10)
-axes[3, 0].annotate('gb = 60-70', xy=(9.7, -1.1), size=10)
-axes[3, 1].annotate('gb = 70-90', xy=(9.7, -1.1), size=10)
+axes[0, 1].annotate('gb = 10-20', xy=(9.6, -1.1), size=10)
+axes[1, 0].annotate('gb = 20-30', xy=(9.6, -1.1), size=10)
+axes[1, 1].annotate('gb = 30-40', xy=(9.6, -1.1), size=10)
+axes[2, 0].annotate('gb = 40-50', xy=(9.6, -1.1), size=10)
+axes[2, 1].annotate('gb = 50-60', xy=(9.6, -1.1), size=10)
+axes[3, 0].annotate('gb = 60-70', xy=(9.6, -1.1), size=10)
+axes[3, 1].annotate('gb = 70-90', xy=(9.6, -1.1), size=10)
 axes[0, 0].set_xlim(6.9, 10.1)
 axes[0, 0].set_ylim(-1.2, 0.6)
 fig.subplots_adjust(wspace=0, hspace=0)
@@ -805,8 +819,8 @@ m = (0.265-0.065)/(-0.88-0.02)
 b = 0.0694
 thickp,= np.where((pl['AFE'] > 0.08) & (pl['AFE'] > (m*pl['FEH'] + b)))
 thinp,= np.where((pl['AFE'] < 0.08) | (pl['AFE'] < (m*pl['FEH'] + b)))
-thickg,= np.where((gl['AFE'] > 0.08) & (gl['AFE'] > (m*gl['FEH'] + b)))
-thing,= np.where((gl['AFE'] < 0.08) | (gl['AFE'] < (m*gl['FEH'] + b)))
+thickg,= np.where((lg['AFE'] > 0.08) & (lg['AFE'] > (m*lg['FEH'] + b)))
+thing,= np.where((lg['AFE'] < 0.08) | (lg['AFE'] < (m*lg['FEH'] + b)))
 #thinp = pl[thinp]
 #thickp = pl[thickp]
 #thing = gl[thing]
@@ -814,7 +828,9 @@ thing,= np.where((gl['AFE'] < 0.08) | (gl['AFE'] < (m*gl['FEH'] + b)))
 
 
 ngp = (pl['nuv']-pl['ebv3d']*7.24)-(pl['phot_g_mean_mag']-pl['ebv3d']*2.85)
-ngg = (gl['mag_nuv']-gl['ebv']*7.24)-(gl['phot_g_mean_mag']-gl['ebv']*2.85)
+ngg = (lg['mag_nuv']-lg['ebv']*7.24)-(lg['phot_g_mean_mag']-lg['ebv']*2.85)
+
+
 
 
 def mass(f, a, b):

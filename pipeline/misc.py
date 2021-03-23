@@ -990,7 +990,7 @@ plt.hist((c11['nuv']-c11['ebv']*7.24)-(c11['phot_g_mean_mag']-c11['ebv']*2.85), 
 plt.hist((c12['nuv']-c12['ebv']*7.24)-(c12['phot_g_mean_mag']-c12['ebv']*2.85), range=[0, 10], bins=20, histtype='step', stacked=True, label=mol['name'][12])
 plt.legend(loc=2)
 plt.xlabel('(NUV - G)$_0$')
-plt.show(
+plt.show()
 
 
 

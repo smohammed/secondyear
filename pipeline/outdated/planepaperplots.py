@@ -117,6 +117,68 @@ fig.subplots_adjust(wspace=0)
 plt.show()
 
 
+############################################################
+# 4 panel CMD for paper
+############################################################
+from matplotlib.colors import LogNorm
+ebvcut = np.where(psg['ebv']> 0)
+nuvgmag = ((psg['nuv']-psg['ebv']*7.24)-(psg['gMeanPSFMag']-psg['ebv']*3.172))[ebvcut]
+gr = ((psg['gMeanPSFMag']-psg['ebv']*3.172)-(psg['rMeanPSFMag']-psg['ebv']*2.271))[ebvcut]
+
+pickles2 = pickles[np.arange(0, len(pickles), 5)]
+
+
+
+fig, axes = plt.subplots(2, 2, sharex=True, sharey=True,figsize=(16, 12), facecolor='w')
+
+cmap = axes[0, 0].hist2d(psg['nuv']-psg['gMeanPSFMag'], psg['gMeanPSFMag']-psg['rMeanPSFMag'], bins=5000,cmap='viridis', norm=LogNorm())
+axes[0, 0].scatter(pickles2['nuv']-pickles2['g'], pickles2['g']-pickles2['r'], color='red', label='SED model',  s=30, zorder=20)
+
+axes[0, 1].hist2d(psg['nuv']-psg['gMeanPSFMag'], psg['gMeanPSFMag']-psg['rMeanPSFMag'], bins=5000,cmap='viridis', norm=LogNorm())
+axes[0, 1].scatter(wds['nuv']-wds['gMeanPSFMag'], wds['gMeanPSFMag']-wds['rMeanPSFMag'],s=1, label='WDs')
+
+axes[1, 0].hist2d(psg['nuv']-psg['gMeanPSFMag'], psg['gMeanPSFMag']-psg['rMeanPSFMag'], bins=5000,cmap='viridis', norm=LogNorm())
+axes[1, 0].scatter(ob['nuv']-ob['gMeanPSFMag'], ob['gMeanPSFMag']-ob['rMeanPSFMag'], s=1, label='Selected blue objects')
+
+axes[1, 1].hist2d(nuvgmag, gr, bins=5000,cmap='viridis', norm=LogNorm())
+axes[1, 1].scatter((ob['nuv']-ob['ebv']*7.24)-(ob['gMeanPSFMag']-ob['ebv']*3.172), (ob['gMeanPSFMag']-ob['ebv']*3.172)-(ob['rMeanPSFMag']-ob['ebv']*2.271), s=1)
+
+
+axes[0, 0].arrow(3,  -0.75,  2.972-1.1838,  1.1838-0.8664,  head_length=0.05,  head_width=0.02,  color='red')
+axes[0, 1].arrow(3,  -0.75,  2.972-1.1838,  1.1838-0.8664,  head_length=0.05,  head_width=0.02,  color='red')
+axes[1, 0].arrow(3,  -0.75,  2.972-1.1838,  1.1838-0.8664,  head_length=0.05,  head_width=0.02,  color='red')
+axes[1, 1].arrow(3,  -0.75,  2.972-1.1838,  1.1838-0.8664,  head_length=0.05,  head_width=0.02,  color='red')
+axes[0, 0].annotate('O', xy=(0, -0.9), size=20)
+axes[0, 0].annotate('B', xy=(1, -0.81), size=20)
+axes[0, 0].annotate('A', xy=(2.5, -0.5), size=20)
+axes[0, 0].annotate('F', xy=(3.7, -0.5), size=20)
+axes[0, 0].annotate('G', xy=(5, -0.3), size=20)
+axes[0, 0].annotate('K', xy=(6.2, -0.1), size=20)
+
+axes[0, 0].legend(scatterpoints=1)
+axes[0, 1].legend(scatterpoints=1)
+axes[1, 0].legend(scatterpoints=1)
+
+fig.subplots_adjust(wspace=0, hspace=0)
+axes[0, 0].set_xlim((-1.2, 8))
+axes[0, 0].set_ylim((-1.5, 2))
+axes[1, 0].set_xlim((-1.2, 8))
+axes[1, 0].set_ylim((-1.5, 2))
+axes[1, 1].set_xlim((-1.2, 8))
+axes[1, 1].set_ylim((-1.5, 2))
+axes[1, 0].set_xlabel('NUV - g')
+axes[1, 1].set_xlabel('NUV - g')
+axes[0, 0].set_ylabel('g - r')
+axes[1, 0].set_ylabel('g - r')
+
+
+cbar_ax = fig.add_axes([0.91, 0.1, 0.03, 0.8])
+plt.colorbar(cmap, cax=cbar_ax)
+
+
+plt.show()
+
+
 
 ############################################################
 # Gaia NUVG vs MNUV
@@ -212,8 +274,8 @@ plt.show()
 ############################################################
 # Angular separations for Gaia and PS1
 ############################################################
-cg = fits.open('plane_gaiadr2_dust_06_12_19.fits')[1].data
-ps = fits.open('plane_ps2_09_01_19.fits')[1].data
+cg = fits.open('plane_gaiadr2_3ddust_ebvsfd_07_24_20.fits')[1].data
+ps = fits.open('plane_ps2_08_01_19.fits')[1].data
 ps = Table(ps)
 dra = (ps['ALPHA_J2000']-ps['raMean'])*3600
 ddec = (ps['DELTA_J2000']-ps['decMean'])*3600
@@ -223,8 +285,8 @@ ps['angsep'] = angsep
 cg = cg[np.where(cg['angsep']*3600. < 2.0)]
 ps = ps[np.where(ps['angsep'] < 2.0)]
 
-plt.hist(cg['angsep']*3600, bins=20, alpha=0.7, label='Gaia match', color='#00E6FF', edgecolor='black')
-plt.hist(ps['angsep'], bins=20, alpha=0.7, label='PS2 match', color='#FF5C5C', edgecolor='black')
+plt.hist(cg['angsep']*3600, bins=20, alpha=0.7, label='Gaia match', color='#00E6FF')
+plt.hist(ps['angsep'], bins=20, alpha=0.7, label='PS2 match', color='#FF5C5C', histtype='step', linewidth=3, stacked=True)
 plt.xlabel('Angular Separation')
 plt.legend(scatterpoints=1)
 plt.show()
@@ -288,15 +350,19 @@ plt.show()
 # NUV offset histogram with GAIS
 ############################################################
 gg = fits.open('plane_gais_08_26_19.fits')[1].data # GAIS 
-
 nuv = gg['nuv']
 
-for mag in range(12, 21,2):
+g14 = (gg['nuv_mag']-nuv)[np.where((nuv > 16) & (nuv < 18))] - 0.25
+
+plt.hist(g14, range=[-1, 1], bins=40)
+
+
+for mag in range(12, 20,2):
     cut = np.where((nuv > mag) & (nuv < mag+2))
     dnuv = (gg['nuv_mag']-nuv)[cut] - 0.25
     plt.hist(dnuv, histtype='step', fill=False, stacked=True, label=str(mag)+'-'+str(mag+2), range=[-1, 1], bins=40)
 plt.legend(scatterpoints=1, loc=2)
-plt.xlabel('$\Delta$NUV (GAIS - plane)')
+plt.xlabel('$\Delta$NUV (GAIS - UVGAPS)')
 plt.xlim(-0.6, 0.6)
 plt.show()
 
@@ -339,6 +405,9 @@ plt.ylabel('g - r')
 plt.arrow(3,  -0.75,  2.972-1.1838,  1.1838-0.8664,  head_length=0.05,  head_width=0.02,  color='red')
 plt.legend(scatterpoints=1, loc=4)
 plt.show()
+
+
+
 
 # MS, WDs and binaries respectively
 p1 = Polygon([[1.7, -0.5], [1.9, 0.3], [2.7, 0.7], [4, 1.05], [5.2, 1.05], [5.8, 1], [6.5, 0.95], [6.6, 0.3], [6, -0.1], [4.6, -0.4], [3.2, -0.5], [1.7, -0.5]])
@@ -403,9 +472,9 @@ galex = galex[q]
 plt.hist(galex['nuv_mag'], range=[12,25], bins=20, label='GAIS', log=True, alpha=0.7, color='#00E6FF')
 plt.hist(cat['nuv'], bins=20, range=[12,25], histtype='step', linewidth=2, stacked=True, label='UVGAPS', log=True, color='black')
 plt.hist(carea['nuv'], range=[12,25], bins=20, histtype='step', linewidth=2, stacked=True, label='UVGAPS in GAIS area', log=True, color='red')
-plt.legend(scatterpoints=1, loc=2)
+plt.legend(scatterpoints=1, loc=1)
 plt.xlabel('NUV')
-#plt.ylim(100, 10**7)
+plt.ylim(1000, 10**7)
 plt.show()
 
 
