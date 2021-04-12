@@ -118,7 +118,7 @@ plt.show()
 
 
 ############################################################
-# 4 panel CMD for paper
+# 4 panel grvsnuvg for paper
 ############################################################
 from matplotlib.colors import LogNorm
 ebvcut = np.where(psg['ebv']> 0)
