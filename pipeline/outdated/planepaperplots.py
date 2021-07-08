@@ -116,6 +116,69 @@ fig.subplots_adjust(hspace=0)
 fig.subplots_adjust(wspace=0)
 plt.show()
 
+###########################################################
+# CMD with OB stars and Binaries
+###########################################################
+
+bi = ob[np.where(ob['BINARY_FLAG'] == 1)]
+
+fig, axes = plt.subplots(nrows=1, ncols=2)
+
+#axes[0].hist2d(cg['nuv']-cg['phot_g_mean_mag'], cg['phot_g_mean_mag']-cg['distmod'], bins=(2000, 2000), norm=matplotlib.colors.LogNorm())
+
+#axes[1].hist2d((cg['nuv']-cg['ebv']*7.24)-(cg['phot_g_mean_mag']-cg['ebv']*2.85), cg['phot_g_mean_mag']-cg['distmod']-cg['ebv']*2.85, bins=(2000, 2000), norm=matplotlib.colors.LogNorm())
+
+#axes[0].scatter(ob['nuv']-ob['phot_g_mean_mag'], ob['phot_g_mean_mag']-ob['distmod'], s=1, c='red')
+#axes[1].scatter((ob['nuv']-ob['ebv']*7.24)-(ob['phot_g_mean_mag']-ob['ebv']*2.85), (ob['phot_g_mean_mag']-ob['distmod']-ob['ebv']*2.85), s=1, c='red', label='OB stars')
+
+
+fig, axes = plt.subplots(nrows=1, ncols=2, sharex=True, sharey=True)
+
+axes[0].hist2d(ob['nuv']-ob['phot_g_mean_mag'], ob['phot_g_mean_mag']-ob['distmod'], bins=(100, 100), norm=matplotlib.colors.LogNorm(), cmap='Blues')
+
+axes[1].hist2d((ob['nuv']-ob['ebv']*7.24)-(ob['phot_g_mean_mag']-ob['ebv']*2.85), (ob['phot_g_mean_mag']-ob['distmod']-ob['ebv']*2.85), bins=(100, 100), norm=matplotlib.colors.LogNorm(), cmap='Blues')
+
+
+axes[0].scatter(bi['nuv']-bi['phot_g_mean_mag'], bi['phot_g_mean_mag']-bi['distmod'], s=3, c='pink')
+axes[1].scatter((bi['nuv']-bi['ebv']*7.24)-(bi['phot_g_mean_mag']-bi['ebv']*2.85), (bi['phot_g_mean_mag']-bi['distmod']-bi['ebv']*2.85), s=3, c='pink', label='Binaries')
+
+
+axes[0].set_xlabel('NUV - G')
+axes[1].set_xlabel('(NUV - G)$_0$')
+axes[0].set_ylabel('M$_G$')
+#axes[0].set_xlim((-2, 11.6))
+#axes[0].set_ylim((14, -5))
+#axes[1].set_xlim((-2, 11.6))
+#axes[1].set_ylim((14, -5))
+#axes[1].set_yticks([])
+fig.subplots_adjust(hspace=0)
+fig.subplots_adjust(wspace=0)
+axes[1].legend(scatterpoints=1, loc=4)
+plt.show()
+
+
+# Just one panel
+x1 = (ob['nuv']-ob['ebv']*7.24)-(ob['phot_g_mean_mag']-ob['ebv']*2.85)
+y1 = ob['phot_g_mean_mag']-ob['ebv']*2.85-ob['distmod']
+
+z1, v1 = np.polyfit(x1, y1, 1, cov=True)
+p1 = np.poly1d(z1)
+oberr = np.sqrt(np.sum((p1(x1)-y1)**2)/len(x1))
+
+
+plt.hist2d(x1, y1, bins=(100, 100), norm=matplotlib.colors.LogNorm(), cmap='Blues')
+plt.scatter((bi['nuv']-bi['ebv']*7.24)-(bi['phot_g_mean_mag']-bi['ebv']*2.85), (bi['phot_g_mean_mag']-bi['distmod']-bi['ebv']*2.85), s=3, c='red', label='Binaries')
+
+
+plt.plot(xline, p1(xline), c='black', label='OB fit')
+plt.plot(xline, p2(xline), c='red', label='Binary fit')
+
+plt.xlabel('(NUV - G)$_0$')
+plt.ylabel('M$_G$')
+plt.xlim(-2, 4.5)
+plt.ylim(5, -8)
+plt.legend(scatterpoints=1, loc=1)
+
 
 ############################################################
 # 4 panel grvsnuvg for paper
