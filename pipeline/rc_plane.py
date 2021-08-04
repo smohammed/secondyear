@@ -1,21 +1,29 @@
 #######################################################################################
 # CMD
 #######################################################################################
-fig, (ax1, ax2) = plt.subplots(1, 2, sharey=True, sharex=True)
+from mpl_toolkits.axes_grid.inset_locator import inset_axes
 
+ga = Table.read('gais_gaiadr2_apogee_dust_7-29.txt', format='ascii')
+pa = Table.read('plane_gaiadr2_dust_apogee_7-28.txt', format='ascii')
+
+lg = Table.read('gais_gaia_lamost_huang20.txt', format='ascii')
+lp = Table.read('rc_plane_gaiadr2_lamost_08-28-20.txt', format='ascii')
+
+
+
+fig, (ax1, ax2) = plt.subplots(1, 2, sharey=True, sharex=True)
 fig.subplots_adjust(wspace=0)
 
 ax1.scatter((ga['mag_nuv']-ga['ebvsfd']*7.24)-(ga['phot_g_mean_mag']-ga['ebvsfd']*2.85), (ga['phot_g_mean_mag']-ga['ebvsfd']*2.85)-ga['distmod'], s=1, alpha=0.5)
-
 ax2.scatter((pa['nuv']-pa['ebv']*7.24)-(pa['phot_g_mean_mag']-pa['ebv']*2.85), (pa['phot_g_mean_mag']-pa['ebv']*2.85)-pa['distmod'], s=1, alpha=0.5)
-ax1.set_ylim(10, -2)
+ax1.set_ylim(8, -4)
 ax1.set_xlim(0, 11)
 plt.ion()
 ax1.set_xlabel('(NUV-G)$_0$')
 ax2.set_xlabel('(NUV-G)$_0$')
 ax1.set_ylabel('M$_{G_0}$')
-ax1.annotate('GAIS+APOGEE', xy=(7.2, -0.5))
-ax2.annotate('UVGAPS+APOGEE', xy=(7, -0.5))
+ax1.annotate('GAIS+APOGEE', xy=(6.6, -0.5))
+ax2.annotate('UVGAPS+APOGEE', xy=(6.4, -0.5))
 ax1.plot((6.5, 10), (-0.3,-0.3), color='red')
 ax1.plot((6.5, 10), (1,1), color='red')
 ax1.plot((10, 10), (-0.3, 1), color='red')
@@ -26,32 +34,33 @@ ax2.plot((10, 10), (-0.3, 1), color='red')
 ax2.plot((6.5, 6.5), (-0.3, 1), color='red')
 
 
+
 #axin1 = inset_axes(ax1, height=2, width=2, loc=3)
 
 axin1 = inset_axes(ax1, width="100%", height="100%",
-                   bbox_to_anchor=(6/11., 7/10., 0.37, -.12),
+                   bbox_to_anchor=(6/11., 9/10., 0.37, -.12),
                    bbox_transform=ax1.transAxes, loc=2, borderpad=0)
 
 axin1.set_xlim(6, 10)
 axin1.set_ylim(1.5, -1.5)
 axin1.scatter((lg['mag_nuv']-lg['ebv']*7.24)-(lg['phot_g_mean_mag']-lg['ebv']*2.85), lg['phot_g_mean_mag']-lg['ebv']*2.85-lg['distmod'], s=1, alpha=0.1)
-ax1.annotate('GAIS+LAMOST', xy=(7.2, 4))
+ax1.annotate('GAIS+LAMOST', xy=(6.6, -3))
 axin1.invert_yaxis()
 
 
 axin2 = inset_axes(ax2, width="100%", height="100%",
-                   bbox_to_anchor=(6/11., 7/10., 0.37, -.12),
+                   bbox_to_anchor=(6/11., 9/10., 0.37, -.12),
                    bbox_transform=ax2.transAxes, loc=2, borderpad=0)
 
 axin2.set_xlim(6, 10)
 axin2.set_ylim(1.5, -1.5)
 axin2.scatter((lp['nuv']-lp['ebv3d']*7.24)-(lp['phot_g_mean_mag']-lp['ebv3d']*2.85), lp['phot_g_mean_mag']-lp['ebv3d']*2.85-lp['distmod'], s=1, alpha=0.5)
-ax2.annotate('UVGAPS+LAMOST', xy=(7.3, 4))
+ax2.annotate('UVGAPS+LAMOST', xy=(6.4, -3))
 axin2.invert_yaxis()
 
 
-ax2.arrow(4, 5.5, (2.972-0.789)*-1, -0.789, head_length=0.2, head_width=0.2, color='red')
-
+#ax2.arrow(4, 5.5, (2.972-0.789)*-1, -0.789, head_length=0.2, head_width=0.2, color='red')
+ax2.arrow(4, 7, (7.24-2.85)*-1*.5, -2.85*.5, head_length=0.2, head_width=0.2, color='red')
 
 plt.show()
 
@@ -89,7 +98,7 @@ thickp,= np.where((rcp['alphafe'] > 0.08) & (rcp['alphafe'] > (m*rcp['FE_H'] + b
 thinp,= np.where((rcp['alphafe'] < 0.08) | (rcp['AFE'] < (m*rcp['FE_H'] + b)))
 thickg,= np.where((rcg['alphafe'] > 0.08) & (rcg['alphafe'] > (m*rcg['FE_H'] + b)))
 thing,= np.where((rcg['alphafe'] < 0.08) | (rcg['alphafe'] < (m*rcg['FE_H'] + b)))
-thinp = rcp[thinp]
+heap beer lyricsthinp = rcp[thinp]
 thickp = rcp[thickp]
 thing = rcg[thing]
 thickg = rcg[thickg]
@@ -264,6 +273,9 @@ plt.show()
 #m = (0.265-0.065)/(-0.88-0.02)
 #b = 0.0694
 
+rcp = Table.read('rc_plane_gaiadr2_apogee_7-28.txt', format='ascii')
+rcg = Table.read('rc_gais_gaiadr2_apogee_dust_7-29.txt', format='ascii')
+
 x1, y1 = 0.02, 0.065
 x2, y2 = -0.86, 0.23
 m = (y2 - y1) / (x2 - x1)
@@ -326,13 +338,13 @@ pthinerr = np.sqrt(np.sum((ppthin(xpthin)-ypthin)**2)/len(xpthin))
 
 fig, axes = plt.subplots(3, 2, sharex=True, sharey=True)
 axes[0, 0].scatter(rcg['TEFF'], (rcg['mag_nuv']-rcg['ebv3d']*7.24)-(rcg['phot_g_mean_mag']-rcg['ebv3d']*2.85), c=rcg['FE_H'], vmin=-0.5, vmax=0.4, s=4)
-cmap = axes[0, 1].scatter(rcp['TEFF'], (rcp['nuv']-rcp['ebv']*7.24)-(rcp['phot_g_mean_mag']-rcp['ebv']*2.85), c=rcp['FE_H'], vmin=-0.5, vmax=0.4, s=4)
+cmap = axes[0, 1].scatter(rcp['TEFF'], (rcp['nuv']-rcp['ebv']*7.24)-(rcp['phot_g_mean_mag']-rcp['ebv']*2.85), c=rcp['FE_H'], vmin=-0.5, vmax=0.4, s=20)
 
 axes[1, 0].scatter(thing['TEFF'], (thing['mag_nuv']-thing['ebv3d']*7.24)-(thing['phot_g_mean_mag']-thing['ebv3d']*2.85), c=thing['FE_H'], vmin=-0.5, vmax=0.4, s=4)
-axes[1, 1].scatter(thinp['TEFF'], (thinp['nuv']-thinp['ebv']*7.24)-(thinp['phot_g_mean_mag']-thinp['ebv']*2.85), c=thinp['FE_H'], vmin=-0.5, vmax=0.4, s=4)
+axes[1, 1].scatter(thinp['TEFF'], (thinp['nuv']-thinp['ebv']*7.24)-(thinp['phot_g_mean_mag']-thinp['ebv']*2.85), c=thinp['FE_H'], vmin=-0.5, vmax=0.4, s=20)
 
 axes[2, 0].scatter(thickg['TEFF'], (thickg['mag_nuv']-thickg['ebv3d']*7.24)-(thickg['phot_g_mean_mag']-thickg['ebv3d']*2.85), c=thickg['FE_H'], vmin=-0.5, vmax=0.4, s=4)
-axes[2, 1].scatter(thickp['TEFF'], (thickp['nuv']-thickp['ebv']*7.24)-(thickp['phot_g_mean_mag']-thickp['ebv']*2.85), c=thickp['FE_H'], vmin=-0.5, vmax=0.4, s=4)
+axes[2, 1].scatter(thickp['TEFF'], (thickp['nuv']-thickp['ebv']*7.24)-(thickp['phot_g_mean_mag']-thickp['ebv']*2.85), c=thickp['FE_H'], vmin=-0.5, vmax=0.4, s=20)
 
 axes[0, 0].plot(xp, -0.00474*xp + 30.958, c='red')
 axes[0, 1].plot(xp, -0.00474*xp + 30.958, c='red')
