@@ -537,7 +537,7 @@ axes[1, 0].hist(ex['nuv'],range=[12.5, 22.5], histtype='step', color='red', stac
 axes[1, 1].hist(np.log10(rc['ebv']), range=[-3,0])
 axes[1, 1].hist(np.log10(ex['ebv']), range=[-3,0], histtype='step', color='red', stacked=True, fill=False)
 
-axes[0, 0].set_xlabel('Galactic Longitude')
+axes[0, 0].set_xlabel('Galactic Latitude')
 axes[0, 1].set_xlabel('log(Distance) [pc]')
 axes[1, 0].set_xlabel('NUV')
 axes[1, 1].set_xlabel('log(E(B-V))')

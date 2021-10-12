@@ -1032,3 +1032,203 @@ ax2.set_title('GAIS')
 plt.show()
 
 
+
+
+
+
+#####################################################
+# Stuff from a random unsaved bit of code, figure out where from
+#####################################################
+hdu = fits.open('/Scratch/UVGAPS/cantat-gaudin_2020_star_clusters.fits')
+cgMW = hdu[1].data
+print(cgMW.columns)
+cggl = cgMW['GLON']
+cggb = cgMW['GLAT']
+cgr50 = cgMW['r50']
+cgDiam = cgMW['r50']*2.0*60
+cgAge = cgMW['AgeNN']
+cgnstars = cgMW['nbstars07']
+#bicaMWc  =  SkyCoord(ra = bicaMW['RAJ2000']*u.degree, dec = bicaMW['DEJ2000']*u.degree) 
+#bicaDiam  =  bicaMW['Diam-a']
+cgyoung = np.where((cgAge < 8))
+cgmed = np.where((cgAge >8.33) & (cgAge < 8.66))
+cgold = np.where((cgAge >8.66))
+print(cggl)
+print(cggb)
+print(cgDiam)
+
+
+
+
+hdu = fits.open('/Scratch/UVGAPS/cantat-gaudin_2020_star_clusters_stars.fits')
+cgsMW = hdu[1].data
+
+print(cgsMW.columns)
+
+cgsgl = cgsMW['GLON']
+cgsgb = cgsMW['GLAT']
+cgsra = cgsMW['RA_ICRS']
+cgsde = cgsMW['DE_ICRS']
+cgsdm = (5.0)*np.log10(1000.0/cgsMW['Plx'])-5.0
+cgsG = cgsMW['Gmag']
+cgsBmR = cgsMW['BP-RP']
+cgscluster = cgsMW['Cluster']
+
+
+cgsu, indices  =  np.unique(cgsMW['Cluster'], return_inverse = True)
+agearr = np.zeros(len(cgsu))
+distarr = np.zeros(len(cgsu))
+stararr = np.zeros(len(cgsu))
+i = 0
+for clust in cgsu:
+    pcl = np.where(clust  =  =  cgMW['Cluster'])[0]
+    agearr[i] = cgMW['AgeNN'][pcl[0]]
+    distarr[i] = cgsdm[pcl[0]]
+    stararr[i] = cgnstars[pcl[0]]
+    i = i+1
+
+#indices = np.flip(indices)
+
+ageptr = np.argsort(agearr)
+newidx = np.zeros(len(indices))
+for i in np.arange(len(cgsu)):
+        p = np.where(indices =  = ageptr[i])
+        newidx[p] = i
+        
+xoff =  np.mod(newidx,30)
+yoff = (newidx-xoff)/30
+
+
+
+
+
+
+
+
+
+cgs = fits.open('cantat-gaudin_2020_star_clusters_stars.fits')[1].data
+q = np.where((cgs['GLON'] < 90) & (cgs['GLON'] > 0) & (cgs['GLAT'] > -10) & (cgs['GLAT'] < 10))
+c1 = cgs[q]
+
+c1young = c1[np.where(c1['AgeNN'] < 8)]
+c1med = c1[np.where((c1['AgeNN'] >8.33) & (c1['AgeNN'] < 8.66))]
+c1old = c1[np.where(c1['AgeNN'] > 8.66)]
+
+
+
+
+
+cgc = fits.open('cantat-gaudin_2020_star_clusters.fits')[1].data
+w = np.where((cgc['GLON'] < 90) & (cgc['GLON'] > 0) & (cgc['GLAT'] > -10) & (cgc['GLAT'] < 10))
+cgc1 = cgc[w]
+
+
+
+fig, ax = plt.subplots()
+img = plt.imread('../Desktop/0-90_crop.png')
+ax.imshow(img, extent=[90, 0, -20, 20])
+plt.scatter(c1['GLON'], c1['GLAT'], s=1, c='black')
+
+
+
+
+cgyoung = np.where((cgAge < 8))
+cgmed = np.where((cgAge >8.33) & (cgAge < 8.66))
+cgold = np.where((cgAge >8.66))
+
+
+
+
+img = plt.imread('../Desktop/270-360_crop.png')
+
+a = 360
+b = 270
+
+q = np.where((cgs['GLON'] < a) & (cgs['GLON'] > b) & (cgs['GLAT'] > -10) & (cgs['GLAT'] < 10))
+cgs1 = cgs[q]
+w = np.where((cgc['GLON'] < a) & (cgc['GLON'] > b) & (cgc['GLAT'] > -10) & (cgc['GLAT'] < 10))
+cgc1 = cgc[w]
+
+fig, ax = plt.subplots()
+ax.imshow(img, extent=[a, b, -10, 10])
+#plt.scatter(cgs1['GLON'], cgs1['GLAT'], marker='o', lw=0, s=2, c='red')
+plt.scatter(cgc1['GLON'], cgc1['GLAT'], facecolor='none', edgecolor='#800000', s=cgc1['r50']**2*520)
+plt.ylim(-10, 10)
+plt.xlim(a, b)
+
+
+32.25 pixels/degree
+
+plot a marker to find the true scale
+
+
+
+s = marker size in pts^2, increases with area
+
+
+a1, b1 = 15, 35
+a2, b2 = 130, 150
+a3, b3 = 235, 255
+a4, b4 = 280, 300
+
+cat1 = cat[np.where((cat['gl'] > a1) & (cat['gl'] < b1))]
+cat2 = cat[np.where((cat['gl'] > a2) & (cat['gl'] < b2))]
+cat3 = cat[np.where((cat['gl'] > a3) & (cat['gl'] < b3))]
+cat4 = cat[np.where((cat['gl'] > a4) & (cat['gl'] < b4))]
+
+
+cgc1 = cgc[np.where((cgc['GLON'] > a1) & (cgc['GLON'] < b1) & (cgc['GLAT'] > -10) & (cgc['GLAT'] < 10))]
+cgc2 = cgc[np.where((cgc['GLON'] > a2) & (cgc['GLON'] < b2) & (cgc['GLAT'] > -10) & (cgc['GLAT'] < 10))]
+cgc3 = cgc[np.where((cgc['GLON'] > a3) & (cgc['GLON'] < b3) & (cgc['GLAT'] > -10) & (cgc['GLAT'] < 10))]
+cgc4 = cgc[np.where((cgc['GLON'] > a4) & (cgc['GLON'] < b4) & (cgc['GLAT'] > -10) & (cgc['GLAT'] < 10))]
+
+
+
+
+bins = 10
+vmin, vmax= 0, 1
+
+fig, axes = plt.subplots(2, 2, sharey=True)
+#axes[0, 0].scatter(cat1['gl'], cat1['gb'], s=1, alpha=0.1)
+#axes[0, 1].scatter(cat2['gl'], cat2['gb'], s=1, alpha=0.1)
+#axes[1, 0].scatter(cat3['gl'], cat3['gb'], s=1, alpha=0.1)
+#axes[1, 1].scatter(cat4['gl'], cat4['gb'], s=1, alpha=0.1)
+
+axes[0, 0].hist2d(cat1['gl'], cat1['gb'], bins=(bins, bins), vmin=vmin, vmax=vmax)#, norm=matplotlib.colors.LogNorm())
+axes[0, 1].hist2d(cat2['gl'], cat2['gb'], bins=(bins, bins), vmin=vmin, vmax=vmax)#, norm=matplotlib.colors.LogNorm())
+axes[1, 0].hist2d(cat3['gl'], cat3['gb'], bins=(bins, bins), vmin=vmin, vmax=vmax)#, norm=matplotlib.colors.LogNorm())
+axes[1, 1].hist2d(cat4['gl'], cat4['gb'], bins=(bins, bins), vmin=vmin, vmax=vmax)#, norm=matplotlib.colors.LogNorm())
+
+
+axes[0, 0].scatter(cgc1['GLON'], cgc1['GLAT'], facecolor='none', edgecolor='#800000', s=cgc1['r50']**2*520)
+axes[0, 1].scatter(cgc2['GLON'], cgc2['GLAT'], facecolor='none', edgecolor='#800000', s=cgc2['r50']**2*520)
+axes[1, 0].scatter(cgc3['GLON'], cgc3['GLAT'], facecolor='none', edgecolor='#800000', s=cgc3['r50']**2*520)
+axes[1, 1].scatter(cgc4['GLON'], cgc4['GLAT'], facecolor='none', edgecolor='#800000', s=cgc4['r50']**2*520)
+fig.subplots_adjust(wspace=0)
+
+
+
+
+
+
+
+
+
+
+# GAIS vs UVGAPS hist by gl steps
+
+for i in range(0, 360, 10):
+    print i
+    a = gais[np.where((gais['glon'] > i) & (gais['glon'] < i + 10) & (np.abs(gais['glat']) < 5) & (gais['nuv_mag'] < 21))]
+    b = cat[np.where((cat['gl'] > i) & (cat['gl'] < i + 10) & (np.abs(cat['gb']) < 5))]
+    plt.hist(a['glon'], range=[i, i+10], bins=20, histtype='step', fill=False, stacked=True, label='GAIS')
+    plt.hist(b['gl'], range=[i, i+10], bins=20, histtype='step', fill=False, stacked=True, label='UVGAPS')
+    plt.title('gl = '+str(i)+'-'+str(i+10)+', |gb| < 5')
+    plt.legend()
+    plt.savefig('images/galexhist/galex_gl_'+str(i)+'-'+str(i+10)+'_ingb_5.png')
+    plt.close()
+
+
+
+
+    
